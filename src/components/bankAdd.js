@@ -5,7 +5,8 @@ import Select from 'react-select';
 import {serverUrl} from './url'
 import axios from 'axios'
 import swal from 'sweetalert'
-
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 const cookie = new Cookies()
 
 // const options = [
@@ -41,7 +42,7 @@ class Main extends React.Component{
        jenisProduct:null, jenisLayanan: null, 
        errorMessage: null, diKlik:false,
        typeBank:[],bankService:[],bankProduct:[],
-       provinsi:[],kabupaten:[],idProvinsi:null
+       provinsi:[],kabupaten:[],idProvinsi:null,phone:''
       };
 
 
@@ -173,15 +174,22 @@ class Main extends React.Component{
         var province =  this.refs.provinsi.value.slice(this.refs.provinsi.value.indexOf('T')+1,this.refs.provinsi.value.length)
         var city = this.refs.kota.value
         var pic = this.refs.pic.value
-        var phone = String(this.refs.telp.value)
-
+        var phone = this.state.phone
 
         if(this.state.jenisLayanan===null || this.state.jenisProduct===null || 
         this.refs.namaBank.value === "" || this.refs.tipeBank.value ==="0" || 
         this.refs.alamat.value ==="" || this.refs.provinsi.value==="0" || 
         this.refs.kota.value==="0" || this.refs.pic.value ==="" || this.refs.telp.value===""){
             this.setState({errorMessage:"Harap cek ulang masih ada data yang belum terisi"})
-        }else{
+        }
+        else if (name.trim() ===""){
+            this.setState({errorMessage:"Nama Bank belum terisi - Harap Cek Ulang"}) 
+        }else if(pic.trim()===""){
+            this.setState({errorMessage:"Nama PIC belum terisi - Harap Cek Ulang"}) 
+        }else if(address.trim()===""){
+            this.setState({errorMessage:"Nama Alamat belum terisi - Harap Cek Ulang"}) 
+        }
+        else{
                 for (var i=0; i<this.state.jenisLayanan.length;i++){
                     services.push (this.state.jenisLayanan[i].value)
                 }
@@ -237,6 +245,7 @@ class Main extends React.Component{
                         <div className="col-sm-10">
                             <input type="text" required className="form-control" ref="namaBank" placeholder="Input Nama Bank.." />
                         </div>
+                        
                         </div>
                         <div className="form-group row">
                         <label className="col-sm-2 col-form-label">Tipe Bank</label>
@@ -313,7 +322,11 @@ class Main extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">No Telp</label>
                             <div className="col-sm-10">
-                            <input type="number" className="form-control" ref="telp" placeholder="Nomor telp" />                                                        
+                            <PhoneInput
+                            country="ID"
+                            placeholder="Masukan nomor telp.."
+                            value={ this.state.phone }
+                            onChange={ phone => this.setState({ phone }) } className="form-control" />                                                  
                             </div>
                         </div>
                             <input type="button" className="btn btn-primary" value="Simpan" onClick={this.btnSaveBank}/>
