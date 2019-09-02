@@ -37,7 +37,9 @@ class TypeBankEdit extends React.Component{
         var name= this.refs.typebank.value
         var description = this.refs.deskripsi.value
         var id = this.props.match.params.id
-
+        if(name.trim()===""){
+            this.setState({errorMessage:'Name Kosong - coba cek ulang'})
+        }else{
             var config = {
                 headers: {'Authorization': "Bearer " + cookie.get('token')}
             };
@@ -52,6 +54,8 @@ class TypeBankEdit extends React.Component{
                 swal("Gagal","Tipe Bank Gagal di Ubah - Coba Ulang Kembali","error")                
                 console.log(err)
             })
+        }
+        
     }
 
     btnCancel =()=>{
