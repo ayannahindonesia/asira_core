@@ -35,8 +35,9 @@ class TypeBankEdit extends React.Component{
 
     btnUpdate=()=>{
         var name= this.refs.typebank.value
-        var description = this.refs.deskripsi.value
+        var description = this.refs.deskripsi.value ? this.refs.deskripsi.value :this.refs.deskripsi.placeholder 
         var id = this.props.match.params.id
+
         if(name.trim()===""){
             this.setState({errorMessage:'Name Kosong - coba cek ulang'})
         }else{
@@ -91,7 +92,7 @@ class TypeBankEdit extends React.Component{
                       <div className="form-group row">
                                                 <label className="col-sm-3 col-form-label">Deskripsi</label>
                                                 <div className="col-sm-9">
-                                                <textarea rows="5" ref="deskripsi" className="form-control" placeholder="Deskripsi.." defaultValue={this.state.rows.description} required autoFocus/>
+                                                <textarea rows="5" ref="deskripsi" className="form-control" placeholder={this.state.rows.description} required autoFocus/>
                                                 </div>
                      </div>
                     <div className="form-group row">
