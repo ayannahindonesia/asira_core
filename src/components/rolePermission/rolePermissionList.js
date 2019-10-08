@@ -1,13 +1,14 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios';
-import { serverUrl } from '../url';
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
 // import SubTable from './../subComponent/SubTable'
 import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import Pagination from 'rc-pagination';
+import {getAllRoleFunction, getAllRolePermissionListFunction} from './saga'
+
+
 const cookie = new Cookies()
 
 // const columnDataRole = [
@@ -44,84 +45,30 @@ class RolePermissionList extends React.Component{
         }
     }
     componentDidMount(){
-        this.getAllRole();
+        this.refresh()
     }
-    
-    getAllRole = ()=>{
-        const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-        };
 
-        axios.get(serverUrl+`admin/roles?orderby=updated_time&sort=desc`,config).then((res)=>{
-            const listRole = res.data && res.data.data
-            
-            this.setState({
-                listRole,
-            }, () => {
-                this.getAllRolePermission()
-            })
-        }).catch((err)=>{
-            console.log(err.toString())
-            this.setState({
-              errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-              loading: false,
-              disabled: true,
-            })
-        })
-    }
-  
-    getAllRolePermission = ()=>{
-        const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-        };
+    refresh = async function(){
+        const param = {};
+        param.rowsPerPage = this.state.rowsPerPage;
+        param.page = this.state.page;
 
-        axios.get(serverUrl+`admin/permission`,config)
-        .then((res)=>{
-            const listPermission = res.data && res.data.data ? res.data.data : res.data;
-            const listRole = this.state.listRole;
-            const newRole = [];
-            const rolePerPages = [];
-            let totalData = 0;
+        const data = await getAllRoleFunction(param, getAllRolePermissionListFunction);
 
-            for(const key in listRole) {
-                const rolePerLine = listRole[key];
-                rolePerLine.permission = []
-                for(const keyPermission in listPermission) {
-                    if(
-                        rolePerLine.id.toString() === listPermission[keyPermission].role_id.toString() &&
-                        listPermission[keyPermission].permissions.toString().trim().length !== 0
-                    ) {
-                        rolePerLine.permission.push(listPermission[keyPermission].permissions)
-                    }
-                }
-
-                if(rolePerLine.permission.length !== 0) {
-                    newRole.push(rolePerLine);
-                }
-            }
-            
-            for(let i = (this.state.rowsPerPage*(this.state.page-1)); i < this.state.rowsPerPage * this.state.page; i+=1) {
-                if(newRole[i] && newRole[i].id) {
-                    rolePerPages.push(newRole[i])
-                }            
-            }
-            
-            totalData = newRole.length;
-
-            this.setState({
-                listRole: rolePerPages,
-                totalData,
-                loading:false,
-            })
-
-        }).catch((err)=>{
-            console.log(err.toString())
-            this.setState({
-              errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-              loading: false,
-              disabled: true,
-            })
-        })
+        if(data) {
+            if(!data.error) {
+                this.setState({
+                    listRole: data.dataRolePermission,
+                    totalData: data.totalData,
+                    loading: false,
+                })
+            } else {
+                this.setState({
+                    errorMessage: data.error,
+                    loading: false,
+                })
+            }      
+        }
     }
 
     renderJSX = () => {
@@ -172,7 +119,7 @@ class RolePermissionList extends React.Component{
             loading:true,
             page:current,
         }, () => {
-            this.getAllRole();
+            this.refresh();
         })
     }
     

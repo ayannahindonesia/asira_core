@@ -1,8 +1,6 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios'
-import { serverUrl } from '../url';
 import CheckBox from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
@@ -11,6 +9,7 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from '../global/globalConstant'
+import {getRoleFunction, getRolePermissionFunction} from './saga'
 
 const styles = (theme) => ({
     container: {
@@ -37,124 +36,40 @@ class rolePermissionDetail extends React.Component{
       this.setState({
         roleId: this.props.match.params.id,
       },() => {
-        this.getRole()
+        this.refresh();
       })
       
     }
 
-    getRole = ()=>{
-      const config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
-      };
+    refresh = async function(){
+      const param = {};
+      param.roleId = this.state.roleId;
+      param.listAllRolePermission = this.state.listAllRolePermission;
 
-      axios.get(serverUrl+`admin/roles/${this.state.roleId}`,config).then((res)=>{
-        const listRole = res.data
+      const data = await getRoleFunction(param, getRolePermissionFunction);
 
-        this.setState({
-          listRole,
-        }, () => {
-          this.getRolePermission()
-        })
-      }).catch((err)=>{
-          console.log(err.toString())
-          this.setState({
-            errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-            loading: false,
-            disabled: true,
-          })
-      })
-    }
-
-    getRolePermission = ()=>{
-      const config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
-      };
-      
-      axios.get(serverUrl+`admin/permission?role_id=${this.state.roleId}`,config)
-      .then((res)=>{
-        const listPermission = res.data && res.data.data ? res.data.data : res.data;
-        const listRole = this.state.listRole;
-        let newPermission = [];
-
-        for(const keyPermission in listPermission) {
-          if(
-            listRole.id.toString() === listPermission[keyPermission].role_id.toString() &&
-            listPermission[keyPermission].permissions.toString().trim().length !== 0
-          ) {
-            if(listPermission[keyPermission].permissions.toString().trim().toLowerCase() === 'all') {
-              newPermission = this.destructRolePermissionAll();
-              break;
-            } else {
-              newPermission.push(this.destructRolePermission(listPermission[keyPermission].permissions))
-            }
-            
-          }
-        }
-
-        this.setState({
-          listRolePermission: newPermission,
-          loading: false,
-        })
-
-      }).catch((err)=>{
-        console.log(err.toString())
-        this.setState({
-          errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-          loading: false,
-          disabled: true,
-        })
-      })
-    }
-
-    destructRolePermissionAll = (permission) => {
-      let newPermission = [];
-
-      for(const key in this.state.listAllRolePermission) {
-        newPermission.push({
-          id: this.state.listAllRolePermission[key].id,
-          name: this.state.listAllRolePermission[key].name,
-          modules: this.state.listAllRolePermission[key].modules,
-        });
+      if(data) {
+          if(!data.error) {
+            this.setState({
+              listRole: data.dataRole,
+              listRolePermission: data.dataRolePermission,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: data.error,
+              disabled: true,
+              loading: false,
+            })
+          }      
       }
-
-      return newPermission
-    }
-
-    destructRolePermission = (permission) => {
-      let newPermission = {};
-
-      const dataPermission = permission.split('_');
-
-      newPermission = {
-        id: this.findIdRolePermission(dataPermission),
-        name: dataPermission[0],
-        modules: dataPermission[1] || dataPermission[0],
-      };
-      
-      return newPermission
-    }
-
-    findIdRolePermission = (dataPermission) => {
-      let idPermission = 0;
-      
-      for(const key in this.state.listAllRolePermission) {
-        if(
-          this.state.listAllRolePermission[key].modules.toString().toLowerCase().trim() === dataPermission[0].toString().toLowerCase().trim() && 
-          dataPermission[1] &&
-          this.state.listAllRolePermission[key].name.toString().toLowerCase().trim() === dataPermission[1].toString().toLowerCase().trim()
-        ) {
-          idPermission = this.state.listAllRolePermission[key].id;
-        }
-      }
-
-      return idPermission
     }
 
     btnCancel = ()=>{
-        this.setState({diKlik:true})
+      this.setState({diKlik:true})
     }
     componentWillReceiveProps(newProps){
-        this.setState({errorMessage:newProps.error})
+      this.setState({errorMessage:newProps.error})
     }
 
     checkingRole = (role, idRolePermission) => {
@@ -167,46 +82,7 @@ class rolePermissionDetail extends React.Component{
           }
         }
         return false;
-      }
-
-      onChangeCheck = (e) => {
-        const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
-        const profileUser = Object.assign({}, this.state.listRolePermission);
-        const profileUserNew = [];
-        let flag = false;
-        let name = '';
-        let modules = '';
-    
-        for (const key in profileUserAll) {
-          if (
-            profileUserAll[key].id.toString().trim() ===
-            e.target.value.toString().trim()
-          ) {
-            name = profileUserAll[key].name;
-            modules = profileUserAll[key].modules;
-
-            for(const keyRole in profileUser) {
-              if(profileUser[keyRole].id.toString().trim() !== e.target.value.toString().trim()) {
-                profileUserNew.push(profileUser[keyRole])
-              } else {
-                flag = true;
-              }
-            }
-          } 
-        }
-    
-        if (!flag) {
-          profileUserNew.push({
-            id: e.target.value,
-            name: name,
-            modules: modules,
-          });
-        }
-        
-        this.setState({
-          listRolePermission: profileUserNew,
-        });
-      };
+    }
 
     render(){
         if(this.state.diKlik){
@@ -253,8 +129,7 @@ class rolePermissionDetail extends React.Component{
                             id="id"
                             labelName="label"
                             modules="menu"      
-                            labelPlacement= "top"                       
-                            onChange={this.onChangeCheck}
+                            labelPlacement= "top"            
                             onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
                             style={{ width: '97%'}}
                             disabled={this.state.disabled}

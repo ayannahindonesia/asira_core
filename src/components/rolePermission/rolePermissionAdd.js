@@ -12,7 +12,9 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import {listAllRolePermission} from './../global/globalConstant'
+import { listAllRolePermission } from './../global/globalConstant'
+import { getAllRoleFunction, getAllRolePermissionAddFunction } from './saga'
+import { constructRolePermission } from './function'
 
 const styles = (theme) => ({
     container: {
@@ -37,92 +39,29 @@ class rolePermissionAdd extends React.Component{
     };
 
     componentDidMount(){
-      this.getAllRole();
+      this.refresh()
     }
 
-    getAllRole = ()=>{
-      const config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
-      };
+    refresh = async function(){
+      const param = {};
 
-      axios.get(serverUrl+`admin/roles`,config).then((res)=>{
-        const listRole = res.data && res.data.data;
+      const data = await getAllRoleFunction(param, getAllRolePermissionAddFunction);
 
-        this.setState({
-          listRole,
-        }, () => {
-          this.getAllRolePermission()
-        })
-      }).catch((err)=>{
-          console.log(err.toString())
-          this.setState({
-            errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-            loading: false,
-            disabled: true,
-          })
-      })
-    }
-
-    getAllRolePermission = ()=>{
-      const config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
-      };
-
-      axios.get(serverUrl+`admin/permission`,config)
-      .then((res)=>{
-          const listPermission = res.data && res.data.data ? res.data.data : res.data;
-          const listRole = this.state.listRole;
-          const newRole = [];
-          let role = 0;
-
-          for(const key in listRole) {
-            const rolePerLine = listRole[key];
-            rolePerLine.permission = []
-            for(const keyPermission in listPermission) {
-              if(
-                rolePerLine.id.toString() === listPermission[keyPermission].role_id.toString() && 
-                listPermission[keyPermission].permissions.toString().trim().length !== 0
-              ) {
-                rolePerLine.permission.push(listPermission[keyPermission].permissions)
-              }
-            }
-
-            if(rolePerLine.permission.length === 0) {
-              if(role === 0) {
-                role = rolePerLine.id;
-              }
-              newRole.push(rolePerLine);
-            }
-          }
-
-          if(newRole.length && newRole.length !== 0) {
-            this.setState({
-              role,
-              listRole: newRole,
-              loading:false,
-            })
+      if(data) {
+          if(!data.error) {
+              this.setState({
+                listRole: data.dataRole,
+                role: data.role,
+                loading: false,
+              })
           } else {
-            this.setState({
-              disabled:true,
-              errorMessage: 'Data Role yang belum di setup tidak ditemukan',
-              loading:false,
-            })
-          }
-          
-          this.setState({
-            role,
-            listRole: newRole,
-            loading:false,
-          })
-
-      }).catch((err)=>{
-        console.log(err.toString())
-        this.setState({
-          errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-          loading: false,
-          disabled: true
-        })
-      })
+              this.setState({
+                errorMessage: data.error,
+                disabled: true,
+                loading: false,
+              })
+          }      
+      }
     }
 
     btnCancel = ()=>{
@@ -142,7 +81,7 @@ class rolePermissionAdd extends React.Component{
         const listRolePermission = this.state.listRolePermission;
         const dataRolePermission = {};
         dataRolePermission.role_id = parseInt(this.state.role);
-        dataRolePermission.permissions = this.constructRolePermission(listRolePermission);
+        dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
         this.setState({loading: true});
         
@@ -160,15 +99,6 @@ class rolePermissionAdd extends React.Component{
           })
         })
       }
-    }
-
-    constructRolePermission = (rolePermission) => {
-      const newPermission = [];
-
-      for(const key in rolePermission) {
-        newPermission.push(`${rolePermission[key].modules}_${rolePermission[key].name}`)
-      }
-      return newPermission;
     }
 
     checkingRole = (role, id) => {
