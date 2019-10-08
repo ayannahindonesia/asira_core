@@ -35,17 +35,22 @@ const cookie = new Cookies()
 // ]
 
 class RolePermissionList extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            loading:true, 
-            listRole: [],
-            page: 1,
-            rowsPerPage: 10,
-        }
+    _isMounted = false;
+
+    state = {
+        loading:true, 
+        listRole: [],
+        page: 1,
+        rowsPerPage: 10,
     }
+
     componentDidMount(){
+        this._isMounted = true;
         this.refresh()
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     refresh = async function(){

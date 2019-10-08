@@ -27,6 +27,8 @@ const cookie = new Cookies();
 
 
 class rolePermissionAdd extends React.Component{
+    _isMounted = false;
+
     state = {
       diKlik:false,
       errorMessage:'',
@@ -39,7 +41,12 @@ class rolePermissionAdd extends React.Component{
     };
 
     componentDidMount(){
+      this._isMounted = true;
       this.refresh()
+    }
+
+    componentWillUnmount() {
+      this._isMounted = false;
     }
 
     refresh = async function(){

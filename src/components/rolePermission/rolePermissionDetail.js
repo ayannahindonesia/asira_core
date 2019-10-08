@@ -20,6 +20,8 @@ const styles = (theme) => ({
 const cookie = new Cookies();
 
 class rolePermissionDetail extends React.Component{
+    _isMounted = false;
+    
     state = {
       diKlik:false,
       errorMessage:'',
@@ -33,12 +35,17 @@ class rolePermissionDetail extends React.Component{
     };
 
     componentDidMount(){
+      this._isMounted = true;
       this.setState({
         roleId: this.props.match.params.id,
       },() => {
         this.refresh();
       })
       
+    }
+
+    componentWillUnmount() {
+      this._isMounted = false;
     }
 
     refresh = async function(){
