@@ -60,6 +60,11 @@ import RoleListPermission from './components/rolePermission/rolePermissionList'
 import RoleDetailPermission from './components/rolePermission/rolePermissionDetail'
 import RoleEditPermission from './components/rolePermission/rolePermissionEdit'
 
+import UserAdd from './components/user/userAdd'
+import UserList from './components/user/userList'
+import UserDetail from './components/user/userDetail'
+import UserEdit from './components/user/userEdit'
+
 import axios from 'axios'
 const kukie =new Cookies()
 
@@ -162,6 +167,11 @@ class App extends React.Component {
                     <Route path='/listRolePermission' component={RoleListPermission}></Route>
                     <Route path='/editRolePermission/:id' component={RoleEditPermission}></Route>
                     <Route path='/detailRolePermission/:id' component={RoleDetailPermission}></Route>
+
+                    <Route path='/tambahUser' component={UserAdd}></Route>
+                    <Route path='/listUser' component={UserList}></Route>
+                    <Route path='/editUser/:id' component={UserEdit}></Route>
+                    <Route path='/detailUser/:id' component={UserDetail}></Route>
 
                     {kukie.get('token') ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
