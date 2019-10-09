@@ -10,8 +10,16 @@ export async function getAllRoleFunction(param, next){
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
-    
-        axios.get(serverUrl+`admin/roles?orderby=updated_time&sort=desc`,config).then((res)=>{
+
+        let filter = '';
+
+        for(const key in param) {
+            filter += `&${key}=${param[key]}`
+        }
+
+        const urlNew = serverUrl+`admin/roles?orderby=updated_time&sort=desc${filter}`
+
+        axios.get(urlNew,config).then((res)=>{
             const listRole = res.data && res.data.data
             param.dataRole = listRole;
 
