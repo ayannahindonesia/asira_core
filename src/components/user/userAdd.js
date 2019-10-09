@@ -4,21 +4,26 @@ import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import axios from 'axios'
 import { serverUrl } from '../url';
-import CheckBox from '../subComponent/CheckBox';
+import CheckBox from '@material-ui/core/Checkbox';
 import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
+import TextField from '@material-ui/core/TextField';
 import { compose } from 'redux';
 import { listAllRolePermission } from './../global/globalConstant'
-import { getAllRoleFunction, getAllRolePermissionAddFunction } from './saga'
+import { getAllRoleFunction } from './../rolePermission/saga'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { constructRolePermission } from './function'
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
+    },
+    textField: {
+      border: '1px solid',
     },
   });
 
@@ -35,9 +40,13 @@ class userAdd extends React.Component{
       listAllRolePermission,
       listRolePermission: [],
       disabled: false,
-      role : '',
+      role : 0,
       listRole: [],
       loading: true,
+      status: true,
+      username: '',
+      phone:'',
+      email:'',
     };
 
     componentDidMount(){
@@ -50,24 +59,25 @@ class userAdd extends React.Component{
     }
 
     refresh = async function(){
-      const param = {};
-
-      const data = await getAllRoleFunction(param, getAllRolePermissionAddFunction);
-
+      const param = {
+        status: true,
+      };
+      
+      const data = await getAllRoleFunction(param);
+      console.log(data)
       if(data) {
-          if(!data.error) {
-              this.setState({
-                listRole: data.dataRole,
-                role: data.role,
-                loading: false,
-              })
-          } else {
-              this.setState({
-                errorMessage: data.error,
-                disabled: true,
-                loading: false,
-              })
-          }      
+        if(!data.error) {
+          this.setState({
+            listRole: data.dataRole,
+            role: (data.dataRole && data.dataRole[0] && data.dataRole[0].id) || 0,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            loading: false,
+          })
+        }      
       }
     }
 
@@ -80,15 +90,14 @@ class userAdd extends React.Component{
     }
 
     btnSave=()=>{
-      if(this.state.listRolePermission.length === 0) {
-        this.setState({errorMessage:"ERROR : Data Role Permission Tidak Boleh Kosong"})
-      } else if(this.state.listRole.length === 0 || this.state.role === 0) {
-        this.setState({errorMessage:"ERROR : Data Role Tidak Boleh Kosong"})
-      } else{
-        const listRolePermission = this.state.listRolePermission;
-        const dataRolePermission = {};
-        dataRolePermission.role_id = parseInt(this.state.role);
-        dataRolePermission.permissions = constructRolePermission(listRolePermission);
+      if (this.validate()) {
+        const dataUser = {
+          username : this.state.username,
+          role_id : this.state.role,
+          phone : this.state.phone,
+          email : this.state.email,
+          status : this.state.status,
+        }
 
         this.setState({loading: true});
         
@@ -96,78 +105,108 @@ class userAdd extends React.Component{
           headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
 
-        axios.post(serverUrl+'admin/permission',dataRolePermission,config).then((res)=>{
-          swal("Success","Role Permission berhasil di tambah","success")
+        axios.post(serverUrl+'admin/users',dataUser,config).then((res)=>{
+          swal("Success","User berhasil di tambah","success")
           this.setState({diKlik:true})
         }).catch((err)=>{
           this.setState({
             errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-            disabled: true,
           })
         })
       }
     }
 
-    checkingRole = (role, id) => {
-      for (const key in role) {
-        if (
-          role[key].id.toString().trim() === id.toString().trim()
-        ) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     onChangeCheck = (e) => {
-      const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
-      const profileUser = Object.assign({}, this.state.listRolePermission);
-      const profileUserNew = [];
-      let flag = false;
-      let name = '';
-      let modules = '';
-  
-      for (const key in profileUserAll) {
-        if (
-          profileUserAll[key].id.toString().trim() ===
-          e.target.value.toString().trim()
-        ) {
-          name = profileUserAll[key].name;
-          modules = profileUserAll[key].modules;
-
-          for(const keyRole in profileUser) {
-            if(profileUser[keyRole].id.toString().trim() !== e.target.value.toString().trim()) {
-              profileUserNew.push(profileUser[keyRole])
-            } else {
-              flag = true;
-            }
-          }
-        } 
-      }
-  
-      if (!flag) {
-        profileUserNew.push({
-          id: e.target.value,
-          name: name,
-          modules: modules,
-        });
-      }
-      
       this.setState({
-        listRolePermission: profileUserNew,
+        status: !this.state.status,
       });
     };
 
+    onChangeTextField = (e) => {
+      let value = e.target.value;
+      let labelName = e.target.id;
+      let flag = true;
+
+      if(value.includes(' ') || value.includes('\'') || value.includes('"') || value.includes(',') ) {
+        flag = false
+      }
+
+      if(labelName === 'phone' && isNaN(value)) {    
+        flag = false 
+      }
+      
+      if(flag) {
+        this.setState({
+          [labelName]: value,
+        })
+      } 
+    }
+
     onChangeDropDown = (e) => {
+      console.log(e.target.value)
       this.setState({role: e.target.value})
+    }
+
+    validateEmail = (email) => {
+      let flag = false;
+
+      if(email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+        flag = true;
+      }
+
+      return flag;
+    }
+
+    validatePhone = (phone) => {
+      let flag = false;
+      let phoneRegex = /^(^\+62\s?|^0)(\d{3,4}){2}\d{3,4}$/;
+
+      if(phone.match(phoneRegex)) {
+        console.log(phone.match(phoneRegex))
+        flag = true
+      }
+      
+
+      return flag;
+    }
+
+    validate = () => {
+      let flag = true;
+      let errorMessage = '';
+
+      if (!this.state.username || this.state.username.length === 0) {
+        flag = false;
+        errorMessage = 'Mohon input nama akun dengan benar'
+      } else if (!this.state.role || this.state.role === 0) {
+        flag = false;
+        errorMessage = 'Mohon input role dengan benar'
+      } else if (
+          !this.state.email || this.state.email.length === 0 || !this.validateEmail(this.state.email)
+        ) {
+        flag = false;
+        errorMessage = 'Mohon input email dengan benar'
+      } else if (!this.state.phone || this.state.phone.length === 0 || !this.validatePhone(this.state.phone)) {
+        console.log(this.state.phone)
+        flag = false;
+        errorMessage = 'Mohon input kontak pic dengan benar'
+      } else {
+        console.log('bagus')
+        errorMessage = ''
+      }
+         
+      this.setState({
+        errorMessage,
+      })
+
+      return flag;
     }
 
     render(){
         if(this.state.diKlik){
-          return <Redirect to='/listRolePermission'/>            
+          return <Redirect to='/listUser'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
+            <div key="zz">
               <div align="center" colSpan={6}>
                 <Loader 
                   type="Circles"
@@ -181,49 +220,120 @@ class userAdd extends React.Component{
         } else if(cookie.get('token')){
           return(
               <div className="container mt-4">
-                <h3>Role Permission - Tambah</h3>
-                
+                <h3>Akun - Tambah</h3>
+                                
                 <hr/>
                 
                 <form>
-                  <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Role Name
-                      </label>
-                      <div className="col-sm-4">
-                        <DropDown
-                          value={this.state.role}
-                          label="Role"
-                          data={this.state.listRole}
-                          id="id"
-                          labelName="name"
-                          onChange={this.onChangeDropDown}
-                          fullWidth
-                          error={this.state.roleHelper}
-                          disabled={this.state.disabled}
-                        />
-                      </div>                 
+                  <div className="form-group row">   
+                    <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left', marginBottom:'2vh'}}>
+                      {this.state.errorMessage}
+                    </div>    
+                  </div>
+                  <div className="form-group row" style={{marginBottom:20}}>                
+                    <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                      Nama Akun
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4" >
+                      <TextField
+                        id="username"
+                        onChange={this.onChangeTextField}
+                        value={this.state.username}
+                        hiddenLabel
+                        fullWidth
+                        placeholder="Nama Akun"
+                        style={{border:'1px groove', paddingLeft:'5px'}}
+                      />
+                    </div>                 
+                  </div>
+
+                  <div className="form-group row" style={{marginBottom:20}}>                   
+                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                      Role
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4">
+                      <DropDown
+                        value={this.state.role}
+                        label="Role"
+                        data={this.state.listRole}
+                        id="id"
+                        labelName="name"
+                        onChange={this.onChangeDropDown}
+                        fullWidth
+                      />
+                    </div>                 
+                  </div>
+
+                  <div className="form-group row" style={{marginBottom:40}}>                   
+                    <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
+                      Email
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4">
+                      <TextField
+                        id="email"
+                        type="email"
+                        onChange={this.onChangeTextField}
+                        value={this.state.email}
+                        hiddenLabel
+                        fullWidth
+                        placeholder="Email"
+                        style={{border:'1px groove', paddingLeft:'5px'}}
+                      />
+                    </div>                   
+                  </div>
+
+                  <div className="form-group row" style={{marginBottom:20}}>                   
+                    <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
+                      Kontak PIC
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4">
+                      <TextField
+                        id="phone"
+                        type="tel"
+                        onChange={this.onChangeTextField}
+                        value={this.state.phone}
+                        hiddenLabel
+                        fullWidth
+                        placeholder="Telepon"
+                        style={{border:'1px groove', paddingLeft:'5px'}}
+                      />
+                    </div>                   
                   </div>
 
                   <div className="form-group row">
-                      <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                        {this.state.errorMessage}
-                      </div>     
-                      <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                        <CheckBox
-                          label="Core - Permission Setup"
-                          modulesName="Menu"
-                          data={this.state.listAllRolePermission}
-                          id="id"
-                          labelName="label"
-                          modules="menu"      
-                          labelPlacement= "top"                       
-                          onChange={this.onChangeCheck}
-                          onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
-                          style={{ width: '97%'}}
-                          disabled={this.state.disabled}
-                        />
-                      </div>           
+                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                      Status
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                      :
+                    </label>
+                    <div className="col-4" style={{color:"black",fontSize:"15px",alignItems:'left', paddingTop: '15px'}}>
+                      
+                      <FormControlLabel
+                        control={
+                          <CheckBox       
+                            color="default"           
+                            onChange={this.onChangeCheck}
+                            checked={this.state.status}
+                            style={{justifyContent:'left'}}
+                          />  
+                        }
+                        label={this.state.status ? "Aktif" : "Tidak Aktif"}
+                      />
+                      
+                    </div>           
                   </div>
                   
                   <div className="form-group row">
