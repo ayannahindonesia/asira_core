@@ -4,6 +4,7 @@ import './../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
 import { serverUrl } from './url';
 import swal from 'sweetalert'
+import Loader from 'react-loader-spinner'
 import axios from 'axios'
 const cookie = new Cookies()
 
@@ -16,6 +17,7 @@ class LayananEdit extends React.Component{
         rows:[],
         imageVal:'',
         check: true,
+        loading:true
     }
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
@@ -27,14 +29,14 @@ class LayananEdit extends React.Component{
         var id = this.props.match.params.id
         var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
                 
-        axios.get(serverUrl+`admin/bank_services/${id}`,config)
+        axios.get(serverUrl+`admin/services/${id}`,config)
         .then((res)=>{
             console.log(res.data)
             this.setState({rows:res.data, check: res.data && res.data.status && res.data.status ==='active' ? true : false})
             if(this.state.rows.image_id !== undefined || this.state.rows.image_id !== null){
                 axios.get(serverUrl+`admin/image/${this.state.rows.image_id}`,config)
                 .then((res)=>{
-                    this.setState({imageVal:res.data.image_string})
+                    this.setState({imageVal:res.data.image_string,loading:false})
                 })
             }
         })
@@ -81,7 +83,7 @@ class LayananEdit extends React.Component{
                         var image = arr[1].toString()
                         var newData = {name,image,status}
                         var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                        axios.patch(serverUrl+`admin/bank_services/${id}`,newData,config)
+                        axios.patch(serverUrl+`admin/services/${id}`,newData,config)
                         .then((res)=>{
                             swal("Success","Layanan berhasil di Edit","success")
                             this.setState({errorMessage:null,diKlik:true})
@@ -96,7 +98,7 @@ class LayananEdit extends React.Component{
             }else{
                 var newData = {name,status}
                 var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                axios.patch(serverUrl+`admin/bank_services/${id}`,newData,config)
+                axios.patch(serverUrl+`admin/services/${id}`,newData,config)
                 .then((res)=>{
                     swal("Success","Layanan berhasil di Edit","success")
                     this.setState({errorMessage:null,diKlik:true})
@@ -119,6 +121,18 @@ class LayananEdit extends React.Component{
     }
 
     render(){
+        if (this.state.loading){
+            return (
+                <div className="mt-2">
+                 <Loader 
+                    type="ThreeDots"
+                    color="#00BFFF"
+                    height="30"	
+                    width="30"
+                />  
+                </div>
+            )
+        }else{
         if(this.state.diKlik){
             return <Redirect to='/listlayanan'/>            
 
@@ -138,7 +152,7 @@ class LayananEdit extends React.Component{
                    <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Nama Layanan</label>
                             <div className="col-sm-9">
-                            <input disabled type="text" placeholder={this.state.rows.name} style={{width:"50%",marginLeft:"100px",height:"35px",borderRadius:"3px"}} ref="namaLayanan"></input>                            
+                            <input disabled type="text" placeholder={this.state.rows.name} style={{width:"50%",marginLeft:"13%"}} className="form-control" ref="namaLayanan"></input>                            
                             </div>
                     </div>
                     <div className="form-group row">
@@ -170,7 +184,7 @@ class LayananEdit extends React.Component{
             )    
         }
        
-    }
+    }}
 }
 
 export default LayananEdit;

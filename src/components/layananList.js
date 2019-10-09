@@ -20,8 +20,9 @@ class LayananList extends React.Component{
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
 
-        axios.get(serverUrl+`admin/bank_services`,config)
+        axios.get(serverUrl+`admin/services`,config)
         .then((res)=>{
+            console.log(res.data)
             this.setState({loading:false,rows:res.data.data})
         })
         .catch((err)=>console.log(err))
