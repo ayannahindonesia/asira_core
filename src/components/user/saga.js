@@ -197,3 +197,20 @@ export async function getRolePermissionFunction(param, next) {
     });
     
 }
+
+export async function postUserAddFunction(param) {
+    return new Promise(async (resolve) => {     
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+          };
+  
+        axios.post(serverUrl+'admin/users',param.dataUser,config).then((res)=>{
+            resolve(res)
+        }).catch((err)=>{
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah User'
+            param.error = error
+            resolve(param);
+        })
+    });
+    
+}
