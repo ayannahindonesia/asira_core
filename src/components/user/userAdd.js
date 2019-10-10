@@ -2,8 +2,6 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import axios from 'axios'
-import { serverUrl } from '../url';
 import CheckBox from '@material-ui/core/Checkbox';
 import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
