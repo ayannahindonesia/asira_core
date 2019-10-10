@@ -5,15 +5,24 @@ import {destructRolePermission, destructRolePermissionAll} from './function'
 
 const cookie = new Cookies()
 
-export async function getAllRoleFunction(param, next){
-    return new Promise(async (resolve, reject) => {
+export async function getAllUserFunction(param, next){
+    return new Promise(async (resolve) => {
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
+
+        let filter = '';
+
+        for(const key in param) {
+            filter += `&${key}=${param[key]}`
+        }
+
+        const urlNew = serverUrl+`admin/users?orderby=updated_time&sort=desc${filter}`
     
-        axios.get(serverUrl+`admin/roles?orderby=updated_time&sort=desc`,config).then((res)=>{
-            const listRole = res.data && res.data.data
-            param.dataRole = listRole;
+        axios.get(urlNew,config).then((res)=>{
+            const listUser = res.data && res.data.data
+            param.dataUser = listUser;
+            param.totalData = res.data.total_data
 
             if(next) {
                 resolve(next(param));
@@ -22,7 +31,8 @@ export async function getAllRoleFunction(param, next){
             }
         }).catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
-            reject({error});
+            param.error = error;
+            resolve(param);
         })
     });
 };
