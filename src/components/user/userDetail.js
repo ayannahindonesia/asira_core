@@ -1,15 +1,13 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import CheckBox from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { listAllRolePermission } from '../global/globalConstant'
-import {getRoleFunction, getRolePermissionFunction} from './saga'
+import { getUserFunction } from './saga'
 
 const styles = (theme) => ({
     container: {
@@ -19,22 +17,19 @@ const styles = (theme) => ({
 
 const cookie = new Cookies();
 
-class rolePermissionDetail extends React.Component{
+class UserDetail extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listAllRolePermission,
-      listRolePermission: [],
-      listRole: {},
-      role : {},
-      roleId: 0,
+      dataUser: {},
+      userId: 0,
       disabled: true,
       loading: true,
     };
 
     componentDidMount(){
       this.setState({
-        roleId: this.props.match.params.id,
+        userId: this.props.match.params.id,
       },() => {
         this.refresh();
       })
@@ -43,16 +38,14 @@ class rolePermissionDetail extends React.Component{
 
     refresh = async function(){
       const param = {};
-      param.roleId = this.state.roleId;
-      param.listAllRolePermission = this.state.listAllRolePermission;
+      param.userId = this.state.userId;
 
-      const data = await getRoleFunction(param, getRolePermissionFunction);
+      const data = await getUserFunction(param);
 
       if(data) {
           if(!data.error) {
             this.setState({
-              listRole: data.dataRole,
-              listRolePermission: data.dataRolePermission,
+              dataUser: data.dataUser,
               loading: false,
             })
           } else {
@@ -86,7 +79,7 @@ class rolePermissionDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listRolePermission'/>            
+            return <Redirect to='/listUser'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -102,45 +95,106 @@ class rolePermissionDetail extends React.Component{
           )
         } else if(cookie.get('token')){
             return(
-                <div className="container mt-4">
-                 <h3>Role Permission - Detail</h3>
+              <div className="container mt-4">
+                 <h3>User - Detail</h3>
                  
                  <hr/>
                  
                  <form>
+                    <div className="form-group row"> 
+                      <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
+                        {this.state.errorMessage}
+                      </div>     
+                    </div>
+
                     <div className="form-group row">                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Role Name
+                        Id Akun
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
                       </label>
                       <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.listRole && this.state.listRole.name}
+                        {this.state.dataUser && this.state.dataUser.id}
+                      </label>               
+                    </div>
+
+                    <div className="form-group row">                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Nama Akun
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                        {this.state.dataUser && this.state.dataUser.username}
+                      </label>               
+                    </div>
+
+                    <div className="form-group row">                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Password
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                        {this.state.dataUser && this.state.dataUser.password}
+                      </label>               
+                    </div>
+
+                    <div className="form-group row">                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Role
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                        {this.state.dataUser && this.state.dataUser.role}
+                      </label>               
+                    </div>
+
+                    <div className="form-group row">                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Email
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                        {this.state.dataUser && this.state.dataUser.email}
+                      </label>               
+                    </div>
+
+                    <div className="form-group row">                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Kontak PIC
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                        {this.state.dataUser && this.state.dataUser.phone}
+                      </label>               
+                    </div>
+
+                    <div className="form-group row">                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Status
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                        {this.state.dataUser && this.state.dataUser.status ? 'Aktif' : 'Tidak Aktif'}
                       </label>               
                     </div>
 
                     <div className="form-group row">
-                        <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                            {this.state.errorMessage}
-                        </div>     
-                        <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                          <CheckBox
-                            label="Core - Permission Setup"
-                            modulesName="Menu"
-                            data={this.state.listAllRolePermission}
-                            id="id"
-                            labelName="label"
-                            modules="menu"      
-                            labelPlacement= "top"            
-                            onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
-                            style={{ width: '97%'}}
-                            disabled={this.state.disabled}
-                          />
-                        </div>           
-                    </div>
-                    
-                    <div className="form-group row">
-                        <div className="col-sm-12 mt-3">
-                          <input type="button" value="Batal" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                        </div>
+                      <div className="col-sm-12 mt-3">
+                        <input type="button" value="Batal" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
+                      </div>
                     </div>
                     
                  </form>
@@ -184,4 +238,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(rolePermissionDetail);
+  )(UserDetail);
