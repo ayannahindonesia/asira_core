@@ -35,22 +35,17 @@ const cookie = new Cookies()
 // ]
 
 class RolePermissionList extends React.Component{
-    _isMounted = false;
-
-    state = {
-        loading:true, 
-        listRole: [],
-        page: 1,
-        rowsPerPage: 10,
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading:true, 
+            listRole: [],
+            page: 1,
+            rowsPerPage: 10,
+        }
     }
-
     componentDidMount(){
-        this._isMounted = true;
         this.refresh()
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
     }
 
     refresh = async function(){
@@ -78,7 +73,7 @@ class RolePermissionList extends React.Component{
 
     renderJSX = () => {
 
-        if (this.state.loading || !this.state.listRole){
+        if (this.state.loading){
             return  (
               <tr  key="zz">
                 <td align="center" colSpan={6}>
@@ -94,7 +89,7 @@ class RolePermissionList extends React.Component{
         }
         
         
-        var jsx = this.state.listRole && this.state.listRole.map((val,index)=>{
+        var jsx = this.state.listRole.map((val,index)=>{
             return(
                 <tr key={index}>
                     <td align="center">{this.state.page >1 ? (index+1 + this.state.rowsPerPage*(this.state.page-1)) : index+1}</td>

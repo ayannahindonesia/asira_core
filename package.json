@@ -39,7 +39,7 @@
     "universal-cookie": "^4.0.0"
   },
   "scripts": {
-    "start": "cross-env PORT=3001 react-scripts start",
+    "start": "set PORT=3001 && react-scripts start",
     "build": "set GENERATE_SOURCEMAP=false && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

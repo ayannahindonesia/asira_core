@@ -3,11 +3,13 @@ import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import axios from 'axios'
 import {serverUrl} from './url' 
+import Loader from 'react-loader-spinner'
+
 
 const cookie = new Cookies()
 
 class LayananDetail extends React.Component{
-    state={rows:[],imageData:''}
+    state={rows:[],imageData:'',loading:true}
 
     componentDidMount =()=>{
         this.getDetailLayanan()
@@ -18,14 +20,14 @@ class LayananDetail extends React.Component{
         var config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-        axios.get(serverUrl+`admin/bank_services/${id}`,config)
+        axios.get(serverUrl+`admin/services/${id}`,config)
         .then((res)=>{
-      
-            this.setState({loading:false,rows:res.data})
+            console.log(res.data)
+            this.setState({rows:res.data})
             if (this.state.rows.image_id !== undefined || this.state.rows.image_id !== null){
                axios.get(serverUrl+`admin/image/${this.state.rows.image_id}`,config)
                 .then((res)=>{
-                    this.setState({imageData:res.data.image_string})
+                    this.setState({imageData:res.data.image_string,loading:false})
                 })
                 .catch((err)=>console.log(err))
             }
@@ -33,6 +35,18 @@ class LayananDetail extends React.Component{
         .catch((err)=>console.log(err))
     }
     render(){
+        if (this.state.loading){
+            return (
+                <div className="mt-2">
+                 <Loader 
+                    type="ThreeDots"
+                    color="#00BFFF"
+                    height="30"	
+                    width="30"
+                />  
+                </div>
+            )
+        }else{
         if(cookie.get('token')){
             return(
                 <div className="container">
@@ -79,7 +93,7 @@ class LayananDetail extends React.Component{
             )    
         }
        
-    }
+    }}
 }
 
 export default LayananDetail;
