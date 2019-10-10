@@ -6,7 +6,7 @@ import {destructRolePermission, destructRolePermissionAll} from './function'
 const cookie = new Cookies()
 
 export async function getAllRoleFunction(param, next){
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
@@ -22,13 +22,14 @@ export async function getAllRoleFunction(param, next){
             }
         }).catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
-            reject({error});
+            param.error = error;
+            resolve(param);
         })
     });
 };
     
 export async function getAllRolePermissionListFunction(param, next){
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
@@ -74,13 +75,14 @@ export async function getAllRolePermissionListFunction(param, next){
 
         }).catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
-            reject({error});
+            param.error = error;
+            resolve(param);
         })
     })
 }
 
 export async function getAllRolePermissionAddFunction(param, next){
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
@@ -126,14 +128,15 @@ export async function getAllRolePermissionAddFunction(param, next){
               }
       
           }).catch((err)=>{
-              const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
-              reject({error});
+                const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+                param.error = error;
+                resolve(param);
           })
     });
 }
 
 export async function getRoleFunction(param, next) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
@@ -149,13 +152,14 @@ export async function getRoleFunction(param, next) {
             }
         }).catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
-            reject({error});
+            param.error = error
+            resolve(param);
         })
     });
 }
 
 export async function getRolePermissionFunction(param, next) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
@@ -192,8 +196,41 @@ export async function getRolePermissionFunction(param, next) {
     
         }).catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
-            reject({error});
+            param.error = error;
+            resolve(param);
         })
     });
     
+}
+
+export async function patchRolePermissionFunction(param) {
+    return new Promise(async (resolve) => {
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
+
+        axios.patch(serverUrl+`admin/permission`,param.dataRolePermission,config).then((res)=>{
+            resolve(res)
+        }).catch((err)=>{
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal mengubah Role Permission'
+            param.error = error;
+            resolve(param);
+        })
+    })
+}
+
+export async function postRolePermissionFunction(param) {
+    return new Promise(async (resolve) => {
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
+
+        axios.post(serverUrl+`admin/permission`,param.dataRolePermission,config).then((res)=>{
+            resolve(res)
+        }).catch((err)=>{
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah Role Permission'
+            param.error = error;
+            resolve(param);
+        })
+    })
 }

@@ -1,8 +1,6 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios'
-import { serverUrl } from '../url';
 import CheckBox from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert';
@@ -12,7 +10,7 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from '../global/globalConstant'
-import { getRoleFunction, getRolePermissionFunction } from './saga'
+import { getRoleFunction, getRolePermissionFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
 
 const styles = (theme) => ({
@@ -57,56 +55,66 @@ class rolePermissionEdit extends React.Component{
       param.listAllRolePermission = this.state.listAllRolePermission;
 
       const data = await getRoleFunction(param, getRolePermissionFunction);
-
+      
       if(data) {
-          if(!data.error) {
-            this.setState({
-              listRole: data.dataRole,
-              listRolePermission: data.dataRolePermission,
-              loading: false,
-            })
-          } else {
-            this.setState({
-              errorMessage: data.error,
-              disabled: true,
-              loading: false,
-            })
-          }      
-      }
+        if(!data.error) {
+          this.setState({
+            listRole: data.dataRole,
+            listRolePermission: data.dataRolePermission,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
+      } 
     }
 
     btnCancel = ()=>{
-        this.setState({diKlik:true})
+      this.setState({diKlik:true})
     }
     componentWillReceiveProps(newProps){
-        this.setState({errorMessage:newProps.error})
+      this.setState({errorMessage:newProps.error})
     }
 
-    btnSave=()=>{
+    btnSave = () =>{
       const listRolePermission = this.state.listRolePermission;
       const dataRolePermission = {};
       dataRolePermission.role_id = parseInt(this.state.listRole.id);
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
-      this.setState({loading: true})
-
-      const config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
+      const param = {
+        dataRolePermission,
       };
-      
-      axios.patch(serverUrl+`admin/permission`,dataRolePermission,config).then((res)=>{
-        swal("Success","Role Permission berhasil di ubah","success")
-        this.setState({diKlik:true})
-      }).catch((err)=>{
-        this.setState({
-          errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-          loading: false,
-          disabled: false,
-        })
-      })
+
+      this.patchRolePermission(param)
         
     }
 
+    patchRolePermission = async function(param) {
+      const data = await patchRolePermissionFunction(param)
+
+      this.setState({loading: true})
+
+      if(data) {
+        if(!data.error) {
+          swal("Success","Role Permission berhasil di ubah","success")
+          this.setState({
+            diKlik: true,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
+      }
+    }
 
     checkingRole = (role, idRolePermission) => {
       for (const key in role) {
@@ -176,56 +184,56 @@ class rolePermissionEdit extends React.Component{
             </div>
           )
         } else if(cookie.get('token')){
-            return(
-                <div className="container mt-4">
-                 <h3>Role Permission - Ubah</h3>
-                 
-                 <hr/>
-                 
-                 <form>
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Role Name
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.listRole && this.state.listRole.name}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">
-                        <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                            {this.state.errorMessage}
-                        </div>     
-                        <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                            <CheckBox
-                              label="Core - Permission Setup"
-                              modulesName="Menu"
-                              data={this.state.listAllRolePermission}
-                              id="id"
-                              labelName="label"
-                              modules="menu"      
-                              labelPlacement= "top"                       
-                              onChange={this.onChangeCheck}
-                              onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
-                              style={{ width: '97%'}}
-                            />
-                        </div>           
-                    </div>
-                    
-                    <div className="form-group row">
-                        <div className="col-sm-12 ml-3 mt-3">
-                          <input type="button" value="Ubah" className="btn btn-success" onClick={this.btnSave} />
-                          <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                        </div>
-                    </div>
-                    
-                 </form>
-                
+          return(
+            <div className="container mt-4">
+              <h3>Role Permission - Ubah</h3>
+              
+              <hr/>
+              
+              <form>
+                <div className="form-group row">                   
+                  <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                    Role Name
+                  </label>
+                  <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                    {this.state.listRole && this.state.listRole.name}
+                  </label>               
                 </div>
-            )
-        }else if(!cookie.get('token')){
+
+                <div className="form-group row">
+                    <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
+                        {this.state.errorMessage}
+                    </div>     
+                    <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
+                        <CheckBox
+                          label="Core - Permission Setup"
+                          modulesName="Menu"
+                          data={this.state.listAllRolePermission}
+                          id="id"
+                          labelName="label"
+                          modules="menu"      
+                          labelPlacement= "top"                       
+                          onChange={this.onChangeCheck}
+                          onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
+                          style={{ width: '97%'}}
+                        />
+                    </div>           
+                </div>
+                
+                <div className="form-group row">
+                    <div className="col-sm-12 ml-3 mt-3">
+                      <input type="button" value="Ubah" className="btn btn-success" onClick={this.btnSave} />
+                      <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
+                    </div>
+                </div>
+                
+              </form>
+            
+            </div>
+          )
+        } else if(!cookie.get('token')){
           return (
-              <Redirect to='/login' />
+            <Redirect to='/login' />
           )    
         }
        

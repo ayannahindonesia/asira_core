@@ -78,7 +78,7 @@ class RolePermissionList extends React.Component{
 
     renderJSX = () => {
 
-        if (this.state.loading){
+        if (this.state.loading || !this.state.listRole){
             return  (
               <tr  key="zz">
                 <td align="center" colSpan={6}>
@@ -94,7 +94,7 @@ class RolePermissionList extends React.Component{
         }
         
         
-        var jsx = this.state.listRole.map((val,index)=>{
+        var jsx = this.state.listRole && this.state.listRole.map((val,index)=>{
             return(
                 <tr key={index}>
                     <td align="center">{this.state.page >1 ? (index+1 + this.state.rowsPerPage*(this.state.page-1)) : index+1}</td>
