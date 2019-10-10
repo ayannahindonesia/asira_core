@@ -4,16 +4,12 @@ import { Redirect } from 'react-router-dom'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { withStyles, ThemeProvider } from '@material-ui/styles';
+import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import DatePickers from './../subComponent/DatePicker'
 import {serverUrl} from './../url'
 import axios from 'axios'
 import { GlobalFunction } from './../globalFunction'
-import Loader from 'react-loader-spinner'
-
-
-
 
 const cookie = new Cookies()
 
@@ -122,7 +118,7 @@ class Report extends React.Component{
 
     }
     getAllLoanData = (tanggalAwal,tanggalAkhir,namaBank)=>{
-        var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
+           var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
            var newLink =`admin/reports/convenience_fee?bank_name=${namaBank}&start_date=${tanggalAwal}&end_date=${tanggalAkhir}`
            axios.get(serverUrl+newLink,config)
            .then((res)=>{
@@ -182,7 +178,6 @@ class Report extends React.Component{
                             </div>      
                      </div>
                     <div className="form-group row">
-                            
                         <label className="col-sm-2 col-form-label">Nama Report</label>
                         <div className="col-sm-10">
                         <select ref="convfee" onChange={this.handleChangeFee} id="report" className="form-control">
@@ -264,13 +259,6 @@ class Report extends React.Component{
                              </table>
                  </div>    
                     :null}
-                  
-                   
-    
-               
-                    
-               
-                  
                 </div>
             )
         }
