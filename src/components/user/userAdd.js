@@ -16,7 +16,8 @@ import { compose } from 'redux';
 import { listAllRolePermission } from './../global/globalConstant'
 import { getAllRoleFunction } from './../rolePermission/saga'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { constructRolePermission } from './function'
+import { postUserAddFunction } from './saga';
+import { validateEmail, validatePhone } from '../global/globalFunction';
 
 const styles = (theme) => ({
     container: {
@@ -64,7 +65,7 @@ class userAdd extends React.Component{
       };
       
       const data = await getAllRoleFunction(param);
-      console.log(data)
+      
       if(data) {
         if(!data.error) {
           this.setState({
@@ -99,20 +100,33 @@ class userAdd extends React.Component{
           status : this.state.status,
         }
 
+        const param = {
+          dataUser,
+        }
+
         this.setState({loading: true});
         
-        const config = {
-          headers: {'Authorization': "Bearer " + cookie.get('token')}
-        };
+        this.postUser(param)
+      }
+    }
 
-        axios.post(serverUrl+'admin/users',dataUser,config).then((res)=>{
+    postUser = async function(param) {
+      const data = postUserAddFunction(param);
+
+      if(data) {
+        if(!data.error) {
           swal("Success","User berhasil di tambah","success")
-          this.setState({diKlik:true})
-        }).catch((err)=>{
           this.setState({
-            errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
+            diKlik: true,
+            loading: false,
           })
-        })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
       }
     }
 
@@ -143,31 +157,7 @@ class userAdd extends React.Component{
     }
 
     onChangeDropDown = (e) => {
-      console.log(e.target.value)
       this.setState({role: e.target.value})
-    }
-
-    validateEmail = (email) => {
-      let flag = false;
-
-      if(email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
-        flag = true;
-      }
-
-      return flag;
-    }
-
-    validatePhone = (phone) => {
-      let flag = false;
-      let phoneRegex = /^(^\+62\s?|^0)(\d{3,4}){2}\d{3,4}$/;
-
-      if(phone.match(phoneRegex)) {
-        console.log(phone.match(phoneRegex))
-        flag = true
-      }
-      
-
-      return flag;
     }
 
     validate = () => {
@@ -181,16 +171,14 @@ class userAdd extends React.Component{
         flag = false;
         errorMessage = 'Mohon input role dengan benar'
       } else if (
-          !this.state.email || this.state.email.length === 0 || !this.validateEmail(this.state.email)
+          !this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email)
         ) {
         flag = false;
         errorMessage = 'Mohon input email dengan benar'
-      } else if (!this.state.phone || this.state.phone.length === 0 || !this.validatePhone(this.state.phone)) {
-        console.log(this.state.phone)
+      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
       } else {
-        console.log('bagus')
         errorMessage = ''
       }
          
