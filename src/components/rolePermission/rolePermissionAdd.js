@@ -2,8 +2,6 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import axios from 'axios'
-import { serverUrl } from '../url';
 import CheckBox from '../subComponent/CheckBox';
 import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
@@ -13,7 +11,7 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from './../global/globalConstant'
-import { getAllRoleFunction, getAllRolePermissionAddFunction } from './saga'
+import { getAllRoleFunction, getAllRolePermissionAddFunction, postRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
 
 const styles = (theme) => ({
@@ -55,19 +53,19 @@ class rolePermissionAdd extends React.Component{
       const data = await getAllRoleFunction(param, getAllRolePermissionAddFunction);
 
       if(data) {
-          if(!data.error) {
-              this.setState({
-                listRole: data.dataRole,
-                role: data.role,
-                loading: false,
-              })
-          } else {
-              this.setState({
-                errorMessage: data.error,
-                disabled: true,
-                loading: false,
-              })
-          }      
+        if(!data.error) {
+          this.setState({
+            listRole: data.dataRole,
+            role: data.role,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
       }
     }
 
@@ -79,7 +77,7 @@ class rolePermissionAdd extends React.Component{
       this.setState({errorMessage:newProps.error})
     }
 
-    btnSave=()=>{
+    btnSave = () => {
       if(this.state.listRolePermission.length === 0) {
         this.setState({errorMessage:"ERROR : Data Role Permission Tidak Boleh Kosong"})
       } else if(this.state.listRole.length === 0 || this.state.role === 0) {
@@ -90,21 +88,34 @@ class rolePermissionAdd extends React.Component{
         dataRolePermission.role_id = parseInt(this.state.role);
         dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
-        this.setState({loading: true});
-        
-        const config = {
-          headers: {'Authorization': "Bearer " + cookie.get('token')}
+        const param = {
+          dataRolePermission,
         };
+  
+        this.postRolePermission(param);
+        
+      }
+    }
 
-        axios.post(serverUrl+'admin/permission',dataRolePermission,config).then((res)=>{
+    postRolePermission = async function (param) {
+      const data = await postRolePermissionFunction(param)
+  
+      this.setState({loading: true})
+
+      if(data) {
+        if(!data.error) {
           swal("Success","Role Permission berhasil di tambah","success")
-          this.setState({diKlik:true})
-        }).catch((err)=>{
           this.setState({
-            errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-            disabled: true,
+            diKlik: true,
+            loading: false,
           })
-        })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
       }
     }
 
