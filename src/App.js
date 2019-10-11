@@ -16,10 +16,10 @@ import EditBank from './components/bankEdit'
 import DetailBank from './components/bankDetail'
 
 
-import LayananEdit from './components/layananEdit'
-import LayananAdd from './components/layananAdd'
-import LayananList from './components/layananList'
-import LayananDetail from './components/layananDetail'
+import LayananEdit from './components/layanan/layananEdit'
+import LayananAdd from './components/layanan/layananAdd'
+import LayananList from './components/layanan/layananList'
+import LayananDetail from './components/layanan/layananDetail'
 
 
 import Login from './components/login'
