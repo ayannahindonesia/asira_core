@@ -268,7 +268,10 @@ class BankEdit extends React.Component{
                 swal("Success","Data berhasil di edit","success")
                 this.setState({diKlik:true,errorMessage:null,submit:false})
             })
-            .catch((err)=> console.log(err))
+            .catch((err)=>{
+                console.log(err)
+                this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})
+            })
            
        }
     }
