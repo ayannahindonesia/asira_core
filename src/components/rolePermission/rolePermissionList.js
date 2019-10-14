@@ -7,6 +7,7 @@ import {Link} from 'react-router-dom'
 import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import Pagination from 'rc-pagination';
 import {getAllRoleFunction, getAllRolePermissionListFunction} from './saga'
+import { checkPermission } from '../global/globalFunction';
 
 
 const cookie = new Cookies()
@@ -103,9 +104,11 @@ class RolePermissionList extends React.Component{
                     <td align="center">{val.system}</td>
                     <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
                     <td align="center">
-                        <Link to={`/editRolePermission/${val.id}`} className="mr-2">
-                            <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                        </Link>
+                        {   checkPermission('Permission_Edit') && 
+                            <Link to={`/editRolePermission/${val.id}`} className="mr-2">
+                                <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
+                        }
                         <Link to={`/detailRolePermission/${val.id}`} >
                             <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                         </Link>
