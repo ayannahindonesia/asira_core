@@ -21,7 +21,7 @@ class ProductList extends React.Component{
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
 
-        axios.get(serverUrl+`admin/service_products`,config)
+        axios.get(serverUrl+`admin/products`,config)
         .then((res)=>{
             this.setState({loading:false,rows:res.data.data})
         })
