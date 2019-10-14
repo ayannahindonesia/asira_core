@@ -38,7 +38,7 @@ const customStyles = {
 class ProductAdd extends React.Component{
     state = {
         selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,
-        bankService:[],diKlik:false,check:false
+        bankService:[],diKlik:false,check:false,submit:false
       };
 
       componentDidMount(){
@@ -51,6 +51,8 @@ class ProductAdd extends React.Component{
 
       btnSaveProduct = ()=>{
         var i
+        var fees= []
+       
         var name = this.refs.namaProduct.value
         var min_timespan = parseInt(this.refs.jangkaWaktuDari.value)
         var max_timespan = parseInt(this.refs.jangkaWaktuSampai.value)
@@ -60,9 +62,8 @@ class ProductAdd extends React.Component{
         var adminfee = this.refs.adminFee.value ? this.refs.adminFee.value : this.refs.adminFee.placeholder
       
         var asn_fee = this.refs.convinienceFee.value ? this.refs.convinienceFee.value : this.refs.convinienceFee.placeholder
-        var service = parseInt(this.refs.layanan.value)
+        var service_id = parseInt(this.refs.layanan.value)
         
-        var fees= []
         var status =  this.state.check?"active":"inactive"
         var assurance =  document.querySelector('.asuransi').checked;
         var otheragunan =  document.querySelector('.otheragunan').checked;
@@ -91,7 +92,7 @@ class ProductAdd extends React.Component{
             this.setState({errorMessage:"Convinience Fee tidak boleh minus - Harap cek ulang"})
         }else if(parseFloat(asn_fee) >100){
             this.setState({errorMessage:"Convinience Fee lebih dari 100% - Harap cek ulang"})
-        }else if(parseInt(service)===0){
+        }else if(parseInt(service_id)===0){
             this.setState({errorMessage:"Layanan belum terpilih - Harap cek ulang"})
         }else if(this.state.selectedOption===null){
             this.setState({errorMessage:"Sektor Pembiayaan belum terpilih - Harap cek ulang"})
@@ -102,11 +103,18 @@ class ProductAdd extends React.Component{
             this.setState({errorMessage:"Admin Fee harus angka atau jika desimal menggunakan titik (.) Contoh: 2.00 - Harap cek ulang"})
         }
         else{
+            this.setState({submit:true})
+
             fees.push({
                 "description": "Admin Fee",
                 "amount":`${adminfee}%`
+            },
+            {
+                "description": "Convenience Fee",
+                "amount":`${asn_fee}%`
             })
            
+
                //===========CODING BAGIAN SEKTOR PEMBIAYAAN
 
                     var financing_sector = []
@@ -131,28 +139,36 @@ class ProductAdd extends React.Component{
                 //====== BIKIN AGUNAN INDEX TERAKHIR JADI YANG PERTAMA BUAT EDIT NYA
                     collaterals.reverse()
                     
-            asn_fee = asn_fee+"%"
             var newData = {
-                name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,asn_fee,service,collaterals,financing_sector,assurance,status
+                name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,service_id,collaterals,financing_sector,assurance,status
             }
             var config = {
                 headers: {'Authorization': "Bearer " + cookie.get('token')}
             };
-            axios.post(serverUrl+'admin/service_products',newData,config)
+            axios.post(serverUrl+'admin/products',newData,config)
             .then((res)=>{
                 console.log(res.data)
                 swal("Berhasil","Produk berhasil bertambah","success")
-                this.setState({errorMessage:null,diKlik:true})
+                this.setState({errorMessage:null,diKlik:true,submit:false})
             })
-            .catch((err)=>console.log(err))
+            .catch((err)=>{
+                console.log(err)
+                this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})
+            })
        }
       }
-      
+      renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-success" value="Simpan" onClick={this.btnSaveProduct} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-success" value="Simpan" onClick={this.btnSaveProduct}/>
+        }
+     }
       getBankService = ()=>{
         var config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-        axios.get(serverUrl+'admin/bank_services',config)
+        axios.get(serverUrl+'admin/services',config)
         .then((res)=>{
             console.log(res.data)
             this.setState({bankService:res.data.data})
@@ -382,7 +398,7 @@ class ProductAdd extends React.Component{
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="button" className="btn btn-success" value="Simpan" onClick={this.btnSaveProduct}/>
+                                    {this.renderBtnSumbit()}
                                     <input type="button" className="btn btn-warning ml-2" value="Batal" onClick={this.btnCancel}/>
                                
                                 </td>
