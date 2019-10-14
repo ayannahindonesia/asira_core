@@ -11,9 +11,10 @@ var config = {
     headers: {'Authorization': "Bearer " + cookie.get('token')}
   };
 class BankDetail extends React.Component{
-    state = {rows:[],layanan:[],produk:[],tipe:0,namaTipeBank:''}
+    state = {rows:[],layanan:[],produk:[],tipe:0,namaTipeBank:'',serviceName:null,productName:null,diKlik:false}
     componentDidMount(){
         this.getBankDetail()
+        
     }
 
     getBankDetail = ()=>{
@@ -29,11 +30,57 @@ class BankDetail extends React.Component{
                 this.setState({rows:res.data,layanan:res.data.services,tipe:res.data.type,produk:res.data.products})
                 if (this.state.rows){
                     this.getTypeBank()
+                    this.getBankServiceId()
+                    this.getProductId()
                 }
             })
             .catch((err)=>console.log(err))
         // }
     }
+    getBankServiceId= () =>{
+             var id = this.props.match.params.id
+             config = {
+                headers: {'Authorization': "Bearer " + cookie.get('token')}
+              };
+          
+            axios.get(serverUrl+`admin/bank_services?bank_id=${id}`,config)
+            .then((res)=>{
+                var serviceId = res.data.data.map((val)=>{
+                    return val.service_id
+                })
+                axios.get(serverUrl+`/admin/services?id=${serviceId.toString()}`,config)
+                .then((res)=>{
+                    var serviceName = res.data.data.map((val)=>{
+                        return val.name
+                    })
+                    this.setState({serviceName:serviceName.toString()})
+                })
+            })
+            .catch((err)=>console.log(err))
+    }
+    getProductId= () =>{
+        var id = this.props.match.params.id
+        config = {
+           headers: {'Authorization': "Bearer " + cookie.get('token')}
+         };
+     
+       axios.get(serverUrl+`admin/bank_products?bank_id=${id}`,config)
+       .then((res)=>{
+           console.log(res.data)
+           var productID = res.data.data.map((val)=>{
+               return val.product_id
+           })
+           axios.get(serverUrl+`/admin/products?id=${productID.toString()}`,config)
+           .then((res)=>{
+               var productName = res.data.data.map((val)=>{
+                   return val.name
+               })
+               this.setState({productName:productName.toString()})
+           })
+       })
+       .catch((err)=>console.log(err))
+}
+
     getTypeBank = ()=>{
         axios.get(serverUrl+`admin/bank_types/${this.state.tipe}`,config)
       .then((res)=>{
@@ -43,12 +90,14 @@ class BankDetail extends React.Component{
       .catch((err)=> console.log(err))
     }
     render(){
+        if(this.state.diKlik){
+            return <Redirect to="/listbank"/>
+        }
         if(cookie.get('token')){
             return(
                 <div className="container">
                    <h2>Bank - Detail</h2>
                    <hr/>
-                   
                    <form>
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">ID Bank</label>
@@ -108,14 +157,15 @@ class BankDetail extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Jenis Layanan</label>
                             <div className="col-sm-8">
-                            : {this.state.layanan === undefined ? "-" :this.state.layanan.toString()}
+                            : {this.state.serviceName === null ? "-" :this.state.serviceName.toString()}
+
 
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Jenis Product</label>
                             <div className="col-sm-8">
-                            : {this.state.produk === undefined ? "-" :this.state.produk.toString()}
+                            : {this.state.productName === null ? "-" :this.state.productName.toString()}
                             </div>
                         </div>
                         <div className="form-group row">
@@ -142,7 +192,7 @@ class BankDetail extends React.Component{
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">
-                                <input type="button" className="btn btn btn-secondary" value="Kembali" onClick={()=>  window.history.back()}/>
+                                <input type="button" className="btn btn btn-secondary" value="Kembali" onClick={()=> this.setState({diKlik:true})}/>
                             </label>
                             <div className="col-sm-8">
 
