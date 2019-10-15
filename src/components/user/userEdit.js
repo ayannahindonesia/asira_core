@@ -25,7 +25,7 @@ const styles = (theme) => ({
 const cookie = new Cookies();
 
 
-class rolePermissionEdit extends React.Component{
+class userEdit extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
@@ -50,9 +50,7 @@ class rolePermissionEdit extends React.Component{
     }
 
     refresh = async function(){
-      const param = {
-        status: true,
-      };
+      const param = {};
       
       const paramUser = {
         userId: this.state.userId,
@@ -65,7 +63,7 @@ class rolePermissionEdit extends React.Component{
           if(!data.error && !dataUser.error) {
             this.setState({
               listRole: data.dataRole,
-              role: (data.dataRole && data.dataRole[0] && data.dataRole[0].id) || 0,
+              role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.role_id) || 0,
               id: dataUser.dataUser.id,
               username: dataUser.dataUser.username,
               password: dataUser.dataUser.password,
@@ -116,7 +114,7 @@ class rolePermissionEdit extends React.Component{
 
       if(data) {
         if(!data.error) {
-          swal("Success","User berhasil di tambah","success")
+          swal("Success","User berhasil di ubah","success")
           this.setState({
             diKlik: true,
             loading: false,
@@ -389,4 +387,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(rolePermissionEdit);
+  )(userEdit);
