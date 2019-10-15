@@ -211,13 +211,9 @@ class Main extends React.Component{
                                     <td>Tanggal Pengajuan</td>
                                     <td>: 
                                     <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" />
-                                    {/* {String(this.state.rows.created_time).substr(0, String(this.state.rows.created_time).indexOf('T'))} */}
                                     </td>
                                 </tr>
-                                {/* <tr>
-                                    <td>Pinjaman Ke-</td>
-                                    <td>: {this.state.rows.status}</td>
-                                </tr> */}
+                              
                                 </tbody>
                                 
                             </table>
@@ -252,7 +248,7 @@ class Main extends React.Component{
                                 {this.state.status === 'rejected'?
                                 <tr>
                                     <td>Alasan ditolak</td>
-                                    <td>: [TUNGGU API]</td>
+                                    <td>:{this.state.rows.reason}</td>
                                 </tr>
                                 :this.state.status === "approved" ?
                                 <tr>
