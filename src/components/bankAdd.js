@@ -1,6 +1,6 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
-import { Redirect , Link } from 'react-router-dom'
+import { Redirect  } from 'react-router-dom'
 import Select from 'react-select';
 import {serverUrl,serverUrlGeo} from './url'
 import axios from 'axios'
@@ -42,7 +42,13 @@ class Main extends React.Component{
        jenisProduct:null, jenisLayanan: null, 
        errorMessage: null, diKlik:false,
        typeBank:[],bankService:[],bankProduct:[],
-       provinsi:[],kabupaten:[],idProvinsi:null,phone:'',adminFeeRadioValue:'potong_plafon',convinienceFeeRadioValue:'beban_plafon'
+       provinsi:[],
+       kabupaten:[],
+       idProvinsi:null,
+       phone:'',
+       adminFeeRadioValue:'potong_plafon',
+       convinienceFeeRadioValue:'beban_plafon',
+       submit:false
       };
 
 
@@ -53,12 +59,10 @@ class Main extends React.Component{
 
        handleChangejenisLayanan = (jenisLayanan) => {
         this.setState({ jenisLayanan });
-        console.log(`Jenis selected:`, jenisLayanan);
       };
 
       handleChangejenisProduct = (jenisProduct) => {
         this.setState({ jenisProduct });
-        console.log(`Product selected:`, jenisProduct);
       };
 
       componentDidMount(){
@@ -67,41 +71,22 @@ class Main extends React.Component{
           this.getBankProduct()
           this.getAllProvinsi()
       }
-    //   getAllProvinsi = () =>{
-    //     axios.get("https://cors-anywhere.herokuapp.com/http://dev.farizdotid.com/api/daerahindonesia/provinsi")
-    //     .then((res)=>{
-    //         console.log(res.data.semuaprovinsi)
-    //         this.setState({provinsi:res.data.semuaprovinsi})
-           
-    //     })
-    //     .catch((err)=> console.log(err))
-    //   }
+  
       getAllProvinsi = () =>{
         configGeo = {
             headers: {'Authorization': "Bearer " + cookie.get('tokenGeo')}
           };
         axios.get(serverUrlGeo+`client/provinsi`,configGeo)
         .then((res)=>{
-            console.log(res.data.data)
             this.setState({provinsi:res.data.data})
-           
         })
         .catch((err)=> console.log(err))
       }
 
-    //   getAllKabupaten = (id) =>{
-    //     axios.get(`https://cors-anywhere.herokuapp.com/http://dev.farizdotid.com/api/daerahindonesia/provinsi/${id}/kabupaten`)
-    //     .then((res)=>{
-    //         console.log(res.data.kabupatens)
-    //         this.setState({kabupaten:res.data.kabupatens})
-           
-    //     })
-    //     .catch((err)=> console.log(err))
-    //   }
+  
       getAllKabupaten = (id) =>{
         axios.get(serverUrlGeo+`client/provinsi/${id}/kota`,configGeo)
         .then((res)=>{
-            console.log(res.data.data)
             this.setState({kabupaten:res.data.data})
            
         })
@@ -111,9 +96,8 @@ class Main extends React.Component{
         config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-        axios.get(serverUrl+'admin/service_products',config)
+        axios.get(serverUrl+'admin/products',config)
         .then((res)=>{
-            console.log(res.data.data)
             this.setState({bankProduct:res.data.data})
         })
         .catch((err)=> console.log(err))
@@ -123,22 +107,21 @@ class Main extends React.Component{
         config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-        axios.get(serverUrl+'admin/bank_services',config)
+        axios.get(serverUrl+'admin/services',config)
         .then((res)=>{
-            console.log(res.data)
             this.setState({bankService:res.data.data})
         })
         .catch((err)=> console.log(err))
       }
       renderJenisLayananJsx = ()=>{
           var jsx = this.state.bankService.map((val,index)=>{
-              return {id:val.id, value: val.name, label: val.name}
+              return {id:val.id, value: val.id, label: val.name}
           })
           return jsx
       }
         renderJenisProductJsx = ()=>{
         var jsx = this.state.bankProduct.map((val,index)=>{
-            return {id:val.id, value: val.name, label: val.name}
+            return {id:val.id, value: val.id, label: val.name}
         })
         return jsx
         }
@@ -168,7 +151,6 @@ class Main extends React.Component{
           };
         axios.get(serverUrl+'admin/bank_types',config)
         .then((res)=>{
-            console.log(res.data)
             this.setState({typeBank:res.data.data})
         })
         .catch((err)=> console.log(err))
@@ -183,10 +165,11 @@ class Main extends React.Component{
           return jsx
       }
       btnCancel = ()=>{
-        window.history.back()
+        this.setState({diKlik:true})
       }
 
     btnSaveBank =()=>{
+        
         var services =[]
         var products =[]
         var name = this.refs.namaBank.value
@@ -213,25 +196,25 @@ class Main extends React.Component{
             this.setState({errorMessage:"Nama Alamat belum terisi - Harap Cek Ulang"}) 
         }
         else{
+                this.setState({submit:true})
                 for (var i=0; i<this.state.jenisLayanan.length;i++){
                     services.push (this.state.jenisLayanan[i].value)
                 }
                 for ( i=0; i<this.state.jenisProduct.length;i++){
                     products.push (this.state.jenisProduct[i].value)
                 }
-             
                 var newData = {
                     name,type,address,province,city,pic,phone,services,products,adminfee_setup,convfee_setup
                 }
-            
+                
                 axios.post(serverUrl+'admin/banks',newData,config)
                 .then((res)=>{
-                    console.log(res.data)
                     swal("Berhasil","Bank berhasil bertambah","success")
-                    this.setState({errorMessage:null,diKlik:true})
+                    this.setState({errorMessage:null,diKlik:true,submit:false})
                 })
                 .catch((err)=>{
                    console.log(err)
+                   this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})
                 })
         }
 
@@ -243,11 +226,16 @@ class Main extends React.Component{
     handleChangeRadioConvience =(e)=>{
         this.setState({convinienceFeeRadioValue:e.target.value})
     }
-
+    renderBtnSumbit =()=>{
+       if( this.state.submit) {
+        return <input type="button" disabled className="btn btn-primary" value="Simpan" onClick={this.btnSaveBank} style={{cursor:"wait"}}/>
+       }else{
+       return <input type="button" className="btn btn-primary" value="Simpan" onClick={this.btnSaveBank}/>
+       }
+    }
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            
-
         }
         if(cookie.get('token')){
             return(
@@ -373,10 +361,9 @@ class Main extends React.Component{
                             onChange={ phone => this.setState({ phone }) } className="form-control" />                                                  
                             </div>
                         </div>
-                            <input type="button" className="btn btn-primary" value="Simpan" onClick={this.btnSaveBank}/>
-                            <Link to='/listbank'>
+                            {this.renderBtnSumbit()}
                             <input type="button" className="btn btn-secondary ml-2" value="Batal" onClick={this.btnCancel}/>
-                            </Link>  
+                            
                     </form>
                     
                    
