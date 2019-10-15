@@ -56,9 +56,7 @@ class userAdd extends React.Component{
     }
 
     refresh = async function(){
-      const param = {
-        status: true,
-      };
+      const param = { };
       
       const data = await getAllRoleFunction(param);
       

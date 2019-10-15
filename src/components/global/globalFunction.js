@@ -33,8 +33,6 @@ const listPermission = [
   'Report_List',
 ]
 
-console.log(listPermissionCookie)
-
 
 export function validateEmail(email) {
     let flag = false;

@@ -41,7 +41,11 @@ class Main extends React.Component{
             <tr key={index}>
                 <td>{val.description}</td>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{val.amount}</td>
+                <td>{String(val.amount).includes("%")?
+                    val.amount:
+                    GlobalFunction.formatMoney(parseInt(val.amount))
+                
+                }</td>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td>{String(val.amount).includes("%")  ?
                     GlobalFunction.formatMoney(parseInt(val.amount.slice(0,val.amount.indexOf("%")))*this.state.rows.loan_amount/100):
@@ -248,7 +252,7 @@ class Main extends React.Component{
                                 {this.state.status === 'rejected'?
                                 <tr>
                                     <td>Alasan ditolak</td>
-                                    <td>:{this.state.rows.reason}</td>
+                                    <td>: {this.state.rows.reject_reason}</td>
                                 </tr>
                                 :this.state.status === "approved" ?
                                 <tr>
