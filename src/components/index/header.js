@@ -34,10 +34,6 @@ class Example extends React.Component {
     };
   }
 
-  componentDidMount() {
-    console.log(kukie.get('profileUser'))
-  }
-
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
@@ -58,7 +54,7 @@ class Example extends React.Component {
         <Redirect to='/' />
       )
     }
-    console.log(checkPermission('Bank_Add','Bank_List'))
+
     return (
       <div className="sideBar">
         <Navbar>
