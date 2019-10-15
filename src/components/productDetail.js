@@ -24,20 +24,18 @@ class ProductDetail extends React.Component{
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
      
-      axios.get(serverUrl+`admin/service_products/${id}`,config)
+      axios.get(serverUrl+`admin/products/${id}`,config)
         .then((res)=>{
-            console.log(res.data)
             this.setState({rows:res.data,fees:res.data.fees,collaterals:res.data.collaterals,financing_sector:res.data.financing_sector})
 
             if (this.state.rows.service !== undefined || this.state.rows.service !== null){
-                var layananid = this.state.rows.service
+                var layananid = this.state.rows.service_id
                 var config = {
                     headers: {'Authorization': "Bearer " + cookie.get('token')}
                   };
                 
-                  axios.get(serverUrl+`admin/bank_services/${layananid}`,config)
+                  axios.get(serverUrl+`admin/services/${layananid}`,config)
                 .then((res)=>{
-                    console.log(res.data)
                     this.setState({layanan:res.data.name})
                 })
                 .catch((err)=>console.log(err)) 
@@ -112,17 +110,7 @@ class ProductDetail extends React.Component{
                             </div>
                         </div>
                     </form>
-                            
-                            
                             :this.renderAdminFee()}
-                    </form>
-                    <form>
-                        <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Convinence Fee</label>
-                            <div className="col-sm-8">
-                            : {this.state.rows.asn_fee}
-                            </div>
-                        </div>
                     </form>
                     <form>
                         <div className="form-group row">

@@ -40,7 +40,7 @@ class ProductEdit extends React.Component{
         selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,
         collaterals:[],
         bankService:[],diKlik:false,rows:[],fees:[],bankServicebyID:{},financing_sector:[],asn_fee:'',
-        agunan:["Sertifikat Tanah","Sertifikat Rumah","Kios/Lapak","Deposito","BPKB Kendaraan"],check:false
+        agunan:["Sertifikat Tanah","Sertifikat Rumah","Kios/Lapak","Deposito","BPKB Kendaraan"],check:false,submit:false
       };
 
       componentDidMount(){
@@ -54,20 +54,22 @@ class ProductEdit extends React.Component{
         var config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-       axios.get(serverUrl+`admin/service_products/${id}`,config)
+       axios.get(serverUrl+`admin/products/${id}`,config)
         .then((res)=>{
             console.log(res.data.status)
             this.setState({rows:res.data,fees:res.data.fees,
                 asn_fee:res.data.asn_fee,
                 collaterals:res.data.collaterals,
-                financing_sector:res.data.financing_sector,
+                financing_sector:res.data.financing_sector.map((val)=>{
+                    return   { value: val, label: val }
+                }),
                 check:res.data.status ==="active"? true: false
             })
-            if (this.state.rows.service !== undefined || this.state.rows.service !== null){
+            if (this.state.rows.service_id !== undefined || this.state.rows.service_id !== null){
                 var config = {
                     headers: {'Authorization': "Bearer " + cookie.get('token')}
                   };
-                axios.get(serverUrl+`admin/bank_services/${this.state.rows.service}`,config)
+                axios.get(serverUrl+`admin/services/${this.state.rows.service_id}`,config)
                 .then((res)=>{
                     console.log(res.data)
                     this.setState({bankServicebyID:res.data})
@@ -76,25 +78,14 @@ class ProductEdit extends React.Component{
             }
         })
         .catch((err)=>console.log(err)) 
-
-    
-
-
       }
       
       handleChange = (selectedOption) => {
-        this.setState({ selectedOption });
+        this.setState({ financing_sector: selectedOption });
         console.log(`Option selected:`, selectedOption);
       };
 
-      renderSektorPembiayaan = ()=>{
-          var jsx = this.state.financing_sector.map((val)=>{
-              return(
-                { value: val, label: val }
-              )
-          })
-          return jsx
-      }
+   
 
       btnEditProduct = ()=>{
         var id = this.props.match.params.id
@@ -105,10 +96,10 @@ class ProductEdit extends React.Component{
         var interest = this.refs.imbalHasil.value ? parseInt(this.refs.imbalHasil.value) : parseInt(this.refs.imbalHasil.placeholder)
         var min_loan = this.state.rentangDari ? parseInt(this.state.rentangDari) : this.state.rows.min_loan
         var max_loan = this.state.rentangAkhir ? parseInt(this.state.rentangAkhir) : this.state.rows.max_loan
-        var adminfee = this.refs.adminFee.value ? this.refs.adminFee.value : this.refs.adminFee.placeholder
-        var asn_fee = this.refs.convinienceFee.value ? this.refs.convinienceFee.value : parseInt(this.refs.convinienceFee.placeholder)
-        var service = parseInt(this.refs.layanan.value)
-        
+        var adminfee = this.refs.AdminFee.value ? this.refs.AdminFee.value : this.refs.AdminFee.placeholder
+        var asn_fee = this.refs.ConvenienceFee.value ? this.refs.ConvenienceFee.value : this.refs.ConvenienceFee.placeholder
+        var service_id = parseInt(this.refs.layanan.value)
+   
         var fees= []
         var status =   this.state.check ?  "active" : "inactive"
         var assurance =  document.querySelector('.asuransi').checked;
@@ -141,27 +132,25 @@ class ProductEdit extends React.Component{
             this.setState({errorMessage:"Admin Fee harus angka atau desimal harus menggunakan titik (.) contoh 2.00 - Harap cek ulang"})
         }
         else{
-
-            asn_fee=asn_fee+"%"
+            this.setState({submit:true})
             String(adminfee)
-        
-            
             fees.push({
                 "description": "Admin Fee",
                 "amount":`${adminfee}%`
+            },{
+                "description": "Convenience Fee",
+                "amount":`${asn_fee}%`
             })
-               //===========CODING BAGIAN SEKTOR PEMBIAYAAN
-
-                    var financing_sector = []
-                    if (this.state.selectedOption){
-                        for ( i=0 ; i < this.state.selectedOption.length; i++){
-                            financing_sector.push(this.state.selectedOption[i].value)
-                        }
+                //===========CODING BAGIAN SEKTOR PEMBIAYAAN
+                    
+                    if(this.state.financing_sector){
+                       var financing_sector = this.state.financing_sector.map((val)=>{
+                            return val.value
+                        })
                     }else{
-                        financing_sector = this.state.financing_sector
+                        financing_sector = []
                     }
                     
-
                 //======= CODING BAGIAN AGUNAN
                     var collaterals =[]
                     var agunan = document.querySelectorAll('.agunan:checked')
@@ -180,26 +169,34 @@ class ProductEdit extends React.Component{
                     collaterals.reverse()
                     
             var newData = {
-                name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,asn_fee,service,collaterals,financing_sector,assurance,status
+                name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,asn_fee,service_id,collaterals,financing_sector,assurance,status
             }
             var config = {
                 headers: {'Authorization': "Bearer " + cookie.get('token')}
             };
-            axios.patch(serverUrl+`admin/service_products/${id}`,newData,config)
+            axios.patch(serverUrl+`admin/products/${id}`,newData,config)
             .then((res)=>{
                 console.log(res.data)
                 swal("Berhasil","Produk berhasil diEdit","success")
-                this.setState({errorMessage:null,diKlik:true})
+                this.setState({errorMessage:null,diKlik:true,submit:false})
             })
-            .catch((err)=>console.log(err))
+            .catch((err)=>{ 
+                console.log(err)
+                this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})})
        }
       }
-      
+      renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-success" value="Simpan" onClick={this.btnEditProduct} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-success" value="Simpan" onClick={this.btnEditProduct}/>
+        }
+     }
       getBankService = ()=>{
         var config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-        axios.get(serverUrl+'admin/bank_services',config)
+        axios.get(serverUrl+'admin/services',config)
         .then((res)=>{
             console.log(res.data)
             this.setState({bankService:res.data.data})
@@ -211,7 +208,7 @@ class ProductEdit extends React.Component{
         var config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-        axios.get(serverUrl+`admin/bank_services/${this.state.rows.service}`,config)
+        axios.get(serverUrl+`admin/services/${this.state.rows.service}`,config)
         .then((res)=>{
             console.log(res.data)
             this.setState({bankServicebyID:res.data})
@@ -238,7 +235,7 @@ class ProductEdit extends React.Component{
                 </td>
                 <td>
                 <div className="form-inline">
-                    <input type="text" className="form-control" ref="adminFee" style={{width:"80px"}} defaultValue={val.amount.slice(0,val.amount.indexOf('%'))} placeholder={val.amount.slice(0,val.amount.indexOf('%'))} /><label>%</label>
+                    <input type="text" className="form-control" ref={val.description.replace(/ /g, '')} style={{width:"80px"}} defaultValue={val.amount.slice(0,val.amount.indexOf('%'))} placeholder={val.amount.slice(0,val.amount.indexOf('%'))} /><label>%</label>
                 </div>
                 </td>
             </tr>
@@ -304,11 +301,11 @@ class ProductEdit extends React.Component{
       }
 
       btnCancel=()=>{
-          this.setState({diKlik:true})
+        this.setState({diKlik:true})
       }
       handleChecked=(e)=>{
         this.setState({check:!this.state.check})
-    }
+      }
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listproduct'/>            
@@ -382,40 +379,26 @@ class ProductEdit extends React.Component{
                                     </td>
 
                             </tr>
-                          {this.renderAdminJsx()}
-                            <tr>
-                                <td>
-                                    <label>Convinience Fee</label>
-                                </td>
-                                <td>
-                                <div className="form-inline">
-                                    <input type="text" className="form-control" ref="convinienceFee" placeholder={this.state.asn_fee.slice(0,this.state.asn_fee.indexOf('%'))} defaultValue={this.state.asn_fee.slice(0,this.state.asn_fee.indexOf('%'))} style={{width:"80px"}}/> <label>%</label>
-                                </div>
-                                </td>
-                            </tr>
+                                  {this.renderAdminJsx()}
                             <tr>
                                 <td>
                                      <label>Layanan</label>
                                 </td>
                                 <td>
                                     <select ref="layanan" className="form-control">
-                                            <option value={this.state.bankServicebyID.id}>{this.state.bankServicebyID.name} [DEFAULT]</option>
-                                            <optgroup label="--------------------------------">    
-                                           {this.renderBankService()}
+                                            <option value={this.state.bankServicebyID.id}>{this.state.bankServicebyID.name}</option>
+                                            <optgroup label="--------------------------------------------------------">    
+                                            {this.renderBankService()}
                                            </optgroup>
                                     </select>
                                 </td>
-
                             </tr>
-                         
                             <tr>
                                 <td>
                                      <label>Agunan</label>
                                 </td>
                                 <td>
-                             
                                 <div className="col-sm-10" style={{marginLeft:"105px"}}>
-                        
                                 {this.renderAngunanJsx()}
                                 {this.state.collaterals.length===0?
                                 <div className="form-check form-check-inline">
@@ -426,8 +409,6 @@ class ProductEdit extends React.Component{
                                 :this.renderAgunanLainJsx()}
                             </div> 
                         
-                       
-                                    
                                 </td>
                             </tr>
 
@@ -437,13 +418,11 @@ class ProductEdit extends React.Component{
                                 </td>
                                 <td>
                                     <Select
-                                        value={this.state.selectedOption}
+                                        value={this.state.financing_sector}
                                         onChange={this.handleChange}
                                         isMulti={true}
                                         options={options}
                                         styles={customStyles}
-                                        placeholder={this.state.financing_sector.toString()}
-                                        
                                     />
                                 </td>
                             </tr>
@@ -462,11 +441,8 @@ class ProductEdit extends React.Component{
                                 <input className="form-check-input asuransi" type="checkbox"/>
                                 <label className="form-check-label">Tersedia</label>
                                 <input type="text" className="ml-2" ref="asuransi" placeholder="Jika ada.."></input>
-                    </div> 
+                               </div> 
                                 }
-                                
-
-
                                 </td>
                             </tr>
                             <tr>
@@ -482,16 +458,13 @@ class ProductEdit extends React.Component{
                             </tr>
                             <tr>
                                 <td colSpan={2}>
-                                        
                                     <div className="form-group row">
                                             <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
                                                     {this.state.errorMessage}
                                             </div>
                                     </div>
-                                    <input type="button" className="inline-block btn btn-success" value="Simpan" onClick={this.btnEditProduct}/>
+                                    {this.renderBtnSumbit()}
                                     <input type="button" className="inline-block btn btn-warning ml-2" value="Batal" onClick={this.btnCancel}/>
-                               
-                                
                                 </td>
                             </tr>
                             </tbody>

@@ -1,7 +1,7 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrlBorrower, serverUrl} from './url'
+import {serverUrlBorrower} from './url'
 import Moment from 'react-moment';
 import { GlobalFunction } from './globalFunction'
 
@@ -12,7 +12,7 @@ var config = {
   };
 
 class Main extends React.Component{
-    state = {rows:{},items:[],borrowerDetail:{},status:'',borrower_info:{},productInfo:{}}
+    state = {rows:{},items:[],borrowerDetail:{},status:'',borrower_info:{},productInfo:{},redirecting:false}
 
     componentDidMount(){
         this.getDataDetail()
@@ -30,22 +30,11 @@ class Main extends React.Component{
             .then((res)=>{
                 console.log(res.data)
                 this.setState({rows:res.data,items:res.data.fees,status:res.data.status,borrower_info:res.data.borrower_info})
-                this.getProductDetail(this.state.rows.product)
-
             })
             .catch((err)=>console.log(err))
-        
-    
     }
 
-    getProductDetail =(id)=>{
-        Axios.get(serverUrl+`admin/service_products/${id}`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({productInfo:res.data})
-        })
-        .catch((err)=>console.log(err))
-    }
+ 
     renderAdminFee = ()=>{
         var jsx = this.state.items.map((val,index)=>{
             return (
@@ -68,7 +57,6 @@ class Main extends React.Component{
         config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-     
               Axios.get(serverUrlBorrower+`admin/borrower/${idBorrower}`,config)
               .then((res)=>{
                   console.log(res.data)
@@ -77,13 +65,11 @@ class Main extends React.Component{
               .catch((err)=>{
                   console.log(err)
               })
-        
-        
     }
 
 
     btnBack = ()=>{
-        window.history.back()
+        this.setState({redirecting:true})
     }
 
     getBiayaAdmin =()=>{
@@ -100,6 +86,9 @@ class Main extends React.Component{
     }
 
     render(){
+        if (this.state.redirecting){
+            return <Redirect to="/permintaanpinjaman"/>
+        }
         if(cookie.get('token')){
             return(
                 <div>
@@ -195,15 +184,7 @@ class Main extends React.Component{
                                         <td>{this.state.rows &&  this.state.rows.interest && this.state.rows.loan_amount?GlobalFunction.formatMoney(parseInt(this.state.rows.interest)*parseInt(this.state.rows.loan_amount)/100) :null}</td>
                                     </tr>
                                     {this.renderAdminFee()}
-                                    <tr>
-                                        <td>Convenience Fee</td>
-                                        <td></td>
-                                        <td>{this.state.productInfo.asn_fee}</td>
-                                        <td></td>
-                                        <td>{this.state.productInfo.asn_fee ?
-                                           GlobalFunction.formatMoney(parseInt(this.state.productInfo.asn_fee.slice(0,this.state.productInfo.asn_fee.indexOf("%"))*this.state.rows.loan_amount/100)):
-                                            null}</td>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -230,13 +211,9 @@ class Main extends React.Component{
                                     <td>Tanggal Pengajuan</td>
                                     <td>: 
                                     <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" />
-                                    {/* {String(this.state.rows.created_time).substr(0, String(this.state.rows.created_time).indexOf('T'))} */}
                                     </td>
                                 </tr>
-                                {/* <tr>
-                                    <td>Pinjaman Ke-</td>
-                                    <td>: {this.state.rows.status}</td>
-                                </tr> */}
+                              
                                 </tbody>
                                 
                             </table>
@@ -268,6 +245,19 @@ class Main extends React.Component{
                                     <td>Sumber Penghasilan lain lain</td>
                                     <td>: {this.state.borrowerDetail.other_incomesource}</td>
                                 </tr>
+                                {this.state.status === 'rejected'?
+                                <tr>
+                                    <td>Alasan ditolak</td>
+                                    <td>:{this.state.rows.reason}</td>
+                                </tr>
+                                :this.state.status === "approved" ?
+                                <tr>
+                                    <td>Tanggal Pencairan</td>
+                                    <td>: 
+                                    <Moment date={this.state.rows.disburse_date} format=" DD  MMMM  YYYY" />                               
+                                    </td>
+                                </tr>
+                                :null}
                                 
                                
                                 </tbody>

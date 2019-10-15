@@ -43,26 +43,24 @@ const customStyles = {
 
 class BankEdit extends React.Component{
     state = {
-        jenisProduct:null, jenisLayanan: null, productID:[],serviceID:[],
+        productID:[],serviceID:[],
         errorMessage: null, diKlik:false,
         typeBank:[],bankService:[],bankProduct:[],
-        provinsi:[],kabupaten:[],idProvinsi:null,dataBank:[],phone:'',provinsiEdit:null,namaTipeBank:'',adminFeeRadioValue:'',convinienceFeeRadioValue:''
+        provinsi:[],kabupaten:[],idProvinsi:null,dataBank:[],phone:'',provinsiEdit:null,namaTipeBank:'',adminFeeRadioValue:'',convinienceFeeRadioValue:'',
+        serviceName:null,productName:null,submit:false
     };
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
        }
     handleChangejenisLayanan = (jenisLayanan) => {
-        this.setState({ jenisLayanan });
-        console.log(`Jenis selected:`, jenisLayanan);
+        this.setState({ serviceName: jenisLayanan });
       };
 
     handleChangejenisProduct = (jenisProduct) => {
-        this.setState({ jenisProduct });
-        console.log(`Product selected:`, jenisProduct);
+        this.setState({ productName:jenisProduct });
     };
     
     componentDidMount(){
-        this.getBankService()
         this.getBankProduct()
         this.getAllProvinsi()
         this.getBankDataById()
@@ -75,49 +73,33 @@ class BankEdit extends React.Component{
        // axios.get(serverUrl+'admin/banks/[bank_id]',config)
         axios.get(serverUrl+`admin/banks/${id}`,config)
         .then((res)=>{
-            console.log(res.data)
             this.setState({dataBank:res.data,productID:res.data.products,serviceID:res.data.services})
            if (this.state.dataBank){
              this.getTypeBank()
+             this.getBankService()
+             this.getServiceDataSudahTerpilih(id)
+             this.getProductDataSudahTerpilih(id)
            }
         })
         .catch((err)=> console.log(err))
 
     }
-    // getAllProvinsi = () =>{
-    //   axios.get("https://cors-anywhere.herokuapp.com/http://dev.farizdotid.com/api/daerahindonesia/provinsi")
-    //   .then((res)=>{
-    //       console.log(res.data.semuaprovinsi)
-    //       this.setState({provinsi:res.data.semuaprovinsi})
-    //   })
-    //   .catch((err)=> console.log(err))
-    // }
+
     getAllProvinsi = () =>{
         configGeo = {
             headers: {'Authorization': "Bearer " + cookie.get('tokenGeo')}
           };
         axios.get(serverUrlGeo+`client/provinsi`,configGeo)
         .then((res)=>{
-            console.log(res.data.data)
             this.setState({provinsi:res.data.data})
            
         })
         .catch((err)=> console.log(err))
       }
 
-    // getAllKabupaten = (id) =>{
-    //   axios.get(`https://cors-anywhere.herokuapp.com/http://dev.farizdotid.com/api/daerahindonesia/provinsi/${id}/kabupaten`)
-    //   .then((res)=>{
-    //       console.log(res.data.kabupatens)
-    //       this.setState({kabupaten:res.data.kabupatens,provinsiEdit:"terpilih"})
-         
-    //   })
-    //   .catch((err)=> console.log(err))
-    // }
     getAllKabupaten = (id) =>{
         axios.get(serverUrlGeo+`client/provinsi/${id}/kota`,configGeo)
         .then((res)=>{
-            console.log(res.data.data)
             this.setState({kabupaten:res.data.data})
            
         })
@@ -127,9 +109,8 @@ class BankEdit extends React.Component{
         config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-      axios.get(serverUrl+'admin/service_products',config)
+      axios.get(serverUrl+'admin/products',config)
       .then((res)=>{
-          console.log(res.data)
           this.setState({bankProduct:res.data.data})
       })
       .catch((err)=> console.log(err))
@@ -138,7 +119,6 @@ class BankEdit extends React.Component{
     getTypeBank = ()=>{
         axios.get(serverUrl+`admin/bank_types/${this.state.dataBank.type}`,config)
       .then((res)=>{
-          console.log(res.data.name)
             this.setState({namaTipeBank:res.data.name})
       })
       .catch((err)=> console.log(err))
@@ -148,13 +128,52 @@ class BankEdit extends React.Component{
         config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-      axios.get(serverUrl+'admin/bank_services',config)
+      axios.get(serverUrl+'admin/services',config)
       .then((res)=>{
-          console.log(res.data)
           this.setState({bankService:res.data.data})
       })
       .catch((err)=> console.log(err))
     }
+
+    getServiceDataSudahTerpilih = (id)=>{  
+      var config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+          };
+      axios.get(serverUrl+`admin/bank_services?bank_id=${id}`,config)
+      .then((res)=>{
+         var resultServiceID = res.data.data.map((val)=>{
+             return val.service_id
+         })
+         axios.get(serverUrl+`/admin/services?id=${resultServiceID.toString()}`,config)
+         .then((res)=>{
+             var serviceName = res.data.data.map((val)=>{
+                 return {value:val.id,label:val.name}
+             })
+             this.setState({serviceName:serviceName})
+         })
+      })
+      .catch((err)=> console.log(err))
+    }
+
+    getProductDataSudahTerpilih = (id)=>{  
+        var config = {
+              headers: {'Authorization': "Bearer " + cookie.get('token')}
+            };
+        axios.get(serverUrl+`admin/bank_products?bank_id=${id}`,config)
+        .then((res)=>{
+           var resultProductID = res.data.data.map((val)=>{
+               return val.product_id
+           })
+           axios.get(serverUrl+`/admin/products?id=${resultProductID.toString()}`,config)
+           .then((res)=>{
+               var productName = res.data.data.map((val)=>{
+                   return {value:val.id,label:val.name}
+               })
+               this.setState({productName:productName})
+           })
+        })
+        .catch((err)=> console.log(err))
+      }
 
     renderProvinsiJsx = ()=>{
         var jsx = this.state.provinsi.map((val,index)=>{
@@ -176,16 +195,16 @@ class BankEdit extends React.Component{
 
     renderJenisLayananJsx = ()=>{
         var jsx = this.state.bankService.map((val,index)=>{
-            return {id:val.id, value: val.name, label: val.name}
+            return {id:val.id, value: val.id, label: val.name}
         })
         return jsx
     }
-      renderJenisProductJsx = ()=>{
-      var jsx = this.state.bankProduct.map((val,index)=>{
-          return {id:val.id, value: val.name, label: val.name}
-      })
-      return jsx
-       }
+    renderJenisProductJsx = ()=>{
+        var jsx = this.state.bankProduct.map((val,index)=>{
+            return {id:val.id, value: val.id, label: val.name}
+        })
+        return jsx
+    }
 
     handleChangeRadioAdmin =(e)=>{
         this.setState({adminFeeRadioValue:e.target.value})
@@ -193,6 +212,14 @@ class BankEdit extends React.Component{
     handleChangeRadioConvience =(e)=>{
         this.setState({convinienceFeeRadioValue:e.target.value})
     }
+
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-primary" value="Simpan" onClick={this.btnEdit} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-primary" value="Simpan" onClick={this.btnEdit}/>
+        }
+     }
     btnEdit = ()=>{
         var services =[]
         var products =[]
@@ -214,22 +241,23 @@ class BankEdit extends React.Component{
         }else if(address.trim()===""){
             this.setState({errorMessage:"Alamat Kosong - Harap cek ulang"})
         }else{
-             if(this.state.jenisLayanan){
-                for (var i=0; i<this.state.jenisLayanan.length;i++){
-                    services.push (this.state.jenisLayanan[i].value)
+            this.setState({submit:true})
+             if(this.state.serviceName){
+                for (var i=0; i<this.state.serviceName.length;i++){
+                    services.push (this.state.serviceName[i].value)
                 }
             }else{
-                services = this.state.serviceID
+                services = []
             }
             
-            if(this.state.jenisProduct){
-                for ( i=0; i<this.state.jenisProduct.length;i++){
-                    products.push (this.state.jenisProduct[i].value)
+            if(this.state.productName){
+                for ( i=0; i<this.state.productName.length;i++){
+                    products.push (this.state.productName[i].value)
                 }
             }else{
-                products = this.state.productID
+                products = []
             }
-    
+            
             var newData = {
                 name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup
             }
@@ -238,21 +266,19 @@ class BankEdit extends React.Component{
             axios.patch(serverUrl+`admin/banks/${id}`,newData,config)
             .then((res)=>{
                 swal("Success","Data berhasil di edit","success")
-                this.setState({diKlik:true,errorMessage:null})
+                this.setState({diKlik:true,errorMessage:null,submit:false})
             })
-            .catch((err)=> console.log(err))
+            .catch((err)=>{
+                console.log(err)
+                this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})
+            })
            
        }
-           
-
-        
-       
     }
     
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            
-
         }
         if(cookie.get('token')){
             return(
@@ -263,7 +289,6 @@ class BankEdit extends React.Component{
                             <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
                                     {this.state.errorMessage}
                             </div>
-                                
                      </div>
                    
                    <form>
@@ -355,14 +380,11 @@ class BankEdit extends React.Component{
                            
                             <div className="col-sm-10" >
                             <Select
-                               
-                                defaultValue={this.state.jenisLayanan}
+                                value={this.state.serviceName}
                                 onChange={this.handleChangejenisLayanan}
                                 isMulti={true}
                                 options={this.renderJenisLayananJsx()}
                                 styles={customStyles}
-                                placeholder={this.state.serviceID.toString()}
-                                
                             />
                             </div>
                         </div>
@@ -371,17 +393,15 @@ class BankEdit extends React.Component{
                             <label className="col-sm-2 col-form-label">Jenis Produk</label>
                             <div className="col-sm-10">
                                 <div>
-                                <Select
-                                defaultValue={this.state.jenisProduct}
+                            <Select
+                                value={this.state.productName}
                                 onChange={this.handleChangejenisProduct}
                                 isMulti={true}
                                 options={this.renderJenisProductJsx()}
                                 styles={customStyles}
-                                placeholder={this.state.productID.toString()}
-                                
                             />
 
-                                </div>
+                        </div>
                             </div>
                         </div>
                         <div className="form-group row">
@@ -402,8 +422,9 @@ class BankEdit extends React.Component{
                             onChange={ phone => this.setState({ phone }) } className="form-control" />                                                       
                             </div>
                         </div>
-                        <input type="button" className="btn btn-success" value="Update" onClick={this.btnEdit}/>
-                        <input type="button" className="btn btn-secondary ml-2" value="Batal" onClick={()=>window.history.back()}/>
+                        {this.renderBtnSumbit()}
+                       
+                        <input type="button" className="btn btn-secondary ml-2" value="Batal" onClick={()=>this.setState({diKlik:true})}/>
 
                    </form>
     
