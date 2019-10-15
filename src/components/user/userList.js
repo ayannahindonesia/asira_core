@@ -7,6 +7,8 @@ import {Link} from 'react-router-dom'
 import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import Pagination from 'rc-pagination';
 import {getAllUserFunction} from './saga'
+import { checkPermission } from '../global/globalFunction';
+import { getAllRoleFunction } from '../rolePermission/saga';
 
 
 const cookie = new Cookies()
@@ -53,12 +55,21 @@ class UserList extends React.Component{
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
 
-        const data = await getAllUserFunction(param);
+        const data = await getAllUserFunction(param, getAllRoleFunction);
 
         if(data) {
             if(!data.error) {
+                console.log(data)
+                const dataListUser = data.dataUser || [];
+
+                if(dataListUser.length !== 0) {
+                    for(const key in dataListUser) {
+                        dataListUser[key].role = this.findRole(dataListUser[key].role_id, data.dataRole || [])
+                    }
+                }
+                
                 this.setState({
-                    listUser: data.dataUser,
+                    listUser: dataListUser,
                     totalData: data.totalData,
                     loading: false,
                 })
@@ -69,6 +80,18 @@ class UserList extends React.Component{
                 })
             }      
         }
+    }
+
+    findRole = (roleId, dataRole) => {
+        let role = '';
+
+        for(const key in dataRole) {
+            if(dataRole[key].id === roleId) {
+                role = dataRole[key].name
+            }
+        }
+
+        return role;
     }
 
     renderJSX = () => {
@@ -98,9 +121,11 @@ class UserList extends React.Component{
                     <td align="center">{val.role}</td>
                     <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
                     <td align="center">
-                        <Link to={`/editUser/${val.id}`} className="mr-2">
-                            <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                        </Link>
+                        {   checkPermission('User_Edit') &&
+                            <Link to={`/editUser/${val.id}`} className="mr-2">
+                                <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
+                        }
                         <Link to={`/detailUser/${val.id}`} >
                             <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                         </Link>
