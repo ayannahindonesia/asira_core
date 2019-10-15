@@ -117,7 +117,7 @@ class App extends React.Component {
         <ScrollTop>
           <div className="row">
           {
-            kukie.get('profileUser') ? 
+            kukie.get('token') ? 
             <div className="col-2 col-md-3">
               <Header />
             </div>

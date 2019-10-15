@@ -4,7 +4,7 @@ import Cookies from 'universal-cookie';
 
 const cookie = new Cookies()
 
-export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
+export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRole, nextPermission) {
     return new Promise(async (resolve) => {     
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('tokenAuth')}
@@ -16,16 +16,17 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
   
         axios.post(url,logindata,config).then((res)=>{
             const date = new Date();
-            date.setTime(date.getTime() + (res.data.expires*1000));
+            date.setTime(date.getTime() + (res.data.expires_in*1000));
             cookie.set('token',res.data.token,{expires: date})
-
+            
             param.dataToken = res.data.token;
+            param.expires = res.data.expires_in;
 
             delete param.password;
 
             if(nextGeo && nextProfile) {
                 nextGeo(param)
-                resolve(nextProfile(param))
+                resolve(nextProfile(param, nextRole, nextPermission))
             } else {
                 resolve(param)
             }
@@ -79,7 +80,7 @@ export async function getTokenGeoFunction(param, next) {
     
 }
 
-export async function getUserProfileFunction(param, next) {
+export async function getUserProfileFunction(param, next, nextPermission) {
     return new Promise(async (resolve) => {     
         const config = {
             headers: {'Authorization': "Bearer " + param.dataToken}
@@ -89,14 +90,11 @@ export async function getUserProfileFunction(param, next) {
 
   
         axios.get(url,config).then((res)=>{
-            const date = new Date();
-            date.setTime(date.getTime() + (res.data.expires*1000));
-            cookie.set('profileUser',res.data,{expires: date})
-
             param.user = res.data;
+            param.roleId = res.data.role_id || 0;
 
             if(next) {
-                resolve(next(param))
+                resolve(next(param, nextPermission))
             } else {
                 resolve(param)
             }
