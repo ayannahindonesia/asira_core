@@ -1,18 +1,26 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
-import './../support/css/layananAdd.css'
+import '../../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
-import { serverUrlBorrower } from './url';
+import {TujuanAddFunction} from './saga'
+import Cookies from 'universal-cookie';
+
 import swal from 'sweetalert'
-import axios from 'axios'
 const cookie = new Cookies()
 
+
 class TujuanAdd extends React.Component{
+    _isMounted = false;
     state={
         errorMessage:'',
-        diKlik:false,check:false
+        diKlik:false,check:false,submit:false
     }
-
+    componentDidMount(){
+        this._isMounted = true;
+    }
+  
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
@@ -25,16 +33,25 @@ class TujuanAdd extends React.Component{
             this.setState({errorMessage:"Tujuan field Kosong -  Harap cek ulang"})
         }else{
                 var newData={name,status}
-                var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                axios.post(serverUrlBorrower+'admin/loan_purposes',newData,config)
-                .then((res)=>{
-                    swal("Success","Tujuan berhasil di tambah","success")
-                    this.setState({errorMessage:null,diKlik:true})
-                })
-                .catch((err)=>{console.log(err)})
+                this.setState({submit:true})
+                this.TujuanAddBtn(newData)
         }
     }
+    
+    TujuanAddBtn = async function (params) {
+        const data = await TujuanAddFunction(params)
+
+        if(data){
+            if(!data.error){
+                swal("Success","Tujuan berhasil di tambah","success")
+                this.setState({errorMessage:null,diKlik:true})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
         
+        
+    }
     
     handleChecked=(e)=>{
         this.setState({check:!this.state.check})
@@ -42,7 +59,13 @@ class TujuanAdd extends React.Component{
     btnCancel = ()=>{
         this.setState({diKlik:true})
     }
-
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSimpanLayanan} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSimpanLayanan}/>
+        }
+    }
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listtujuan'/>            
@@ -74,7 +97,7 @@ class TujuanAdd extends React.Component{
                             </div>
                     </div>
                     <div className="form-group row">
-                            <input type="button" className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSimpanLayanan}/>
+                            {this.renderBtnSumbit()}
                             <input type="button" className="btn btn-warning" value="Batal" onClick={this.btnCancel}/>
 
                     </div>

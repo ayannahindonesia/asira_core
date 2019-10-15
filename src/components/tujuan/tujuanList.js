@@ -2,29 +2,38 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { serverUrlBorrower } from './url';
-import axios from 'axios'
+import {checkPermission} from './../global/globalFunction'
 import {Link} from 'react-router-dom'
+import {TujuanListFunction} from './saga'
 
 const cookie = new Cookies()
 
 class TujuanList extends React.Component{
+    _isMounted = false
     state={
-        loading:true
+        loading:true,rows:[]
     }
     componentDidMount (){
+        this._isMounted = true;
         this.getAllList()
     }
-    getAllList = ()=>{
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
-        axios.get(serverUrlBorrower+`admin/loan_purposes`,config)
-        .then((res)=>{
-            this.setState({loading:false,rows:res.data.data})
-        })
-        .catch((err)=>console.log(err))
+    
+    getAllList = async function (params) {
+        const data = await TujuanListFunction(params)
+
+        if(data){
+            if(!data.error){
+                this.setState({loading:false,rows:data})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
+        
+        
     }
 
     renderJSX = () => {
@@ -57,9 +66,12 @@ class TujuanList extends React.Component{
                         <td align="center">{val.name}</td>
                          
                         <td align="center">
+                        {checkPermission('LoanPurposes_Edit') &&
                         <Link to={`/tujuanedit/${val.id}`} className="mr-2">
-                         <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                         </Link>
+                        <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                        </Link>
+                        }
+                        
                         <Link to={`/tujuandetail/${val.id}`} >
                          <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                     </Link>
