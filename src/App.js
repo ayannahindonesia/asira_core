@@ -37,15 +37,15 @@ import ProductDetail from './components/productDetail'
 
 import ProductEdit from './components/productEdit'
 import Cookies from 'universal-cookie';
-import TypeBankAdd from './components/typebankAdd'
-import TypeBankList from './components/typebankList'
+import TypeBankAdd from './components/tipebank/typebankAdd'
+import TypeBankList from './components/tipebank/typebankList'
 import TujuanAdd from './components/tujuan/tujuanAdd'
 import TujuanList from './components/tujuan/tujuanList'
 import TujuanEdit from './components/tujuan/tujuanEdit'
 import TujuanDetail from './components/tujuan/tujuanDetail'
 
-import TypeBankEdit from './components/typebankEdit'
-import TypeBankDetail from './components/typebankDetail'
+import TypeBankEdit from './components/tipebank/typebankEdit'
+import TypeBankDetail from './components/tipebank/typebankDetail'
 
 import RoleAdd from './components/roleAdd'
 import RoleList from './components/roleList'

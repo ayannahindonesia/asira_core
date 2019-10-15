@@ -1,7 +1,7 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrl} from './url'
+import {serverUrl} from '../url'
 
 import axios from 'axios'
 
