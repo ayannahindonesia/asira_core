@@ -2,31 +2,39 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { serverUrl } from '../url';
-import axios from 'axios'
 import {Link} from 'react-router-dom'
+import {ListTipeBankFunction} from './saga'
 
 const cookie = new Cookies()
 
 class TambahBankList extends React.Component{
+    _isMounted = false;
+
     state={
         loading:true
     }
     componentDidMount (){
+        this._isMounted = true;
         this.getAllList()
     }
-    getAllList = ()=>{
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-
-        axios.get(serverUrl+`admin/bank_types`,config)
-        .then((res)=>{
-            this.setState({loading:false,rows:res.data.data})
-        })
-        .catch((err)=>console.log(err))
+    componentWillUnmount() {
+        this._isMounted = false;
     }
+    getAllList = async function () {
+        const param = {
 
+        };
+        const data  = await ListTipeBankFunction(param)
+        if(data){
+            if(!data.error){
+                this.setState({loading:false,rows:data})
+            }else{
+                this.setState({loading:false,errorMessage:data.error})
+            }
+        }
+        
+    }
+  
     renderJSX = () => {
         if (this.state.loading){
             return  (
