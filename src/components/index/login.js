@@ -7,6 +7,10 @@ import {Redirect} from 'react-router-dom'
 import {keepLogin} from './../../1.actions'
 import {connect} from 'react-redux'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction} from './saga'
+import { getRoleFunction, getPermissionFunction } from '../rolePermission/saga';
+import Cookies from 'universal-cookie';
+
+const cookie = new Cookies()
 
  
 class Login extends React.Component{
@@ -32,17 +36,27 @@ class Login extends React.Component{
     } 
 
     postLoginAdmin = async function(param)  {
-        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction)
+        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction, getRoleFunction, getPermissionFunction)
         
         if(data) {
+            console.log(data)
             if(!data.error) {
+                let userPermission = [];
+
+                if(data.dataRole && data.dataRole.status && data.dataPermission) {
+                    userPermission = data.dataPermission
+                }
+                
+                const date = new Date();
+                date.setTime(date.getTime() + (data.expires*1000));
+                cookie.set('profileUser',userPermission,{expires: date})
+
                 this.setState({loading: false, isLogin: true})
             } else {
                 this.setState({loading : false})
-                swal("Warning","Username atau Password tidak benar","info")
+                swal("Warning",data.error,"info")
             }
         }
-        console.log(data)
     
     }
 

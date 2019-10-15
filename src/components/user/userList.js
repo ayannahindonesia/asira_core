@@ -8,6 +8,7 @@ import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import Pagination from 'rc-pagination';
 import {getAllUserFunction} from './saga'
 import { checkPermission } from '../global/globalFunction';
+import { getAllRoleFunction } from '../rolePermission/saga';
 
 
 const cookie = new Cookies()
@@ -54,12 +55,21 @@ class UserList extends React.Component{
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
 
-        const data = await getAllUserFunction(param);
+        const data = await getAllUserFunction(param, getAllRoleFunction);
 
         if(data) {
             if(!data.error) {
+                console.log(data)
+                const dataListUser = data.dataUser || [];
+
+                if(dataListUser.length !== 0) {
+                    for(const key in dataListUser) {
+                        dataListUser[key].role = this.findRole(dataListUser[key].role_id, data.dataRole || [])
+                    }
+                }
+                
                 this.setState({
-                    listUser: data.dataUser,
+                    listUser: dataListUser,
                     totalData: data.totalData,
                     loading: false,
                 })
@@ -70,6 +80,18 @@ class UserList extends React.Component{
                 })
             }      
         }
+    }
+
+    findRole = (roleId, dataRole) => {
+        let role = '';
+
+        for(const key in dataRole) {
+            if(dataRole[key].id === roleId) {
+                role = dataRole[key].name
+            }
+        }
+
+        return role;
     }
 
     renderJSX = () => {

@@ -17,10 +17,10 @@ export async function getAllRoleFunction(param, next){
             filter += `&${key}=${param[key]}`
         }
 
-        const urlNew = serverUrl+`admin/roles?orderby=updated_time&sort=desc${filter}`
+        const urlNew = serverUrl+`admin/roles_all?orderby=updated_time&sort=desc${filter}`
 
         axios.get(urlNew,config).then((res)=>{
-            const listRole = res.data && res.data.data
+            const listRole = res.data && res.data.data ? res.data.data : res.data
             param.dataRole = listRole;
 
             if(next) {
@@ -195,6 +195,33 @@ export async function getRolePermissionFunction(param, next) {
             }
     
             param.dataRolePermission = newPermission
+    
+            if(next) {
+                resolve(next(param));
+            } else {
+                resolve(param);
+            }
+    
+        }).catch((err)=>{
+            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            param.error = error;
+            resolve(param);
+        })
+    });
+    
+}
+
+export async function getPermissionFunction(param, next) {
+    return new Promise(async (resolve) => {
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
+          
+        axios.get(serverUrl+`admin/permission?role_id=${param.roleId}`,config)
+        .then((res)=>{
+            const listPermission = res.data && res.data.data ? res.data.data : res.data;
+
+            param.dataPermission = listPermission;
     
             if(next) {
                 resolve(next(param));

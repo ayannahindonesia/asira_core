@@ -235,7 +235,7 @@ class ProductEdit extends React.Component{
                 </td>
                 <td>
                 <div className="form-inline">
-                    <input type="text" className="form-control" ref={val.description.replace(/\s+/g, '')} style={{width:"80px"}} defaultValue={val.amount.slice(0,val.amount.indexOf('%'))} placeholder={val.amount.slice(0,val.amount.indexOf('%'))} /><label>%</label>
+                    <input type="text" className="form-control" ref={val.description.replace(/ /g, '')} style={{width:"80px"}} defaultValue={val.amount.slice(0,val.amount.indexOf('%'))} placeholder={val.amount.slice(0,val.amount.indexOf('%'))} /><label>%</label>
                 </div>
                 </td>
             </tr>

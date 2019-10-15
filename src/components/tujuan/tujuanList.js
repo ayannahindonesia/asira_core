@@ -2,29 +2,38 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { serverUrl } from './url';
-import axios from 'axios'
+import {checkPermission} from './../global/globalFunction'
 import {Link} from 'react-router-dom'
+import {TujuanListFunction} from './saga'
 
 const cookie = new Cookies()
 
-class TambahBankList extends React.Component{
+class TujuanList extends React.Component{
+    _isMounted = false
     state={
-        loading:true
+        loading:true,rows:[]
     }
     componentDidMount (){
+        this._isMounted = true;
         this.getAllList()
     }
-    getAllList = ()=>{
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
-        axios.get(serverUrl+`admin/bank_types`,config)
-        .then((res)=>{
-            this.setState({loading:false,rows:res.data.data})
-        })
-        .catch((err)=>console.log(err))
+    
+    getAllList = async function (params) {
+        const data = await TujuanListFunction(params)
+
+        if(data){
+            if(!data.error){
+                this.setState({loading:false,rows:data})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
+        
+        
     }
 
     renderJSX = () => {
@@ -57,10 +66,13 @@ class TambahBankList extends React.Component{
                         <td align="center">{val.name}</td>
                          
                         <td align="center">
-                        <Link to={`/banktypeedit/${val.id}`} className="mr-2">
-                         <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                         </Link>
-                        <Link to={`/banktypedetail/${val.id}`} >
+                        {checkPermission('LoanPurposes_Edit') &&
+                        <Link to={`/tujuanedit/${val.id}`} className="mr-2">
+                        <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                        </Link>
+                        }
+                        
+                        <Link to={`/tujuandetail/${val.id}`} >
                          <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                     </Link>
                         </td>
@@ -76,14 +88,14 @@ class TambahBankList extends React.Component{
         if(cookie.get('token')){
             return(
                 <div className="container">
-                   <h2 className="mt-3">Tipe Bank - List</h2>
+                   <h2 className="mt-3">Tujuan Pembiayaan - List</h2>
                    <hr/>
                    <table className="table table-hover">
                    <thead className="table-warning">
                         <tr >
                             <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">Id Tipe Bank</th>
-                            <th className="text-center" scope="col">Nama Tipe Bank</th>
+                            <th className="text-center" scope="col">Id Tujuan</th>
+                            <th className="text-center" scope="col">Tujuan Pembiayaan</th>
                             <th className="text-center" scope="col">Action</th>  
                         </tr>     
                     </thead>
@@ -105,4 +117,4 @@ class TambahBankList extends React.Component{
     }
 }
 
-export default TambahBankList;
+export default TujuanList;
