@@ -2,13 +2,13 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { serverUrlBorrower } from './url';
+import { serverUrl } from '../url';
 import axios from 'axios'
 import {Link} from 'react-router-dom'
 
 const cookie = new Cookies()
 
-class TujuanList extends React.Component{
+class TambahBankList extends React.Component{
     state={
         loading:true
     }
@@ -20,7 +20,7 @@ class TujuanList extends React.Component{
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
 
-        axios.get(serverUrlBorrower+`admin/loan_purposes`,config)
+        axios.get(serverUrl+`admin/bank_types`,config)
         .then((res)=>{
             this.setState({loading:false,rows:res.data.data})
         })
@@ -57,10 +57,10 @@ class TujuanList extends React.Component{
                         <td align="center">{val.name}</td>
                          
                         <td align="center">
-                        <Link to={`/tujuanedit/${val.id}`} className="mr-2">
+                        <Link to={`/banktypeedit/${val.id}`} className="mr-2">
                          <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
                          </Link>
-                        <Link to={`/tujuandetail/${val.id}`} >
+                        <Link to={`/banktypedetail/${val.id}`} >
                          <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                     </Link>
                         </td>
@@ -76,14 +76,14 @@ class TujuanList extends React.Component{
         if(cookie.get('token')){
             return(
                 <div className="container">
-                   <h2 className="mt-3">Tujuan Pembiayaan - List</h2>
+                   <h2 className="mt-3">Tipe Bank - List</h2>
                    <hr/>
                    <table className="table table-hover">
                    <thead className="table-warning">
                         <tr >
                             <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">Id Tujuan</th>
-                            <th className="text-center" scope="col">Tujuan Pembiayaan</th>
+                            <th className="text-center" scope="col">Id Tipe Bank</th>
+                            <th className="text-center" scope="col">Nama Tipe Bank</th>
                             <th className="text-center" scope="col">Action</th>  
                         </tr>     
                     </thead>
@@ -105,4 +105,4 @@ class TujuanList extends React.Component{
     }
 }
 
-export default TujuanList;
+export default TambahBankList;

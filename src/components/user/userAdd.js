@@ -11,7 +11,6 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import { compose } from 'redux';
-import { listAllRolePermission } from './../global/globalConstant'
 import { getAllRoleFunction } from './../rolePermission/saga'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { postUserAddFunction } from './saga';
@@ -36,7 +35,6 @@ class userAdd extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listAllRolePermission,
       listRolePermission: [],
       disabled: false,
       role : 0,
@@ -58,9 +56,7 @@ class userAdd extends React.Component{
     }
 
     refresh = async function(){
-      const param = {
-        status: true,
-      };
+      const param = { };
       
       const data = await getAllRoleFunction(param);
       
@@ -109,7 +105,7 @@ class userAdd extends React.Component{
     }
 
     postUser = async function(param) {
-      const data = postUserAddFunction(param);
+      const data = await postUserAddFunction(param);
 
       if(data) {
         if(!data.error) {

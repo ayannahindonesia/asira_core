@@ -1,13 +1,13 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
-import './../support/css/layananAdd.css'
+import '../../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
-import { serverUrlBorrower } from './url';
+import {TujuanDetailFunction, TujuanEditFunction} from './saga'
 import swal from 'sweetalert'
-import axios from 'axios'
 const cookie = new Cookies()
 
 class TujuanEdit extends React.Component{
+    _isMounted = false
     state={
         errorMessage:'',
         diKlik:false,
@@ -15,20 +15,29 @@ class TujuanEdit extends React.Component{
     }
 
     componentDidMount(){
+        this._isMounted = true
         this.getTujuanDetailByID()
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
     }
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
 
-    getTujuanDetailByID = ()=>{
+    getTujuanDetailByID = async function(){
         var id = this.props.match.params.id
-        var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-        axios.get(serverUrlBorrower+`admin/loan_purposes/${id}`,config)
-        .then((res)=>{
-            this.setState({rows:res.data,check:res.data.status==="active"?true:false})
-        })
-        .catch((err)=>{console.log(err)})
+        const param = {
+            id
+        }
+        const data = await TujuanDetailFunction(param)
+        if(data){
+            if(!data.error){
+                this.setState({rows:data,check:data.status==="active"?true:false})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
     }
     btnUpdateLayanan = ()=>{
         var name =this.refs.tujuan.value ? this.refs.tujuan.value : this.refs.tujuan.placeholder
@@ -39,16 +48,23 @@ class TujuanEdit extends React.Component{
             this.setState({errorMessage:"Tujuan field Kosong -  Harap cek ulang"})
         }else{
                 var newData={name,status}
-                var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                axios.patch(serverUrlBorrower+`admin/loan_purposes/${id}`,newData,config)
-                .then((res)=>{
-                    swal("Success","Tujuan berhasil di tambah","success")
-                    this.setState({errorMessage:null,diKlik:true})
-                })
-                .catch((err)=>{console.log(err)})
+                const param = {
+                    id, newData
+                }
+                this.getEditTujuan(param)
             }
     }
-        
+    getEditTujuan = async function(param){
+        const data = await TujuanEditFunction(param)
+        if(data){
+            if(!data.error){
+                swal("Success","Tujuan berhasil di tambah","success")
+                this.setState({errorMessage:null,diKlik:true})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
     
     handleChecked = () => {
         this.setState({check : !this.state.check})

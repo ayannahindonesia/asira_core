@@ -1,50 +1,56 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrl} from './url'
+import {TujuanDetailFunction} from './saga'
 
-import axios from 'axios'
 
 const cookie = new Cookies()
 
-class TypeBankDetail extends React.Component{
+class TujuanDetail extends React.Component{
+    _isMounted = false
     state = {rows:{}}
     componentDidMount(){
+        this._isMounted = true;
         this.getTypeBankDetail()
     }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
-    getTypeBankDetail = ()=>{
+    getTypeBankDetail = async function () {
         var id = this.props.match.params.id
-        if(cookie.get('token')){
-            var config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-              };
-          
-            axios.get(serverUrl+`admin/bank_types/${id}`,config)
-            .then((res)=>{
-                console.log(res.data)
-                this.setState({rows:res.data})
-            })
-            .catch((err)=>console.log(err))
+        
+        const param = {
+            id,
+        }
+
+        const data = await TujuanDetailFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({rows:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
         }
     }
     render(){
         if(cookie.get('token')){
             return(
                 <div className="container">
-                   <h2>Tipe Bank - Detail</h2>
+                   <h2>Tujuan Pembiayaan - Detail</h2>
                    <hr/>
                    
                    <form>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">ID Tipe Bank</label>
+                            <label className="col-sm-4 col-form-label">ID Tujuan Pembiayaan</label>
                             <div className="col-sm-8">
                             : {this.state.rows.id}
 
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Nama Tipe Bank</label>
+                            <label className="col-sm-4 col-form-label">Tujuan Pembiayaan</label>
                             <div className="col-sm-8">
                             : {this.state.rows.name}
                             
@@ -52,9 +58,9 @@ class TypeBankDetail extends React.Component{
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Deskripsi</label>
+                            <label className="col-sm-4 col-form-label">Status</label>
                             <div className="col-sm-8">
-                            : {this.state.rows.description}
+                            : {this.state.rows.status==="active"?"Aktif":"Tidak Aktif"}
                         
                             </div>
                         </div>
@@ -81,4 +87,4 @@ class TypeBankDetail extends React.Component{
     }
 }
 
-export default TypeBankDetail;
+export default TujuanDetail;
