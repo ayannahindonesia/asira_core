@@ -1,31 +1,37 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrlBorrower} from './url'
+import {TujuanDetailFunction} from './saga'
 
-import axios from 'axios'
 
 const cookie = new Cookies()
 
 class TujuanDetail extends React.Component{
+    _isMounted = false
     state = {rows:{}}
     componentDidMount(){
+        this._isMounted = true;
         this.getTypeBankDetail()
     }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
-    getTypeBankDetail = ()=>{
+    getTypeBankDetail = async function () {
         var id = this.props.match.params.id
-        if(cookie.get('token')){
-            var config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-              };
-          
-            axios.get(serverUrlBorrower+`admin/loan_purposes/${id}`,config)
-            .then((res)=>{
-                console.log(res.data)
-                this.setState({rows:res.data})
-            })
-            .catch((err)=>console.log(err))
+        
+        const param = {
+            id,
+        }
+
+        const data = await TujuanDetailFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({rows:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
         }
     }
     render(){
