@@ -8,6 +8,7 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getUserFunction } from './saga'
+import { getAllRoleFunction } from '../rolePermission/saga';
 
 const styles = (theme) => ({
     container: {
@@ -40,12 +41,17 @@ class UserDetail extends React.Component{
       const param = {};
       param.userId = this.state.userId;
 
-      const data = await getUserFunction(param);
+      const data = await getUserFunction(param, getAllRoleFunction);
+      
 
       if(data) {
           if(!data.error) {
+            const dataUser = data.dataUser || [];
+
+            dataUser.role = this.findRole(dataUser.role_id, data.dataRole || [])
+
             this.setState({
-              dataUser: data.dataUser,
+              dataUser,
               loading: false,
             })
           } else {
@@ -57,6 +63,18 @@ class UserDetail extends React.Component{
           }      
       }
     }
+
+    findRole = (roleId, dataRole) => {
+      let role = '';
+
+      for(const key in dataRole) {
+          if(dataRole[key].id === roleId) {
+              role = dataRole[key].name
+          }
+      }
+
+      return role;
+  }
 
     btnCancel = ()=>{
       this.setState({diKlik:true})
