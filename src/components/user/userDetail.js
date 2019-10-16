@@ -96,7 +96,7 @@ class UserDetail extends React.Component{
         } else if(cookie.get('token')){
             return(
               <div className="container mt-4">
-                 <h3>User - Detail</h3>
+                 <h3>Akun - Detail</h3>
                  
                  <hr/>
                  
