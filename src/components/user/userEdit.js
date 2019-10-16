@@ -208,7 +208,7 @@ class userEdit extends React.Component{
         } else if(cookie.get('token')){
             return(
                 <div className="container mt-4">
-                 <h3>User - Ubah</h3>
+                 <h3>Akun - Edit</h3>
                  
                  <hr/>
                  
