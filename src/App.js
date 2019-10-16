@@ -79,7 +79,6 @@ class App extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.location.pathname === '/login' && this.props.location.pathname === '/') {
-      console.log('hit')
       this.getAuth()
     }
     
