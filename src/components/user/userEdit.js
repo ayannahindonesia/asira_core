@@ -251,7 +251,7 @@ class userEdit extends React.Component{
                         :
                       </label>
                       <div className="col-sm-4 col-form-label" >
-                        {this.state.password}                       
+                        ********                       
                       </div>                 
                     </div>
 
