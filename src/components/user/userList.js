@@ -157,7 +157,7 @@ class UserList extends React.Component{
                 <div className="container">
                     <div className="row">
                         <div className="col-7">
-                            <h2 className="mt-3">User - List</h2>
+                            <h2 className="mt-3">Akun - List</h2>
                         </div>
                         <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
                             {this.state.errorMessage}
@@ -180,7 +180,7 @@ class UserList extends React.Component{
                    <thead className="table-warning">
                         <tr >
                             <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">ID Role</th>
+                            <th className="text-center" scope="col">ID Akun</th>
                             <th className="text-center" scope="col">Nama Akun</th>
                             <th className="text-center" scope="col">Role</th>
                             <th className="text-center" scope="col">Status</th>
