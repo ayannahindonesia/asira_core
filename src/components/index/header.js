@@ -155,7 +155,7 @@ class Example extends React.Component {
             { checkPermission('User_Add','User_List') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
-                  <label><i className="fas fa-user"></i> User </label>
+                  <label><i className="fas fa-user"></i> Akun </label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
                   { checkPermission('User_Add') && <Link to="/tambahUser" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
