@@ -42,7 +42,6 @@ class Login extends React.Component{
                 swal("Warning","Username atau Password tidak benar","info")
             }
         }
-        console.log(data)
     
     }
 

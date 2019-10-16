@@ -70,7 +70,6 @@ export async function getTokenGeoFunction(param, next) {
             
         }).catch((err)=>{
             console.log(err.toString())
-            console.log(err.response)
             const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah User'
             param.error = error
             resolve(param);
