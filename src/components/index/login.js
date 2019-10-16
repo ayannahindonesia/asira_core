@@ -7,11 +7,32 @@ import {Redirect} from 'react-router-dom'
 import {keepLogin} from './../../1.actions'
 import {connect} from 'react-redux'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction} from './saga'
+import { getRoleFunction, getPermissionFunction } from '../rolePermission/saga';
+import Cookies from 'universal-cookie';
+
+const cookie = new Cookies()
 
  
 class Login extends React.Component{
-    state={token:"",authData:[],loading:false,tokenClient:'' , isLogin : false}
+    _isMounted = false;
+
+    state = {
+        token:"",
+        authData:[],
+        loading:false,
+        tokenClient:'' , 
+        isLogin : false
+    }
   
+    componentDidMount(){
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+      
     //LOGIN BUTTON
     btnLogin = ()=>{
         this.setState({loading:true})
@@ -32,14 +53,29 @@ class Login extends React.Component{
     } 
 
     postLoginAdmin = async function(param)  {
-        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction)
+        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction, getRoleFunction, getPermissionFunction)
         
         if(data) {
             if(!data.error) {
-                this.setState({loading: false, isLogin: true})
+                let flag = false;
+                let userPermission = [];
+
+                if(data.dataRole && data.dataRole.status && data.dataPermission) {
+                    userPermission = data.dataPermission
+                }
+                
+                const date = new Date();
+                date.setTime(date.getTime() + (data.expires*1000));
+                cookie.set('profileUser',userPermission,{expires: date})
+
+                if(data.dataRole && data.dataRole.system && data.dataRole.system.toString().toLowerCase() === 'core') {
+                    flag = true;
+                }
+
+                this.setState({loading: false, isLogin: flag})
             } else {
                 this.setState({loading : false})
-                swal("Warning","Username atau Password tidak benar","info")
+                swal("Warning",data.error,"info")
             }
         }
     
@@ -69,8 +105,6 @@ class Login extends React.Component{
                 <Redirect to='/' />
             )
         }
-        // alert('masuk')
-       
 
         return (
             <div className="App loginContainer mr-3">

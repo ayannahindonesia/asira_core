@@ -79,7 +79,6 @@ class App extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.location.pathname === '/login' && this.props.location.pathname === '/') {
-      console.log('hit')
       this.getAuth()
     }
     
@@ -117,7 +116,7 @@ class App extends React.Component {
         <ScrollTop>
           <div className="row">
           {
-            kukie.get('profileUser') ? 
+            kukie.get('token') ? 
             <div className="col-2 col-md-3">
               <Header />
             </div>

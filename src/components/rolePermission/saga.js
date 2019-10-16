@@ -211,6 +211,33 @@ export async function getRolePermissionFunction(param, next) {
     
 }
 
+export async function getPermissionFunction(param, next) {
+    return new Promise(async (resolve) => {
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
+          
+        axios.get(serverUrl+`admin/permission?role_id=${param.roleId}`,config)
+        .then((res)=>{
+            const listPermission = res.data && res.data.data ? res.data.data : res.data;
+
+            param.dataPermission = listPermission;
+    
+            if(next) {
+                resolve(next(param));
+            } else {
+                resolve(param);
+            }
+    
+        }).catch((err)=>{
+            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            param.error = error;
+            resolve(param);
+        })
+    });
+    
+}
+
 export async function patchRolePermissionFunction(param) {
     return new Promise(async (resolve) => {
         const config = {
