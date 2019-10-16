@@ -2,11 +2,12 @@ import Cookies from 'universal-cookie';
 import axios from 'axios'
 import { serverUrl } from '../url';
 const cookie = new Cookies()
-const config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-};
+
 export async function AddRoleFunction (param){
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.post(serverUrl+'admin/roles',param,config)
         .then((res)=>{
             resolve(res)
@@ -21,6 +22,9 @@ export async function AddRoleFunction (param){
 
 export async function ListRoleFunction (param){
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         let filter = '';
 
         for(const key in param) {
@@ -40,7 +44,9 @@ export async function ListRoleFunction (param){
 
 export async function DetailRoleFunction (param){
     return new Promise(async (resolve)=>{
-       
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.get(serverUrl+`admin/roles/${param.id}`,config)
         .then((res)=>{
             resolve(res)
@@ -55,6 +61,9 @@ export async function DetailRoleFunction (param){
 
 export async function EditRoleFunction (param){
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.patch(serverUrl+`admin/roles/${param.id}`,param.newData,config)
         .then((res)=>{
             resolve(res)

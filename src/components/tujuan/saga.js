@@ -3,9 +3,7 @@ import axios from 'axios'
 import { serverUrl } from '../url';
 
 const cookie = new Cookies()
-const config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-  };
+
 export async function TujuanAddFunction(param){
     return new Promise(async (resolve) => {
         const config = {
@@ -26,7 +24,9 @@ export async function TujuanAddFunction(param){
 
 export async function TujuanListFunction(param) {
     return new Promise(async (resolve)=>{
-        
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+          };
         let filter = '';
 
         for(const key in param) {
@@ -47,7 +47,9 @@ export async function TujuanListFunction(param) {
 
 export async function TujuanDetailFunction (param){
     return new Promise(async (resolve)=>{
-  
+            const config = {
+                headers: {'Authorization': "Bearer " + cookie.get('token')}
+            };
             axios.get(serverUrl+`admin/loan_purposes/${param.id}`,config)
             .then((res)=>{
                 resolve(res.data)
@@ -63,6 +65,9 @@ export async function TujuanDetailFunction (param){
 
 export async function TujuanEditFunction (param){
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.patch(serverUrl+`admin/loan_purposes/${param.id}`,param.newData,config)
         .then((res)=>{
             resolve(res)
