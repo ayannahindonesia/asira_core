@@ -57,6 +57,7 @@ class Login extends React.Component{
         
         if(data) {
             if(!data.error) {
+                let flag = false;
                 let userPermission = [];
 
                 if(data.dataRole && data.dataRole.status && data.dataPermission) {
@@ -67,7 +68,11 @@ class Login extends React.Component{
                 date.setTime(date.getTime() + (data.expires*1000));
                 cookie.set('profileUser',userPermission,{expires: date})
 
-                this.setState({loading: false, isLogin: true})
+                if(data.dataRole && data.dataRole.system && data.dataRole.system.toString().toLowerCase() === 'core') {
+                    flag = true;
+                }
+
+                this.setState({loading: false, isLogin: flag})
             } else {
                 this.setState({loading : false})
                 swal("Warning",data.error,"info")
