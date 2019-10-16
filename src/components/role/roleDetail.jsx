@@ -1,26 +1,40 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import { serverUrl } from './url';
-import Axios from 'axios';
+import { DetailRoleFunction } from './saga';
 const cookie = new Cookies()
 
 class RoleDetail extends React.Component{
-    state= {diklik:false,rows:[]}
-    componentDidMount =()=>{
+    _isMounted = false;
+    state= {diklik:false,rows:[],errorMessage:''}
+ 
+    componentDidMount(){
+        this._isMounted=true;
         this.getDetailLayanan()
     }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    
     getDetailLayanan = () =>{
-        var id = this.props.match.params.id
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        Axios.get(serverUrl+`admin/roles/${id}`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({loading:false,rows:res.data})
-        })
-        .catch((err)=>console.log(err))
+        const id = this.props.match.params.id
+        const param ={
+            id,
+        }
+        this.detailRole(param)
+
+    }
+
+    detailRole = async function (params) {
+        const data = await DetailRoleFunction(params);
+        if(data){
+            if(!data.error){
+                this.setState({rows:data.data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
     }
     btnBack = ()=>{
         this.setState({diklik:true})

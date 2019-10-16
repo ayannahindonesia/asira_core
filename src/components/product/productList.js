@@ -1,32 +1,39 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
-import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { serverUrl } from './url';
-import axios from 'axios'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { listProductFunction } from './saga';
+import {checkPermission} from './../global/globalFunction'
+import { Redirect } from 'react-router-dom'
+
 const cookie = new Cookies()
 
 class ProductList extends React.Component{
-
+    _isMounted = false;
     state={
         loading:true
     }
-
+    componentWillUnmount() {
+        this._isMounted = false;
+      }
     componentDidMount (){
+        this._isMounted = true;
         this.getAllProduct()
     }
-    getAllProduct = ()=>{
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
+    getAllProduct = async function () {
+        const params ={
 
-        axios.get(serverUrl+`admin/products`,config)
-        .then((res)=>{
-            this.setState({loading:false,rows:res.data.data})
-        })
-        .catch((err)=>console.log(err))
+        }
+        const data = await listProductFunction (params)
+        if(data){
+            if(!data.error){
+                this.setState({loading:false,rows:data.data.data})
+            }else{
+                console.log(data.error)
+            }
+        }
     }
+
     renderJSX = () => {
         if (this.state.loading){
             return  (
@@ -57,9 +64,12 @@ class ProductList extends React.Component{
                         <td align="center">{val.name}</td>
                         <td align="center">{val.status ==="active"?"Aktif":"Tidak Aktif"}</td>               
                         <td align="center">
+                      
+                         {checkPermission('ServiceProduct_Edit') &&
                         <Link to={`/productedit/${val.id}`} className="mr-2">
-                         <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                         </Link>
+                        <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                        </Link>
+                        }
                         <Link to={`/productdetail/${val.id}`} >
                          <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                     </Link>

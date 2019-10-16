@@ -1,18 +1,25 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios'
-import { serverUrl } from './url';
 import swal from 'sweetalert'
+import { AddRoleFunction } from './saga';
 
 const cookie = new Cookies()
 
 class RoleAdd extends React.Component{
+    _isMounted = false;
     state = {
         diKlik:false,
         errorMessage:'',
-        check:false
+        check:false,
+        submit:false
        };
+    componentDidMount(){
+        this._isMounted = true;
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
     btnCancel = ()=>{
         this.setState({diKlik:true})
@@ -31,17 +38,30 @@ class RoleAdd extends React.Component{
         }else if(system === "0" ){
             this.setState({errorMessage:"Sistem Role Kosong - Harap Cek Ulang"})            
         }else{
+            this.setState({submit:true})
             var newData = {name,system,description,status}
-            var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-            axios.post(serverUrl+'admin/roles',newData,config)
-            .then((res)=>{
-                swal("Success","Role berhasil di tambah","success")
-                this.setState({diKlik:true})
-            })
-            .catch((err)=>{
-                console.log(err.response)
-            })
+            this.addRole(newData)
          
+        }
+    }
+    
+    addRole = async function (params) {
+        const data  = await AddRoleFunction(params)
+        if(data){
+            if(!data.error){
+                swal("Success","Role berhasil di tambah","success")
+                this.setState({diKlik:true,submit:false})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
+    }
+   
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-success" value="Simpan" onClick={this.btnSave} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-success" value="Simpan" onClick={this.btnSave}/>
         }
     }
     handleChecked = () =>{
@@ -102,7 +122,7 @@ class RoleAdd extends React.Component{
 
                             <div className="form-group row">
                             <div className="col-sm-12 ml-3 mt-3">
-                                                <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnSave}/>
+                                                {this.renderBtnSumbit()}
                                                 <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                              </div></div>
                     </div>

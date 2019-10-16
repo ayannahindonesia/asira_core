@@ -1,19 +1,17 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import { serverUrl } from './url';
-import Axios from 'axios';
 import swal from 'sweetalert'
+import { EditRoleFunction, DetailRoleFunction } from './saga';
 const cookie = new Cookies()
-var config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-};
+
 class RoleEdit extends React.Component{
     state = {
         diKlik:false,
         dataRole:'',
         check:true
     };
+    _isMounted = false;
     btnCancel = ()=>{
         this.setState({diKlik:true})
     }
@@ -21,19 +19,29 @@ class RoleEdit extends React.Component{
         this.setState({errorMessage:newProps.error})
     }
     componentDidMount(){
+        this._isMounted = true;
         this.getRoleById()
     }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     getRoleById = ()=>{
-        var id = this.props.match.params.id
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-        };
-        Axios.get(serverUrl+`admin/roles/${id}`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({dataRole:res.data,check:res.data.status})
-        })
-        .catch((err)=> console.log(err))
+        const id = this.props.match.params.id
+        const param ={id}
+        this.getDetailRoleByID(param)
+
+    }
+    getDetailRoleByID = async function (params) {
+        const data = await DetailRoleFunction (params)
+        if(data){
+            if(data.error){
+                this.setState({errorMessage:data.error})
+            }else{
+                this.setState({dataRole:data.data,check:data.data.status})
+            }
+        }
 
     }
     btnEdit = ()=>{
@@ -41,14 +49,32 @@ class RoleEdit extends React.Component{
         var description = this.refs.deskripsi.value ?  this.refs.deskripsi.value :  this.refs.deskripsi.placeholder
         var status =  this.state.check
         //status ? status= "active": status= "inactive"
-                var newData = {description,status}
-                Axios.patch(serverUrl+`admin/roles/${id}`,newData,config)
-                .then((res)=>{
-                    swal("Success","Role berhasil di Edit","success")
-                    this.setState({diKlik:true})
-                })
-                .catch((err)=>{console.log(err)})
-      
+        var newData = {description,status}
+        const param = {
+            id,newData
+        }
+        this.setState({submit:true})
+        this.editRole(param)
+    }
+
+    editRole = async function (params) {
+        const data = await EditRoleFunction(params)
+        if(data){
+            if(data.error){
+                this.setState({errorMessage:data.error,submit:false})
+            }else{
+                swal("Success","Role berhasil di Edit","success")
+                this.setState({diKlik:true,submit:false})
+            }
+        }
+    }
+    
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-success" value="Simpan" onClick={this.btnEdit} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-success" value="Simpan" onClick={this.btnEdit}/>
+        }
     }
     handleChecked = () =>{
         this.setState({check:!this.state.check})
@@ -103,7 +129,7 @@ class RoleEdit extends React.Component{
 
                             <div className="form-group row">
                             <div className="col-sm-12 ml-3 mt-3">
-                                                <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnEdit}/>
+                                                {this.renderBtnSumbit()}
                                                 <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                              </div></div>
                     </div>
