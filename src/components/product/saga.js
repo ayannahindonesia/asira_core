@@ -1,15 +1,13 @@
 import axios from 'axios'
 import Cookie from 'universal-cookie'
 import {serverUrl} from '../url'
-
-
 const cookie = new Cookie()
-const config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-};
 
 export async function getBankServiceFunction(param){
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.get(serverUrl+'admin/services',config)
         .then((res)=>{
             resolve(res)
@@ -24,6 +22,9 @@ export async function getBankServiceFunction(param){
 
 export async function addProductFunction(param){
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.post(serverUrl+'admin/products',param,config)
         .then((res)=>{
             resolve(res)
@@ -38,6 +39,9 @@ export async function addProductFunction(param){
 
 export async function listProductFunction (param){
     return new Promise (async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         let filter = '';
 
         for(const key in param) {
@@ -59,7 +63,9 @@ export async function listProductFunction (param){
 
 export async function detailProductFunction(param,next) {
     return new Promise(async (resolve)=>{
-        
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.get(serverUrl+`admin/products/${param.id}`,config)
         .then((res)=>{
             param.dataProduct = res.data
@@ -79,6 +85,9 @@ export async function detailProductFunction(param,next) {
 
 export async function detailServiceProductFunction(param,next) {
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.get(serverUrl+`admin/services/${param.dataProduct.service_id}`,config)
         .then((res)=>{
             const data = res.data && res.data.data ? res.data.data : res.data;
@@ -98,6 +107,9 @@ export async function detailServiceProductFunction(param,next) {
 
 export async function editProductFunction (param) {
     return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + cookie.get('token')}
+        };
         axios.patch(serverUrl+`admin/products/${param.id}`,param.newData,config)
         .then((res)=>{
           resolve(res)
