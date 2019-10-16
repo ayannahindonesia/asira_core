@@ -2,11 +2,10 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Select from 'react-select';
-import './../support/css/productAdd.css'
+import './../../support/css/productAdd.css'
 import NumberFormat from 'react-number-format';
-import axios from 'axios'
-import {serverUrl} from './url'
 import swal from 'sweetalert'
+import { addProductFunction, getBankServiceFunction} from './saga';
 
 const cookie = new Cookies()
 const options = [
@@ -36,163 +35,172 @@ const customStyles = {
  
 
 class ProductAdd extends React.Component{
+    _isMounted = false;
     state = {
-        selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,
-        bankService:[],diKlik:false,check:false,submit:false
-      };
+    selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,
+    bankService:[],diKlik:false,check:false,submit:false
+    };
 
-      componentDidMount(){
-          this.getBankService()
-      }
-      handleChange = (selectedOption) => {
+    componentDidMount(){
+        this._isMounted=true;
+        this.getBankService()
+    }
+    componentWillReceiveProps(newProps){
+        this.setState({errorMessage:newProps.error})
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    handleChange = (selectedOption) => {
         this.setState({ selectedOption });
         console.log(`Option selected:`, selectedOption);
-      };
+    };
 
-      btnSaveProduct = ()=>{
-        var i
-        var fees= []
-       
-        var name = this.refs.namaProduct.value
-        var min_timespan = parseInt(this.refs.jangkaWaktuDari.value)
-        var max_timespan = parseInt(this.refs.jangkaWaktuSampai.value)
-        var interest = this.refs.imbalHasil.value ? parseInt(this.refs.imbalHasil.value) : parseInt(this.refs.imbalHasil.placeholder)
-        var min_loan = parseInt(this.state.rentangDari)
-        var max_loan = parseInt(this.state.rentangAkhir) 
-        var adminfee = this.refs.adminFee.value ? this.refs.adminFee.value : this.refs.adminFee.placeholder
-      
-        var asn_fee = this.refs.convinienceFee.value ? this.refs.convinienceFee.value : this.refs.convinienceFee.placeholder
-        var service_id = parseInt(this.refs.layanan.value)
-        
-        var status =  this.state.check?"active":"inactive"
-        var assurance =  document.querySelector('.asuransi').checked;
-        var otheragunan =  document.querySelector('.otheragunan').checked;
-       
-        assurance = assurance ? assurance = this.refs.asuransi.value : assurance=""
-        otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan =""
+    btnSaveProduct = ()=>{
+    var i
+    var fees= []
     
-        if(name==="" || name.trim()===""){
-            this.setState({errorMessage:"Nama Product Kosong"})
-        }else if (interest>200){
-            this.setState({errorMessage:"Imbal Hasil tidak boleh lebih dari 200% - Harap cek ulang"})
-        }else if(min_timespan==="0" || max_timespan==="0"){
-            this.setState({errorMessage:"Jangka Waktu Kosong"})
-        }else if(parseInt(min_timespan) > parseInt(max_timespan)){
-            this.setState({errorMessage:"Jangka Waktu dari lebih besar - Harap cek ulang"})
-        }
-        else if(parseFloat(interest)<0 || parseInt(interest)===0){
-            this.setState({errorMessage:"Imbal Hasil tidak bole minus/ kosong - Harap cek ulang"})
-        }else if(parseInt(min_loan) > parseInt(max_loan) || parseInt(min_loan) === parseInt(max_loan) ){
-            this.setState({errorMessage:"Rentang Pengajuan tidak benar - Harap cek ulang"})
-        }else if(parseFloat(adminfee) <0){
-            this.setState({errorMessage:"Admin Fee tidak benar - Harap cek ulang"})
-        }else if(parseFloat(adminfee) >100){
-            this.setState({errorMessage:"Admin Fee lebih dari 100% - Harap cek ulang"})
-        }else if(parseFloat(asn_fee) <0){
-            this.setState({errorMessage:"Convinience Fee tidak boleh minus - Harap cek ulang"})
-        }else if(parseFloat(asn_fee) >100){
-            this.setState({errorMessage:"Convinience Fee lebih dari 100% - Harap cek ulang"})
-        }else if(parseInt(service_id)===0){
-            this.setState({errorMessage:"Layanan belum terpilih - Harap cek ulang"})
-        }else if(this.state.selectedOption===null){
-            this.setState({errorMessage:"Sektor Pembiayaan belum terpilih - Harap cek ulang"})
-        }else if(isNaN(asn_fee)){
-            this.setState({errorMessage:"Convience Fee harus angka atau jika desimal menggunakan titik (.) Contoh: 2.00 - Harap cek ulang"})
-        }
-        else if(isNaN(adminfee)){
-            this.setState({errorMessage:"Admin Fee harus angka atau jika desimal menggunakan titik (.) Contoh: 2.00 - Harap cek ulang"})
-        }
-        else{
-            this.setState({submit:true})
+    var name = this.refs.namaProduct.value
+    var min_timespan = parseInt(this.refs.jangkaWaktuDari.value)
+    var max_timespan = parseInt(this.refs.jangkaWaktuSampai.value)
+    var interest = this.refs.imbalHasil.value ? parseInt(this.refs.imbalHasil.value) : parseInt(this.refs.imbalHasil.placeholder)
+    var min_loan = parseInt(this.state.rentangDari)
+    var max_loan = parseInt(this.state.rentangAkhir) 
+    var adminfee = this.refs.adminFee.value ? this.refs.adminFee.value : this.refs.adminFee.placeholder
+    
+    var asn_fee = this.refs.convinienceFee.value ? this.refs.convinienceFee.value : this.refs.convinienceFee.placeholder
+    var service_id = parseInt(this.refs.layanan.value)
+    
+    var status =  this.state.check?"active":"inactive"
+    var assurance =  document.querySelector('.asuransi').checked;
+    var otheragunan =  document.querySelector('.otheragunan').checked;
+    
+    assurance = assurance ? assurance = this.refs.asuransi.value : assurance=""
+    otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan =""
 
-            fees.push({
-                "description": "Admin Fee",
-                "amount":`${adminfee}%`
-            },
-            {
-                "description": "Convenience Fee",
-                "amount":`${asn_fee}%`
-            })
-           
+    if(name==="" || name.trim()===""){
+        this.setState({errorMessage:"Nama Product Kosong"})
+    }else if (interest>200){
+        this.setState({errorMessage:"Imbal Hasil tidak boleh lebih dari 200% - Harap cek ulang"})
+    }else if(min_timespan==="0" || max_timespan==="0"){
+        this.setState({errorMessage:"Jangka Waktu Kosong"})
+    }else if(parseInt(min_timespan) > parseInt(max_timespan)){
+        this.setState({errorMessage:"Jangka Waktu dari lebih besar - Harap cek ulang"})
+    }
+    else if(parseFloat(interest)<0 || parseInt(interest)===0){
+        this.setState({errorMessage:"Imbal Hasil tidak bole minus/ kosong - Harap cek ulang"})
+    }else if(parseInt(min_loan) > parseInt(max_loan) || parseInt(min_loan) === parseInt(max_loan) ){
+        this.setState({errorMessage:"Rentang Pengajuan tidak benar - Harap cek ulang"})
+    }else if(parseFloat(adminfee) <0){
+        this.setState({errorMessage:"Admin Fee tidak benar - Harap cek ulang"})
+    }else if(parseFloat(adminfee) >100){
+        this.setState({errorMessage:"Admin Fee lebih dari 100% - Harap cek ulang"})
+    }else if(parseFloat(asn_fee) <0){
+        this.setState({errorMessage:"Convinience Fee tidak boleh minus - Harap cek ulang"})
+    }else if(parseFloat(asn_fee) >100){
+        this.setState({errorMessage:"Convinience Fee lebih dari 100% - Harap cek ulang"})
+    }else if(parseInt(service_id)===0){
+        this.setState({errorMessage:"Layanan belum terpilih - Harap cek ulang"})
+    }else if(this.state.selectedOption===null){
+        this.setState({errorMessage:"Sektor Pembiayaan belum terpilih - Harap cek ulang"})
+    }else if(isNaN(asn_fee)){
+        this.setState({errorMessage:"Convience Fee harus angka atau jika desimal menggunakan titik (.) Contoh: 2.00 - Harap cek ulang"})
+    }
+    else if(isNaN(adminfee)){
+        this.setState({errorMessage:"Admin Fee harus angka atau jika desimal menggunakan titik (.) Contoh: 2.00 - Harap cek ulang"})
+    }
+    else{
+        this.setState({submit:true})
 
-               //===========CODING BAGIAN SEKTOR PEMBIAYAAN
-
-                    var financing_sector = []
-                    for ( i=0 ; i < this.state.selectedOption.length; i++){
-                        financing_sector.push(this.state.selectedOption[i].value)
-                    }
-
-
-                //======= CODING BAGIAN AGUNAN
-                    var collaterals =[]
-                    var agunan = document.querySelectorAll('.agunan:checked')
-                    
-
-                    for ( i = 0; i < agunan.length; i++) {
-                        collaterals.push(agunan[i].value)   
-                    }
-                   
-                    if (otheragunan){
-                        collaterals.push(otheragunan)
-                    }
-
-                //====== BIKIN AGUNAN INDEX TERAKHIR JADI YANG PERTAMA BUAT EDIT NYA
-                    collaterals.reverse()
-                    
-            var newData = {
-                name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,service_id,collaterals,financing_sector,assurance,status
-            }
-            var config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-            };
-            axios.post(serverUrl+'admin/products',newData,config)
-            .then((res)=>{
-                console.log(res.data)
-                swal("Berhasil","Produk berhasil bertambah","success")
-                this.setState({errorMessage:null,diKlik:true,submit:false})
-            })
-            .catch((err)=>{
-                console.log(err)
-                this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})
-            })
-       }
-      }
-      renderBtnSumbit =()=>{
-        if( this.state.submit) {
-         return <input type="button" disabled className="btn btn-success" value="Simpan" onClick={this.btnSaveProduct} style={{cursor:"wait"}}/>
-        }else{
-        return <input type="button" className="btn btn-success" value="Simpan" onClick={this.btnSaveProduct}/>
-        }
-     }
-      getBankService = ()=>{
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        axios.get(serverUrl+'admin/services',config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({bankService:res.data.data})
+        fees.push({
+            "description": "Admin Fee",
+            "amount":`${adminfee}%`
+        },
+        {
+            "description": "Convenience Fee",
+            "amount":`${asn_fee}%`
         })
-        .catch((err)=> console.log(err))
-      }
+        
 
-      renderBankService = ()=>{
-          var jsx = this.state.bankService.map((val,index)=>{
-                 return   (<option key={index} value={val.id}>{val.name}</option>)
-          })
-          return jsx;
-      }
+            //===========CODING BAGIAN SEKTOR PEMBIAYAAN
 
-      btnCancel = ()=>{
-        this.setState({diKlik:true})
-      }
+                var financing_sector = []
+                for ( i=0 ; i < this.state.selectedOption.length; i++){
+                    financing_sector.push(this.state.selectedOption[i].value)
+                }
 
-      componentWillReceiveProps(newProps){
-        this.setState({errorMessage:newProps.error})
-       }
-       handleChecked = ()=>{
-        this.setState({check:!this.state.check})
-       }
+
+            //======= CODING BAGIAN AGUNAN
+                var collaterals =[]
+                var agunan = document.querySelectorAll('.agunan:checked')
+                
+
+                for ( i = 0; i < agunan.length; i++) {
+                    collaterals.push(agunan[i].value)   
+                }
+                
+                if (otheragunan){
+                    collaterals.push(otheragunan)
+                }
+
+            //====== BIKIN AGUNAN INDEX TERAKHIR JADI YANG PERTAMA BUAT EDIT NYA
+                collaterals.reverse()
+                
+        var newData = {
+            name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,service_id,collaterals,financing_sector,assurance,status
+        }
+        
+        this.productAddBtn(newData)
+    }
+    }
+
+    productAddBtn = async function (params) {
+        const data = await addProductFunction(params)
+        if(data){
+            if(!data.error){
+            swal("Berhasil","Produk berhasil bertambah","success")
+            this.setState({errorMessage:null,diKlik:true,submit:false})
+            }else{
+            this.setState({errorMessage:data.error,submit:false})
+            }
+        }
+    }
+      
+    
+    getBankService = async function (params) {
+        const data = await getBankServiceFunction(params)
+        if(data){
+            if(!data.error){
+                    this.setState({bankService:data.data.data})
+            }else{
+                    this.setState({errorMessage:data.error})
+            }
+        }
+    }
+
+    renderBankService = ()=>{
+        var jsx = this.state.bankService.map((val,index)=>{
+                return   (<option key={index} value={val.id}>{val.name}</option>)
+        })
+        return jsx;
+    }
+
+    btnCancel = ()=>{
+    this.setState({diKlik:true})
+    }
+
+    handleChecked = ()=>{
+    this.setState({check:!this.state.check})
+    }
+
+    renderBtnSumbit =()=>{
+    if( this.state.submit) {
+        return <input type="button" disabled className="btn btn-success" value="Simpan" onClick={this.btnSaveProduct} style={{cursor:"wait"}}/>
+    }else{
+    return <input type="button" className="btn btn-success" value="Simpan" onClick={this.btnSaveProduct}/>
+    }
+    }
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listproduct'/>            

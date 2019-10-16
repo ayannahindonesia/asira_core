@@ -1,49 +1,27 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios'
-import {serverUrl} from './url'
 import NumberFormat from 'react-number-format';
+import { detailProductFunction, detailServiceProductFunction } from './saga';
 const cookie = new Cookies()
 
 class ProductDetail extends React.Component{
-    state = {rows:[],fees:[ {
-        "description": "Admin Fee",
-        "amount": "2500"
-      }, {
-        "description": "Admin Fee",
-        "amount": "2500"
-      }],collaterals:["c","d","s"],financing_sector:["a","b","c"],layanan:""}
+    state = {rows:[],fees:[],collaterals:[],financing_sector:[],layanan:""}
     componentDidMount(){
         this.getDetailProduct()
      
     }
-    getDetailProduct = ()=>{
+    getDetailProduct = async function () {
         var id = this.props.match.params.id
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-     
-      axios.get(serverUrl+`admin/products/${id}`,config)
-        .then((res)=>{
-            this.setState({rows:res.data,fees:res.data.fees,collaterals:res.data.collaterals,financing_sector:res.data.financing_sector})
+        const data  = await detailProductFunction({id},detailServiceProductFunction)
 
-            if (this.state.rows.service !== undefined || this.state.rows.service !== null){
-                var layananid = this.state.rows.service_id
-                var config = {
-                    headers: {'Authorization': "Bearer " + cookie.get('token')}
-                  };
-                
-                  axios.get(serverUrl+`admin/services/${layananid}`,config)
-                .then((res)=>{
-                    this.setState({layanan:res.data.name})
-                })
-                .catch((err)=>console.log(err)) 
+        if(data){
+            if(!data.error){
+                this.setState({layanan:data.serviceProduct.name,rows:data.dataProduct,fees:data.dataProduct.fees,collaterals:data.dataProduct.collaterals,financing_sector:data.dataProduct.financing_sector})
+            }else{
+                console.log(data.error)
             }
-
-        })
-        .catch((err)=>console.log(err)) 
-    
+        }
     }
   
     renderAdminFee = ()=>{
@@ -99,19 +77,19 @@ class ProductDetail extends React.Component{
                             </div>
                         </div>
                     </form>
-                    <form>
+                   
                         {this.state.fees.length === 0 ? 
                             
                             <form>
-                        <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Admin Fee</label>
-                            <div className="col-sm-8">
-                            : -
-                            </div>
-                        </div>
-                    </form>
-                            :this.renderAdminFee()}
-                    </form>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Admin Fee</label>
+                                    <div className="col-sm-8">
+                                    : -
+                                    </div>
+                                </div>
+                            </form>
+                            : this.renderAdminFee()}
+                   
                     <form>
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Layanan</label>
