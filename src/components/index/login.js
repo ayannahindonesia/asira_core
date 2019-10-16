@@ -14,8 +14,25 @@ const cookie = new Cookies()
 
  
 class Login extends React.Component{
-    state={token:"",authData:[],loading:false,tokenClient:'' , isLogin : false}
+    _isMounted = false;
+
+    state = {
+        token:"",
+        authData:[],
+        loading:false,
+        tokenClient:'' , 
+        isLogin : false
+    }
   
+    componentDidMount(){
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+      
     //LOGIN BUTTON
     btnLogin = ()=>{
         this.setState({loading:true})
@@ -39,7 +56,6 @@ class Login extends React.Component{
         const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction, getRoleFunction, getPermissionFunction)
         
         if(data) {
-            console.log(data)
             if(!data.error) {
                 let userPermission = [];
 
@@ -84,8 +100,6 @@ class Login extends React.Component{
                 <Redirect to='/' />
             )
         }
-        // alert('masuk')
-       
 
         return (
             <div className="App loginContainer mr-3">
