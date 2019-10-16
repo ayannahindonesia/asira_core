@@ -61,7 +61,7 @@ export function checkPermission(stringPermission, stringPermissionSecond) {
   const listPermission = newCookie.get('profileUser');
 
   for(const key in listPermission) {
-    if(listPermission[key].permissions.toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
+    if(stringPermission && listPermission[key].permissions.toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
       flag = true;
       break;
     } else if(stringPermissionSecond && listPermission[key].permissions.toString().toLowerCase() === stringPermissionSecond.toString().toLowerCase()) {
