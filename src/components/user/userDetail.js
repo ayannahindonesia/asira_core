@@ -157,7 +157,7 @@ class UserDetail extends React.Component{
                         :
                       </label>
                       <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.password}
+                        ********
                       </label>               
                     </div>
 
