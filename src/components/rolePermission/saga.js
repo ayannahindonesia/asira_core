@@ -17,10 +17,10 @@ export async function getAllRoleFunction(param, next){
             filter += `&${key}=${param[key]}`
         }
 
-        const urlNew = serverUrl+`admin/roles?orderby=updated_time&sort=desc${filter}`
+        const urlNew = serverUrl+`admin/roles_all?orderby=updated_time&sort=desc${filter}`
 
         axios.get(urlNew,config).then((res)=>{
-            const listRole = res.data && res.data.data
+            const listRole = res.data && res.data.data ? res.data.data : res.data
             param.dataRole = listRole;
 
             if(next) {

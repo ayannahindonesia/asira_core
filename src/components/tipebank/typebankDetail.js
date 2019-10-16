@@ -1,13 +1,13 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrlBorrower} from './url'
+import {serverUrl} from '../url'
 
 import axios from 'axios'
 
 const cookie = new Cookies()
 
-class TujuanDetail extends React.Component{
+class TypeBankDetail extends React.Component{
     state = {rows:{}}
     componentDidMount(){
         this.getTypeBankDetail()
@@ -20,7 +20,7 @@ class TujuanDetail extends React.Component{
                 headers: {'Authorization': "Bearer " + cookie.get('token')}
               };
           
-            axios.get(serverUrlBorrower+`admin/loan_purposes/${id}`,config)
+            axios.get(serverUrl+`admin/bank_types/${id}`,config)
             .then((res)=>{
                 console.log(res.data)
                 this.setState({rows:res.data})
@@ -32,19 +32,19 @@ class TujuanDetail extends React.Component{
         if(cookie.get('token')){
             return(
                 <div className="container">
-                   <h2>Tujuan Pembiayaan - Detail</h2>
+                   <h2>Tipe Bank - Detail</h2>
                    <hr/>
                    
                    <form>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">ID Tujuan Pembiayaan</label>
+                            <label className="col-sm-4 col-form-label">ID Tipe Bank</label>
                             <div className="col-sm-8">
                             : {this.state.rows.id}
 
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Tujuan Pembiayaan</label>
+                            <label className="col-sm-4 col-form-label">Nama Tipe Bank</label>
                             <div className="col-sm-8">
                             : {this.state.rows.name}
                             
@@ -52,9 +52,9 @@ class TujuanDetail extends React.Component{
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Status</label>
+                            <label className="col-sm-4 col-form-label">Deskripsi</label>
                             <div className="col-sm-8">
-                            : {this.state.rows.status==="active"?"Aktif":"Tidak Aktif"}
+                            : {this.state.rows.description}
                         
                             </div>
                         </div>
@@ -81,4 +81,4 @@ class TujuanDetail extends React.Component{
     }
 }
 
-export default TujuanDetail;
+export default TypeBankDetail;
