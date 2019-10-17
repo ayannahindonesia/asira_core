@@ -178,7 +178,7 @@ class App extends React.Component {
 
                   { checkPermission('Report_List') && <Route path='/report' component={Report}></Route>}
 
-                  {newLs.get(md5('token')) ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
+                  {newLs.get(md5('tokenAuth')) ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
                   <Route path='*' component={PageNotFound} />
             </Switch>
