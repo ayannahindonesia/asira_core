@@ -1,59 +1,67 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios'
-import {serverUrl} from '../url'
 import swal from 'sweetalert'
+import { DetailTipeBankFunction,EditTipeBankFunction } from './saga';
+
 const cookie = new Cookies()
 
 class TypeBankEdit extends React.Component{
-    state={diKlik:false,errorMessage:'',rows:[]}
+    state={diKlik:false,errorMessage:'',rows:[],submit:false}
+    _isMounted = false
     
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error,rows:[]})
     }
     componentDidMount(){
+        this._isMounted = true;
         this.getDataBankTypebyID()
     }
-
-    getDataBankTypebyID = ()=>{
-        var id = this.props.match.params.id
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-        };
-    
-        axios.get(serverUrl+`admin/bank_types/${id}`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({rows:res.data})  
-        })
-        .catch((err)=>{
-            swal("Gagal","Terjadi kesalahan - Coba Ulang Kembali","error")                
-            console.log(err)
-        })
+    componentWillUnmount() {
+        this._isMounted = false;
     }
-
+    getDataBankTypebyID = async function (){
+        var id = this.props.match.params.id
+        const param = {id}
+        const data = await DetailTipeBankFunction(param)
+        if(data){
+            if(!data.error){
+                this.setState({rows:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnUpdate} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnUpdate}/>
+        }
+    }
     btnUpdate=()=>{
         var name= this.refs.typebank.value
         var description = this.refs.deskripsi.value ? this.refs.deskripsi.value :this.refs.deskripsi.placeholder
         var id = this.props.match.params.id
-
-            var config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-            };
-            var newData={name,description}
-            axios.patch(serverUrl+`admin/bank_types/${id}`,newData,config)
-            .then((res)=>{
-                console.log(res)
-                this.setState({diKlik:true,errorMessage:""})
-                swal("Success","Tipe Bank Berhasil di Ubah","success")
-            })
-            .catch((err)=>{
-                swal("Gagal","Tipe Bank Gagal di Ubah - Coba Ulang Kembali","error")                
-                console.log(err)
-            })
+        this.setState({submit:true})
+        var newData={name,description}
+        const params = {id,newData}
+        this.EditTypeBankBtn(params)
     }
 
+    EditTypeBankBtn = async function (params) {
+        const data = await EditTipeBankFunction(params)
+        if(data){
+            if(!data.error){
+                swal("Success","Bank Type berhasil di ubah","success")              
+                this.setState({diKlik:true,errorMessage:'',submit:false})
+            }else{
+                this.setState({submit:false,errorMessage:data.error})
+            }
+        }
+
+        
+    }
     btnCancel =()=>{
         this.setState({diKlik:true})
     }
@@ -91,7 +99,7 @@ class TypeBankEdit extends React.Component{
                                                 </div>
                      </div>
                     <div className="form-group row">
-                                                <input type="button" value="Ubah" className="btn btn-success" onClick={this.btnUpdate}/>
+                                                {this.renderBtnSumbit()}
                                                 <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                       </div>
 

@@ -1,16 +1,22 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios'
-import {serverUrl} from './../url'
 import swal from 'sweetalert'
+import { AddTipeBankFunction } from './saga';
 const cookie = new Cookies()
 
 class TypeBank extends React.Component{
-    state={diKlik:false,errorMessage:''}
+    _isMounted = false;
+    state={diKlik:false,errorMessage:'',submit:false}
     
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
+    }
+    componentDidMount(){
+        this._isMounted = true;
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     btnSave=()=>{
@@ -20,23 +26,30 @@ class TypeBank extends React.Component{
         if (name ===""||name.trim()===""){
             this.setState({errorMessage:"Nama Tipe Bank Kosong - Harap cek ulang"})
         }else{
-            var config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-            };
+            this.setState({submit:true})
             var newData={name,description}
-            axios.post(serverUrl+`admin/bank_types`,newData,config)
-            .then((res)=>{
-                console.log(res)
-                this.setState({diKlik:true,errorMessage:""})
-                swal("Success","Tipe Bank Berhasil di Tambah","success")
-            })
-            .catch((err)=>{
-                swal("Gagal","Tipe Bank Gagal di Tambah - Coba Ulang Kembali","error")                
-                console.log(err)
-            })
+            this.AddTypeBank(newData)
         }
     }
 
+    AddTypeBank = async function (params) {
+        const data = await AddTipeBankFunction(params)
+        if(data){
+            if(!data.error){
+                this.setState({submit:false,diKlik:true,errorMessage:""})
+                swal("Success","Tipe Bank Berhasil di Tambah","success")
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
+    }
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+         return <input type="button" disabled className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSave} style={{cursor:"wait"}}/>
+        }else{
+        return <input type="button" className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSave}/>
+        }
+    }
     btnCancel =()=>{
         this.setState({diKlik:true})
     }
@@ -68,7 +81,7 @@ class TypeBank extends React.Component{
                                                 </div>
                      </div>
                     <div className="form-group row">
-                                                <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnSave}/>
+                                                {this.renderBtnSumbit()}
                                                 <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                       </div>
 

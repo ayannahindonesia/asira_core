@@ -22,7 +22,8 @@ class TujuanList extends React.Component{
     }
 
     
-    getAllList = async function (params) {
+    getAllList = async function () {
+        const params = {}
         const data = await TujuanListFunction(params)
 
         if(data){
