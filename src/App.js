@@ -31,12 +31,11 @@ import profileNasabahDetail from './components/profileNasabahDetail'
 import PermintaanPinjaman from './components/permintaanPinjaman'
 import PermintaanPinjamanDetail from './components/permintaanPinjamanDetail'
 
-import ProductAdd from './components/productAdd'
-import ProductList from './components/productList'
-import ProductDetail from './components/productDetail'
+import ProductAdd from './components/product/productAdd'
+import ProductList from './components/product/productList'
+import ProductDetail from './components/product/productDetail'
 
-import ProductEdit from './components/productEdit'
-import Cookies from 'universal-cookie';
+import ProductEdit from './components/product/productEdit'
 import TypeBankAdd from './components/tipebank/typebankAdd'
 import TypeBankList from './components/tipebank/typebankList'
 import TujuanAdd from './components/tujuan/tujuanAdd'
@@ -47,10 +46,10 @@ import TujuanDetail from './components/tujuan/tujuanDetail'
 import TypeBankEdit from './components/tipebank/typebankEdit'
 import TypeBankDetail from './components/tipebank/typebankDetail'
 
-import RoleAdd from './components/roleAdd'
-import RoleList from './components/roleList'
-import RoleDetail from './components/roleDetail'
-import RoleEdit from './components/roleEdit'
+import RoleAdd from './components/role/roleAdd'
+import RoleList from './components/role/roleList'
+import RoleDetail from './components/role/roleDetail'
+import RoleEdit from './components/role/roleEdit'
 
 import Report from './components/report/report'
 import RoleAddPermission from './components/rolePermission/rolePermissionAdd'
@@ -64,8 +63,10 @@ import UserDetail from './components/user/userDetail'
 import UserEdit from './components/user/userEdit'
 
 import axios from 'axios'
-const kukie =new Cookies()
+import SecureLS from 'secure-ls';
+import md5 from 'md5';
 
+const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'}); 
 
 
 class App extends React.Component {
@@ -92,9 +93,8 @@ class App extends React.Component {
           password : 'reactsecret'
         }
     }).then((res)=>{
-        var date = new Date();
-        date.setTime(date.getTime() + (res.data.expires*1000));
-        kukie.set('tokenAuth',res.data.token,{expires: date})
+
+        newLs.set(md5('tokenAuth'), res.data.token);
         
         this.setState({loading : false})   
     }).catch((err)=>{
@@ -116,7 +116,7 @@ class App extends React.Component {
         <ScrollTop>
           <div className="row">
           {
-            kukie.get('token') ? 
+            newLs.get(md5('token')) ? 
             <div className="col-2 col-md-3">
               <Header />
             </div>
@@ -178,7 +178,7 @@ class App extends React.Component {
 
                   { checkPermission('Report_List') && <Route path='/report' component={Report}></Route>}
 
-                  {kukie.get('token') ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
+                  {newLs.get(md5('token')) ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
                   <Route path='*' component={PageNotFound} />
             </Switch>

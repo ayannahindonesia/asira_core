@@ -8,11 +8,9 @@ import {keepLogin} from './../../1.actions'
 import {connect} from 'react-redux'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction} from './saga'
 import { getRoleFunction, getPermissionFunction } from '../rolePermission/saga';
-import Cookies from 'universal-cookie';
+import SecureLS from 'secure-ls';
+import md5 from 'md5';
 
-const cookie = new Cookies()
-
- 
 class Login extends React.Component{
     _isMounted = false;
 
@@ -59,18 +57,32 @@ class Login extends React.Component{
             if(!data.error) {
                 let flag = false;
                 let userPermission = [];
-
+                
                 if(data.dataRole && data.dataRole.status && data.dataPermission) {
-                    userPermission = data.dataPermission
+                    for(const key in data.dataPermission) {
+                        if(data.dataPermission[key].permissions) {
+                            userPermission.push(data.dataPermission[key].permissions)
+                        }                      
+                    }
+
+                    if(data.dataRole.system && data.dataRole.system.toString().toLowerCase() === 'core') {
+                        flag = true;
+                    }
+
                 }
                 
-                const date = new Date();
-                date.setTime(date.getTime() + (data.expires*1000));
-                cookie.set('profileUser',userPermission,{expires: date})
+                const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'});    
+                
 
-                if(data.dataRole && data.dataRole.system && data.dataRole.system.toString().toLowerCase() === 'core') {
-                    flag = true;
+                newLs.set(md5('profileUser'), JSON.stringify(userPermission));
+
+                if(data.dataToken) {
+                    newLs.set(md5('token'), data.dataToken);
                 }
+                if(data.dataGeoToken) {
+                    newLs.set(md5('tokenGeo'), data.dataGeoToken);
+                }
+                
 
                 this.setState({loading: false, isLogin: flag})
             } else {

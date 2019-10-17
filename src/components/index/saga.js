@@ -1,13 +1,18 @@
 import axios from 'axios';
 import { serverUrl, serverUrlGeo } from '../url';
 import Cookies from 'universal-cookie';
+import SecureLS from 'secure-ls';
+import md5 from 'md5';
 
 const cookie = new Cookies()
 
 export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRole, nextPermission) {
-    return new Promise(async (resolve) => {     
+    return new Promise(async (resolve) => { 
+        const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'}); 
+        const tokenAuth = newLs.get(md5('tokenAuth'))    
+        
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('tokenAuth')}
+            headers: {'Authorization': "Bearer " + tokenAuth}
         };
 
         const url = serverUrl + "client/admin_login"
@@ -71,7 +76,6 @@ export async function getTokenGeoFunction(param, next) {
             
         }).catch((err)=>{
             console.log(err.toString())
-            console.log(err.response)
             const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah User'
             param.error = error
             resolve(param);

@@ -43,8 +43,8 @@ class Example extends React.Component {
   logOutBtn =()=>{ 
     kukie.remove("tokenGeo")
     kukie.remove("token")
-    kukie.remove("tokenAuth")
-    kukie.remove('profileUser')
+    
+    localStorage.clear();
     this.setState({isLogin:true})
   }
   
