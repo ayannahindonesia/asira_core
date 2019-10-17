@@ -1,33 +1,38 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrl} from '../url'
-
-import axios from 'axios'
+import { DetailTipeBankFunction } from './saga';
 
 const cookie = new Cookies()
 
 class TypeBankDetail extends React.Component{
+    _isMounted = false;
     state = {rows:{}}
     componentDidMount(){
+        this._isMounted = true;
         this.getTypeBankDetail()
     }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
-    getTypeBankDetail = ()=>{
+    getTypeBankDetail = async function(){
         var id = this.props.match.params.id
-        if(cookie.get('token')){
-            var config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-              };
-          
-            axios.get(serverUrl+`admin/bank_types/${id}`,config)
-            .then((res)=>{
-                console.log(res.data)
-                this.setState({rows:res.data})
-            })
-            .catch((err)=>console.log(err))
+        const param ={
+            id
+        }
+        const data = await DetailTipeBankFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({rows:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
         }
     }
+
+
     render(){
         if(cookie.get('token')){
             return(

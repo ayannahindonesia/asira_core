@@ -34,8 +34,8 @@ import PermintaanPinjamanDetail from './components/permintaanPinjamanDetail'
 import ProductAdd from './components/product/productAdd'
 import ProductList from './components/product/productList'
 import ProductDetail from './components/product/productDetail'
-
 import ProductEdit from './components/product/productEdit'
+
 import TypeBankAdd from './components/tipebank/typebankAdd'
 import TypeBankList from './components/tipebank/typebankList'
 import TujuanAdd from './components/tujuan/tujuanAdd'
