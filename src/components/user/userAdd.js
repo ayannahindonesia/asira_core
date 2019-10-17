@@ -36,7 +36,6 @@ class userAdd extends React.Component{
       diKlik:false,
       errorMessage:'',
       listRolePermission: [],
-      disabled: false,
       role : 0,
       listRole: [],
       loading: true,
@@ -117,7 +116,6 @@ class userAdd extends React.Component{
         } else {
           this.setState({
             errorMessage: data.error,
-            disabled: true,
             loading: false,
           })
         }      
@@ -320,7 +318,7 @@ class userAdd extends React.Component{
                   
                   <div className="form-group row">
                       <div className="col-sm-12 ml-3 mt-3">
-                        <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnSave} disabled={this.state.disabled}/>
+                        <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnSave} />
                         <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                       </div>
                   </div>
