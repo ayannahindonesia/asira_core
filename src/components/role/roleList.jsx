@@ -1,38 +1,42 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import Axios from 'axios';
-import { serverUrl } from './url';
+import {ListRoleFunction} from './saga'
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
+import {checkPermission} from './../global/globalFunction'
+
 const cookie = new Cookies()
 
 class RoleList extends React.Component{
+    _isMounted = false;
     state={
         loading:true, rows:[],errMessage:''
     }
     componentDidMount(){
+        this._isMounted=true;
         this.getAllRole()
     }
 
-    getAllRole = ()=>{
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        Axios.get(serverUrl+`admin/roles`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({
-                rows:res.data.data,
-                loading:false,
-                errMessage:''
-            })
-
-        })
-        .catch((err)=>{
-            this.setState({errMessage:err.toString(),loading:false})
-        })
+    componentWillUnmount() {
+        this._isMounted = false;
     }
+    
+    getAllRole = async function () {
+        const param = {
+
+        };
+        const data  = await ListRoleFunction(param)
+        if(data){
+            if(!data.error){
+                this.setState({loading:false,rows:data,errorMessage:''})
+            }else{
+                this.setState({loading:false,errorMessage:data.error})
+            }
+        }
+        
+    }
+    
     renderJSX = () => {
         if (this.state.loading){
             return  (
@@ -57,9 +61,12 @@ class RoleList extends React.Component{
                 <td align="center">{val.system}</td>
                 <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
                 <td align="center">
-                    <Link to={`/editrole/${val.id}`} className="mr-2">
-                         <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                    </Link>
+                    
+                    {checkPermission('Role_Edit') &&
+                      <Link to={`/editrole/${val.id}`} className="mr-2">
+                      <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                      </Link>
+                    }
                     <Link to={`/detailrole/${val.id}`} >
                          <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                     </Link>
@@ -102,6 +109,8 @@ class RoleList extends React.Component{
                        </tbody>
                    </table>
                 </div>
+               
+              
             )
         }
         if(!cookie.get('token')){

@@ -92,7 +92,7 @@ class userEdit extends React.Component{
     btnSave=()=>{
       if (this.validate()) {
         const dataUser = {
-          role_id : this.state.role,
+          role_id : parseInt(this.state.role),
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
@@ -251,7 +251,7 @@ class userEdit extends React.Component{
                         :
                       </label>
                       <div className="col-sm-4 col-form-label" >
-                        {this.state.password}                       
+                        ********                       
                       </div>                 
                     </div>
 
