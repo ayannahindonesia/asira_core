@@ -2,8 +2,6 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import axios from 'axios'
-import { serverUrl } from '../url';
 import CheckBox from '../subComponent/CheckBox';
 import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
@@ -12,7 +10,9 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import {listAllRolePermission} from './../global/globalConstant'
+import { listAllRolePermission } from './../global/globalConstant'
+import { getAllRoleFunction, getAllRolePermissionAddFunction, postRolePermissionFunction } from './saga'
+import { constructRolePermission } from './function'
 
 const styles = (theme) => ({
     container: {
@@ -25,6 +25,8 @@ const cookie = new Cookies();
 
 
 class rolePermissionAdd extends React.Component{
+    _isMounted = false;
+
     state = {
       diKlik:false,
       errorMessage:'',
@@ -37,92 +39,34 @@ class rolePermissionAdd extends React.Component{
     };
 
     componentDidMount(){
-      this.getAllRole();
+      this._isMounted = true;
+      this.refresh()
     }
 
-    getAllRole = ()=>{
-      const config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
-      };
+    componentWillUnmount() {
+      this._isMounted = false;
+    }
 
-      axios.get(serverUrl+`admin/roles`,config).then((res)=>{
-        const listRole = res.data && res.data.data;
+    refresh = async function(){
+      const param = {};
 
-        this.setState({
-          listRole,
-        }, () => {
-          this.getAllRolePermission()
-        })
-      }).catch((err)=>{
-          console.log(err.toString())
+      const data = await getAllRoleFunction(param, getAllRolePermissionAddFunction);
+
+      if(data) {
+        if(!data.error) {
           this.setState({
-            errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
+            listRole: data.dataRole,
+            role: data.role,
             loading: false,
-            disabled: true,
           })
-      })
-    }
-
-    getAllRolePermission = ()=>{
-      const config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
-      };
-
-      axios.get(serverUrl+`admin/permission`,config)
-      .then((res)=>{
-          const listPermission = res.data && res.data.data ? res.data.data : res.data;
-          const listRole = this.state.listRole;
-          const newRole = [];
-          let role = 0;
-
-          for(const key in listRole) {
-            const rolePerLine = listRole[key];
-            rolePerLine.permission = []
-            for(const keyPermission in listPermission) {
-              if(
-                rolePerLine.id.toString() === listPermission[keyPermission].role_id.toString() && 
-                listPermission[keyPermission].permissions.toString().trim().length !== 0
-              ) {
-                rolePerLine.permission.push(listPermission[keyPermission].permissions)
-              }
-            }
-
-            if(rolePerLine.permission.length === 0) {
-              if(role === 0) {
-                role = rolePerLine.id;
-              }
-              newRole.push(rolePerLine);
-            }
-          }
-
-          if(newRole.length && newRole.length !== 0) {
-            this.setState({
-              role,
-              listRole: newRole,
-              loading:false,
-            })
-          } else {
-            this.setState({
-              disabled:true,
-              errorMessage: 'Data Role yang belum di setup tidak ditemukan',
-              loading:false,
-            })
-          }
-          
+        } else {
           this.setState({
-            role,
-            listRole: newRole,
-            loading:false,
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
           })
-
-      }).catch((err)=>{
-        console.log(err.toString())
-        this.setState({
-          errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-          loading: false,
-          disabled: true
-        })
-      })
+        }      
+      }
     }
 
     btnCancel = ()=>{
@@ -133,7 +77,7 @@ class rolePermissionAdd extends React.Component{
       this.setState({errorMessage:newProps.error})
     }
 
-    btnSave=()=>{
+    btnSave = () => {
       if(this.state.listRolePermission.length === 0) {
         this.setState({errorMessage:"ERROR : Data Role Permission Tidak Boleh Kosong"})
       } else if(this.state.listRole.length === 0 || this.state.role === 0) {
@@ -142,33 +86,37 @@ class rolePermissionAdd extends React.Component{
         const listRolePermission = this.state.listRolePermission;
         const dataRolePermission = {};
         dataRolePermission.role_id = parseInt(this.state.role);
-        dataRolePermission.permissions = this.constructRolePermission(listRolePermission);
+        dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
-        this.setState({loading: true});
-        
-        const config = {
-          headers: {'Authorization': "Bearer " + cookie.get('token')}
+        const param = {
+          dataRolePermission,
         };
-
-        axios.post(serverUrl+'admin/permission',dataRolePermission,config).then((res)=>{
-          swal("Success","Role Permission berhasil di tambah","success")
-          this.setState({diKlik:true})
-        }).catch((err)=>{
-          this.setState({
-            errorMessage : err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`,
-            disabled: true,
-          })
-        })
+  
+        this.postRolePermission(param);
+        
       }
     }
 
-    constructRolePermission = (rolePermission) => {
-      const newPermission = [];
+    postRolePermission = async function (param) {
+      const data = await postRolePermissionFunction(param)
+  
+      this.setState({loading: true})
 
-      for(const key in rolePermission) {
-        newPermission.push(`${rolePermission[key].modules}_${rolePermission[key].name}`)
+      if(data) {
+        if(!data.error) {
+          swal("Success","Role Permission berhasil di tambah","success")
+          this.setState({
+            diKlik: true,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
       }
-      return newPermission;
     }
 
     checkingRole = (role, id) => {

@@ -6,8 +6,9 @@ import {Link} from 'react-router-dom'
 // import SubTable from './../subComponent/SubTable'
 import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import Pagination from 'rc-pagination';
-import {getAllRoleFunction, getAllRolePermissionListFunction} from './saga'
+import {getAllUserFunction} from './saga'
 import { checkPermission } from '../global/globalFunction';
+import { getAllRoleFunction } from '../rolePermission/saga';
 
 
 const cookie = new Cookies()
@@ -35,14 +36,17 @@ const cookie = new Cookies()
 //     },
 // ]
 
-class RolePermissionList extends React.Component{
+class UserList extends React.Component{
     _isMounted = false;
 
-    state = {
-        loading:true, 
-        listRole: [],
-        page: 1,
-        rowsPerPage: 10,
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading:true, 
+            listUser: [],
+            page: 1,
+            rowsPerPage: 10,
+        }
     }
 
     componentDidMount(){
@@ -56,15 +60,23 @@ class RolePermissionList extends React.Component{
 
     refresh = async function(){
         const param = {};
-        param.rowsPerPage = this.state.rowsPerPage;
+        param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
 
-        const data = await getAllRoleFunction(param, getAllRolePermissionListFunction);
+        const data = await getAllUserFunction(param, getAllRoleFunction);
 
         if(data) {
             if(!data.error) {
+                const dataListUser = data.dataUser || [];
+
+                if(dataListUser.length !== 0) {
+                    for(const key in dataListUser) {
+                        dataListUser[key].role = this.findRole(dataListUser[key].role_id, data.dataRole || [])
+                    }
+                }
+                
                 this.setState({
-                    listRole: data.dataRolePermission,
+                    listUser: dataListUser,
                     totalData: data.totalData,
                     loading: false,
                 })
@@ -77,9 +89,21 @@ class RolePermissionList extends React.Component{
         }
     }
 
+    findRole = (roleId, dataRole) => {
+        let role = '';
+
+        for(const key in dataRole) {
+            if(dataRole[key].id === roleId) {
+                role = dataRole[key].name
+            }
+        }
+
+        return role;
+    }
+
     renderJSX = () => {
 
-        if (this.state.loading || !this.state.listRole){
+        if (this.state.loading || !this.state.listUser){
             return  (
               <tr  key="zz">
                 <td align="center" colSpan={6}>
@@ -95,21 +119,21 @@ class RolePermissionList extends React.Component{
         }
         
         
-        var jsx = this.state.listRole && this.state.listRole.map((val,index)=>{
+        var jsx = this.state.listUser.map((val,index)=>{
             return(
                 <tr key={index}>
                     <td align="center">{this.state.page >1 ? (index+1 + this.state.rowsPerPage*(this.state.page-1)) : index+1}</td>
                     <td align="center">{val.id}</td>
-                    <td align="center">{val.name}</td>
-                    <td align="center">{val.system}</td>
+                    <td align="center">{val.username}</td>
+                    <td align="center">{val.role}</td>
                     <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
                     <td align="center">
-                        {   checkPermission('Permission_Edit') && 
-                            <Link to={`/editRolePermission/${val.id}`} className="mr-2">
+                        {   checkPermission('User_Edit') &&
+                            <Link to={`/editUser/${val.id}`} className="mr-2">
                                 <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
                             </Link>
                         }
-                        <Link to={`/detailRolePermission/${val.id}`} >
+                        <Link to={`/detailUser/${val.id}`} >
                             <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                         </Link>
                     </td>
@@ -134,14 +158,13 @@ class RolePermissionList extends React.Component{
 
 
     render(){
-        
-        
+
         if(cookie.get('token')){
             return(
                 <div className="container">
                     <div className="row">
                         <div className="col-7">
-                             <h2 className="mt-3">Role Permission - List</h2>
+                            <h2 className="mt-3">Akun - List</h2>
                         </div>
                         <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
                             {this.state.errorMessage}
@@ -153,7 +176,7 @@ class RolePermissionList extends React.Component{
                         // headerTitle={'List Application'}
                         // search={this.state.flagAdd ? searchBar : null}
                         columnData={columnDataRole}
-                        data={this.state.listRole}
+                        data={this.state.listUser}
                         idKey={'id'}
                         // onAddFunction={
                         //     // this.state.flagAdd ? this.handleAddApplication : null
@@ -164,9 +187,9 @@ class RolePermissionList extends React.Component{
                    <thead className="table-warning">
                         <tr >
                             <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">ID Role</th>
-                            <th className="text-center" scope="col">Nama Role</th>
-                            <th className="text-center" scope="col">Sistem</th>
+                            <th className="text-center" scope="col">ID Akun</th>
+                            <th className="text-center" scope="col">Nama Akun</th>
+                            <th className="text-center" scope="col">Role</th>
                             <th className="text-center" scope="col">Status</th>
                             <th className="text-center" scope="col">Action</th>
                         </tr>     
@@ -198,4 +221,4 @@ class RolePermissionList extends React.Component{
     }
 }
 
-export default RolePermissionList;
+export default UserList;
