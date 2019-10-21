@@ -2,30 +2,36 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { serverUrl } from './url';
-import axios from 'axios'
+import { checkPermission } from '../global/globalFunction';
 import {Link} from 'react-router-dom'
+import { getAllLayananListFunction } from './saga';
 
 const cookie = new Cookies()
 
 class LayananList extends React.Component{
+    _isMounted = false;
+    
     state={
         loading:true
     }
     componentDidMount (){
+        this._isMounted=true
         this.getAllList()
     }
-    getAllList = ()=>{
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-
-        axios.get(serverUrl+`admin/services`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({loading:false,rows:res.data.data})
-        })
-        .catch((err)=>console.log(err))
+    componentWillUnmount(){
+        this._isMounted=false
+    }
+    
+    getAllList = async function (){
+        const param={}
+        const data = await getAllLayananListFunction(param)
+        if(data){
+            if(!data.error){
+                this.setState({loading:false,rows:data.data.data})
+            }else{
+                this.setState({errorMessage:data.error,loading:false})
+            }
+        }
     }
 
     renderJSX = () => {
@@ -58,9 +64,12 @@ class LayananList extends React.Component{
                         <td align="center">{val.name}</td>
                         <td align="center">{val.status==="active"?"Aktif":"Tidak Aktif"}</td>               
                         <td align="center">
-                        <Link to={`/layananedit/${val.id}`} className="mr-2">
-                         <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                         </Link>
+                        
+                         {   checkPermission('BankService_Edit') &&
+                           <Link to={`/layananedit/${val.id}`} className="mr-2">
+                           <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                           </Link>
+                        }
                         <Link to={`/layanandetail/${val.id}`} >
                          <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                     </Link>
@@ -69,15 +78,8 @@ class LayananList extends React.Component{
                   )
               })
                return jsx;
-              }
-
-
-            
+              }   
         }
-            
-            
-         
-        
     }
     render(){
         if(cookie.get('token')){

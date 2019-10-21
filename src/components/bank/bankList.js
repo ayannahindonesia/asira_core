@@ -4,10 +4,11 @@ import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
-import {serverUrl} from './url'
+import {serverUrl} from '../url'
+import {getAllBankList} from './saga'
 import 'rc-pagination/assets/index.css';
 import Pagination from 'rc-pagination';
-import './../support/css/pagination.css'
+import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import QueryString from 'query-string'
 const cookie = new Cookies()
@@ -26,10 +27,10 @@ class BankList extends React.Component{
     }
 
     getLink = ()=>{
-       var obj = QueryString.parse(this.props.location.search)
-       return obj.query 
-      }
-      pushUrl = ()=>{
+      var obj = QueryString.parse(this.props.location.search)
+      return obj.query 
+    }
+    pushUrl = ()=>{
         var newLink ='/listbank/search'
         var params =[]
         //categoryDropdown,search
@@ -49,36 +50,28 @@ class BankList extends React.Component{
         }
         this.props.history.push(newLink)
     }
-    getAllBankData = ()=>{
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        var newLink =`admin/banks`
-        if (this.props.location.search){
-          var hasil = this.getLink()
-          if(!isNaN(hasil)){
-            newLink += `?id=${hasil}&`+this.state.halamanConfig
-          }else{
-            newLink += `?name=${hasil}&`+this.state.halamanConfig
-          }
-        }else{
-          newLink += `?`+this.state.halamanConfig
+    getAllBankData = async function (params,next) {
+        const param = {
+          search : this.props.location.search,
+          halamanConfig: this.state.halamanConfig,
+          link : this.getLink()
         }
-        
-        axios.get(serverUrl+newLink,config)
-        .then((res)=>{
+        const data = await getAllBankList(param)
+        if(data){
+          if(!data.error){
             this.setState({
-                rows:res.data.data,
-                total_data:res.data.total_data,
-                page:res.data.current_page,
-                from:res.data.from,
-                to:res.data.to,
-                last_page:res.data.last_page,
-                dataPerhalaman:res.data.rows,
-                loading:false})
-        })
-        .catch((err)=>console.log(err))
-
+              rows:data.data.data,
+              total_data:data.data.total_data,
+              page:data.data.current_page,
+              from:data.data.from,
+              to:data.data.to,
+              last_page:data.data.last_page,
+              dataPerhalaman:data.data.rows,
+              loading:false})
+          }else{
+              this.setState({errorMessage:data.error})
+          }
+        }
     }
 
     onBtnSearch = ()=>{
@@ -211,18 +204,19 @@ class BankList extends React.Component{
                     </thead>
                        <tbody>
                           {this.renderJSX()}
-
                        </tbody>
                    </table>
                    <hr/>
                 <nav style={{float:"right",color:"black"}}> 
-                <Pagination className="ant-pagination"  
+
+            <Pagination 
+                className="ant-pagination"  
                 showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
                 total={this.state.total_data}
                 pageSize={this.state.dataPerhalaman}
                 onChange={this.onChangePage}
                 locale={localeInfo}
-                />
+            />
                 </nav>
                
                 </div>

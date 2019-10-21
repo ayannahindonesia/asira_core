@@ -1,9 +1,9 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrlBorrower} from './url'
+import {serverUrlBorrower} from '../url'
 import Moment from 'react-moment';
-import { GlobalFunction } from './globalFunction'
+import { GlobalFunction } from '../globalFunction'
 
 import Axios from 'axios';
 const cookie = new Cookies()

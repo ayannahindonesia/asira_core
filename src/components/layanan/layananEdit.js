@@ -1,11 +1,12 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
-import './../support/css/layananAdd.css'
-import { Redirect } from 'react-router-dom'
-import { serverUrl } from './url';
 import swal from 'sweetalert'
 import Loader from 'react-loader-spinner'
-import axios from 'axios'
+import { editLayananFunction, getDetailLayananFunction, getImageFunction } from './saga'
+import { Redirect } from 'react-router-dom'
+import './../../support/css/layananAdd.css'
+
+
 const cookie = new Cookies()
 
 class LayananEdit extends React.Component{
@@ -17,31 +18,35 @@ class LayananEdit extends React.Component{
         rows:[],
         imageVal:'',
         check: true,
-        loading:true
+        loading:true,
+        submit:false
     }
+    _isMounted = false;
+
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
     componentDidMount(){
+        this._isMounted=true
         this.getLayananEdit()
     }
-    getLayananEdit = ()=>{
-        var id = this.props.match.params.id
-        var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                
-        axios.get(serverUrl+`admin/services/${id}`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({rows:res.data, check: res.data && res.data.status && res.data.status ==='active' ? true : false})
-            if(this.state.rows.image_id !== undefined || this.state.rows.image_id !== null){
-                axios.get(serverUrl+`admin/image/${this.state.rows.image_id}`,config)
-                .then((res)=>{
-                    this.setState({imageVal:res.data.image_string,loading:false})
-                })
-            }
-        })
-        .catch((err)=>{console.log(err)})
+    componentWillUnmount(){
+        this._isMounted=false
     }
+
+    getLayananEdit = async function(){
+        const id = this.props.match.params.id
+        const data = await getDetailLayananFunction({id},getImageFunction)
+
+        if(data){
+            if(!data.error){
+                this.setState({rows:data.data,imageVal:data.imageData.image_string,loading:false, check: data.data && data.data.status && data.data.status ==='active' ? true : false})
+            }else{
+                this.setState({errorMessage:data.error,loading:false})
+            }
+        }
+    }
+
     onChangeHandler = (event)=>{
         //untuk mendapatkan file image
         this.setState({selectedFile:event.target.files[0]})
@@ -60,20 +65,19 @@ class LayananEdit extends React.Component{
         reader.onerror = function (error) {
           console.log('Error: ', error);
         };
-        // return reader.result.replace("data:image/jpeg;base64,","");
      }
 
     btnEditLayanan = ()=>{
-        var id = this.props.match.params.id
+        
         var name = this.refs.namaLayanan.value ? this.refs.namaLayanan.value : this.refs.namaLayanan.placeholder
         var status = this.state.check ? "active": "inactive"
-        
+        this.setState({submit:true})
         if(name.trim()===""||name===""){
-            this.setState({errorMessage:"Nama Layanan Kosong - Harap Cek Ulang"})
+            this.setState({errorMessage:"Nama Layanan Kosong - Harap Cek Ulang",submit:false})
         }else{
             if (this.state.selectedFile){
                 if (this.state.selectedFile.size >1000000){
-                    this.setState({errorMessage:"Gambar tidak bole lebih dari 1 MB - Harap cek ulang"})
+                    this.setState({errorMessage:"Gambar tidak bole lebih dari 1 MB - Harap cek ulang",submit:false})
                 }else{
                     var pic = this.state.selectedFile
                     var reader = new FileReader();
@@ -82,13 +86,11 @@ class LayananEdit extends React.Component{
                         var arr = reader.result.split(",")   
                         var image = arr[1].toString()
                         var newData = {name,image,status}
-                        var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                        axios.patch(serverUrl+`admin/services/${id}`,newData,config)
-                        .then((res)=>{
-                            swal("Success","Layanan berhasil di Edit","success")
-                            this.setState({errorMessage:null,diKlik:true})
-                        })
-                        .catch((err)=>{console.log(err)})
+                        const param ={
+                            id:this.props.match.params.id,
+                            newData
+                        }
+                        this.editLayananBtn(param)
                     };
                     reader.onerror = function (error) {
                       console.log('Error: ', error);
@@ -97,21 +99,25 @@ class LayananEdit extends React.Component{
              
             }else{
                 var newData = {name,status}
-                var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                axios.patch(serverUrl+`admin/services/${id}`,newData,config)
-                .then((res)=>{
-                    swal("Success","Layanan berhasil di Edit","success")
-                    this.setState({errorMessage:null,diKlik:true})
-                })
-                .catch((err)=>{console.log(err)})
+                const param ={
+                    id:this.props.match.params.id,
+                    newData
+                }
+                this.editLayananBtn(param)
             }
         }
-        
-            
-        
-        
     }
-
+    editLayananBtn = async function (param){
+        const data = await editLayananFunction (param)
+        if(data){
+            if(!data.error){
+                swal("Success","Layanan berhasil di Edit","success")
+                this.setState({errorMessage:null,diKlik:true})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
+    }
     btnCancel = ()=>{
         this.setState({diKlik:true})
     }
@@ -119,6 +125,15 @@ class LayananEdit extends React.Component{
     handleChecked = () => {
         this.setState({check : !this.state.check})
     }
+
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+            return <input type="button" disabled className="btn btn-success ml-3 mr-3" value="Ubah" onClick={this.btnEditLayanan} style={{cursor:"wait"}}/>
+        }else{
+            return   <input type="button" className="btn btn-success ml-3 mr-3" value="Ubah" onClick={this.btnEditLayanan}/>
+     
+        }
+     }
 
     render(){
         if (this.state.loading){
@@ -171,7 +186,7 @@ class LayananEdit extends React.Component{
                             </div>
                     </div>
                     <div className="form-group row">
-                            <input type="button" className="btn btn-success ml-3 mr-3" value="Ubah" onClick={this.btnEditLayanan}/>
+                            {this.renderBtnSumbit()}
                             <input type="button" className="btn btn-warning" value="Batal" onClick={this.btnCancel}/>
 
                     </div>

@@ -10,16 +10,16 @@ import Testing from './components/testing'
 
 import PageNotFound from './components/404'
 
-import TambahBank from './components/bankAdd'
-import ListBank from './components/bankList'
-import EditBank from './components/bankEdit'
-import DetailBank from './components/bankDetail'
+import TambahBank from './components/bank/bankAdd'
+import ListBank from './components/bank/bankList'
+import EditBank from './components/bank/bankEdit'
+import DetailBank from './components/bank/bankDetail'
 
 
-import LayananEdit from './components/layananEdit'
-import LayananAdd from './components/layananAdd'
-import LayananList from './components/layananList'
-import LayananDetail from './components/layananDetail'
+import LayananEdit from './components/layanan/layananEdit'
+import LayananAdd from './components/layanan/layananAdd'
+import LayananList from './components/layanan/layananList'
+import LayananDetail from './components/layanan/layananDetail'
 
 
 import Login from './components/index/login'
@@ -28,8 +28,8 @@ import Home from './components/index/main'
 import Nasabah from './components/profileNasabah'
 import ScrollTop from './components/scrollToTop'
 import profileNasabahDetail from './components/profileNasabahDetail'
-import PermintaanPinjaman from './components/permintaanPinjaman'
-import PermintaanPinjamanDetail from './components/permintaanPinjamanDetail'
+import PermintaanPinjaman from './components/permintaanPinjaman/permintaanPinjaman'
+import PermintaanPinjamanDetail from './components/permintaanPinjaman/permintaanPinjamanDetail'
 
 import ProductAdd from './components/product/productAdd'
 import ProductList from './components/product/productList'

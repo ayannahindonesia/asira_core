@@ -1,39 +1,38 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import axios from 'axios'
-import {serverUrl} from './url' 
-import Loader from 'react-loader-spinner'
 
+import Loader from 'react-loader-spinner'
+import { getDetailLayananFunction, getImageFunction } from './saga'
 
 const cookie = new Cookies()
 
 class LayananDetail extends React.Component{
+    _isMounted = false;
+    
     state={rows:[],imageData:'',loading:true}
 
     componentDidMount =()=>{
+        this._isMounted=true
         this.getDetailLayanan()
     }
-
-    getDetailLayanan = () =>{
-        var id = this.props.match.params.id
-        var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        axios.get(serverUrl+`admin/services/${id}`,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({rows:res.data})
-            if (this.state.rows.image_id !== undefined || this.state.rows.image_id !== null){
-               axios.get(serverUrl+`admin/image/${this.state.rows.image_id}`,config)
-                .then((res)=>{
-                    this.setState({imageData:res.data.image_string,loading:false})
-                })
-                .catch((err)=>console.log(err))
-            }
-        })
-        .catch((err)=>console.log(err))
+    componentWillUnmount(){
+        this._isMounted=false
     }
+
+    getDetailLayanan = async function(){
+        const id = this.props.match.params.id
+        const data = await getDetailLayananFunction({id},getImageFunction)
+
+        if(data){
+            if(!data.error){
+                this.setState({rows:data.data,imageData:data.imageData.image_string,loading:false})
+            }else{
+                this.setState({errorMessage:data.error,loading:false})
+            }
+        }
+    }
+   
     render(){
         if (this.state.loading){
             return (
