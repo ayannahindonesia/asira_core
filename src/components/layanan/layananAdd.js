@@ -1,21 +1,28 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
-import './../support/css/layananAdd.css'
+import './../../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
-import { serverUrl } from './url';
 import swal from 'sweetalert'
-import axios from 'axios'
+import { addLayananFunction } from './saga';
 const cookie = new Cookies()
 
 class LayananAdd extends React.Component{
+    _isMounted = false;
+
     state={
         selectedFile:null,
         base64img:null,
         errorMessage:'',
         diKlik:false,
-        check:false
-    
+        check:false,submit:false
     }
+    componentDidMount(){
+        this._isMounted=true
+    }
+    componentWillUnmount(){
+        this._isMounted=false
+    }
+
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
@@ -25,41 +32,32 @@ class LayananAdd extends React.Component{
         this.setState({selectedFile:event.target.files[0]})
     }
     valueHandler = ()=>{
-        console.log(this.state.selectedFile)
+        
         return  this.state.selectedFile ? this.state.selectedFile.name :"Browse Image"
         
     }
 
     btnSimpanLayanan = ()=>{
         var name =this.refs.namaLayanan.value
-
+        this.setState({submit:true})
         if(name==="" || this.state.selectedFile===null){
-            this.setState({errorMessage:"Nama Layanan atau Gambar kosong"})
+            this.setState({errorMessage:"Nama Layanan atau Gambar kosong",submit:false})
         }else if(name.trim() === ""){
-            this.setState({errorMessage:"Nama Layanan kosong - Harap Cek ulang"})
+            this.setState({errorMessage:"Nama Layanan kosong - Harap Cek ulang",submit:false})
         }else if(this.state.selectedFile.size > 1000000){
-            this.setState({errorMessage:"Gambar tidak boleh lebih dari 1 MB - Harap Cek ulang"})
+            this.setState({errorMessage:"Gambar tidak boleh lebih dari 1 MB - Harap Cek ulang",submit:false})
         }
         else{
             var pic = this.state.selectedFile
             var reader = new FileReader();
             reader.readAsDataURL(pic);
             reader.onload =  () => {   
-                console.log(reader)
                 var arr = reader.result.split(",")   
                 var image = arr[1].toString()
                 var status = this.state.check ? "active": "inactive"
-
                 var newData = {name,status,image}
-                var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-                axios.post(serverUrl+'admin/services',newData,config)
-                .then((res)=>{
-                    swal("Success","Layanan berhasil di tambah","success")
-                    this.setState({errorMessage:null,diKlik:true})
-                })
-                .catch((err)=>{console.log(err)})
 
-
+                this.addLayananBtn(newData)
             };
             reader.onerror = function (error) {
               console.log('Error: ', error);
@@ -68,12 +66,34 @@ class LayananAdd extends React.Component{
         
     }
 
+    addLayananBtn = async function (param){
+        const data = await addLayananFunction(param)
+        if(data){
+            if(!data.error){
+                swal("Success","Layanan berhasil di tambah","success")
+                this.setState({errorMessage:null,diKlik:true})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
+    }
+
     btnCancel = ()=>{
         this.setState({diKlik:true})
     }
     handleChecked=(e)=>{
         this.setState({check:!this.state.check})
     }
+
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+            return <input type="button" disabled className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSimpanLayanan} style={{cursor:"wait"}}/>
+        }else{
+            return   <input type="button" className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSimpanLayanan}/>
+     
+        }
+     }
+
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listlayanan'/>            
@@ -111,7 +131,7 @@ class LayananAdd extends React.Component{
                             </div>
                     </div>
                     <div className="form-group row">
-                            <input type="button" className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnSimpanLayanan}/>
+                            {this.renderBtnSumbit()}
                             <input type="button" className="btn btn-warning" value="Batal" onClick={this.btnCancel}/>
 
                     </div>

@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
 import {ListTipeBankFunction} from './saga'
+import { checkPermission } from '../global/globalFunction';
 
 const cookie = new Cookies()
 
@@ -65,9 +66,12 @@ class TambahBankList extends React.Component{
                         <td align="center">{val.name}</td>
                          
                         <td align="center">
-                        <Link to={`/banktypeedit/${val.id}`} className="mr-2">
-                         <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                         </Link>
+                        {   checkPermission('BankType_Edit') &&
+                           <Link to={`/banktypeedit/${val.id}`} className="mr-2">
+                           <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                           </Link>
+                        }
+                       
                         <Link to={`/banktypedetail/${val.id}`} >
                          <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                     </Link>

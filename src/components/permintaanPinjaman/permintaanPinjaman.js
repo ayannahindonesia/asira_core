@@ -3,13 +3,13 @@ import axios from 'axios'
 import {connect } from 'react-redux'
 import Cookie from 'universal-cookie'
 import { Redirect } from 'react-router-dom'
-import {serverUrlBorrower} from './url'
+import {serverUrlBorrower} from '../url'
 import {Link} from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import QueryString from 'query-string'
 import Moment from 'react-moment'
 import Pagination from 'rc-pagination';
-import './../support/css/pagination.css'
+import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID'
 
 const kukie = new Cookie()

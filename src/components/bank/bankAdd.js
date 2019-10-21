@@ -1,19 +1,16 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
-import { Redirect  } from 'react-router-dom'
 import Select from 'react-select';
-import {serverUrl,serverUrlGeo} from './url'
-import axios from 'axios'
 import swal from 'sweetalert'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import { addBankFunction, getProvinsiFunction, getKabupatenFunction, getServiceFunction } from './saga';
+import { ListTipeBankFunction } from './../tipebank/saga'
+import { listProductFunction } from './../product/saga'
+import { Redirect  } from 'react-router-dom'
+
 const cookie = new Cookies()
-    var config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-  };
-  var configGeo = {
-    headers: {'Authorization': "Bearer " + cookie.get('tokenGeo')}
-  };
+
 
   const customStyles = {
     option: (provided, state) => ({
@@ -38,138 +35,183 @@ const cookie = new Cookies()
   
 
 class Main extends React.Component{
-      state = {
-       jenisProduct:null, jenisLayanan: null, 
-       errorMessage: null, diKlik:false,
-       typeBank:[],bankService:[],bankProduct:[],
-       provinsi:[],
-       kabupaten:[],
-       idProvinsi:null,
-       phone:'',
-       adminFeeRadioValue:'potong_plafon',
-       convinienceFeeRadioValue:'beban_plafon',
-       submit:false
-      };
+    state = {
+        jenisProduct:null, 
+        jenisLayanan: null, 
+        errorMessage: null, 
+        diKlik:false,
+        typeBank:[],bankService:[],bankProduct:[],
+        provinsi:[],
+        kabupaten:[],
+        idProvinsi:null,
+        phone:'',
+        adminFeeRadioValue:'potong_plafon',
+        convinienceFeeRadioValue:'beban_plafon',
+        submit:false,jenisLayananId:null,loadingData:false
+    };
 
+    _isMounted = false;
 
+    componentWillReceiveProps(newProps){
+    this.setState({errorMessage:newProps.error})
+    }
 
-      componentWillReceiveProps(newProps){
-        this.setState({errorMessage:newProps.error})
-       }
+    handleChangejenisLayanan = (jenisLayanan) => {
+        
+            this.setState({ jenisLayanan , jenisProduct: null}, (() => {
+                let stringServiceId = '';
+                if(this.state.jenisLayanan) {
+                    for(let key = 0; key < this.state.jenisLayanan.length; key++) {
+                        stringServiceId += `${this.state.jenisLayanan[key].value}`;
+                        if(this.state.jenisLayanan[key + 1]) {
+                            stringServiceId += ',';
+                        }
+                    }
+                    this.getBankProduct(stringServiceId)
+                }
+                
+            }));
+        
+       
+      
+    };
 
-       handleChangejenisLayanan = (jenisLayanan) => {
-        this.setState({ jenisLayanan });
-      };
+    handleChangejenisProduct = (jenisProduct) => {
+    this.setState({ jenisProduct });
+    };
 
-      handleChangejenisProduct = (jenisProduct) => {
-        this.setState({ jenisProduct });
-      };
+    componentDidMount(){
+        this._isMounted = true;
+        this.getBankType()
+        this.getBankService()
+        this.getAllProvinsi()
+    }
 
-      componentDidMount(){
-          this.getBankType()
-          this.getBankService()
-          this.getBankProduct()
-          this.getAllProvinsi()
-      }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
   
-      getAllProvinsi = () =>{
-        configGeo = {
-            headers: {'Authorization': "Bearer " + cookie.get('tokenGeo')}
-          };
-        axios.get(serverUrlGeo+`client/provinsi`,configGeo)
-        .then((res)=>{
-            this.setState({provinsi:res.data.data})
-        })
-        .catch((err)=> console.log(err))
-      }
+    getAllProvinsi = async function(){
+        const data = await getProvinsiFunction()
+        
+        if(data){
+            if(!data.error){
+                this.setState({provinsi:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
 
-  
-      getAllKabupaten = (id) =>{
-        axios.get(serverUrlGeo+`client/provinsi/${id}/kota`,configGeo)
-        .then((res)=>{
-            this.setState({kabupaten:res.data.data})
-           
-        })
-        .catch((err)=> console.log(err))
-      }
-      getBankProduct = ()=>{
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        axios.get(serverUrl+'admin/products',config)
-        .then((res)=>{
-            this.setState({bankProduct:res.data.data})
-        })
-        .catch((err)=> console.log(err))
-      }
 
-      getBankService = ()=>{
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        axios.get(serverUrl+'admin/services',config)
-        .then((res)=>{
-            this.setState({bankService:res.data.data})
-        })
-        .catch((err)=> console.log(err))
-      }
-      renderJenisLayananJsx = ()=>{
-          var jsx = this.state.bankService.map((val,index)=>{
-              return {id:val.id, value: val.id, label: val.name}
-          })
-          return jsx
-      }
-        renderJenisProductJsx = ()=>{
-        var jsx = this.state.bankProduct.map((val,index)=>{
+    getAllKabupaten = async function (params) {
+        const data = await getKabupatenFunction(params)
+        if(data){
+            if(!data.error){
+                this.setState({kabupaten:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+
+    getBankProduct = async function (stringServiceId) {
+        const param ={
+            service_id: stringServiceId || '',
+        }
+
+        const data = await listProductFunction(param)
+        if (data){
+            if(!data.error){
+                this.setState({bankProduct:data.data.data, jenisProduct: null})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+
+    getBankService = async function () {
+        const data = await getServiceFunction()
+
+        if(data){
+            if(!data.error){
+                this.setState({bankService:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    } 
+
+    renderJenisLayananJsx = ()=>{
+        var jsx = this.state.bankService.map((val)=>{
             return {id:val.id, value: val.id, label: val.name}
         })
         return jsx
-        }
+    }
 
+    renderJenisProductJsx = ()=>{
         
-       renderProvinsiJsx = ()=>{
-            var jsx = this.state.provinsi.map((val,index)=>{
-                return (
-                    <option key={index} value={val.id+"-"+val.name} > {val.name} </option>
-                )
-            })
-            return jsx
-        }
-        renderKabupatenJsx = ()=>{
-            var jsx = this.state.kabupaten.map((val,index)=>{
-                return (
-                    <option key={index} value={val.name}>{val.name}</option>
-                )
-            })
-            return jsx
-        }
-
-
-      getBankType = () => {
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        axios.get(serverUrl+'admin/bank_types',config)
-        .then((res)=>{
-            this.setState({typeBank:res.data.data})
+        var jsx = this.state.bankProduct.map((val)=>{
+                return {id:val.id, value: val.id, label: " [ "+this.findServiceName(val.service_id)+" ] "+val.name }
         })
-        .catch((err)=> console.log(err))
-      }
+        return jsx
+    }
 
-      renderTypeBankJsx = ()=>{
-          var jsx = this.state.typeBank.map((val,index)=>{
-              return(
-                <option key={index} value={val.id}>{val.name}</option>
-              )
-          })
-          return jsx
-      }
-      btnCancel = ()=>{
+    findServiceName = (service_id) => {
+        let stringService = '';
+        
+        for(const key in this.state.jenisLayanan) {
+            if(this.state.jenisLayanan[key].id.toString() === service_id.toString()) {
+                stringService = this.state.jenisLayanan[key].label
+            }
+        }
+
+        return stringService;
+    }
+
+    renderProvinsiJsx = ()=>{
+        var jsx = this.state.provinsi.map((val,index)=>{
+            return (
+            <option key={index} value={val.id+"-"+val.name} > {val.name} </option>
+            )
+        })
+            return jsx
+    }
+
+    renderKabupatenJsx = ()=>{
+        var jsx = this.state.kabupaten.map((val,index)=>{
+            return (
+                <option key={index} value={val.name}>{val.name}</option>
+            )
+        })
+            return jsx
+    }
+
+
+    getBankType = async function (params) {
+        const data = await ListTipeBankFunction()
+        if(data){
+            if(!data.error){
+                this.setState({typeBank:data})
+            }else{
+
+            }
+        }
+    } 
+
+    renderTypeBankJsx = ()=>{
+        var jsx = this.state.typeBank.map((val,index)=>{
+        return(
+            <option key={index} value={val.id}>{val.name}</option>
+        )
+        })
+        return jsx
+    }
+    btnCancel = ()=>{
         this.setState({diKlik:true})
-      }
+    }
 
     btnSaveBank =()=>{
-        
         var services =[]
         var products =[]
         var name = this.refs.namaBank.value
@@ -207,19 +249,22 @@ class Main extends React.Component{
                     name,type,address,province,city,pic,phone,services,products,adminfee_setup,convfee_setup
                 }
                 
-                axios.post(serverUrl+'admin/banks',newData,config)
-                .then((res)=>{
-                    swal("Berhasil","Bank berhasil bertambah","success")
-                    this.setState({errorMessage:null,diKlik:true,submit:false})
-                })
-                .catch((err)=>{
-                   console.log(err)
-                   this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})
-                })
+               this.addBankSubmit(newData)
         }
-
-
     }
+
+    addBankSubmit = async function (params) {
+        const data = await addBankFunction(params)
+        if(data){
+            if(!data.error){
+                swal("Berhasil","Bank berhasil bertambah","success")
+                this.setState({errorMessage:null,diKlik:true,submit:false})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }        
+    }
+
     handleChangeRadioAdmin =(e)=>{
         this.setState({adminFeeRadioValue:e.target.value})
     }
@@ -233,6 +278,7 @@ class Main extends React.Component{
        return <input type="button" className="btn btn-primary" value="Simpan" onClick={this.btnSaveBank}/>
        }
     }
+
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            

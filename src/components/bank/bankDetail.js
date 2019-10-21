@@ -1,50 +1,50 @@
 import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrl} from './url'
+import {serverUrl} from '../url'
 import Moment from 'react-moment'
-
+import Loader from 'react-loader-spinner'
 import axios from 'axios'
+import { getBankDetailFunction } from './saga';
+import {DetailTipeBankFunction} from './../tipebank/saga'
 
 const cookie = new Cookies()
 var config = {
     headers: {'Authorization': "Bearer " + cookie.get('token')}
   };
 class BankDetail extends React.Component{
-    state = {rows:[],layanan:[],produk:[],tipe:0,namaTipeBank:'',serviceName:null,productName:null,diKlik:false}
+    state = {rows:[],layanan:[],produk:[],tipe:0,namaTipeBank:'',serviceName:null,productName:null,diKlik:false,loading:true}
     componentDidMount(){
         this.getBankDetail()
-        
     }
 
-    getBankDetail = ()=>{
+    getBankDetail = async function () {
         var id = this.props.match.params.id
-        // if(cookie.get('token')){
-             config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-              };
-          
-            axios.get(serverUrl+`admin/banks/${id}`,config)
-            .then((res)=>{
-                console.log(res.data)
-                this.setState({rows:res.data,layanan:res.data.services,tipe:res.data.type,produk:res.data.products})
+        const param ={id}
+        const data = await getBankDetailFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({rows:data,layanan:data.services,tipe:data.type,produk:data.products})
                 if (this.state.rows){
                     this.getTypeBank()
                     this.getBankServiceId()
                     this.getProductId()
                 }
-            })
-            .catch((err)=>console.log(err))
-        // }
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
     }
+
     getBankServiceId= () =>{
              var id = this.props.match.params.id
              config = {
                 headers: {'Authorization': "Bearer " + cookie.get('token')}
               };
           
-            axios.get(serverUrl+`admin/bank_services?bank_id=${id}`,config)
-            .then((res)=>{
+                axios.get(serverUrl+`admin/bank_services?bank_id=${id}`,config)
+                .then((res)=>{
                 var serviceId = res.data.data.map((val)=>{
                     return val.service_id
                 })
@@ -58,6 +58,7 @@ class BankDetail extends React.Component{
             })
             .catch((err)=>console.log(err))
     }
+
     getProductId= () =>{
         var id = this.props.match.params.id
         config = {
@@ -75,23 +76,38 @@ class BankDetail extends React.Component{
                var productName = res.data.data.map((val)=>{
                    return val.name
                })
-               this.setState({productName:productName.toString()})
+               this.setState({productName:productName.toString(),loading:false})
            })
        })
        .catch((err)=>console.log(err))
-}
-
-    getTypeBank = ()=>{
-        axios.get(serverUrl+`admin/bank_types/${this.state.tipe}`,config)
-      .then((res)=>{
-          console.log(res.data.name)
-            this.setState({namaTipeBank:res.data.name})
-      })
-      .catch((err)=> console.log(err))
     }
+
+    getTypeBank = async function () {
+        const param = {id:this.state.tipe}
+        const data = await DetailTipeBankFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({namaTipeBank:data.name})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    } 
+
     render(){
         if(this.state.diKlik){
             return <Redirect to="/listbank"/>
+        }
+        if(this.state.loading){
+            return(
+                <Loader 
+                type="ThreeDots"
+                color="#00BFFF"
+                height="30"	
+                width="30"
+                />  
+            )
         }
         if(cookie.get('token')){
             return(
