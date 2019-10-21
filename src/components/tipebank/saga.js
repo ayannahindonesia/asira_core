@@ -43,7 +43,7 @@ export async function ListTipeBankFunction (param){
     })
 }
 
-export async function DetailTipeBankFunction(params) {
+export async function DetailTipeBankFunction(params,next) {
     return new Promise(async(resolve)=>{
         
             const config = {
@@ -52,7 +52,11 @@ export async function DetailTipeBankFunction(params) {
           
             axios.get(serverUrl+`admin/bank_types/${params.id}`,config)
             .then((res)=>{
-                resolve(res.data)
+                if(next){
+                    resolve(next(params))
+                }else{
+                    resolve(res.data)
+                }
             })
             .catch((err)=>{
                 const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`

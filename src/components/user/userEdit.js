@@ -26,6 +26,8 @@ const cookie = new Cookies();
 
 
 class userEdit extends React.Component{
+    _isMounted = false;
+
     state = {
       diKlik:false,
       errorMessage:'',
@@ -42,11 +44,17 @@ class userEdit extends React.Component{
     };
 
     componentDidMount(){
+      this._isMounted = true;
+      
       this.setState({
         userId: this.props.match.params.id,
       },() => {
         this.refresh();
       })
+    }
+
+    componentWillUnmount() {
+      this._isMounted = false;
     }
 
     refresh = async function(){

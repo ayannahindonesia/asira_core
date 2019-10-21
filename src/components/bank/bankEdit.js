@@ -2,25 +2,22 @@ import React from 'react'
 import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Select from 'react-select';
-import {serverUrl,serverUrlGeo} from './url'
+import {serverUrl} from '../url'
 import axios from 'axios'
 import swal from 'sweetalert'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
+import { getProvinsiFunction, getKabupatenFunction, getServiceFunction } from './saga';
+import { listProductFunction } from './../product/saga'
+
 const cookie = new Cookies()
 var config = {
     headers: {'Authorization': "Bearer " + cookie.get('token')}
   };
-  var configGeo = {
-    headers: {'Authorization': "Bearer " + cookie.get('tokenGeo')}
-  };
+ 
 
-// const options = [
-//     { value: 'chocolate', label: 'Chocolate' },
-//     { value: 'strawberry', label: 'Strawberry' },
-//     { value: 'vanilla', label: 'Vanilla' },
-//   ];
+
 const customStyles = {
     option: (provided, state) => ({
       ...provided,
@@ -56,21 +53,89 @@ class BankEdit extends React.Component{
         this.setState({ serviceName: jenisLayanan });
       };
 
+      handleChangejenisLayanan = (jenisLayanan) => {
+        
+            this.setState({ serviceName:jenisLayanan , productName: null}, (() => {
+                let stringServiceId = '';
+                if(this.state.serviceName) {
+                    for(let key = 0; key < this.state.serviceName.length; key++) {
+                        stringServiceId += `${this.state.serviceName[key].value}`;
+                        if(this.state.serviceName[key + 1]) {
+                            stringServiceId += ',';
+                        }
+                    }
+                    this.getBankProduct(stringServiceId)
+                }
+                
+            }));
+
+    };
+
     handleChangejenisProduct = (jenisProduct) => {
         this.setState({ productName:jenisProduct });
     };
     
     componentDidMount(){
-        this.getBankProduct()
+    
         this.getAllProvinsi()
         this.getBankDataById()
     }
+
+    getAllProvinsi = async function(){
+        const data = await getProvinsiFunction()
+        
+        if(data){
+            if(!data.error){
+                this.setState({provinsi:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+    getAllKabupaten = async function (params) {
+        const data = await getKabupatenFunction(params)
+        if(data){
+            if(!data.error){
+                this.setState({kabupaten:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+
+    getBankProduct = async function (stringServiceId) {
+        const param ={
+            service_id: stringServiceId || '',
+        }
+
+        const data = await listProductFunction(param)
+        if (data){
+            if(!data.error){
+                this.setState({bankProduct:data.data.data, productName: null})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+
+    getBankService = async function () {
+        const data = await getServiceFunction()
+
+        if(data){
+            if(!data.error){
+                this.setState({bankService:data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    } 
+
+
     getBankDataById = ()=>{
         var id = this.props.match.params.id
         config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
           };
-       // axios.get(serverUrl+'admin/banks/[bank_id]',config)
         axios.get(serverUrl+`admin/banks/${id}`,config)
         .then((res)=>{
             this.setState({dataBank:res.data,productID:res.data.products,serviceID:res.data.services})
@@ -83,37 +148,6 @@ class BankEdit extends React.Component{
         })
         .catch((err)=> console.log(err))
 
-    }
-
-    getAllProvinsi = () =>{
-        configGeo = {
-            headers: {'Authorization': "Bearer " + cookie.get('tokenGeo')}
-          };
-        axios.get(serverUrlGeo+`client/provinsi`,configGeo)
-        .then((res)=>{
-            this.setState({provinsi:res.data.data})
-           
-        })
-        .catch((err)=> console.log(err))
-      }
-
-    getAllKabupaten = (id) =>{
-        axios.get(serverUrlGeo+`client/provinsi/${id}/kota`,configGeo)
-        .then((res)=>{
-            this.setState({kabupaten:res.data.data})
-           
-        })
-        .catch((err)=> console.log(err))
-      }
-    getBankProduct = ()=>{
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-      axios.get(serverUrl+'admin/products',config)
-      .then((res)=>{
-          this.setState({bankProduct:res.data.data})
-      })
-      .catch((err)=> console.log(err))
     }
 
     getTypeBank = ()=>{
@@ -147,7 +181,7 @@ class BankEdit extends React.Component{
          axios.get(serverUrl+`/admin/services?id=${resultServiceID.toString()}`,config)
          .then((res)=>{
              var serviceName = res.data.data.map((val)=>{
-                 return {value:val.id,label:val.name}
+                 return {value:val.id,label:val.name,id:val.id}
              })
              this.setState({serviceName:serviceName})
          })
@@ -173,7 +207,7 @@ class BankEdit extends React.Component{
            })
         })
         .catch((err)=> console.log(err))
-      }
+    }
 
     renderProvinsiJsx = ()=>{
         var jsx = this.state.provinsi.map((val,index)=>{
@@ -200,10 +234,21 @@ class BankEdit extends React.Component{
         return jsx
     }
     renderJenisProductJsx = ()=>{
-        var jsx = this.state.bankProduct.map((val,index)=>{
-            return {id:val.id, value: val.id, label: val.name}
+        var jsx = this.state.bankProduct.map((val)=>{
+                return {id:val.id, value: val.id, label: " [ "+this.findServiceName(val.service_id)+" ] "+val.name }
         })
         return jsx
+    }
+
+    findServiceName = (service_id) => {
+        let stringService = '';
+        console.log(this.state.serviceName)
+        for(const key in this.state.serviceName) {
+            if(this.state.serviceName[key].id.toString() === service_id.toString()) {
+                stringService = this.state.serviceName[key].label
+            }
+        }
+        return stringService;
     }
 
     handleChangeRadioAdmin =(e)=>{

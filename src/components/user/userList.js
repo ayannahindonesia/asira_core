@@ -37,6 +37,8 @@ const cookie = new Cookies()
 // ]
 
 class UserList extends React.Component{
+    _isMounted = false;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -46,8 +48,14 @@ class UserList extends React.Component{
             rowsPerPage: 10,
         }
     }
+
     componentDidMount(){
+        this._isMounted = true;
         this.refresh()
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     refresh = async function(){
