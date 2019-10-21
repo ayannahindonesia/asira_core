@@ -3,59 +3,45 @@ import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
-import axios from 'axios'
-import {serverUrl} from '../url'
 import {getAllBankList} from './saga'
 import 'rc-pagination/assets/index.css';
 import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
-import QueryString from 'query-string'
 const cookie = new Cookies()
-var config = {
-  headers: {'Authorization': "Bearer " + cookie.get('token')}
-};
+
 class BankList extends React.Component{
+    _isMounted=false;
     state={
         loading:true,
         rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,
-        searchRows:null,
-        halamanConfig:`orderby=id&sort=ASC&rows=10`
+        search: '',
     }
     componentDidMount(){
+      this._isMounted=true
         this.getAllBankData()
     }
+    componentWillUnmount(){
+      this._isMounted=false
 
-    getLink = ()=>{
-      var obj = QueryString.parse(this.props.location.search)
-      return obj.query 
     }
-    pushUrl = ()=>{
-        var newLink ='/listbank/search'
-        var params =[]
-        //categoryDropdown,search
-        if(this.refs.search.value){
-            params.push({
-                params:'query',
-                value:this.refs.search.value
-            })
-        }
 
-        for (var i=0;i<params.length;i++){
-            if(i===0){
-                newLink += '?'+params[i].params+ '='+ params[i].value
-            }else{
-                newLink += '&'+params[i].params+ '='+ params[i].value
-            }
+    getAllBankData = async function () {
+        let param = { 
+          page: this.state.page,
         }
-        this.props.history.push(newLink)
-    }
-    getAllBankData = async function (params,next) {
-        const param = {
-          search : this.props.location.search,
-          halamanConfig: this.state.halamanConfig,
-          link : this.getLink()
+        
+        var hasil = this.state.search;
+
+        if(hasil.toString().trim().length !== 0) {
+          if(!isNaN(hasil)){
+              param.id = hasil
+          }else{
+              param.name = hasil
+          }
         }
+        
+        
         const data = await getAllBankList(param)
         if(data){
           if(!data.error){
@@ -75,29 +61,8 @@ class BankList extends React.Component{
     }
 
     onBtnSearch = ()=>{
-      this.pushUrl()
-      var searching = this.refs.search.value
-      this.setState({loading:true,searchRows:searching})
-      var newLink=""
-      if(searching){
-        //search function
-      if(!isNaN(searching)){
-          newLink += `id=${searching}&${this.state.halamanConfig}` 
-        }else{
-          newLink += `name=${searching}&${this.state.halamanConfig}`
-        }     
-      }else{
-        newLink +=this.state.halamanConfig
-      }
-      axios.get(serverUrl+`admin/banks?`+newLink,config)
-      .then((res)=>{
-          console.log(res)
-          this.setState({loading:false,rows:res.data.data,searchRows:null,total_data:res.data.total_data,dataPerhalaman:res.data.rows})
-      })
-      .catch((err)=>{
-          console.log(err)
-      })
-
+      this.getAllBankData()
+      this.setState({loading : true})
     }
 
     renderJSX = () => {
@@ -149,30 +114,15 @@ class BankList extends React.Component{
     }
 
     onChangePage = (current, pageSize) => {
-        this.setState({loading:true})
-        console.log('onChange:current=', current);
-        console.log('onChange:pageSize=', pageSize);
-        var searching = this.refs.search.value
-        var newLink=""
-        if(searching){
-          //search function
-        if(!isNaN(searching)){
-            newLink += `id=${searching}&${this.state.halamanConfig}&page=${current}` 
-          }else{
-            newLink += `name=${searching}&${this.state.halamanConfig}&page=${current}`
-          }     
-        }else{
-          newLink +=this.state.halamanConfig+`&page=${current}`
-        }
-        axios.get(serverUrl+`admin/banks?`+newLink,config)
-        .then((res)=>{
-            console.log(res.data)
-            this.setState({loading:false,rows:res.data.data,dataPerhalaman:res.data.rows,total_data:res.data.total_data,page:current})
+        this.setState({loading:true, page : current}, () => {
+          this.getAllBankData()
         })
-        .catch((err)=>{
-            console.log(err)
-        })
-      }
+    }
+
+    changeSearch = (e) => {
+      console.log(e.target.value)
+      this.setState({search: e.target.value})
+    }
  
     render(){
         if(cookie.get('token')){
@@ -184,7 +134,7 @@ class BankList extends React.Component{
                         </div>
                         <div className="col-4 mt-3 ml-5">
                         <div className="input-group">
-                            <input type="text" className="form-control" ref="search" placeholder="Search Bank.." />
+                            <input type="text" className="form-control" ref="search" placeholder="Search Bank.."  onChange={this.changeSearch} value={this.state.search}/>
                             <span className="input-group-addon ml-2" style={{border:"1px solid grey",width:"35px",height:"35px",paddingTop:"2px",borderRadius:"4px",paddingLeft:"2px",marginTop:"6px",cursor:"pointer"}} onClick={this.onBtnSearch}> 
                             <i className="fas fa-search" style={{fontSize:"28px"}} ></i></span>
                         </div>

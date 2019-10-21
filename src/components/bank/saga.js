@@ -83,19 +83,14 @@ export async function getAllBankList (param){
         const config = {
             headers: {'Authorization': "Bearer " + cookie.get('token')}
         };
-        var newLink =`admin/banks`
-        if (param.search){
-          var hasil = param.link
-          if(!isNaN(hasil)){
-            newLink += `?id=${hasil}&`+param.halamanConfig
-          }else{
-            newLink += `?name=${hasil}&`+param.halamanConfig
-          }
-        }else{
-          newLink += `?`+param.halamanConfig
+
+        let filter = '';
+
+        for(const key in param) {
+            filter += `&${key}=${param[key]}`
         }
 
-        axios.get(serverUrl+newLink,config)
+        axios.get(serverUrl+`admin/banks?orderby=id&sort=ASC&rows=10${filter}`,config)
         .then((res)=>{
             resolve(res)
         })
