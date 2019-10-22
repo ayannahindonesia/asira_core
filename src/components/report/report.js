@@ -7,9 +7,8 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import DatePickers from './../subComponent/DatePicker'
-import {serverUrl} from './../url'
-import axios from 'axios'
 import { GlobalFunction } from './../globalFunction'
+import { getAllBankListFunction, getAllLoanDataFunction } from './saga';
 
 const cookie = new Cookies()
 
@@ -48,26 +47,29 @@ const cookie = new Cookies()
 
 class Report extends React.Component{
     
-    state ={munculinTable:false,pilihReport:false, tanggalAwal:null,tanggalAkhir:null,errorMessage:'',errorMessageBank:'',dataBank:[],namaBank:null,loading:false}
+    state ={munculinTable:false,pilihReport:false, 
+        tanggalAwal:null,tanggalAkhir:null,
+        tanggalAwalPencairan:null,tanggalAkhirPencairan:null,
+        errorMessagePencairan:'',errorMessage:'',errorMessageBank:'',dataBank:[],namaBank:null,loading:false}
     componentDidMount(){
         this.getDataBankList()
     }
     componentWillReceiveProps(newProps){
-        this.setState({errorMessage:newProps.error,errorMessageBank:newProps.error})
+        this.setState({errorMessage:newProps.error,errorMessageBank:newProps.error,errorMessagePencairan:newProps.error})
     }
     
     //----------------------- GET DATA LIST BANK ---------------------
-    getDataBankList = () =>{
-       var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        var newLink =`admin/banks?orderby=id&sort=ASC`
-        axios.get(serverUrl+newLink,config)
-          .then((res)=>{
-              console.log(res.data.data)
-              this.setState({dataBank:res.data.data})
-          })
-          .catch((err)=>console.log(err))
+    getDataBankList = async function(){
+        const data = await getAllBankListFunction()
+
+        if(data){
+            console.log(data)
+            if(!data.error){
+                this.setState({dataBank:data.data.data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
     }
 
     renderBankList = () =>{
@@ -89,6 +91,35 @@ class Report extends React.Component{
             this.setState({pilihReport:false})
         }
     }
+    validate = () => {
+        let flag = true;
+        const {tanggalAkhir,tanggalAwal,tanggalAwalPencairan,tanggalAkhirPencairan,namaBank} = this.state
+        let dateAwal = new Date(tanggalAwal).getTime()
+        let dateAkhir = new Date(tanggalAkhir).getTime()
+ 
+        let tglPencairanAwal = new Date(tanggalAwalPencairan).getTime()
+        let tglPencairanAkhir = new Date(tanggalAkhirPencairan).getTime()
+ 
+ 
+         if(tanggalAwal === null || tanggalAkhir ===null){
+             this.setState({errorMessage:"Tanggal Kosong - Harap cek ulang",errorMessagePencairan:'',errorMessageBank:''})
+             flag=false
+         }
+         else if(dateAwal > dateAkhir){
+            this.setState({errorMessage:"Range Tanggal tidak benar - Harap cek ulang",errorMessagePencairan:'',errorMessageBank:''}) 
+             flag=false
+         } 
+         else if(tglPencairanAwal>tglPencairanAkhir){
+             this.setState({errorMessagePencairan:"Range Tanggal Pencairan tidak benar - Harap cek ulang",errorMessage:'',errorMessageBank:''}) 
+             flag=false
+         } 
+         else if(namaBank === "0" || namaBank === null){
+             this.setState({errorMessageBank:"Bank Kosong - Harap cek ulang",errorMessage:'',errorMessagePencairan:''}) 
+             flag=false
+         }
+
+         return flag
+    }
     //---------------------- HANDLE TANGGAL ---------------------
     handleEndChange = (e)=>{
         this.setState({tanggalAkhir:e.target.value.toString().trim().length !== 0 ? e.target.value : null,errorMessage:''})
@@ -96,40 +127,52 @@ class Report extends React.Component{
     handleStartChange = (e)=>{
         this.setState({tanggalAwal:e.target.value.toString().trim().length !== 0 ? e.target.value : null,errorMessage:''})
     }
+
+    handleStartPencairanChange = (e)=>{
+        this.setState({tanggalAwalPencairan:e.target.value.toString().trim().length !== 0 ? e.target.value : null,errorMessage:'',errorMessagePencairan:''})
+    }
+    handleEndPencairanChange = (e)=>{
+        this.setState({tanggalAkhirPencairan:e.target.value.toString().trim().length !== 0 ? e.target.value : null,errorMessage:'',errorMessagePencairan:''})
+    }
     //---------------------- HANDLE BUTTON PROSES ---------------------
     btnShowReport = ()=>{
-       const {tanggalAkhir,tanggalAwal,namaBank} = this.state
-       var dateAwal = new Date(tanggalAwal).getTime()
-       var dateAkhir = new Date(tanggalAkhir).getTime()
-        if(tanggalAwal === null || tanggalAkhir ===null){
-            this.setState({errorMessage:"Tanggal ada yang kosong - Harap cek ulang"})
-        }else if(dateAwal > dateAkhir){
-            this.setState({errorMessage:"Range tanggal tidak benar - Harap cek ulang"})
-        }else if(namaBank === "0" || namaBank === null){
-            this.setState({errorMessageBank:"Bank Kosong - Harap cek ulang"})
-        }
-        else{
-            this.setState({loading:true})
-            var newTanggalAwal = tanggalAwal+"T00:00:00.000Z"
-            var newTanggalBack = tanggalAkhir+"T23:59:59.000Z"
-            this.getAllLoanData(newTanggalAwal,newTanggalBack,namaBank)
-           
-        }
+       const {tanggalAkhir,tanggalAwal,tanggalAwalPencairan,tanggalAkhirPencairan,namaBank} = this.state
+            if(this.validate()) {
+                this.setState({loading:true})
+                let newTanggalAwal = tanggalAwal+"T00:00:00.000Z"
+                let newTanggalBack = tanggalAkhir+"T23:59:59.000Z"
 
+                let newTanggalPencairanAwal = tanggalAwalPencairan+"T00:00:00.000Z" 
+                let newTanggalPencairanAkhir = tanggalAkhirPencairan+"T23:59:59.000Z"
+
+                const param ={
+                    bank_name:namaBank,
+                    start_date:newTanggalAwal,
+                    end_date:newTanggalBack,
+                }
+                
+                if(tanggalAwalPencairan) {
+                    param.start_disburse_date = newTanggalPencairanAwal
+                }
+                if(tanggalAkhirPencairan){
+                    param.end_disburse_date = newTanggalPencairanAkhir
+                }
+                this.getAllLoanData(param)
+            }
     }
-    getAllLoanData = (tanggalAwal,tanggalAkhir,namaBank)=>{
-           var config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
-           var newLink =`admin/reports/convenience_fee?bank_name=${namaBank}&start_date=${tanggalAwal}&end_date=${tanggalAkhir}`
-           axios.get(serverUrl+newLink,config)
-           .then((res)=>{
-               console.log(res.data.data)
-               this.setState({dataReport:res.data.data,errorMessage:"",errorMessageBank:'',munculinTable:true,loading:false})
-           })
-           .catch((err)=>{
-               console.log(err)
-           })
-     
-       }
+    getAllLoanData = async function (params) {
+        const data = await getAllLoanDataFunction(params)
+        if(data){
+            console.log(data)
+            if(!data.error){
+                this.setState({dataReport:data.data.data,errorMessage:"",errorMessageBank:'',errorMessagePencairan:'',munculinTable:true,loading:false})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+
+    
     renderReportJsx =()=>{
         var jsx = this.state.dataReport.map((val,index)=>{
             return(
@@ -174,7 +217,7 @@ class Report extends React.Component{
                     <hr></hr>
                     <div className="form-group row">
                             <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
-                                    {this.state.errorMessage}{this.state.errorMessageBank} 
+                                    {this.state.errorMessage}{this.state.errorMessageBank}{this.state.errorMessagePencairan}
                             </div>      
                      </div>
                     <div className="form-group row">
@@ -214,8 +257,33 @@ class Report extends React.Component{
                                     <DatePickers
                                         label = 'Sampai Tanggal'
                                         onChange ={this.handleEndChange}
-                                        value={this.state.tanggalAwal}
+                                        value={this.state.tanggalAkhir}
                                         error={this.state.errorMessage.trim().length !== 0}
+                                    />
+                                </div>
+                            </div>
+                    
+                        </div>
+
+                        <div className="form-group row">
+                            <label className="col-sm-2 col-form-label">Tanggal Pencairan</label>
+                            <div className="col-sm-10 form-inline pl-5">
+                            <div className="col-sm-1 form-inline"></div>
+                                <div className="col-sm-3 form-inline">
+                                    <DatePickers
+                                        label = 'Dari Tanggal'
+                                        onChange ={this.handleStartPencairanChange}
+                                        value={this.state.tanggalAwalPencairan}
+                                        error={this.state.errorMessagePencairan.trim().length !== 0}
+                                    />
+                                </div>
+                                <div className="form-inline mr-3 ml-3"><i className="fas fa-long-arrow-alt-right"></i></div>
+                                <div className="col-sm-3 form-inline">
+                                    <DatePickers
+                                        label = 'Sampai Tanggal'
+                                        onChange ={this.handleEndPencairanChange}
+                                        value={this.state.tanggalAkhirPencairan}
+                                        error={this.state.errorMessagePencairan.trim().length !== 0}
                                     />
                                 </div>
                             </div>
