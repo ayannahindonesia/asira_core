@@ -63,11 +63,7 @@ import UserDetail from './components/user/userDetail'
 import UserEdit from './components/user/userEdit'
 
 import axios from 'axios'
-import SecureLS from 'secure-ls';
-import md5 from 'md5';
-
-const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'}); 
-
+import { getToken, setTokenAuth } from './components/index/token';
 
 class App extends React.Component {
   state = {
@@ -94,7 +90,7 @@ class App extends React.Component {
         }
     }).then((res)=>{
 
-        newLs.set(md5('tokenAuth'), res.data.token);
+        setTokenAuth(res.data.token);
         
         this.setState({loading : false})   
     }).catch((err)=>{
@@ -116,7 +112,7 @@ class App extends React.Component {
         <ScrollTop>
           <div className="row">
           {
-            newLs.get(md5('token')) ? 
+            getToken() ? 
             <div className="col-2 col-md-3">
               <Header />
             </div>
@@ -178,7 +174,7 @@ class App extends React.Component {
 
                   { checkPermission('Report_List') && <Route path='/report' component={Report}></Route>}
 
-                  {newLs.get(md5('token')) ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
+                  {getToken() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
                   <Route path='*' component={PageNotFound} />
             </Switch>

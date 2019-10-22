@@ -8,14 +8,12 @@ import {keepLogin} from './../../1.actions'
 import {connect} from 'react-redux'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction} from './saga'
 import { getRoleFunction, getPermissionFunction } from '../rolePermission/saga';
-import SecureLS from 'secure-ls';
-import md5 from 'md5';
+import { setProfileUser } from './token'
 
 class Login extends React.Component{
     _isMounted = false;
 
     state = {
-        token:"",
         authData:[],
         loading:false,
         tokenClient:'' , 
@@ -71,18 +69,7 @@ class Login extends React.Component{
 
                 }
                 
-                const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'});    
-                
-
-                newLs.set(md5('profileUser'), JSON.stringify(userPermission));
-
-                if(data.dataToken) {
-                    newLs.set(md5('token'), data.dataToken);
-                }
-                if(data.dataGeoToken) {
-                    newLs.set(md5('tokenGeo'), data.dataGeoToken);
-                }
-                
+                setProfileUser(JSON.stringify(userPermission))
 
                 this.setState({loading: false, isLogin: flag})
             } else {

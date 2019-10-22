@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert';
@@ -15,14 +14,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { getUserFunction, patchUserAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import DropDown from '../subComponent/DropDown';
+import { getToken } from '../index/token';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 
 class userEdit extends React.Component{
@@ -213,7 +211,7 @@ class userEdit extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
             return(
                 <div className="container mt-4">
                  <h3>Akun - Edit</h3>
@@ -360,7 +358,7 @@ class userEdit extends React.Component{
                 
                 </div>
             )
-        }else if(!cookie.get('token')){
+        }else if(!getToken()){
           return (
               <Redirect to='/login' />
           )    

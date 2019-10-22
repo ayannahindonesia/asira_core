@@ -1,14 +1,14 @@
 import axios from 'axios';
-import { serverUrl } from '../url';
-import Cookies from 'universal-cookie';
+import { serverUrl } from '../url'
 import {destructRolePermission, destructRolePermissionAll} from './function'
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 export async function getAllRoleFunction(param, next){
     return new Promise(async (resolve) => {
+        const token = getToken();
+       
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
 
         let filter = '';
@@ -38,8 +38,9 @@ export async function getAllRoleFunction(param, next){
     
 export async function getAllRolePermissionListFunction(param, next){
     return new Promise(async (resolve) => {
+        const token = getToken()
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
 
         axios.get(serverUrl+`admin/permission`,config)
@@ -91,8 +92,9 @@ export async function getAllRolePermissionListFunction(param, next){
 
 export async function getAllRolePermissionAddFunction(param, next){
     return new Promise(async (resolve) => {
+        const token = getToken();
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
           };
       
           axios.get(serverUrl+`admin/permission`,config)
@@ -145,8 +147,9 @@ export async function getAllRolePermissionAddFunction(param, next){
 
 export async function getRoleFunction(param, next) {
     return new Promise(async (resolve) => {
+        const token = getToken()
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
 
         axios.get(serverUrl+`admin/roles/${param.roleId}`,config).then((res)=>{
@@ -168,8 +171,9 @@ export async function getRoleFunction(param, next) {
 
 export async function getRolePermissionFunction(param, next) {
     return new Promise(async (resolve) => {
+        const token = getToken()
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
           
         axios.get(serverUrl+`admin/permission?role_id=${param.roleId}`,config)
@@ -213,8 +217,9 @@ export async function getRolePermissionFunction(param, next) {
 
 export async function getPermissionFunction(param, next) {
     return new Promise(async (resolve) => {
+        const token = getToken()
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
           
         axios.get(serverUrl+`admin/permission?role_id=${param.roleId}`,config)
@@ -240,8 +245,9 @@ export async function getPermissionFunction(param, next) {
 
 export async function patchRolePermissionFunction(param) {
     return new Promise(async (resolve) => {
+        const token = getToken();
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
 
         axios.patch(serverUrl+`admin/permission`,param.dataRolePermission,config).then((res)=>{
@@ -256,8 +262,9 @@ export async function patchRolePermissionFunction(param) {
 
 export async function postRolePermissionFunction(param) {
     return new Promise(async (resolve) => {
+        const token = getToken(); 
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
 
         axios.post(serverUrl+`admin/permission`,param.dataRolePermission,config).then((res)=>{
