@@ -60,12 +60,12 @@ class Report extends React.Component{
     
     //----------------------- GET DATA LIST BANK ---------------------
     getDataBankList = async function(){
-        const data = await getAllBankListFunction()
+        const param={}
+        const data = await getAllBankListFunction(param)
 
         if(data){
-            console.log(data)
             if(!data.error){
-                this.setState({dataBank:data.data.data})
+                this.setState({dataBank:data.BankList})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -165,7 +165,7 @@ class Report extends React.Component{
         if(data){
             console.log(data)
             if(!data.error){
-                this.setState({dataReport:data.data.data,errorMessage:"",errorMessageBank:'',errorMessagePencairan:'',munculinTable:true,loading:false})
+                this.setState({dataReport:data.reportFee.data,errorMessage:"",errorMessageBank:'',errorMessagePencairan:'',munculinTable:true,loading:false})
             }else{
                 this.setState({errorMessage:data.error})
             }
