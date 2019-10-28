@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
@@ -9,14 +8,13 @@ import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getUserFunction } from './saga'
 import { getAllRoleFunction } from '../rolePermission/saga';
+import { getToken } from '../index/token';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 class UserDetail extends React.Component{
     _isMounted = false;
@@ -119,7 +117,7 @@ class UserDetail extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
             return(
               <div className="container mt-4">
                  <h3>Akun - Detail</h3>
@@ -227,7 +225,7 @@ class UserDetail extends React.Component{
                 
                 </div>
             )
-        } else if(!cookie.get('token')){
+        } else if(!getToken()){
           return (
               <Redirect to='/login' />
           )    

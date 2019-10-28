@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
@@ -8,9 +7,8 @@ import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import Pagination from 'rc-pagination';
 import {getAllRoleFunction, getAllRolePermissionListFunction} from './saga'
 import { checkPermission } from '../global/globalFunction';
+import { getToken } from '../index/token'
 
-
-const cookie = new Cookies()
 
 // const columnDataRole = [
 //     {
@@ -136,7 +134,7 @@ class RolePermissionList extends React.Component{
     render(){
         
         
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                     <div className="row">
@@ -189,7 +187,7 @@ class RolePermissionList extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

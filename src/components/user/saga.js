@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { serverUrl } from '../url';
-import Cookies from 'universal-cookie';
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 export async function getAllUserFunction(param, next){
     return new Promise(async (resolve) => {
+
+        const token = getToken();
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
 
         let filter = '';
@@ -38,8 +38,10 @@ export async function getAllUserFunction(param, next){
 
 export async function getUserFunction(param, next) {
     return new Promise(async (resolve) => {
+
+        const token = getToken();
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
         };
 
         const urlNew = serverUrl+`admin/users/${param.userId}`
@@ -62,9 +64,10 @@ export async function getUserFunction(param, next) {
 }
 
 export async function patchUserAddFunction(param) {
-    return new Promise(async (resolve) => {     
+    return new Promise(async (resolve) => {   
+        const token = getToken() 
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
           };
   
         axios.patch(serverUrl+`admin/users/${param.id}`,param.dataUser,config).then((res)=>{
@@ -80,8 +83,10 @@ export async function patchUserAddFunction(param) {
 
 export async function postUserAddFunction(param) {
     return new Promise(async (resolve) => {     
+
+        const token = getToken()
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + token}
           };
   
         axios.post(serverUrl+'admin/users',param.dataUser,config).then((res)=>{

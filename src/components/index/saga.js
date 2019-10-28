@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { serverUrl, serverUrlGeo } from '../url';
 import Cookies from 'universal-cookie';
-import SecureLS from 'secure-ls';
-import md5 from 'md5';
+import { setToken, setTokenGeo, getTokenAuth } from './token';
 
 const cookie = new Cookies()
 
 export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRole, nextPermission) {
     return new Promise(async (resolve) => { 
-        const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'}); 
-        const tokenAuth = newLs.get(md5('tokenAuth'))    
+        const tokenAuth = getTokenAuth();
+
         
         const config = {
             headers: {'Authorization': "Bearer " + tokenAuth}
@@ -23,9 +22,11 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
             const date = new Date();
             date.setTime(date.getTime() + (res.data.expires_in*1000));
             cookie.set('token',res.data.token,{expires: date})
+
+            setToken(res.data.token, date.getTime() + (res.data.expires_in*1000))
             
             param.dataToken = res.data.token;
-            param.expires = res.data.expires_in;
+            param.expires = res.data.expires_in;      
 
             delete param.password;
 
@@ -47,7 +48,8 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
 }
 
 export async function getTokenGeoFunction(param, next) {
-    return new Promise(async (resolve) => {     
+    return new Promise(async (resolve) => {    
+        
         const config = {
             headers: {'Authorization': "Bearer " + param.dataToken}
         };
@@ -65,6 +67,8 @@ export async function getTokenGeoFunction(param, next) {
             const date = new Date();
             date.setTime(date.getTime() + (res.data.expires*1000));
             cookie.set('tokenGeo',res.data.token,{expires: date})
+
+            setTokenGeo(res.data.token);
 
             param.dataGeoToken = res.data.token;
 

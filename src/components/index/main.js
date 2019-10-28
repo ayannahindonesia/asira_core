@@ -1,14 +1,11 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom';
-import SecureLS from 'secure-ls';
-import md5 from 'md5';
-
-const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'});
+import { getToken } from './token';
 
 class Main extends React.Component{
     
     render(){
-        if(newLs.get(md5('token'))){
+        if(getToken()){
             return(
                 <div className="container">
                    <p>CORE</p>
@@ -16,7 +13,7 @@ class Main extends React.Component{
                 </div>
             )
         }
-        if(!newLs.get(md5('token'))){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

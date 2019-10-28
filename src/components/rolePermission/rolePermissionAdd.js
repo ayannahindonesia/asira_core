@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import CheckBox from '../subComponent/CheckBox';
@@ -13,14 +12,13 @@ import { compose } from 'redux';
 import { listAllRolePermission } from './../global/globalConstant'
 import { getAllRoleFunction, getAllRolePermissionAddFunction, postRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
+import { getToken } from '../index/token';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 
 
@@ -189,7 +187,7 @@ class rolePermissionAdd extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
           return(
               <div className="container mt-4">
                 <h3>Role Permission - Tambah</h3>
@@ -248,7 +246,7 @@ class rolePermissionAdd extends React.Component{
               
               </div>
           )
-        } else if(!cookie.get('token')){
+        } else if(!getToken()){
           return (
               <Redirect to='/login' />
           )    
