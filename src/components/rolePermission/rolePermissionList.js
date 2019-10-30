@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom'
 // import SubTable from './../subComponent/SubTable'
 import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import Pagination from 'rc-pagination';
-import {getAllRoleFunction, getAllRolePermissionListFunction} from './saga'
+import {getAllRoleFunction} from './saga'
 import { checkPermission } from '../global/globalFunction';
 import { getToken } from '../index/token'
 
@@ -57,15 +57,28 @@ class RolePermissionList extends React.Component{
         param.rowsPerPage = this.state.rowsPerPage;
         param.page = this.state.page;
 
-        const data = await getAllRoleFunction(param, getAllRolePermissionListFunction);
+        const data = await getAllRoleFunction(param);
 
         if(data) {
+            
             if(!data.error) {
+                const listRole = [];
+                const dataRole = data.dataRole;
+
+                for(const key in dataRole) {
+                    if(dataRole[key].permissions && dataRole[key].permissions.length !== 0) {
+                        listRole.push(dataRole[key])
+                    }
+                }
+
+                
                 this.setState({
-                    listRole: data.dataRolePermission,
-                    totalData: data.totalData,
+                    listRole,
+                    totalData: listRole.length,
                     loading: false,
                 })
+                
+
             } else {
                 this.setState({
                     errorMessage: data.error,
@@ -102,14 +115,16 @@ class RolePermissionList extends React.Component{
                     <td align="center">{val.system}</td>
                     <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
                     <td align="center">
-                        {   checkPermission('Permission_Edit') && 
+                        {   checkPermission('core_permission_patch') && 
                             <Link to={`/editRolePermission/${val.id}`} className="mr-2">
                                 <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
                             </Link>
                         }
-                        <Link to={`/detailRolePermission/${val.id}`} >
-                            <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                        </Link>
+                        {   checkPermission('core_permission_detail') && 
+                            <Link to={`/detailRolePermission/${val.id}`} >
+                                <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
+                        }
                     </td>
                 </tr>  
             )
