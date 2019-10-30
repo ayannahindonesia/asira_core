@@ -9,9 +9,10 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from '../global/globalConstant'
-import { getRoleFunction, getRolePermissionFunction, patchRolePermissionFunction } from './saga'
+import { getRoleFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
 import { getToken } from '../index/token';
+import { destructRolePermission } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -50,25 +51,26 @@ class rolePermissionEdit extends React.Component{
     refresh = async function(){
       const param = {};
       param.roleId = this.state.roleId;
-      param.listAllRolePermission = this.state.listAllRolePermission;
 
-      const data = await getRoleFunction(param, getRolePermissionFunction);
-      
+      const data = await getRoleFunction(param);
+
       if(data) {
-        if(!data.error) {
-          this.setState({
-            listRole: data.dataRole,
-            listRolePermission: data.dataRolePermission,
-            loading: false,
-          })
-        } else {
-          this.setState({
-            errorMessage: data.error,
-            disabled: true,
-            loading: false,
-          })
-        }      
-      } 
+          const listRolePermission = destructRolePermission(data.dataRole.permissions, this.state.listAllRolePermission)
+
+          if(!data.error) {
+            this.setState({
+              listRole: data.dataRole,
+              listRolePermission,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: data.error,
+              disabled: true,
+              loading: false,
+            })
+          }      
+      }
     }
 
     btnCancel = ()=>{
@@ -87,7 +89,7 @@ class rolePermissionEdit extends React.Component{
       const param = {
         dataRolePermission,
       };
-
+      
       this.patchRolePermission(param)
         
     }
@@ -130,8 +132,8 @@ class rolePermissionEdit extends React.Component{
       const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
       const profileUser = Object.assign({}, this.state.listRolePermission);
       const profileUserNew = [];
+
       let flag = false;
-      let name = '';
       let modules = '';
   
       for (const key in profileUserAll) {
@@ -139,7 +141,6 @@ class rolePermissionEdit extends React.Component{
           profileUserAll[key].id.toString().trim() ===
           e.target.value.toString().trim()
         ) {
-          name = profileUserAll[key].name;
           modules = profileUserAll[key].modules;
 
           for(const keyRole in profileUser) {
@@ -153,11 +154,14 @@ class rolePermissionEdit extends React.Component{
       }
   
       if (!flag) {
-        profileUserNew.push({
-          id: e.target.value,
-          name: name,
-          modules: modules,
-        });
+        const modulesSplit = modules.split(' ');
+
+        for(const key in modulesSplit) {
+          profileUserNew.push({
+            id: e.target.value,
+            modules: modulesSplit[key],
+          });
+        } 
       }
       
       this.setState({

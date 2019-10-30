@@ -126,14 +126,16 @@ class UserList extends React.Component{
                     <td align="center">{val.role}</td>
                     <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
                     <td align="center">
-                        {   checkPermission('User_Edit') &&
+                        {   checkPermission('core_user_patch') &&
                             <Link to={`/editUser/${val.id}`} className="mr-2">
                                 <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
                             </Link>
                         }
-                        <Link to={`/detailUser/${val.id}`} >
-                            <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                        </Link>
+                        {   checkPermission('core_user_details') &&
+                            <Link to={`/detailUser/${val.id}`} >
+                                <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
+                        }
                     </td>
                 </tr>  
             )

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { serverUrl, serverUrlGeo } from '../url';
 import Cookies from 'universal-cookie';
+import jsonWebToken from 'jsonwebtoken';
 import { setToken, setTokenGeo, getTokenAuth } from './token';
 
 const cookie = new Cookies()
@@ -89,30 +90,19 @@ export async function getTokenGeoFunction(param, next) {
 }
 
 export async function getUserProfileFunction(param, next, nextPermission) {
-    return new Promise(async (resolve) => {     
-        const config = {
-            headers: {'Authorization': "Bearer " + param.dataToken}
-        };
+    return new Promise(async (resolve) => {    
+        try {
+            var token = jsonWebToken.verify(param.dataToken,'sXQ8jUMpueOvN5P3cdCR');
 
-        const url = serverUrl+"admin/profile"
-
-  
-        axios.get(url,config).then((res)=>{
-            param.user = res.data;
-            param.roleId = res.data.role_id || 0;
-
-            if(next) {
-                resolve(next(param, nextPermission))
-            } else {
-                resolve(param)
-            }
-            
-        }).catch((err)=>{
-            console.log(err.toString())
+            param.dataPermission = token.permissions;
+            resolve(param)
+        } catch (err) {
             const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah User'
             param.error = error
             resolve(param);
-        })
+        }
+        
+        
     });
     
 }

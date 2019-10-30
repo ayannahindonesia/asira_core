@@ -10,7 +10,7 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from './../global/globalConstant'
-import { getAllRoleFunction, getAllRolePermissionAddFunction, postRolePermissionFunction } from './saga'
+import { getAllRoleFunction, postRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
 import { getToken } from '../index/token';
 
@@ -31,7 +31,7 @@ class rolePermissionAdd extends React.Component{
       listAllRolePermission,
       listRolePermission: [],
       disabled: false,
-      role : '',
+      role : 0,
       listRole: [],
       loading: true,
     };
@@ -48,15 +48,34 @@ class rolePermissionAdd extends React.Component{
     refresh = async function(){
       const param = {};
 
-      const data = await getAllRoleFunction(param, getAllRolePermissionAddFunction);
+      const data = await getAllRoleFunction(param);
 
       if(data) {
         if(!data.error) {
-          this.setState({
-            listRole: data.dataRole,
-            role: data.role,
-            loading: false,
-          })
+          const listRole = [];
+          const dataRole = data.dataRole;
+          let role = 0;
+
+          for(const key in dataRole) {
+            if(dataRole[key].permissions && dataRole[key].permissions.length === 0) {
+              listRole.push(dataRole[key])
+              role = dataRole[key].id
+            }
+          }
+          if(listRole.length !== 0) {
+            this.setState({
+              listRole,
+              role,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: 'Data Role yang belum di setup tidak ditemukan',
+              // disabled: true,
+              loading: false,
+            })
+          }
+          
         } else {
           this.setState({
             errorMessage: data.error,
@@ -132,8 +151,8 @@ class rolePermissionAdd extends React.Component{
       const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
       const profileUser = Object.assign({}, this.state.listRolePermission);
       const profileUserNew = [];
+
       let flag = false;
-      let name = '';
       let modules = '';
   
       for (const key in profileUserAll) {
@@ -141,7 +160,6 @@ class rolePermissionAdd extends React.Component{
           profileUserAll[key].id.toString().trim() ===
           e.target.value.toString().trim()
         ) {
-          name = profileUserAll[key].name;
           modules = profileUserAll[key].modules;
 
           for(const keyRole in profileUser) {
@@ -155,11 +173,14 @@ class rolePermissionAdd extends React.Component{
       }
   
       if (!flag) {
-        profileUserNew.push({
-          id: e.target.value,
-          name: name,
-          modules: modules,
-        });
+        const modulesSplit = modules.split(' ');
+
+        for(const key in modulesSplit) {
+          profileUserNew.push({
+            id: e.target.value,
+            modules: modulesSplit[key],
+          });
+        } 
       }
       
       this.setState({

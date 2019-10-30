@@ -26,6 +26,7 @@ export function checkPermission(stringPermission, stringPermissionSecond) {
   
   const listPermission = getProfileUser() ? JSON.parse(getProfileUser()) : [];
 
+
   for(const key in listPermission) {
     if(stringPermission && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
       flag = true;

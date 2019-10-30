@@ -8,8 +8,9 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from '../global/globalConstant'
-import {getRoleFunction, getRolePermissionFunction} from './saga'
+import {getRoleFunction} from './saga'
 import { getToken } from '../index/token';
+import { destructRolePermission } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -49,15 +50,16 @@ class rolePermissionDetail extends React.Component{
     refresh = async function(){
       const param = {};
       param.roleId = this.state.roleId;
-      param.listAllRolePermission = this.state.listAllRolePermission;
 
-      const data = await getRoleFunction(param, getRolePermissionFunction);
+      const data = await getRoleFunction(param);
 
       if(data) {
+          const listRolePermission = destructRolePermission(data.dataRole.permissions, this.state.listAllRolePermission)
+
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
-              listRolePermission: data.dataRolePermission,
+              listRolePermission,
               loading: false,
             })
           } else {

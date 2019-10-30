@@ -7,7 +7,6 @@ import {Redirect} from 'react-router-dom'
 import {keepLogin} from './../../1.actions'
 import {connect} from 'react-redux'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction} from './saga'
-import { getRoleFunction, getPermissionFunction } from '../rolePermission/saga';
 import { setProfileUser } from './token'
 
 class Login extends React.Component{
@@ -49,25 +48,12 @@ class Login extends React.Component{
     } 
 
     postLoginAdmin = async function(param)  {
-        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction, getRoleFunction, getPermissionFunction)
+        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction)
         
         if(data) {
             if(!data.error) {
-                let flag = false;
-                let userPermission = [];
-                
-                if(data.dataRole && data.dataRole.status && data.dataPermission) {
-                    for(const key in data.dataPermission) {
-                        if(data.dataPermission[key].permissions) {
-                            userPermission.push(data.dataPermission[key].permissions)
-                        }                      
-                    }
-
-                    if(data.dataRole.system && data.dataRole.system.toString().toLowerCase() === 'core') {
-                        flag = true;
-                    }
-
-                }
+                let flag = true;
+                let userPermission = data.dataPermission || [];  
                 
                 setProfileUser(JSON.stringify(userPermission))
 
