@@ -63,7 +63,7 @@ import UserDetail from './components/user/userDetail'
 import UserEdit from './components/user/userEdit'
 
 import axios from 'axios'
-import { getToken, setTokenAuth } from './components/index/token';
+import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
 
 class App extends React.Component {
   state = {
@@ -174,7 +174,7 @@ class App extends React.Component {
 
                   { checkPermission('convenience_fee_report') && <Route path='/report' component={Report}></Route>}
 
-                  {getToken() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
+                  {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
                   <Route path='*' component={PageNotFound} />
             </Switch>

@@ -24,7 +24,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
             date.setTime(date.getTime() + (res.data.expires_in*1000));
             cookie.set('token',res.data.token,{expires: date})
 
-            setToken(res.data.token, date.getTime() + (res.data.expires_in*1000))
+            setToken(res.data.token, new Date().getTime() + (res.data.expires_in*1000))
             
             param.dataToken = res.data.token;
             param.expires = res.data.expires_in;      
@@ -97,7 +97,7 @@ export async function getUserProfileFunction(param, next, nextPermission) {
             param.dataPermission = token.permissions;
             resolve(param)
         } catch (err) {
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah User'
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal memuat profile User'
             param.error = error
             resolve(param);
         }
