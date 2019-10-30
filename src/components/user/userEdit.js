@@ -66,6 +66,7 @@ class userEdit extends React.Component{
       const dataUser = await getUserFunction(paramUser);
 
       if(data && dataUser) {
+          console.log(dataUser)
           if(!data.error && !dataUser.error) {
             this.setState({
               listRole: data.dataRole,
@@ -137,8 +138,16 @@ class userEdit extends React.Component{
 
 
     onChangeCheck = (e) => {
+      let status = this.state.status;
+
+      if(status === 'active') {
+        status = 'non-active'
+      } else {
+        status = 'active'
+      }
+
       this.setState({
-        status: !this.state.status,
+        status,
       });
     };
 
@@ -337,11 +346,11 @@ class userEdit extends React.Component{
                             <CheckBox       
                               color="default"           
                               onChange={this.onChangeCheck}
-                              checked={this.state.status}
+                              checked={ this.state.status && this.state.status === 'active' ? true : false }
                               style={{justifyContent:'left'}}
                             />  
                           }
-                          label={this.state.status ? "Aktif" : "Tidak Aktif"}
+                          label={this.state.status && this.state.status === 'active' ? "Aktif" : "Tidak Aktif"}
                         />
                         
                       </div>           
