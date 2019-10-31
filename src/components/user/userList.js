@@ -69,10 +69,10 @@ class UserList extends React.Component{
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {
-                        dataListUser[key].role = this.findRole(dataListUser[key].role_id, data.dataRole || [])
+                        dataListUser[key].role = this.findRole(dataListUser[key].roles || [], data.dataRole || [])
                     }
                 }
-                
+
                 this.setState({
                     listUser: dataListUser,
                     totalData: data.totalData,
@@ -87,14 +87,19 @@ class UserList extends React.Component{
         }
     }
 
-    findRole = (roleId, dataRole) => {
+    findRole = (roleUser, dataRole) => {
         let role = '';
-
-        for(const key in dataRole) {
-            if(dataRole[key].id === roleId) {
-                role = dataRole[key].name
+        for(const keyRole in roleUser) {
+            for(const key in dataRole) {
+                if(dataRole[key].id === roleUser[keyRole]) {
+                    if(role.trim().length !== 0) {
+                        role += ', ';
+                    }
+                    role += dataRole[key].name;
+                }
             }
         }
+        
 
         return role;
     }
