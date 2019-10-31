@@ -32,7 +32,7 @@ export async function ListTipeBankFunction (param){
           }
         axios.get(serverUrl+`admin/bank_types?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
-            resolve(res.data.data)
+            resolve(res)
             
         })
         .catch((err)=>{

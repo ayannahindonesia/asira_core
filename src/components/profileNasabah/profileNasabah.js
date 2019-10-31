@@ -1,21 +1,16 @@
 import React from 'react';
-import axios from 'axios'
-
 import Loader from 'react-loader-spinner'
 import Moment from 'react-moment';
 import {connect } from 'react-redux'
-import Cookie from 'universal-cookie'
 import { Redirect } from 'react-router-dom'
-import QueryString from 'query-string'
-import {serverUrlBorrower} from './url'
 import {Link} from 'react-router-dom'
 import Pagination from 'rc-pagination';
-import './../support/css/pagination.css'
+import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
-const kukie = new Cookie()
-var config = {
-  headers: {'Authorization': "Bearer " + kukie.get('token')}
-};
+import { getProfileNasabahFunction } from './saga';
+import { getToken } from '../index/token';
+import { checkPermission } from '../global/globalFunction';
+
 class profileNasabah extends React.Component {
   state = {
     rows: [], searchRows:null,
@@ -27,93 +22,53 @@ class profileNasabah extends React.Component {
     last_page:1,
     loading:true,
     bankID:0,bankName:'',
-    halamanConfig:`orderby=id&sort=ASC&rows=10`
+  
   };
 
   //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
+  
+  _isMounted = false
   componentDidMount(){
     this.getAllData()
+    this._isMounted = true
+  }
+  componentWillUnmount(){
+    this._isMounted = false
   }
 
-  pushUrl = ()=>{
-    var newLink ='/profileNasabah/search'
-    var params =[]
-    //categoryDropdown,search
-    if(this.refs.search.value){
-        params.push({
-            params:'query',
-            value:this.refs.search.value
-        })
-    }
-    
-
-    for (var i=0;i<params.length;i++){
-        if(i===0){
-            newLink += '?'+params[i].params+ '='+ params[i].value
-        }else{
-            newLink += '&'+params[i].params+ '='+ params[i].value
-        }
-    }
-    this.props.history.push(newLink)
-}
-//GET LINK
-getLink = ()=>{
-  var obj = QueryString.parse(this.props.location.search)
- return obj.query 
-}
-  
   //Ambil data pertama kali
-  getAllData = ()=>{
-    config = {
-      headers: {'Authorization': "Bearer " + kukie.get('token')}
-    };
-   var newLink='admin/borrower?'+this.state.halamanConfig
-   
-    if (this.props.location.search){
-      var hasil = this.getLink()
-      if(!isNaN(hasil)){
-        newLink += `?id=${hasil}&${this.state.halamanConfig}`
-      }else{
-        newLink += `?fullname=${hasil}&${this.state.halamanConfig}`
+  getAllData = async function(){
+      const param ={
+        rows:10,
+        page:this.state.page
       }
-    }
-    axios.get(serverUrlBorrower+newLink,config)
-    .then((res)=>{
-        this.setState({loading:false,rows:res.data.data,rowsPerPage:res.data.rows,jumlahBaris:null,totalData:res.data.total_data,last_page:res.data.last_page,page:res.data.current_page})
-    })
-    .catch((err)=>{
-        console.log(err)
-    })
-}
+      let hasil = this.state.searchRows
+      if (hasil){
+        if(!isNaN(hasil)){
+          param.id = hasil
+        }else{
+          param.fullname = hasil
+        }
+      }
+
+      const data = await getProfileNasabahFunction(param)
+
+      if(data){
+        if(!data.error){
+          this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
+        }else{
+          this.setState({errorMessage:data.error})
+        }
+      }
+  }
 
   onBtnSearch = ()=>{
     
     var searching = this.refs.search.value
-    this.setState({loading:true,searchRows:searching})
-    this.pushUrl()
-    var newLink=''
-    if(searching){
-      //search function
-    
-      if(!isNaN(searching)){
-        newLink += `admin/borrower?id=${searching}&${this.state.halamanConfig}`
-       
-      }else{
-        newLink += `admin/borrower?fullname=${searching}&${this.state.halamanConfig}`
-      }
-
-     
-    }else{
-      newLink += `admin/borrower?${this.state.halamanConfig}`
-      
-    }
-    axios.get(serverUrlBorrower+newLink,config)
-      .then((res)=>{
-          this.setState({loading:false,rows:res.data.data,searchRows:null,rowsPerPage:res.data.rows,totalData:res.data.total_data})
-      })
-      .catch((err)=>{
-          console.log(err)
-      })
+    this.setState({loading:true,searchRows:searching,page:1},()=>{
+        this.getAllData()
+    })
+  
   }
 
  
@@ -122,35 +77,9 @@ getLink = ()=>{
  // p = 3
  // index = 11
 
- onChangePage = (current, pageSize) => {
-  this.setState({loading:true})
-  console.log('onChange:current=', current);
-  console.log('onChange:pageSize=', pageSize);
-  var searching = this.refs.search.value
-
-  var newLink=''
-    if(searching){
-      //search function
-    
-      if(!isNaN(searching)){
-        newLink += `admin/borrower?id=${searching}&${this.state.halamanConfig}&page=${current}`
-       
-      }else{
-        newLink += `admin/borrower?fullname=${searching}&${this.state.halamanConfig}&page=${current}`
-      }
-
-     
-    }else{
-      newLink += `admin/borrower?${this.state.halamanConfig}&page=${current}`
-      
-    }
-  axios.get(serverUrlBorrower+newLink,config)
-  .then((res)=>{
-      console.log(res.data)
-      this.setState({loading:false,rows:res.data.data,dataPerhalaman:res.data.rows,page:current,totalData:res.data.total_data})
-  })
-  .catch((err)=>{
-      console.log(err)
+ onChangePage = (current) => {
+  this.setState({loading:true,page:current},()=>{
+    this.getAllData()
   })
 }
   
@@ -189,9 +118,14 @@ getLink = ()=>{
             <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
             {/* <TableCell align="center">{val.status}</TableCell> */}
             <td align="center">
-            <Link style={{textDecoration:"none"}} to={`/profileNasabahDetail/${val.id}`}>
-              <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
-            </Link>
+
+            {   checkPermission('core_borrower_get_details') &&
+                      <Link style={{textDecoration:"none"}} to={`/profileNasabahDetail/${val.id}`}>
+                      <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
+                    </Link>
+                }
+                         
+            
             </td>
         </tr>
         )
@@ -206,8 +140,7 @@ getLink = ()=>{
     
   render() {
    
-
-if(kukie.get("token")){
+if(getToken()){
     return (
         <div className="container">
          <div className="row">
@@ -236,9 +169,9 @@ if(kukie.get("token")){
                  
               </tr>     
           </thead>
-            <tbody>
-              {this.renderJSX()}
- </tbody>  
+          <tbody>
+            {this.renderJSX()}
+          </tbody>  
           </table>
                 <hr/>
           <nav className="navbar" style={{float:"right"}}> 
@@ -248,14 +181,16 @@ if(kukie.get("token")){
                 pageSize={this.state.rowsPerPage}
                 onChange={this.onChangePage}
                 locale={localeInfo}
+                current={this.state.page}
                 />     
           </nav>
         </div>
     );
 
-}else if (!kukie.get("token")){
-  return  <Redirect to='/login' />
 }
+    else if(!getToken()){
+      return  <Redirect to='/login' />
+    }
     
   }
 }

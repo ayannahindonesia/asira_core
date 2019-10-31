@@ -1,14 +1,14 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
 import {getAllBankList} from './saga'
+import { checkPermission } from '../global/globalFunction';
 import 'rc-pagination/assets/index.css';
 import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 class BankList extends React.Component{
     _isMounted=false;
@@ -29,6 +29,7 @@ class BankList extends React.Component{
     getAllBankData = async function () {
         let param = { 
           page: this.state.page,
+          rows:10
         }
         
         var hasil = this.state.search;
@@ -61,8 +62,9 @@ class BankList extends React.Component{
     }
 
     onBtnSearch = ()=>{
-      this.getAllBankData()
-      this.setState({loading : true})
+      this.setState({loading : true, page:1},()=>{
+        this.getAllBankData()
+      })
     }
 
     renderJSX = () => {
@@ -96,12 +98,18 @@ class BankList extends React.Component{
                         {/* <td align="center">{val.type}</td> */}
                         <td align="center">{val.pic}</td>
                         <td align="center">
-                            <Link to={`/bankedit/${val.id}`} className="mr-2">
-                                 <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                          {   checkPermission('core_bank_patch') &&
+                              <Link to={`/bankedit/${val.id}`} className="mr-2">
+                                  <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                              </Link>
+                          }
+                          {   checkPermission('core_bank_detail') &&
+                              <Link to={`/bankdetail/${val.id}`} >
+                              <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
                             </Link>
-                            <Link to={`/bankdetail/${val.id}`} >
-                                 <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                            </Link>
+                          }
+                           
+                           
                         </td>
                 </tr>  
                     )
@@ -113,7 +121,7 @@ class BankList extends React.Component{
 
     }
 
-    onChangePage = (current, pageSize) => {
+    onChangePage = (current) => {
         this.setState({loading:true, page : current}, () => {
           this.getAllBankData()
         })
@@ -125,7 +133,7 @@ class BankList extends React.Component{
     }
  
     render(){
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                     <div className="row">
@@ -166,13 +174,14 @@ class BankList extends React.Component{
                 pageSize={this.state.dataPerhalaman}
                 onChange={this.onChangePage}
                 locale={localeInfo}
+                current={this.state.page}
             />
                 </nav>
                
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

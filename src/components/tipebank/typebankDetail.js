@@ -1,9 +1,8 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import { DetailTipeBankFunction } from './saga';
+import { getToken } from '../index/token';
 
-const cookie = new Cookies()
 
 class TypeBankDetail extends React.Component{
     _isMounted = false;
@@ -34,7 +33,7 @@ class TypeBankDetail extends React.Component{
 
 
     render(){
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2>Tipe Bank - Detail</h2>
@@ -77,7 +76,7 @@ class TypeBankDetail extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+     if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    
