@@ -52,9 +52,9 @@ class UserDetail extends React.Component{
 
       if(data) {
           if(!data.error) {
-            const dataUser = data.dataUser || [];
-
-            dataUser.role = this.findRole(dataUser.role_id, data.dataRole || [])
+            const dataUser = data.dataUser || {};
+            
+            dataUser.role = this.findRole((dataUser && dataUser.roles && dataUser.roles[0]) || 0, data.dataRole || [])
 
             this.setState({
               dataUser,

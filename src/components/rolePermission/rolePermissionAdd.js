@@ -71,7 +71,7 @@ class rolePermissionAdd extends React.Component{
           } else {
             this.setState({
               errorMessage: 'Data Role yang belum di setup tidak ditemukan',
-              // disabled: true,
+              disabled: true,
               loading: false,
             })
           }
