@@ -66,11 +66,10 @@ class userEdit extends React.Component{
       const dataUser = await getUserFunction(paramUser);
 
       if(data && dataUser) {
-          console.log(dataUser)
           if(!data.error && !dataUser.error) {
             this.setState({
               listRole: data.dataRole,
-              role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.role_id) || 0,
+              role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.roles && dataUser.dataUser.roles[0]) || 0,
               id: dataUser.dataUser.id,
               username: dataUser.dataUser.username,
               password: dataUser.dataUser.password,
@@ -99,7 +98,7 @@ class userEdit extends React.Component{
     btnSave=()=>{
       if (this.validate()) {
         const dataUser = {
-          role_id : parseInt(this.state.role),
+          role_id : [parseInt(this.state.role)],
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
