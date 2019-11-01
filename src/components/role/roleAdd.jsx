@@ -1,11 +1,8 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import swal from 'sweetalert'
 import { AddRoleFunction } from './saga';
 import { getToken } from '../index/token';
-
-const cookie = new Cookies()
 
 class RoleAdd extends React.Component{
     _isMounted = false;
@@ -72,7 +69,7 @@ class RoleAdd extends React.Component{
         if(this.state.diKlik){
             return <Redirect to='/listrole'/>            
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container mt-4">
                  <h3>Role - Tambah</h3>
