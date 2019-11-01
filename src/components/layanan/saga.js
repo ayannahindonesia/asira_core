@@ -1,18 +1,17 @@
-import { serverUrl } from '../url';
 import axios from 'axios'
-import Cookies from 'universal-cookie';
+import { serverUrl } from '../url';
+import { getToken } from '../index/token';
 
-const cookie = new Cookies()
 
 export async function getAllLayananListFunction(param,next) {
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
           };
         let filter =''
         
         for (const key in param){
-            filter += `${[key]} = ${param[key]}`
+            filter += `&${[key]}=${param[key]}`
         }
 
 
@@ -35,7 +34,7 @@ export async function getAllLayananListFunction(param,next) {
 export async function getDetailLayananFunction(param,next) {
     return new Promise(async (resolve)=>{
         var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " +getToken()}
           };
         axios.get(serverUrl+`admin/services/${param.id}`,config)
         .then((res)=>{
@@ -58,7 +57,7 @@ export async function getDetailLayananFunction(param,next) {
 export async function getImageFunction(param,next) {
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
           };
         axios.get(serverUrl+`admin/image/${param.image_id}`,config)
         .then((res)=>{
@@ -79,7 +78,7 @@ export async function getImageFunction(param,next) {
 
 export async function editLayananFunction (param,next){
     return new Promise(async (resolve)=>{
-        const config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
+        const config = {headers: {'Authorization': "Bearer " + getToken()}};
         axios.patch(serverUrl+`admin/services/${param.id}`,param.newData,config)
         .then((res)=>{
             param = res
@@ -98,7 +97,7 @@ export async function editLayananFunction (param,next){
     
 export async function addLayananFunction (param, next){
     return new Promise(async (resolve)=>{
-        const config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
+        const config = {headers: {'Authorization': "Bearer " + getToken()}};
         axios.post(serverUrl+'admin/services',param,config)
         .then((res)=>{
            resolve(res)

@@ -1,13 +1,12 @@
 
 import {serverUrl} from './../url'
 import axios from 'axios'
-import Cookies from 'universal-cookie';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 export async function getAllBankListFunction (param,next){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
 
         let filter = '';
@@ -36,7 +35,7 @@ export async function getAllBankListFunction (param,next){
 
 export async function getAllLoanDataFunction (param,next){
     return new Promise(async (resolve)=>{
-        const config = {headers: {'Authorization': "Bearer " + cookie.get('token')}};
+        const config = {headers: {'Authorization': "Bearer " + getToken()}};
         let filter = '';
 
         for(const key in param) {

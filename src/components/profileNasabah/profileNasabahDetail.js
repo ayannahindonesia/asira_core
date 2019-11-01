@@ -1,74 +1,83 @@
 import React from 'react'
-import Axios from 'axios';
-import {serverUrlBorrower,serverUrl} from './url'
-// import {serverUrlBorrower} from './url'
-import Cookies from 'universal-cookie';
-import './../support/css/profilenasabahdetail.css'
+import './../../support/css/profilenasabahdetail.css'
 import { Redirect } from 'react-router-dom'
 import {connect} from 'react-redux'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Moment from 'react-moment';
-import BrokenLink from './../support/img/default.png'
+import BrokenLink from './../../support/img/default.png'
 import Loader from 'react-loader-spinner'
+import {getProfileNasabahDetailFunction, getImageFunction} from './saga'
+import { getToken } from '../index/token';
+import { getBankDetailFunction } from '../bank/saga';
 
-
-const kukie = new Cookies()
-var config = {headers: {'Authorization': "Bearer " + kukie.get('token')}}
 
 class profileNasabahDetail extends React.Component{
     state={rows:[],modalKTP:false,modalNPWP:false,npwp:null,ktp:null,gambarKTP:null,gambarNPWP:null,
-        bankID:0,bankName:'',diKlik:false,progress:true,errorMessage:''}
-
+        bankID:0,bankName:'',diKlik:false,progress:false,errorMessage:''}
+    
+    _isMounted = false
     componentDidMount(){
         this.getDataDetail()  
+        this._isMounted = true
+       
     }
+    componentWillUnmount(){
+        this._isMounted = false
+    }
+    getDataDetail = async function () {
+        const param = {
+            id:this.props.match.params.id
+        }
 
-    getBankName = ()=>{
-        Axios.get(serverUrl+`admin/banks/${this.state.bankID}`,config)
-        .then((res)=>{
-          this.setState({bankName:res.data.name})
+        const data = await getProfileNasabahDetailFunction(param)
+        if(data){
+            if(!data.error){
+                this.setState({rows:data.data,ktp:data.data.idcard_image,npwp:data.data.taxid_image, bankID:data.data.bank.Int64})
+                  //KTP WAJIB KALO NPWP OPTIONAL
+                    this.getBankName() 
+                    this.getImage(this.state.ktp,'gambarKTP')
+                    this.getImage(this.state.npwp,'gambarNPWP')
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+    getBankName = async function(){
+        const param = {
+            id:this.state.bankID
+        }
+        const data = await getBankDetailFunction(param)
 
-        })
-        .catch((err)=> console.log(err))
+        if(data){
+            console.log(data)
+            if(!data.error){
+                this.setState({bankName:data.name})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
         return this.state.bankName
     }
-    getImage = (idImage, stringStates)=>{
-          //KTP
-          Axios.get(serverUrlBorrower+`admin/image/${idImage}`,config)
-          .then((res)=>{
-              this.setState({[stringStates]:res.data.image_string,progress:false})
-          })
-          .catch((err)=>{
-              this.setState({progress:false,errorMessage:'ID Gambar KTP dalam Database Tidak ditemukan'})
-          })
+
+    getImage =  async function(idImage, stringStates){
+        const param ={
+            id:idImage
+        }
+
+        const data = await getImageFunction(param)
+
+        if(data){
+            if(!data.error){
+            this.setState({[stringStates]:data.data.image_string,progress:false})
+            }else{
+            this.setState({progress:false,errorMessage:'ID Gambar KTP dalam Database Tidak ditemukan'})                  
+            }
+        }
     }
     
     formatMoney=(number)=>
     { return number.toLocaleString('in-RP', {style : 'currency', currency: 'IDR'})}
 
-    getDataDetail =()=>{
-         var id = this.props.match.params.id
-         config = {
-            headers: {'Authorization': "Bearer " + kukie.get('token')}
-          };
-        if (kukie.get('token')){
-           
-              Axios.get(serverUrlBorrower+`admin/borrower/${id}`,config)
-              .then((res)=>{
-                  console.log(res.data)
-                  this.setState({rows:res.data,bankId:res,ktp:res.data.idcard_image.Int64,npwp:res.data.taxid_image.Int64, bankID:res.data.bank.Int64})
-                  //KTP WAJIB KALO NPWP OPTIONAL
-                    this.getBankName() 
-                    this.getImage(this.state.ktp,'gambarKTP')
-                    this.getImage(this.state.npwp,'gambarNPWP')
-                
-                })
-              .catch((err)=>{
-                  console.log(err)
-              })
-        }
-        
-    }
 
     btnModalKTP =()=>{
         this.setState({modalKTP:true})
@@ -104,7 +113,7 @@ class profileNasabahDetail extends React.Component{
                 <Redirect to="/profileNasabah"></Redirect>
             )
         }
-        if(kukie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
    {/* ------------------------------------------------------FOTO KTP------------------------------------------------------ */}
@@ -445,7 +454,7 @@ class profileNasabahDetail extends React.Component{
             )
                                     }
         }
-        if(!kukie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

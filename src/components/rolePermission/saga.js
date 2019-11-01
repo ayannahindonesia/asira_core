@@ -94,7 +94,7 @@ export async function patchRolePermissionFunction(param) {
             headers: {'Authorization': "Bearer " + token}
         };
 
-        axios.patch(serverUrl+`admin/permission`,param.dataRolePermission,config).then((res)=>{
+        axios.patch(serverUrl+`admin/roles/${param.roleId}`,param.dataRolePermission,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
             const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal mengubah Role Permission'

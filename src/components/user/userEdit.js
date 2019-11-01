@@ -98,7 +98,7 @@ class userEdit extends React.Component{
     btnSave=()=>{
       if (this.validate()) {
         const dataUser = {
-          role_id : [parseInt(this.state.role)],
+          roles : [parseInt(this.state.role)],
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
@@ -140,7 +140,7 @@ class userEdit extends React.Component{
       let status = this.state.status;
 
       if(status === 'active') {
-        status = 'non-active'
+        status = 'inactive'
       } else {
         status = 'active'
       }

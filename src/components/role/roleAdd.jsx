@@ -31,17 +31,16 @@ class RoleAdd extends React.Component{
         var name = this.refs.namaRole.value
         var system = this.refs.sistem.value
         var description = this.refs.deskripsi.value
-        var status = this.state.check
-
+        var status = this.state.check ? "active" :"inactive"
+        var permissions =[]
         if(name.trim()==="" || name ===""){
             this.setState({errorMessage:"Nama Role Kosong - Harap Cek Ulang"})
         }else if(system === "0" ){
             this.setState({errorMessage:"Sistem Role Kosong - Harap Cek Ulang"})            
         }else{
             this.setState({submit:true})
-            var newData = {name,system,description,status}
+            var newData = {name,system,description,status,permissions}
             this.addRole(newData)
-         
         }
     }
     
@@ -101,7 +100,7 @@ class RoleAdd extends React.Component{
                                 <option value={0}>====== Pilih Sistem =====</option>
                                 <option value="Mobile">Mobile</option>
                                 <option value="Core">Core</option>
-                                <option value="Bank Dashboard">Bank Dashboard</option>
+                                <option value="Dashboard">Dashboard</option>
                             </select>
                             </div>
                             </div>

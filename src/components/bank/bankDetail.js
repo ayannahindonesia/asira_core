@@ -1,21 +1,22 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrl} from '../url'
 import Moment from 'react-moment'
 import Loader from 'react-loader-spinner'
-import axios from 'axios'
 import { getBankDetailFunction } from './saga';
 import {DetailTipeBankFunction} from './../tipebank/saga'
+import { listProductFunction } from '../product/saga';
+import { getAllLayananListFunction } from '../layanan/saga';
+import { getToken } from '../index/token';
 
-const cookie = new Cookies()
-var config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-  };
 class BankDetail extends React.Component{
     state = {rows:[],layanan:[],produk:[],tipe:0,namaTipeBank:'',serviceName:null,productName:null,diKlik:false,loading:true}
+    _isMounted = false;
     componentDidMount(){
         this.getBankDetail()
+        this._isMounted = true
+    }
+    componentWillUnmount(){
+        this._isMounted = false
     }
 
     getBankDetail = async function () {
@@ -24,6 +25,7 @@ class BankDetail extends React.Component{
         const data = await getBankDetailFunction(param)
 
         if(data){
+            console.log(data)
             if(!data.error){
                 this.setState({rows:data,layanan:data.services,tipe:data.type,produk:data.products})
                 if (this.state.rows){
@@ -37,49 +39,42 @@ class BankDetail extends React.Component{
         }
     }
 
-    getBankServiceId= () =>{
-             var id = this.props.match.params.id
-             config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
-              };
-          
-                axios.get(serverUrl+`admin/bank_services?bank_id=${id}`,config)
-                .then((res)=>{
-                var serviceId = res.data.data.map((val)=>{
-                    return val.service_id
-                })
-                axios.get(serverUrl+`/admin/services?id=${serviceId.toString()}`,config)
-                .then((res)=>{
-                    var serviceName = res.data.data.map((val)=>{
-                        return val.name
-                    })
-                    this.setState({serviceName:serviceName.toString()})
-                })
-            })
-            .catch((err)=>console.log(err))
-    }
+    getBankServiceId = async function (){
+        let param ={
+            id:this.state.rows.services.toString()
+        }
+        const data = await getAllLayananListFunction(param)
 
-    getProductId= () =>{
-        var id = this.props.match.params.id
-        config = {
-           headers: {'Authorization': "Bearer " + cookie.get('token')}
-         };
-     
-       axios.get(serverUrl+`admin/bank_products?bank_id=${id}`,config)
-       .then((res)=>{
-           console.log(res.data)
-           var productID = res.data.data.map((val)=>{
-               return val.product_id
-           })
-           axios.get(serverUrl+`/admin/products?id=${productID.toString()}`,config)
-           .then((res)=>{
-               var productName = res.data.data.map((val)=>{
-                   return val.name
-               })
-               this.setState({productName:productName.toString(),loading:false})
-           })
-       })
-       .catch((err)=>console.log(err))
+        if(data){
+            console.log(data)
+            if(!data.error){
+                var serviceName = data.data.data.map((val)=>{
+                    return val.name
+                })
+                this.setState({serviceName:serviceName.toString()})
+            }else{
+
+            }
+        }
+    }
+    
+    getProductId = async function (){
+        let param = {
+            id:this.state.rows.products.toString()
+        }
+        const data = await listProductFunction(param)
+        if(data){
+            console.log(data)
+            if(!data.error){
+                var productName = data.data.data.map((val)=>{
+                    return val.name
+                })
+                this.setState({productName:productName.toString(),loading:false})
+            }else{
+                this.setState({errorMessage:data.error,loading:false})
+            }
+        }
+
     }
 
     getTypeBank = async function () {
@@ -109,7 +104,7 @@ class BankDetail extends React.Component{
                 />  
             )
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2>Bank - Detail</h2>
@@ -220,7 +215,7 @@ class BankDetail extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken){
             return (
                 <Redirect to='/login' />
             )    

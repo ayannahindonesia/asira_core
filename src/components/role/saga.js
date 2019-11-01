@@ -1,12 +1,11 @@
-import Cookies from 'universal-cookie';
 import axios from 'axios'
 import { serverUrl } from '../url';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 export async function AddRoleFunction (param){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.post(serverUrl+'admin/roles',param,config)
         .then((res)=>{
@@ -23,7 +22,7 @@ export async function AddRoleFunction (param){
 export async function ListRoleFunction (param){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         let filter = '';
 
@@ -32,7 +31,7 @@ export async function ListRoleFunction (param){
         }
         axios.get(serverUrl+`admin/roles?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
-            resolve(res.data.data)
+            resolve(res)
         })
         .catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
@@ -45,7 +44,7 @@ export async function ListRoleFunction (param){
 export async function DetailRoleFunction (param){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " +  getToken()}
         };
         axios.get(serverUrl+`admin/roles/${param.id}`,config)
         .then((res)=>{
@@ -62,7 +61,7 @@ export async function DetailRoleFunction (param){
 export async function EditRoleFunction (param){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " +  getToken()}
         };
         axios.patch(serverUrl+`admin/roles/${param.id}`,param.newData,config)
         .then((res)=>{

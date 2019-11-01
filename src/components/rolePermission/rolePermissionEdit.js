@@ -56,7 +56,7 @@ class rolePermissionEdit extends React.Component{
 
       if(data) {
           const listRolePermission = destructRolePermission(data.dataRole.permissions, this.state.listAllRolePermission)
-
+          
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
@@ -83,10 +83,12 @@ class rolePermissionEdit extends React.Component{
     btnSave = () =>{
       const listRolePermission = this.state.listRolePermission;
       const dataRolePermission = {};
-      dataRolePermission.role_id = parseInt(this.state.listRole.id);
+      
+      dataRolePermission.id = parseInt(this.state.listRole.id);
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
       const param = {
+        roleId: parseInt(this.state.listRole.id),
         dataRolePermission,
       };
       

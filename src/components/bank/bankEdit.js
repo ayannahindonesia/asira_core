@@ -1,22 +1,14 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Select from 'react-select';
-import {serverUrl} from '../url'
-import axios from 'axios'
 import swal from 'sweetalert'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
-import { getProvinsiFunction, getKabupatenFunction, getServiceFunction } from './saga';
+import { getProvinsiFunction, getKabupatenFunction, getBankDetailFunction, getBankTypesFunction, editBankFunction } from './saga';
 import { listProductFunction } from './../product/saga'
-
-const cookie = new Cookies()
-var config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-  };
- 
-
+import { getToken } from '../index/token';
+import { getAllLayananListFunction } from '../layanan/saga';
 
 const customStyles = {
     option: (provided, state) => ({
@@ -39,6 +31,7 @@ const customStyles = {
   }
 
 class BankEdit extends React.Component{
+    _isMounted=false;
     state = {
         productID:[],serviceID:[],
         errorMessage: null, diKlik:false,
@@ -47,38 +40,38 @@ class BankEdit extends React.Component{
         serviceName:null,productName:null,submit:false
     };
     componentWillReceiveProps(newProps){
-        this.setState({errorMessage:newProps.error})
-       }
+      this.setState({errorMessage:newProps.error})
+    }
     handleChangejenisLayanan = (jenisLayanan) => {
-        this.setState({ serviceName: jenisLayanan });
-      };
+      this.setState({ serviceName: jenisLayanan });
+    };
 
-      handleChangejenisLayanan = (jenisLayanan) => {
-        
-            this.setState({ serviceName:jenisLayanan , productName: null}, (() => {
-                let stringServiceId = '';
-                if(this.state.serviceName) {
-                    for(let key = 0; key < this.state.serviceName.length; key++) {
-                        stringServiceId += `${this.state.serviceName[key].value}`;
-                        if(this.state.serviceName[key + 1]) {
-                            stringServiceId += ',';
-                        }
+    handleChangejenisLayanan = (jenisLayanan) => {
+        this.setState({ serviceName:jenisLayanan , productName: null}, (() => {
+            let stringServiceId = '';
+            if(this.state.serviceName) {
+                for(let key = 0; key < this.state.serviceName.length; key++) {
+                    stringServiceId += `${this.state.serviceName[key].value}`;
+                    if(this.state.serviceName[key + 1]) {
+                        stringServiceId += ',';
                     }
-                    this.getBankProduct(stringServiceId)
                 }
-                
-            }));
+                this.getBankProduct(stringServiceId)
+            }
+        }));
 
     };
 
     handleChangejenisProduct = (jenisProduct) => {
         this.setState({ productName:jenisProduct });
     };
-    
     componentDidMount(){
-    
+        this._isMounted=true
         this.getAllProvinsi()
         this.getBankDataById()
+    }
+    componentWillUnmount(){
+        this._isMounted=false
     }
 
     getAllProvinsi = async function(){
@@ -119,11 +112,11 @@ class BankEdit extends React.Component{
     }
 
     getBankService = async function () {
-        const data = await getServiceFunction()
+        const data = await getAllLayananListFunction()
 
         if(data){
             if(!data.error){
-                this.setState({bankService:data})
+                this.setState({bankService:data.data.data})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -131,82 +124,82 @@ class BankEdit extends React.Component{
     } 
 
 
-    getBankDataById = ()=>{
-        var id = this.props.match.params.id
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-        axios.get(serverUrl+`admin/banks/${id}`,config)
-        .then((res)=>{
-            this.setState({dataBank:res.data,productID:res.data.products,serviceID:res.data.services})
-           if (this.state.dataBank){
-             this.getTypeBank()
-             this.getBankService()
-             this.getServiceDataSudahTerpilih(id)
-             this.getProductDataSudahTerpilih(id)
-           }
-        })
-        .catch((err)=> console.log(err))
+    getBankDataById = async function (){
+        const param = {
+            id:this.props.match.params.id
+        }
+
+        const data = await getBankDetailFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({dataBank:data,productID:data.products,serviceID:data.services})
+                if (this.state.dataBank){
+                  this.getTypeBank()
+                  this.getBankService()
+                  this.getServiceDataSudahTerpilih()
+                  this.getProductDataSudahTerpilih()
+                }
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
 
     }
 
-    getTypeBank = ()=>{
-        axios.get(serverUrl+`admin/bank_types/${this.state.dataBank.type}`,config)
-      .then((res)=>{
-            this.setState({namaTipeBank:res.data.name})
-      })
-      .catch((err)=> console.log(err))
+    getTypeBank = async function (){
+        const param = {
+            type: this.state.dataBank.type
+        }
+        const data = await getBankTypesFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({namaTipeBank:data.data.name})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+   
     }
 
-    getBankService = ()=>{
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-      axios.get(serverUrl+'admin/services',config)
-      .then((res)=>{
-          this.setState({bankService:res.data.data})
-      })
-      .catch((err)=> console.log(err))
-    }
+   
 
-    getServiceDataSudahTerpilih = (id)=>{  
-      var config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-      axios.get(serverUrl+`admin/bank_services?bank_id=${id}`,config)
-      .then((res)=>{
-         var resultServiceID = res.data.data.map((val)=>{
-             return val.service_id
-         })
-         axios.get(serverUrl+`/admin/services?id=${resultServiceID.toString()}`,config)
-         .then((res)=>{
-             var serviceName = res.data.data.map((val)=>{
-                 return {value:val.id,label:val.name,id:val.id}
-             })
-             this.setState({serviceName:serviceName})
-         })
-      })
-      .catch((err)=> console.log(err))
-    }
+    getServiceDataSudahTerpilih = async function(){
+        let param = {
+            id:this.state.dataBank.products.toString()
+        }
 
-    getProductDataSudahTerpilih = (id)=>{  
-        var config = {
-              headers: {'Authorization': "Bearer " + cookie.get('token')}
-            };
-        axios.get(serverUrl+`admin/bank_products?bank_id=${id}`,config)
-        .then((res)=>{
-           var resultProductID = res.data.data.map((val)=>{
-               return val.product_id
-           })
-           axios.get(serverUrl+`/admin/products?id=${resultProductID.toString()}`,config)
-           .then((res)=>{
-               var productName = res.data.data.map((val)=>{
-                   return {value:val.id,label:val.name}
-               })
-               this.setState({productName:productName})
-           })
-        })
-        .catch((err)=> console.log(err))
+        const data = await getAllLayananListFunction(param)
+
+        if(data){
+            if(!data.error){
+                var serviceName = data.data.data.map((val)=>{
+                    return {value:val.id,label:val.name,id:val.id}
+                })
+                this.setState({serviceName:serviceName})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+    }
+   
+    getProductDataSudahTerpilih = async function(){
+        let param = {
+            id:this.state.dataBank.products.toString()
+        }
+        const data = await listProductFunction(param)
+
+        if(data){
+            if(!data.error){
+                let productName = data.data.data.map((val)=>{
+                    return {value:val.id,label:val.name}
+                })
+                this.setState({productName:productName})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
     }
 
     renderProvinsiJsx = ()=>{
@@ -306,26 +299,33 @@ class BankEdit extends React.Component{
             var newData = {
                 name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup
             }
-        
+            const param = {
+                id:id,
+                newData
+            }
            
-            axios.patch(serverUrl+`admin/banks/${id}`,newData,config)
-            .then((res)=>{
-                swal("Success","Data berhasil di edit","success")
-                this.setState({diKlik:true,errorMessage:null,submit:false})
-            })
-            .catch((err)=>{
-                console.log(err)
-                this.setState({errorMessage:err.response.data.message.toString().toUpperCase(),submit:false})
-            })
+            this.editBankBtn(param)
            
        }
+    }
+
+    editBankBtn = async function (param){
+        const data = await editBankFunction(param)
+        if(data){
+            if(!data.error){
+                swal("Success","Data berhasil di edit","success")
+                this.setState({diKlik:true,errorMessage:null,submit:false})
+            }else{
+                this.setState({errorMessage:data.error,submit:false})
+            }
+        }
     }
     
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2>Bank - Edit</h2>
@@ -476,7 +476,7 @@ class BankEdit extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

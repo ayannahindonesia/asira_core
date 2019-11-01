@@ -1,15 +1,14 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import Select from 'react-select';
 import swal from 'sweetalert'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-import { addBankFunction, getProvinsiFunction, getKabupatenFunction, getServiceFunction } from './saga';
+import { addBankFunction, getProvinsiFunction, getKabupatenFunction } from './saga';
 import { ListTipeBankFunction } from './../tipebank/saga'
 import { listProductFunction } from './../product/saga'
 import { Redirect  } from 'react-router-dom'
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
+import { getAllLayananListFunction } from '../layanan/saga';
 
 
   const customStyles = {
@@ -31,8 +30,6 @@ const cookie = new Cookies()
       return { ...provided, opacity, transition };
     }
   }
-
-  
 
 class Main extends React.Component{
     state = {
@@ -57,7 +54,6 @@ class Main extends React.Component{
     }
 
     handleChangejenisLayanan = (jenisLayanan) => {
-        
             this.setState({ jenisLayanan , jenisProduct: null}, (() => {
                 let stringServiceId = '';
                 if(this.state.jenisLayanan) {
@@ -71,8 +67,6 @@ class Main extends React.Component{
                 }
                 
             }));
-        
-       
       
     };
 
@@ -131,11 +125,11 @@ class Main extends React.Component{
     }
 
     getBankService = async function () {
-        const data = await getServiceFunction()
+        const data = await getAllLayananListFunction()
 
         if(data){
             if(!data.error){
-                this.setState({bankService:data})
+                this.setState({bankService:data.data.data})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -283,7 +277,7 @@ class Main extends React.Component{
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container mt-2">
                      <h3>Bank - Tambah</h3>
@@ -416,7 +410,7 @@ class Main extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

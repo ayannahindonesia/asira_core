@@ -1,11 +1,9 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-
 import Loader from 'react-loader-spinner'
 import { getDetailLayananFunction, getImageFunction } from './saga'
+import { getToken } from '../index/token';
 
-const cookie = new Cookies()
 
 class LayananDetail extends React.Component{
     _isMounted = false;
@@ -46,7 +44,7 @@ class LayananDetail extends React.Component{
                 </div>
             )
         }else{
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2>Layanan Detail</h2>
@@ -86,7 +84,7 @@ class LayananDetail extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

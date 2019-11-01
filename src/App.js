@@ -25,9 +25,9 @@ import LayananDetail from './components/layanan/layananDetail'
 import Login from './components/index/login'
 import Header from './components/index/header'
 import Home from './components/index/main'
-import Nasabah from './components/profileNasabah'
+import Nasabah from './components/profileNasabah/profileNasabah'
 import ScrollTop from './components/scrollToTop'
-import profileNasabahDetail from './components/profileNasabahDetail'
+import profileNasabahDetail from './components/profileNasabah/profileNasabahDetail'
 import PermintaanPinjaman from './components/permintaanPinjaman/permintaanPinjaman'
 import PermintaanPinjamanDetail from './components/permintaanPinjaman/permintaanPinjamanDetail'
 
@@ -94,7 +94,6 @@ class App extends React.Component {
         
         this.setState({loading : false})   
     }).catch((err)=>{
-      console.log(err)
       setTimeout(function(){ alert("Coba reload halaman/ cek koneksi internet"); }, 5000);
     })
   }

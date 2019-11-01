@@ -1,15 +1,14 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import Select from 'react-select';
+import Select from 'react-select/creatable'
 import './../../support/css/productEdit.css'
 import NumberFormat from 'react-number-format';
-import axios from 'axios'
-import {serverUrl} from '../url'
 import swal from 'sweetalert'
-import { getBankServiceFunction, editProductFunction, detailProductFunction,detailServiceProductFunction} from './saga';
+import { editProductFunction, detailProductFunction,detailServiceProductFunction} from './saga';
+import { getAllLayananListFunction, getDetailLayananFunction } from '../layanan/saga';
+import { getToken } from '../index/token';
+import Loader from 'react-loader-spinner'
 
-const cookie = new Cookies()
 const options = [
     { value: 'pendidikan', label: 'Pendidikan' },
     { value: 'konsumtif', label: 'Konsumtif' }
@@ -38,40 +37,44 @@ const customStyles = {
 
 class ProductEdit extends React.Component{
     state = {
-    selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,
+    selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,loading:true,
     collaterals:[],
     bankService:[],diKlik:false,rows:[],fees:[],bankServicebyID:{},financing_sector:[],asn_fee:'',
     agunan:["Sertifikat Tanah","Sertifikat Rumah","Kios/Lapak","Deposito","BPKB Kendaraan"],check:false,submit:false
     };
-
+    _isMounted = false
     componentDidMount(){
-    this.getBankService()
-    this.getProductDetailId()
+        this._isMounted = true
+        this.getBankService()
+        this.getProductDetailId()
+    }
+    componentWillUnmount (){
+        this._isMounted = false
     }
        
     
-      getProductDetailId= async function (params) {
-          const id = this.props.match.params.id
-          const data = await detailProductFunction({id},detailServiceProductFunction)
+    getProductDetailId= async function (params) {
+        const id = this.props.match.params.id
+        const data = await detailProductFunction({id},detailServiceProductFunction)
 
-          if(data){
-            if(!data.error){
-                this.setState({
-                    rows:data.dataProduct,
-                    fees:data.dataProduct.fees,
-                    asn_fee:data.dataProduct.asn_fee,
-                    collaterals:data.dataProduct.collaterals,
-                    financing_sector:data.dataProduct.financing_sector.map((val)=>{
-                        return   { value: val, label: val }
-                    }),
-                    check:data.dataProduct.status ==="active"? true: false,
-                    bankServicebyID:data.serviceProduct
-                })
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-          }
-      }
+        if(data){
+        if(!data.error){
+            this.setState({
+                rows:data.dataProduct,
+                fees:data.dataProduct.fees,
+                asn_fee:data.dataProduct.asn_fee,
+                collaterals:data.dataProduct.collaterals,
+                financing_sector:data.dataProduct.financing_sector.map((val)=>{
+                    return   { value: val, label: val }
+                }),
+                check:data.dataProduct.status ==="active"? true: false,
+                bankServicebyID:data.serviceProduct,loading:false
+            })
+        }else{
+            this.setState({errorMessage:data.error})
+        }
+        }
+    }
     
       
     handleChange = (selectedOption) => {
@@ -190,7 +193,7 @@ class ProductEdit extends React.Component{
     }
 
     getBankService = async function (params) {
-    const data = await getBankServiceFunction(params)
+    const data = await getAllLayananListFunction(params)
     if(data){
     if(!data.error){
         this.setState({bankService:data.data.data})
@@ -200,16 +203,19 @@ class ProductEdit extends React.Component{
     }
     }
 
-    getBankServiceID = ()=>{
-    var config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-    };
-    axios.get(serverUrl+`admin/services/${this.state.rows.service}`,config)
-    .then((res)=>{
-    console.log(res.data)
-    this.setState({bankServicebyID:res.data})
-    })
-    .catch((err)=> console.log(err))
+    getBankServiceID = async function () {
+        const param = {
+            id: this.state.rows.service
+        }
+        const data = await getDetailLayananFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({bankServicebyID:data.data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
     }
 
     renderBankService = ()=>{
@@ -310,7 +316,19 @@ class ProductEdit extends React.Component{
             return <Redirect to='/listproduct'/>            
 
         }
-        if(cookie.get('token')){
+        if (this.state.loading){
+            return (
+                <div className="mt-2">
+                 <Loader 
+                    type="ThreeDots"
+                    color="#00BFFF"
+                    height="30"	
+                    width="30"
+                />  
+                </div>
+            )
+        }else{
+        if(getToken()){
             return(
                 <div className="container">
                     <h2 className="mb-5">Produk - Ubah</h2> 
@@ -480,12 +498,13 @@ class ProductEdit extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken())
+        {
             return (
                 <Redirect to='/login' />
             )    
         }
-       
+        }
     }
 }
 

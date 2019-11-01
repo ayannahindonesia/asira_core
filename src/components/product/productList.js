@@ -1,17 +1,18 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import Loader from 'react-loader-spinner'
 import { Link } from 'react-router-dom'
 import { listProductFunction } from './saga';
 import {checkPermission} from './../global/globalFunction'
 import { Redirect } from 'react-router-dom'
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
+import localeInfo from 'rc-pagination/lib/locale/id_ID';
+import Pagination from 'rc-pagination';
 
 class ProductList extends React.Component{
     _isMounted = false;
     state={
-        loading:true
+        loading:true,
+        rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,
     }
     componentWillUnmount() {
         this._isMounted = false;
@@ -22,17 +23,33 @@ class ProductList extends React.Component{
     }
     getAllProduct = async function () {
         const params ={
-
+            page:this.state.page,
+            rows:10
         }
         const data = await listProductFunction (params)
         if(data){
             if(!data.error){
-                this.setState({loading:false,rows:data.data.data})
+                this.setState({loading:false,rows:data.data.data,
+                    total_data:data.data.total_data,
+                    page:data.data.current_page,
+                    from:data.data.from,
+                    to:data.data.to,
+                    last_page:data.data.last_page,
+                    rowsPerPage:data.data.rows,
+                    
+                })
             }else{
                 console.log(data.error)
             }
         }
     }
+
+    onChangePage = (current) => {
+        this.setState({loading:true, page : current}, () => {
+          this.getAllProduct()
+        })
+    }
+
 
     renderJSX = () => {
         if (this.state.loading){
@@ -65,14 +82,17 @@ class ProductList extends React.Component{
                         <td align="center">{val.status ==="active"?"Aktif":"Tidak Aktif"}</td>               
                         <td align="center">
                       
-                         {checkPermission('ServiceProduct_Edit') &&
-                        <Link to={`/productedit/${val.id}`} className="mr-2">
-                        <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                        </Link>
+                         {checkPermission('core_product_patch') &&
+                            <Link to={`/productedit/${val.id}`} className="mr-2">
+                            <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
                         }
-                        <Link to={`/productdetail/${val.id}`} >
-                         <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                    </Link>
+                        {checkPermission('core_product_detail') &&
+                            <Link to={`/productdetail/${val.id}`} >
+                            <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
+                        }
+                        
                         </td>
                       </tr>
                   )
@@ -84,7 +104,7 @@ class ProductList extends React.Component{
 
 
     render(){
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                     <h2>Product - List</h2>
@@ -105,10 +125,22 @@ class ProductList extends React.Component{
 
                        </tbody>
                    </table>
+                   <hr></hr>
+                        <nav style={{float:"right",color:"black"}}> 
+                            <Pagination 
+                            className="ant-pagination"  
+                            showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
+                            total={this.state.total_data}
+                            pageSize={this.state.rowsPerPage}
+                            onChange={this.onChangePage}
+                            locale={localeInfo}
+                            current={this.state.page}
+                            />
+                        </nav>
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

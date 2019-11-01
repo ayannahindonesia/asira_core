@@ -1,18 +1,19 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import { checkPermission } from '../global/globalFunction';
 import {Link} from 'react-router-dom'
 import { getAllLayananListFunction } from './saga';
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
+import localeInfo from 'rc-pagination/lib/locale/id_ID';
+import Pagination from 'rc-pagination';
 
 class LayananList extends React.Component{
     _isMounted = false;
     
     state={
-        loading:true
+        loading:true,
+        rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,
     }
     componentDidMount (){
         this._isMounted=true
@@ -23,15 +24,31 @@ class LayananList extends React.Component{
     }
     
     getAllList = async function (){
-        const param={}
+        const param={
+            page: this.state.page,
+            rows:10
+        }
         const data = await getAllLayananListFunction(param)
         if(data){
             if(!data.error){
-                this.setState({loading:false,rows:data.data.data})
+                this.setState({loading:false,rows:data.data.data,
+                    total_data:data.data.total_data,
+                    page:data.data.current_page,
+                    from:data.data.from,
+                    to:data.data.to,
+                    last_page:data.data.last_page,
+                    dataPerhalaman:data.data.rows,
+                })
             }else{
                 this.setState({errorMessage:data.error,loading:false})
             }
         }
+    }
+
+    onChangePage = (current) => {
+        this.setState({loading:true, page : current}, () => {
+          this.getAllList()
+        })
     }
 
     renderJSX = () => {
@@ -64,15 +81,19 @@ class LayananList extends React.Component{
                         <td align="center">{val.name}</td>
                         <td align="center">{val.status==="active"?"Aktif":"Tidak Aktif"}</td>               
                         <td align="center">
-                        
-                         {   checkPermission('BankService_Edit') &&
-                           <Link to={`/layananedit/${val.id}`} className="mr-2">
-                           <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                           </Link>
-                        }
-                        <Link to={`/layanandetail/${val.id}`} >
-                         <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                    </Link>
+                            {   checkPermission('core_service_patch') &&
+                                <Link to={`/layananedit/${val.id}`} className="mr-2">
+                                <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
+                                </Link>
+                            }
+
+                            {   checkPermission('core_service_detail') &&
+                                <Link to={`/layanandetail/${val.id}`} >
+                                <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
+                            }
+                       
+                       
                         </td>
                       </tr>
                   )
@@ -82,7 +103,7 @@ class LayananList extends React.Component{
         }
     }
     render(){
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2 className="mt-3">Layanan List</h2>
@@ -102,11 +123,23 @@ class LayananList extends React.Component{
 
                        </tbody>
                    </table>
+                   <nav style={{float:"right",color:"black"}}> 
+
+                    <Pagination 
+                    className="ant-pagination"  
+                    showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
+                    total={this.state.total_data}
+                    pageSize={this.state.dataPerhalaman}
+                    onChange={this.onChangePage}
+                    locale={localeInfo}
+                    current={this.state.page}
+                    />
+                    </nav>
     
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    
