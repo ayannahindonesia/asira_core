@@ -94,7 +94,6 @@ class App extends React.Component {
         
         this.setState({loading : false})   
     }).catch((err)=>{
-      console.log(err)
       setTimeout(function(){ alert("Coba reload halaman/ cek koneksi internet"); }, 5000);
     })
   }

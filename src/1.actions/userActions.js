@@ -1,13 +1,12 @@
 import Axios from 'axios'
 import {serverUrl} from './../components/url'
-import Cookie from 'universal-cookie'
+import { getToken } from '../components/index/token'
 
-const kukie = new Cookie()
 
 export const keepLogin = ()=>{
   return (dispatch)=>{
         var config = {
-          headers: {'Authorization': "Bearer " + kukie.get('tokenClient')}
+          headers: {'Authorization': "Bearer " + getToken()}
         };
       Axios.get(serverUrl+"lender/profile",config)
       .then((res)=>{

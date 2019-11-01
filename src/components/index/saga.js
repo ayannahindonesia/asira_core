@@ -1,10 +1,7 @@
 import axios from 'axios';
 import { serverUrl, serverUrlGeo } from '../url';
-import Cookies from 'universal-cookie';
 import jsonWebToken from 'jsonwebtoken';
 import { setToken, setTokenGeo, getTokenAuth } from './token';
-
-const cookie = new Cookies()
 
 export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRole, nextPermission) {
     return new Promise(async (resolve) => { 
@@ -20,9 +17,6 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
         const logindata ={key: param.key,password: param.password};
   
         axios.post(url,logindata,config).then((res)=>{
-            const date = new Date();
-            date.setTime(date.getTime() + (res.data.expires_in*1000));
-            cookie.set('token',res.data.token,{expires: date})
 
             setToken(res.data.token, new Date().getTime() + (res.data.expires_in*1000))
             
@@ -65,10 +59,6 @@ export async function getTokenGeoFunction(param, next) {
         }
   
         axios.get(url,geoData,config).then((res)=>{
-            const date = new Date();
-            date.setTime(date.getTime() + (res.data.expires*1000));
-            cookie.set('tokenGeo',res.data.token,{expires: date})
-
             setTokenGeo(res.data.token);
 
             param.dataGeoToken = res.data.token;

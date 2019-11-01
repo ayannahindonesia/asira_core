@@ -84,7 +84,7 @@ class userAdd extends React.Component{
       if (this.validate()) {
         const dataUser = {
           username : this.state.username,
-          role_id : [parseInt(this.state.role)],
+          roles : [parseInt(this.state.role)],
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status ? 'active' : 'inactive',
