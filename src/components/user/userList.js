@@ -64,7 +64,6 @@ class UserList extends React.Component{
         const data = await getAllUserFunction(param, getAllRoleFunction);
 
         if(data) {
-            console.log(data)
             if(!data.error) {
                 const dataListUser = data.dataUser || [];
 
