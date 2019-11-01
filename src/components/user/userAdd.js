@@ -87,7 +87,7 @@ class userAdd extends React.Component{
           role_id : [parseInt(this.state.role)],
           phone : this.state.phone,
           email : this.state.email,
-          status : this.state.status ? 'active' : 'non-active',
+          status : this.state.status ? 'active' : 'inactive',
         }
 
         const param = {

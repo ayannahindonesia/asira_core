@@ -140,7 +140,7 @@ class userEdit extends React.Component{
       let status = this.state.status;
 
       if(status === 'active') {
-        status = 'non-active'
+        status = 'inactive'
       } else {
         status = 'active'
       }
