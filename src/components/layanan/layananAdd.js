@@ -1,10 +1,9 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import './../../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
 import swal from 'sweetalert'
 import { addLayananFunction } from './saga';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 class LayananAdd extends React.Component{
     _isMounted = false;
@@ -99,7 +98,7 @@ class LayananAdd extends React.Component{
             return <Redirect to='/listlayanan'/>            
 
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2 className="mt-3">Layanan Tambah</h2>
@@ -138,7 +137,7 @@ class LayananAdd extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

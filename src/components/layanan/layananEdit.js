@@ -1,13 +1,12 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import swal from 'sweetalert'
 import Loader from 'react-loader-spinner'
 import { editLayananFunction, getDetailLayananFunction, getImageFunction } from './saga'
 import { Redirect } from 'react-router-dom'
 import './../../support/css/layananAdd.css'
+import { getToken } from '../index/token';
 
 
-const cookie = new Cookies()
 
 class LayananEdit extends React.Component{
     state={
@@ -152,7 +151,7 @@ class LayananEdit extends React.Component{
             return <Redirect to='/listlayanan'/>            
 
         }
-        if(cookie.get('token')){
+        if(getToken()){
             console.log(this.state.check)
             return(
                 <div className="container">
@@ -193,7 +192,8 @@ class LayananEdit extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
+       
             return (
                 <Redirect to='/login' />
             )    

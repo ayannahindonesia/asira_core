@@ -1,15 +1,19 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import NumberFormat from 'react-number-format';
 import { detailProductFunction, detailServiceProductFunction } from './saga';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
+import Loader from 'react-loader-spinner'
 
 class ProductDetail extends React.Component{
-    state = {rows:[],fees:[],collaterals:[],financing_sector:[],layanan:""}
+    state = {rows:[],fees:[],collaterals:[],financing_sector:[],layanan:"",loading:true}
+    _isMounted = false
     componentDidMount(){
         this.getDetailProduct()
-     
+        this._isMounted = true
+    }
+    componentWillUnmount(){
+        this._isMounted = false
     }
     getDetailProduct = async function () {
         var id = this.props.match.params.id
@@ -17,7 +21,7 @@ class ProductDetail extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({layanan:data.serviceProduct.name,rows:data.dataProduct,fees:data.dataProduct.fees,collaterals:data.dataProduct.collaterals,financing_sector:data.dataProduct.financing_sector})
+                this.setState({loading:false,layanan:data.serviceProduct.name,rows:data.dataProduct,fees:data.dataProduct.fees,collaterals:data.dataProduct.collaterals,financing_sector:data.dataProduct.financing_sector})
             }else{
                 console.log(data.error)
             }
@@ -39,7 +43,21 @@ class ProductDetail extends React.Component{
         return jsx
     }
     render(){
-        if(cookie.get('token')){
+        if (this.state.loading){
+            return (
+                <div className="mt-2">
+                 <Loader 
+                    type="ThreeDots"
+                    color="#00BFFF"
+                    height="30"	
+                    width="30"
+                />  
+                </div>
+            )
+        }else{
+
+        
+        if(getToken()){
             return(
                 <div className="container">
                    <h2>Produk - Detail</h2>
@@ -142,12 +160,12 @@ class ProductDetail extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    
         }
-       
+    }
     }
 }
 

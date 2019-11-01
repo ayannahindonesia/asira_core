@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -9,8 +8,8 @@ import { compose } from 'redux';
 import DatePickers from './../subComponent/DatePicker'
 import { GlobalFunction } from './../globalFunction'
 import { getAllBankListFunction, getAllLoanDataFunction } from './saga';
+import { getToken } from '../index/token';
 
-const cookie = new Cookies()
 
   const styles = (theme) => ({
     // root: theme.mixins.gutters({
@@ -46,14 +45,20 @@ const cookie = new Cookies()
   });
 
 class Report extends React.Component{
-    
+    _isMounted = false
     state ={munculinTable:false,pilihReport:false, 
         tanggalAwal:null,tanggalAkhir:null,
         tanggalAwalPencairan:null,tanggalAkhirPencairan:null,
         errorMessagePencairan:'',errorMessage:'',errorMessageBank:'',dataBank:[],namaBank:null,loading:false}
     componentDidMount(){
         this.getDataBankList()
+        this._isMounted = true
     }
+
+    componentWillUnmount(){
+        this._isMounted=false
+    }
+    
     componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error,errorMessageBank:newProps.error,errorMessagePencairan:newProps.error})
     }
@@ -210,7 +215,7 @@ class Report extends React.Component{
         document.getElementById("bankName").value ="0"
     }
     render(){
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container mt-2">
                     <h2>Report</h2>
@@ -330,7 +335,7 @@ class Report extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

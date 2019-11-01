@@ -1,13 +1,11 @@
-import Cookies from 'universal-cookie';
 import axios from 'axios'
 import { serverUrl } from '../url';
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 export async function TujuanAddFunction(param){
     return new Promise(async (resolve) => {
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
 
         axios.post(serverUrl+'admin/loan_purposes',param,config)
@@ -25,7 +23,7 @@ export async function TujuanAddFunction(param){
 export async function TujuanListFunction(param) {
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
           };
         let filter = '';
 
@@ -34,7 +32,7 @@ export async function TujuanListFunction(param) {
         }
         axios.get(serverUrl+`admin/loan_purposes?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
-            resolve(res.data.data)
+            resolve(res)
         })
         .catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
@@ -48,7 +46,7 @@ export async function TujuanListFunction(param) {
 export async function TujuanDetailFunction (param){
     return new Promise(async (resolve)=>{
             const config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
+                headers: {'Authorization': "Bearer " + getToken()}
             };
             axios.get(serverUrl+`admin/loan_purposes/${param.id}`,config)
             .then((res)=>{
@@ -66,7 +64,7 @@ export async function TujuanDetailFunction (param){
 export async function TujuanEditFunction (param){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.patch(serverUrl+`admin/loan_purposes/${param.id}`,param.newData,config)
         .then((res)=>{
