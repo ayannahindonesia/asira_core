@@ -1,8 +1,4 @@
 import React from 'react'
-import Axios from 'axios';
-import {serverUrl} from '../url'
-// import {serverUrlBorrower} from './url'
-import Cookies from 'universal-cookie';
 import './../../support/css/profilenasabahdetail.css'
 import { Redirect } from 'react-router-dom'
 import {connect} from 'react-redux'
@@ -10,10 +6,10 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Moment from 'react-moment';
 import BrokenLink from './../../support/img/default.png'
 import Loader from 'react-loader-spinner'
-import {getProfileNasabahDetailFunction} from './saga'
+import {getProfileNasabahDetailFunction, getImageFunction} from './saga'
+import { getToken } from '../index/token';
+import { getBankDetailFunction } from '../bank/saga';
 
-const kukie = new Cookies()
-var config = {headers: {'Authorization': "Bearer " + kukie.get('token')}}
 
 class profileNasabahDetail extends React.Component{
     state={rows:[],modalKTP:false,modalNPWP:false,npwp:null,ktp:null,gambarKTP:null,gambarNPWP:null,
@@ -46,24 +42,37 @@ class profileNasabahDetail extends React.Component{
             }
         }
     }
-    getBankName = ()=>{
-        Axios.get(serverUrl+`admin/banks/${this.state.bankID}`,config)
-        .then((res)=>{
-          this.setState({bankName:res.data.name})
+    getBankName = async function(){
+        const param = {
+            id:this.state.bankID
+        }
+        const data = await getBankDetailFunction(param)
 
-        })
-        .catch((err)=> console.log(err))
+        if(data){
+            console.log(data)
+            if(!data.error){
+                this.setState({bankName:data.name})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
         return this.state.bankName
     }
-    getImage = (idImage, stringStates)=>{
-          //KTP
-          Axios.get(serverUrl+`admin/image/${idImage}`,config)
-          .then((res)=>{
-              this.setState({[stringStates]:res.data.image_string,progress:false})
-          })
-          .catch((err)=>{
-              this.setState({progress:false,errorMessage:'ID Gambar KTP dalam Database Tidak ditemukan'})
-          })
+
+    getImage =  async function(idImage, stringStates){
+        const param ={
+            id:idImage
+        }
+
+        const data = await getImageFunction(param)
+
+        if(data){
+            if(!data.error){
+            this.setState({[stringStates]:data.data.image_string,progress:false})
+            }else{
+            this.setState({progress:false,errorMessage:'ID Gambar KTP dalam Database Tidak ditemukan'})                  
+            }
+        }
     }
     
     formatMoney=(number)=>
@@ -104,7 +113,7 @@ class profileNasabahDetail extends React.Component{
                 <Redirect to="/profileNasabah"></Redirect>
             )
         }
-        if(kukie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
    {/* ------------------------------------------------------FOTO KTP------------------------------------------------------ */}
@@ -445,7 +454,7 @@ class profileNasabahDetail extends React.Component{
             )
                                     }
         }
-        if(!kukie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

@@ -1,12 +1,11 @@
-import Cookies from 'universal-cookie';
 import axios from 'axios'
 import { serverUrl } from '../url';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 export async function AddTipeBankFunction (param){
     return new Promise (async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.post(serverUrl+`admin/bank_types`,param,config)
         .then((res)=>{
@@ -23,7 +22,7 @@ export async function AddTipeBankFunction (param){
 export async function ListTipeBankFunction (param){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
           };
           let filter = '';
 
@@ -47,7 +46,7 @@ export async function DetailTipeBankFunction(params,next) {
     return new Promise(async(resolve)=>{
         
             const config = {
-                headers: {'Authorization': "Bearer " + cookie.get('token')}
+                headers: {'Authorization': "Bearer " + getToken()}
               };
           
             axios.get(serverUrl+`admin/bank_types/${params.id}`,config)
@@ -70,7 +69,7 @@ export async function DetailTipeBankFunction(params,next) {
 export async function EditTipeBankFunction(params) {
     return new Promise(async(resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.patch(serverUrl+`admin/bank_types/${params.id}`,params.newData,config)
         .then((res)=>{

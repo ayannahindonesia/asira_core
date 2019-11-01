@@ -7,12 +7,15 @@ import { getToken } from '../index/token';
 
 class Main extends React.Component{
     state = {rows:{},items:[],borrowerDetail:{},status:'',borrower_info:{},productInfo:{},redirecting:false,errorMessage:''}
-
+    _isMounted = false
     componentDidMount(){
+        this._isMounted=true
         this.getDataDetail()
         this.getDataBorrower()
     }
-    
+    componentWillUnmount(){
+        this._isMounted = false
+    }
     getDataDetail = async function () {
         const param={
             id:this.props.match.params.idLoan

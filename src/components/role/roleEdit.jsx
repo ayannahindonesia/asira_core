@@ -1,9 +1,8 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import swal from 'sweetalert'
 import { EditRoleFunction, DetailRoleFunction } from './saga';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 class RoleEdit extends React.Component{
     state = {
@@ -20,21 +19,18 @@ class RoleEdit extends React.Component{
     }
     componentDidMount(){
         this._isMounted = true;
-        this.getRoleById()
+        this.getDetailRoleByID()
     }
 
     componentWillUnmount() {
         this._isMounted = false;
     }
 
-    getRoleById = ()=>{
+    
+    getDetailRoleByID = async function () {
         const id = this.props.match.params.id
         const param ={id}
-        this.getDetailRoleByID(param)
-
-    }
-    getDetailRoleByID = async function (params) {
-        const data = await DetailRoleFunction (params)
+        const data = await DetailRoleFunction (param)
         if(data){
             if(data.error){
                 this.setState({errorMessage:data.error})
@@ -48,7 +44,7 @@ class RoleEdit extends React.Component{
         var id = this.props.match.params.id
         var description = this.refs.deskripsi.value ?  this.refs.deskripsi.value :  this.refs.deskripsi.placeholder
         var status =  this.state.check
-        //status ? status= "active": status= "inactive"
+        status ? status= "active": status= "inactive"
         var newData = {description,status}
         const param = {
             id,newData
@@ -83,7 +79,7 @@ class RoleEdit extends React.Component{
         if(this.state.diKlik){
             return <Redirect to='/listrole'/>            
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container mt-4">
                  <h3>Role - Edit</h3>
@@ -138,7 +134,8 @@ class RoleEdit extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken())
+        {
             return (
                 <Redirect to='/login' />
             )    

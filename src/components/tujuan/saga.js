@@ -1,9 +1,6 @@
-import Cookies from 'universal-cookie';
 import axios from 'axios'
 import { serverUrl } from '../url';
 import { getToken } from '../index/token';
-
-const cookie = new Cookies()
 
 export async function TujuanAddFunction(param){
     return new Promise(async (resolve) => {
