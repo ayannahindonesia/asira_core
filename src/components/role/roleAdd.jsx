@@ -3,6 +3,7 @@ import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import swal from 'sweetalert'
 import { AddRoleFunction } from './saga';
+import { getToken } from '../index/token';
 
 const cookie = new Cookies()
 
@@ -130,7 +131,7 @@ class RoleAdd extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    
