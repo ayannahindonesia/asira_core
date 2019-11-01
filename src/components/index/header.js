@@ -14,10 +14,7 @@ import {Link,Redirect} from 'react-router-dom'
 import './../../support/css/header.css'
 import {connect} from 'react-redux'
 import {resetUser} from './../../1.actions/index'
-import Cookies from 'universal-cookie';
 import {checkPermission} from './../global/globalFunction'
-
-const kukie =new Cookies()
 
 
 class Example extends React.Component {
@@ -41,9 +38,7 @@ class Example extends React.Component {
   }
   //Button log out function  
   logOutBtn =()=>{ 
-    kukie.remove("tokenGeo")
-    kukie.remove("token")
-    
+    this.props.resetUser();
     localStorage.clear();
     this.setState({isLogin:true})
   }

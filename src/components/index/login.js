@@ -4,8 +4,6 @@ import './../../support/css/login.css'
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert'
 import {Redirect} from 'react-router-dom'
-import {keepLogin} from './../../1.actions'
-import {connect} from 'react-redux'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction} from './saga'
 import { setProfileUser } from './token'
 
@@ -122,4 +120,4 @@ class Login extends React.Component{
     
 }
 
-export default connect(null,{keepLogin}) (Login);
+export default (Login);
