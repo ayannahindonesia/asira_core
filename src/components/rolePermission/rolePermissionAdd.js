@@ -10,7 +10,7 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from './../global/globalConstant'
-import { getAllRoleFunction, postRolePermissionFunction } from './saga'
+import { getAllRoleFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
 import { getToken } from '../index/token';
 
@@ -57,7 +57,7 @@ class rolePermissionAdd extends React.Component{
           let role = 0;
 
           for(const key in dataRole) {
-            if(dataRole[key].permissions && dataRole[key].permissions.length === 0) {
+            if(!dataRole[key].permissions || (dataRole[key].permissions && dataRole[key].permissions.length === 0)) {
               listRole.push(dataRole[key])
               role = dataRole[key].id
             }
@@ -79,7 +79,6 @@ class rolePermissionAdd extends React.Component{
         } else {
           this.setState({
             errorMessage: data.error,
-            disabled: true,
             loading: false,
           })
         }      
@@ -102,10 +101,11 @@ class rolePermissionAdd extends React.Component{
       } else{
         const listRolePermission = this.state.listRolePermission;
         const dataRolePermission = {};
-        dataRolePermission.role_id = parseInt(this.state.role);
+        dataRolePermission.id = parseInt(this.state.role);
         dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
         const param = {
+          roleId: parseInt(this.state.role),
           dataRolePermission,
         };
   
@@ -115,7 +115,7 @@ class rolePermissionAdd extends React.Component{
     }
 
     postRolePermission = async function (param) {
-      const data = await postRolePermissionFunction(param)
+      const data = await patchRolePermissionFunction(param)
   
       this.setState({loading: true})
 
