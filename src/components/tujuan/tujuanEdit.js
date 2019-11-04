@@ -1,17 +1,16 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import '../../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
 import {TujuanDetailFunction, TujuanEditFunction} from './saga'
 import swal from 'sweetalert'
-const cookie = new Cookies()
+import { getToken } from '../index/token'
 
 class TujuanEdit extends React.Component{
     _isMounted = false
     state={
         errorMessage:'',
         diKlik:false,
-        rows:[],check:true
+        rows:[],check:true,submit:false
     }
 
     componentDidMount(){
@@ -40,6 +39,7 @@ class TujuanEdit extends React.Component{
         }
     }
     btnUpdateLayanan = ()=>{
+        this.setState({submit:true})
         var name =this.refs.tujuan.value ? this.refs.tujuan.value : this.refs.tujuan.placeholder
         var status = this.state.check?"active":"inactive"
         var id = this.props.match.params.id
@@ -59,7 +59,7 @@ class TujuanEdit extends React.Component{
         if(data){
             if(!data.error){
                 swal("Success","Tujuan berhasil di tambah","success")
-                this.setState({errorMessage:null,diKlik:true})
+                this.setState({errorMessage:null,diKlik:true,submit:false})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -72,13 +72,21 @@ class TujuanEdit extends React.Component{
     btnCancel = ()=>{
         this.setState({diKlik:true})
     }
+    renderBtnSumbit =()=>{
+        if( this.state.submit) {
+            return <input type="button" disabled className="btn btn-success ml-3 mr-3" value="Ubah" onClick={this.btnUpdateLayanan} style={{cursor:"wait"}}/>
+        }else{
+             return <input type="button" className="btn btn-success ml-3 mr-3" value="Ubah" onClick={this.btnUpdateLayanan}/>
+     
+        }
+     }
 
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listtujuan'/>            
 
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2 className="mt-3">Tujuan Pembiayaan - Edit</h2>
@@ -106,14 +114,14 @@ class TujuanEdit extends React.Component{
                     </div>
                     
                     <div className="form-group row">
-                            <input type="button" className="btn btn-success ml-3 mr-3" value="Simpan" onClick={this.btnUpdateLayanan}/>
+                            {this.renderBtnSumbit()}
                             <input type="button" className="btn btn-warning" value="Batal" onClick={this.btnCancel}/>
 
                     </div>
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

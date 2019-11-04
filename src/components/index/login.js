@@ -4,18 +4,13 @@ import './../../support/css/login.css'
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert'
 import {Redirect} from 'react-router-dom'
-import {keepLogin} from './../../1.actions'
-import {connect} from 'react-redux'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction} from './saga'
-import { getRoleFunction, getPermissionFunction } from '../rolePermission/saga';
-import SecureLS from 'secure-ls';
-import md5 from 'md5';
+import { setProfileUser } from './token'
 
 class Login extends React.Component{
     _isMounted = false;
 
     state = {
-        token:"",
         authData:[],
         loading:false,
         tokenClient:'' , 
@@ -51,38 +46,14 @@ class Login extends React.Component{
     } 
 
     postLoginAdmin = async function(param)  {
-        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction, getRoleFunction, getPermissionFunction)
+        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction)
         
         if(data) {
             if(!data.error) {
-                let flag = false;
-                let userPermission = [];
+                let flag = true;
+                let userPermission = data.dataPermission || [];  
                 
-                if(data.dataRole && data.dataRole.status && data.dataPermission) {
-                    for(const key in data.dataPermission) {
-                        if(data.dataPermission[key].permissions) {
-                            userPermission.push(data.dataPermission[key].permissions)
-                        }                      
-                    }
-
-                    if(data.dataRole.system && data.dataRole.system.toString().toLowerCase() === 'core') {
-                        flag = true;
-                    }
-
-                }
-                
-                const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'});    
-                
-
-                newLs.set(md5('profileUser'), JSON.stringify(userPermission));
-
-                if(data.dataToken) {
-                    newLs.set(md5('token'), data.dataToken);
-                }
-                if(data.dataGeoToken) {
-                    newLs.set(md5('tokenGeo'), data.dataGeoToken);
-                }
-                
+                setProfileUser(JSON.stringify(userPermission))
 
                 this.setState({loading: false, isLogin: flag})
             } else {
@@ -149,4 +120,4 @@ class Login extends React.Component{
     
 }
 
-export default connect(null,{keepLogin}) (Login);
+export default (Login);

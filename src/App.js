@@ -25,9 +25,9 @@ import LayananDetail from './components/layanan/layananDetail'
 import Login from './components/index/login'
 import Header from './components/index/header'
 import Home from './components/index/main'
-import Nasabah from './components/profileNasabah'
+import Nasabah from './components/profileNasabah/profileNasabah'
 import ScrollTop from './components/scrollToTop'
-import profileNasabahDetail from './components/profileNasabahDetail'
+import profileNasabahDetail from './components/profileNasabah/profileNasabahDetail'
 import PermintaanPinjaman from './components/permintaanPinjaman/permintaanPinjaman'
 import PermintaanPinjamanDetail from './components/permintaanPinjaman/permintaanPinjamanDetail'
 
@@ -63,11 +63,7 @@ import UserDetail from './components/user/userDetail'
 import UserEdit from './components/user/userEdit'
 
 import axios from 'axios'
-import SecureLS from 'secure-ls';
-import md5 from 'md5';
-
-const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'}); 
-
+import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
 
 class App extends React.Component {
   state = {
@@ -94,11 +90,10 @@ class App extends React.Component {
         }
     }).then((res)=>{
 
-        newLs.set(md5('tokenAuth'), res.data.token);
+        setTokenAuth(res.data.token);
         
         this.setState({loading : false})   
     }).catch((err)=>{
-      console.log(err)
       setTimeout(function(){ alert("Coba reload halaman/ cek koneksi internet"); }, 5000);
     })
   }
@@ -116,7 +111,7 @@ class App extends React.Component {
         <ScrollTop>
           <div className="row">
           {
-            newLs.get(md5('token')) ? 
+            getToken() ? 
             <div className="col-2 col-md-3">
               <Header />
             </div>
@@ -128,57 +123,57 @@ class App extends React.Component {
                   <Route path='/test' component={Testing}></Route>
                   <Route path='/' component={Home} exact></Route>
 
-                  { checkPermission('Borrower_List') && <Route path='/profileNasabah' component={Nasabah}></Route>}
-                  { checkPermission('Borrower_List') && <Route path="/profileNasabahDetail/:id" component={profileNasabahDetail}></Route>}
+                  { checkPermission('core_borrower_get_all') && <Route path='/profileNasabah' component={Nasabah}></Route>}
+                  { checkPermission('core_borrower_get_details') && <Route path="/profileNasabahDetail/:id" component={profileNasabahDetail}></Route>}
 
-                  { checkPermission('Loan_List') && <Route path="/permintaanpinjaman" component={PermintaanPinjaman}></Route>}
-                  { checkPermission('Loan_List') && <Route path="/permintaanpinjamanDetail/:idLoan/:idBorrower" component={PermintaanPinjamanDetail}></Route>}
+                  { checkPermission('core_loan_get_all') && <Route path="/permintaanpinjaman" component={PermintaanPinjaman}></Route>}
+                  { checkPermission('core_loan_get_details') && <Route path="/permintaanpinjamanDetail/:idLoan/:idBorrower" component={PermintaanPinjamanDetail}></Route>}
 
-                  { checkPermission('Bank_Add') && <Route path='/tambahbank' component={TambahBank}></Route>}
-                  { checkPermission('Bank_List') && <Route path='/listbank' component={ListBank}></Route>}
-                  { checkPermission('Bank_Edit') && <Route path='/bankedit/:id' component={EditBank}></Route>}
-                  { checkPermission('Bank_List') && <Route path='/bankdetail/:id' component={DetailBank}></Route>}
+                  { checkPermission('core_bank_new') && <Route path='/tambahbank' component={TambahBank}></Route>}
+                  { checkPermission('core_bank_list') && <Route path='/listbank' component={ListBank}></Route>}
+                  { checkPermission('core_bank_patch') && <Route path='/bankedit/:id' component={EditBank}></Route>}
+                  { checkPermission('core_bank_detail') && <Route path='/bankdetail/:id' component={DetailBank}></Route>}
 
-                  { checkPermission('ServiceProduct_Add') && <Route path='/tambahproduct' component={ProductAdd}></Route>}
-                  { checkPermission('ServiceProduct_List') && <Route path='/listproduct' component={ProductList}></Route>}
-                  { checkPermission('ServiceProduct_Edit') && <Route path='/productedit/:id' component={ProductEdit}></Route>}
-                  { checkPermission('ServiceProduct_List') && <Route path='/productdetail/:id' component={ProductDetail}></Route>}
+                  { checkPermission('core_product_new') && <Route path='/tambahproduct' component={ProductAdd}></Route>}
+                  { checkPermission('core_product_list') && <Route path='/listproduct' component={ProductList}></Route>}
+                  { checkPermission('core_product_patch') && <Route path='/productedit/:id' component={ProductEdit}></Route>}
+                  { checkPermission('core_product_detail') && <Route path='/productdetail/:id' component={ProductDetail}></Route>}
                 
                                     
-                  { checkPermission('BankService_Add') && <Route path='/tambahlayanan' component={LayananAdd}></Route>}
-                  { checkPermission('BankService_List') && <Route path='/listlayanan' component={LayananList}></Route>}
-                  { checkPermission('BankService_Edit') && <Route path='/layananedit/:id' component={LayananEdit}></Route>}
-                  { checkPermission('BankService_List') && <Route path='/layanandetail/:id' component={LayananDetail}></Route>}
+                  { checkPermission('core_service_new') && <Route path='/tambahlayanan' component={LayananAdd}></Route>}
+                  { checkPermission('core_service_list') && <Route path='/listlayanan' component={LayananList}></Route>}
+                  { checkPermission('core_service_patch') && <Route path='/layananedit/:id' component={LayananEdit}></Route>}
+                  { checkPermission('core_service_detail') && <Route path='/layanandetail/:id' component={LayananDetail}></Route>}
 
 
-                  { checkPermission('BankType_Add') && <Route path='/tambahtipe' component={TypeBankAdd}></Route>}
-                  { checkPermission('BankType_List') && <Route path='/listtipe' component={TypeBankList}></Route>}
-                  { checkPermission('BankType_Edit') && <Route path='/banktypeedit/:id' component={TypeBankEdit}></Route>}
-                  { checkPermission('BankType_List') && <Route path='/banktypedetail/:id' component={TypeBankDetail}></Route>}
+                  { checkPermission('core_bank_type_new') && <Route path='/tambahtipe' component={TypeBankAdd}></Route>}
+                  { checkPermission('core_bank_type_list') && <Route path='/listtipe' component={TypeBankList}></Route>}
+                  { checkPermission('core_bank_type_patch') && <Route path='/banktypeedit/:id' component={TypeBankEdit}></Route>}
+                  { checkPermission('core_bank_type_detail') && <Route path='/banktypedetail/:id' component={TypeBankDetail}></Route>}
                   
-                  { checkPermission('LoanPurposes_Add') && <Route path='/tambahtujuan' component={TujuanAdd}></Route>}
-                  { checkPermission('LoanPurposes_List') && <Route path='/listtujuan' component={TujuanList}></Route>}
-                  { checkPermission('LoanPurposes_Edit') && <Route path='/tujuanedit/:id' component={TujuanEdit}></Route>}
-                  { checkPermission('LoanPurposes_List') && <Route path='/tujuandetail/:id' component={TujuanDetail}></Route>}
+                  { checkPermission('core_loan_purpose_new') && <Route path='/tambahtujuan' component={TujuanAdd}></Route>}
+                  { checkPermission('core_loan_purpose_list') && <Route path='/listtujuan' component={TujuanList}></Route>}
+                  { checkPermission('core_loan_purpose_patch') && <Route path='/tujuanedit/:id' component={TujuanEdit}></Route>}
+                  { checkPermission('core_loan_purpose_detail') && <Route path='/tujuandetail/:id' component={TujuanDetail}></Route>}
                   
-                  { checkPermission('Role_Add') && <Route path='/tambahrole' component={RoleAdd}></Route>}
-                  { checkPermission('Role_List') && <Route path='/listrole' component={RoleList}></Route>}
-                  { checkPermission('Role_Edit') && <Route path='/editrole/:id' component={RoleEdit}></Route>}
-                  { checkPermission('Role_List') && <Route path='/detailrole/:id' component={RoleDetail}></Route>}
+                  { checkPermission('core_role_new') && <Route path='/tambahrole' component={RoleAdd}></Route>}
+                  { checkPermission('core_role_list') && <Route path='/listrole' component={RoleList}></Route>}
+                  { checkPermission('core_role_patch') && <Route path='/editrole/:id' component={RoleEdit}></Route>}
+                  { checkPermission('core_role_details') && <Route path='/detailrole/:id' component={RoleDetail}></Route>}
 
-                  { checkPermission('Permission_Add') && <Route path='/tambahRolePermission' component={RoleAddPermission}></Route>}
-                  { checkPermission('Permission_List') && <Route path='/listRolePermission' component={RoleListPermission}></Route>}
-                  { checkPermission('Permission_Edit') && <Route path='/editRolePermission/:id' component={RoleEditPermission}></Route>}
-                  { checkPermission('Permission_List') && <Route path='/detailRolePermission/:id' component={RoleDetailPermission}></Route>}
+                  { checkPermission('core_permission_new') && <Route path='/tambahRolePermission' component={RoleAddPermission}></Route>}
+                  { checkPermission('core_permission_list') && <Route path='/listRolePermission' component={RoleListPermission}></Route>}
+                  { checkPermission('core_permission_patch') && <Route path='/editRolePermission/:id' component={RoleEditPermission}></Route>}
+                  { checkPermission('core_permission_detail') && <Route path='/detailRolePermission/:id' component={RoleDetailPermission}></Route>}
 
-                  { checkPermission('User_Add') && <Route path='/tambahUser' component={UserAdd}></Route>}
-                  { checkPermission('User_List') && <Route path='/listUser' component={UserList}></Route>}
-                  { checkPermission('User_Edit') && <Route path='/editUser/:id' component={UserEdit}></Route>}
-                  { checkPermission('User_List') && <Route path='/detailUser/:id' component={UserDetail}></Route>}
+                  { checkPermission('core_user_new') && <Route path='/tambahUser' component={UserAdd}></Route>}
+                  { checkPermission('core_user_list') && <Route path='/listUser' component={UserList}></Route>}
+                  { checkPermission('core_user_patch') && <Route path='/editUser/:id' component={UserEdit}></Route>}
+                  { checkPermission('core_user_details') && <Route path='/detailUser/:id' component={UserDetail}></Route>}
 
-                  { checkPermission('Report_List') && <Route path='/report' component={Report}></Route>}
+                  { checkPermission('convenience_fee_report') && <Route path='/report' component={Report}></Route>}
 
-                  {newLs.get(md5('token')) ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
+                  {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
                   <Route path='*' component={PageNotFound} />
             </Switch>

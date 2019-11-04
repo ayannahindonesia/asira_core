@@ -2,10 +2,8 @@ import React from 'react'
 import '../../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
 import {TujuanAddFunction} from './saga'
-import Cookies from 'universal-cookie';
-
 import swal from 'sweetalert'
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 
 class TujuanAdd extends React.Component{
@@ -71,7 +69,7 @@ class TujuanAdd extends React.Component{
             return <Redirect to='/listtujuan'/>            
 
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2 className="mt-3">Tujuan Pembiayaan - Tambah</h2>
@@ -104,7 +102,7 @@ class TujuanAdd extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

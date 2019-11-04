@@ -1,10 +1,7 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import {TujuanDetailFunction} from './saga'
-
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 class TujuanDetail extends React.Component{
     _isMounted = false
@@ -35,7 +32,7 @@ class TujuanDetail extends React.Component{
         }
     }
     render(){
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2>Tujuan Pembiayaan - Detail</h2>
@@ -78,7 +75,7 @@ class TujuanDetail extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

@@ -1,37 +1,34 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import {serverUrlBorrower} from '../url'
 import Moment from 'react-moment';
 import { GlobalFunction } from '../globalFunction'
-
-import Axios from 'axios';
-const cookie = new Cookies()
-var config = {
-    headers: {'Authorization': "Bearer " + cookie.get('token')}
-  };
+import { getDetailFunction, getDetailBorrowerFunction } from './saga';
+import { getToken } from '../index/token';
 
 class Main extends React.Component{
-    state = {rows:{},items:[],borrowerDetail:{},status:'',borrower_info:{},productInfo:{},redirecting:false}
-
+    state = {rows:{},items:[],borrowerDetail:{},status:'',borrower_info:{},productInfo:{},redirecting:false,errorMessage:''}
+    _isMounted = false
     componentDidMount(){
+        this._isMounted=true
         this.getDataDetail()
         this.getDataBorrower()
-
     }
-    
-    getDataDetail =()=>{
-       var idLoan = this.props.match.params.idLoan
-       config = {
-        headers: {'Authorization': "Bearer " + cookie.get('token')}
-      };
-       
-            Axios.get(serverUrlBorrower+`admin/loan/${idLoan}`,config)
-            .then((res)=>{
-                console.log(res.data)
-                this.setState({rows:res.data,items:res.data.fees,status:res.data.status,borrower_info:res.data.borrower_info})
-            })
-            .catch((err)=>console.log(err))
+    componentWillUnmount(){
+        this._isMounted = false
+    }
+    getDataDetail = async function () {
+        const param={
+            id:this.props.match.params.idLoan
+        }
+        const data = await getDetailFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({rows:data.data,items:data.data.fees,status:data.data.status})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
     }
 
  
@@ -43,7 +40,7 @@ class Main extends React.Component{
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td>{String(val.amount).includes("%")?
                     val.amount:
-                    GlobalFunction.formatMoney(parseInt(val.amount))
+                    parseInt(val.amount)/parseInt(this.state.rows.loan_amount)*100 +"%"
                 
                 }</td>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -56,19 +53,21 @@ class Main extends React.Component{
         return jsx
     }
     
-    getDataBorrower =()=>{
-        var idBorrower = this.props.match.params.idBorrower
-        config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-          };
-              Axios.get(serverUrlBorrower+`admin/borrower/${idBorrower}`,config)
-              .then((res)=>{
-                  console.log(res.data)
-                  this.setState({borrowerDetail:res.data})
-              })
-              .catch((err)=>{
-                  console.log(err)
-              })
+    getDataBorrower = async function () {
+        const param ={
+            id:this.props.match.params.idBorrower
+        }
+
+        const data = await getDetailBorrowerFunction(param)
+
+        if(data){
+            if(!data.error){
+                this.setState({borrowerDetail:data.data})
+            }else{
+                this.setState({errorMessage:data.error})
+            }
+        }
+        
     }
 
 
@@ -93,7 +92,7 @@ class Main extends React.Component{
         if (this.state.redirecting){
             return <Redirect to="/permintaanpinjaman"/>
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div>
 
@@ -111,7 +110,7 @@ class Main extends React.Component{
                                 </tr>
                                 <tr>
                                     <td>Nama Nasabah</td>
-                                    <td>: {this.state.borrower_info.employer_name}</td>
+                                    <td>: {this.state.rows.owner_name}</td>
                                 </tr>
                                 </tbody>
                              
@@ -274,7 +273,7 @@ class Main extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

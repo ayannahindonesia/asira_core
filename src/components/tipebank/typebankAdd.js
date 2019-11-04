@@ -1,9 +1,8 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import swal from 'sweetalert'
 import { AddTipeBankFunction } from './saga';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 class TypeBank extends React.Component{
     _isMounted = false;
@@ -58,7 +57,7 @@ class TypeBank extends React.Component{
         if(this.state.diKlik){
             return <Redirect to="/listtipe"/>
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container mt-3">
                   <h2>Tipe Bank -  Tambah</h2>
@@ -88,7 +87,7 @@ class TypeBank extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

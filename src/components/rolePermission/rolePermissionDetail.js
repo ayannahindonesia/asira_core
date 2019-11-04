@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import CheckBox from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
@@ -9,15 +8,15 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from '../global/globalConstant'
-import {getRoleFunction, getRolePermissionFunction} from './saga'
+import {getRoleFunction} from './saga'
+import { getToken } from '../index/token';
+import { destructRolePermission } from './function';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 class rolePermissionDetail extends React.Component{
     _isMounted = false;
@@ -51,15 +50,16 @@ class rolePermissionDetail extends React.Component{
     refresh = async function(){
       const param = {};
       param.roleId = this.state.roleId;
-      param.listAllRolePermission = this.state.listAllRolePermission;
 
-      const data = await getRoleFunction(param, getRolePermissionFunction);
+      const data = await getRoleFunction(param);
 
       if(data) {
+          const listRolePermission = destructRolePermission(data.dataRole.permissions, this.state.listAllRolePermission)
+
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
-              listRolePermission: data.dataRolePermission,
+              listRolePermission,
               loading: false,
             })
           } else {
@@ -107,7 +107,7 @@ class rolePermissionDetail extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
             return(
                 <div className="container mt-4">
                  <h3>Role Permission - Detail</h3>
@@ -154,7 +154,7 @@ class rolePermissionDetail extends React.Component{
                 
                 </div>
             )
-        } else if(!cookie.get('token')){
+        } else if(!getToken()){
           return (
               <Redirect to='/login' />
           )    

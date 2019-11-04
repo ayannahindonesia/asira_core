@@ -1,8 +1,7 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import { DetailRoleFunction } from './saga';
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 class RoleDetail extends React.Component{
     _isMounted = false;
@@ -10,24 +9,19 @@ class RoleDetail extends React.Component{
  
     componentDidMount(){
         this._isMounted=true;
-        this.getDetailLayanan()
+        this.detailRole()
     }
 
     componentWillUnmount() {
         this._isMounted = false;
     }
-    
-    getDetailLayanan = () =>{
+
+    detailRole = async function (params) {
         const id = this.props.match.params.id
         const param ={
             id,
         }
-        this.detailRole(param)
-
-    }
-
-    detailRole = async function (params) {
-        const data = await DetailRoleFunction(params);
+        const data = await DetailRoleFunction(param);
         if(data){
             if(!data.error){
                 this.setState({rows:data.data})
@@ -43,7 +37,7 @@ class RoleDetail extends React.Component{
         if(this.state.diklik){
             return <Redirect to="/listrole"></Redirect>
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                    <h2>Role - Detail</h2>
@@ -84,7 +78,7 @@ class RoleDetail extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Status</label>
                             <div className="col-sm-8">
-                            : {this.state.rows.status ?"Aktif":"Tidak Aktif"}
+                            : {this.state.rows.status ==='active' ? "Aktif" :"Tidak Aktif"}
                             </div>
                         </div>
                     </form>
@@ -99,7 +93,7 @@ class RoleDetail extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

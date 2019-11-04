@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
@@ -9,14 +8,13 @@ import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getUserFunction } from './saga'
 import { getAllRoleFunction } from '../rolePermission/saga';
+import { getToken } from '../index/token';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 class UserDetail extends React.Component{
     _isMounted = false;
@@ -54,9 +52,9 @@ class UserDetail extends React.Component{
 
       if(data) {
           if(!data.error) {
-            const dataUser = data.dataUser || [];
-
-            dataUser.role = this.findRole(dataUser.role_id, data.dataRole || [])
+            const dataUser = data.dataUser || {};
+            
+            dataUser.role = this.findRole((dataUser && dataUser.roles && dataUser.roles[0]) || 0, data.dataRole || [])
 
             this.setState({
               dataUser,
@@ -119,7 +117,7 @@ class UserDetail extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
             return(
               <div className="container mt-4">
                  <h3>Akun - Detail</h3>
@@ -213,7 +211,7 @@ class UserDetail extends React.Component{
                         :
                       </label>
                       <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.status ? 'Aktif' : 'Tidak Aktif'}
+                        {this.state.dataUser && this.state.dataUser.status && this.state.dataUser.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
                       </label>               
                     </div>
 
@@ -227,7 +225,7 @@ class UserDetail extends React.Component{
                 
                 </div>
             )
-        } else if(!cookie.get('token')){
+        } else if(!getToken()){
           return (
               <Redirect to='/login' />
           )    

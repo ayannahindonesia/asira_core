@@ -1,9 +1,4 @@
-import SecureLS from 'secure-ls';
-import md5 from 'md5'
-
-const profileUser = md5('profileUser')
-const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'});    
-                
+import { getProfileUser } from '../index/token';
 
 export function validateEmail(email) {
     let flag = false;
@@ -29,7 +24,8 @@ export function  validatePhone(phone) {
 export function checkPermission(stringPermission, stringPermissionSecond) {
   let flag = false;
   
-  const listPermission = newLs.get(profileUser) ? JSON.parse(newLs.get(profileUser)) : [];
+  const listPermission = getProfileUser() ? JSON.parse(getProfileUser()) : [];
+
 
   for(const key in listPermission) {
     if(stringPermission && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {

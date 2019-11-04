@@ -14,10 +14,7 @@ import {Link,Redirect} from 'react-router-dom'
 import './../../support/css/header.css'
 import {connect} from 'react-redux'
 import {resetUser} from './../../1.actions/index'
-import Cookies from 'universal-cookie';
 import {checkPermission} from './../global/globalFunction'
-
-const kukie =new Cookies()
 
 
 class Example extends React.Component {
@@ -41,9 +38,7 @@ class Example extends React.Component {
   }
   //Button log out function  
   logOutBtn =()=>{ 
-    kukie.remove("tokenGeo")
-    kukie.remove("token")
-    
+    this.props.resetUser();
     localStorage.clear();
     this.setState({isLogin:true})
   }
@@ -65,106 +60,106 @@ class Example extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav navbar>
               
-            { checkPermission('Bank_Add','Bank_List') && 
+            { checkPermission('core_bank_new','core_bank_list') && 
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-university"></i> Bank</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('Bank_Add') && <Link to="/tambahbank" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
-                  { checkPermission('Bank_List') && <Link to="/listbank" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem>   </Link>}             
+                  { checkPermission('core_bank_new') && <Link to="/tambahbank" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
+                  { checkPermission('core_bank_list') && <Link to="/listbank" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem>   </Link>}             
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
 
-            { checkPermission('Borrower_List') && <Link to="/profileNasabah" style={{marginBottom:"10px"}} ><label><i className="fas fa-user-friends"></i> Nasabah</label></Link>}
-            { checkPermission('Loan_List') && <Link to="/permintaanpinjaman"><label><i className="fas fa-hand-holding-usd"></i> Pinjaman</label></Link>}
+            { checkPermission('core_borrower_get_all') && <Link to="/profileNasabah" style={{marginBottom:"10px"}} ><label><i className="fas fa-user-friends"></i> Nasabah</label></Link>}
+            { checkPermission('core_loan_get_all') && <Link to="/permintaanpinjaman"><label><i className="fas fa-hand-holding-usd"></i> Pinjaman</label></Link>}
             
-            { checkPermission('BankService_Add','BankService_List') && 
+            { checkPermission('core_bank_new','core_bank_list') && 
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-concierge-bell"></i> Layanan</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('BankService_Add') && <Link to="/tambahlayanan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
-                  { checkPermission('BankService_List') && <Link to="/listlayanan" style={{color:"inherit",textDecoration:"none"}}> <DropdownItem>List</DropdownItem></Link> }               
+                  { checkPermission('core_bank_new') && <Link to="/tambahlayanan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
+                  { checkPermission('core_bank_list') && <Link to="/listlayanan" style={{color:"inherit",textDecoration:"none"}}> <DropdownItem>List</DropdownItem></Link> }               
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
             
-            { checkPermission('ServiceProduct_Add','ServiceProduct_List') &&
+            { checkPermission('core_product_new','core_product_list') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                 <label><i className="fas fa-money-check-alt"></i> Product</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('ServiceProduct_Add') && <Link to="/tambahproduct" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah </DropdownItem></Link>}                 
-                  { checkPermission('ServiceProduct_List') && <Link to="/listproduct" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem>  </Link>}                                 
+                  { checkPermission('core_product_new') && <Link to="/tambahproduct" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah </DropdownItem></Link>}                 
+                  { checkPermission('core_product_list') && <Link to="/listproduct" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem>  </Link>}                                 
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
 
-            { checkPermission('BankType_Add','BankType_List') &&
+            { checkPermission('core_bank_type_new','core_bank_type_list') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-sliders-h"></i> Tipe Bank</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('BankType_Add') && <Link to="/tambahtipe" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                  
-                  { checkPermission('BankType_List') && <Link to="/listtipe" style={{color:"inherit",textDecoration:"none"}}>  <DropdownItem>List </DropdownItem></Link>}                
+                  { checkPermission('core_bank_type_new') && <Link to="/tambahtipe" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                  
+                  { checkPermission('core_bank_type_list') && <Link to="/listtipe" style={{color:"inherit",textDecoration:"none"}}>  <DropdownItem>List </DropdownItem></Link>}                
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
               
-            { checkPermission('LoanPurposes_Add','LoanPurposes_List') &&
+            { checkPermission('core_loan_purpose_new','core_loan_purpose_list') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-bullseye"></i> Tujuan</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('LoanPurposes_Add') && <Link to="/tambahtujuan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link> }                  
-                  { checkPermission('LoanPurposes_List') && <Link to="/listtujuan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem></Link> }              
+                  { checkPermission('core_loan_purpose_new') && <Link to="/tambahtujuan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link> }                  
+                  { checkPermission('core_loan_purpose_list') && <Link to="/listtujuan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem></Link> }              
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
 
-            { checkPermission('Role_Add','Role_List') &&
+            { checkPermission('core_role_new','core_role_list') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-handshake"></i> Role</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('Role_Add') && <Link to="/tambahrole" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>     }              
-                  { checkPermission('Role_List') && <Link to="/listrole" style={{color:"inherit",textDecoration:"none"}}>  <DropdownItem>List </DropdownItem>   </Link>   }             
+                  { checkPermission('core_role_new') && <Link to="/tambahrole" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>     }              
+                  { checkPermission('core_role_list') && <Link to="/listrole" style={{color:"inherit",textDecoration:"none"}}>  <DropdownItem>List </DropdownItem>   </Link>   }             
                 </DropdownMenu>
               </UncontrolledDropdown> 
             }        
 
-            { checkPermission('Permission_Add','Permission_List') &&
+            { checkPermission('core_permission_new','core_permission_list') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-user-tag"></i> Role Permission </label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('Permission_Add') && <Link to="/tambahRolePermission" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
-                  { checkPermission('Permission_List') && <Link to="/listRolePermission" style={{color:"inherit",textDecoration:"none"}}>  <DropdownItem>List </DropdownItem>   </Link> }               
+                  { checkPermission('core_permission_new') && <Link to="/tambahRolePermission" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
+                  { checkPermission('core_permission_list') && <Link to="/listRolePermission" style={{color:"inherit",textDecoration:"none"}}>  <DropdownItem>List </DropdownItem>   </Link> }               
                 </DropdownMenu>
               </UncontrolledDropdown>    
             }
 
-            { checkPermission('User_Add','User_List') &&
+            { checkPermission('core_user_new','core_user_list') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-user"></i> Akun </label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('User_Add') && <Link to="/tambahUser" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
-                  { checkPermission('User_List') && <Link to="/listUser" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem></Link> }               
+                  { checkPermission('core_user_new') && <Link to="/tambahUser" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
+                  { checkPermission('core_user_list') && <Link to="/listUser" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem></Link> }               
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
             
-            { checkPermission('Report_List') && <Link to="/report" style={{marginBottom:"10px"}}><label><i className="far fa-newspaper"></i> Report</label></Link>}
+            { checkPermission('convenience_fee_report') && <Link to="/report" style={{marginBottom:"10px"}}><label><i className="far fa-newspaper"></i> Report</label></Link>}
            
         
             <p style={{ cursor:"pointer"}} onClick={this.logOutBtn}><label><i className="fas fa-sign-out-alt"></i> Log Out</label></p>

@@ -1,20 +1,15 @@
 import React from 'react';
-import axios from 'axios'
 import {connect } from 'react-redux'
-import Cookie from 'universal-cookie'
 import { Redirect } from 'react-router-dom'
-import {serverUrlBorrower} from '../url'
 import {Link} from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import QueryString from 'query-string'
 import Moment from 'react-moment'
 import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID'
-
-const kukie = new Cookie()
-
-var config = {headers: {'Authorization': "Bearer " + kukie.get('token')}};
+import { getToken } from '../index/token';
+import { getAllPermintaanPinjamanFunction } from './saga';
+import { checkPermission } from '../global/globalFunction';
 
 class PermintaanPinjaman extends React.Component {
   state = {
@@ -28,127 +23,64 @@ class PermintaanPinjaman extends React.Component {
     last_page:1,
     loading:true,
     BankName:'',serviceName:'',productName:'',
-    halamanConfig:`orderby=id&sort=ASC&rows=10`
-    
+    errorMessage:''
   };
 
   //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
-  
+  _isMounted=false
   componentDidMount(){
     this.getAllData()
+    this._isMounted=true
+  }
+  componentWillUnmount(){
+    this._isMounted=false
   }
 
-  getAllData = ()=>{
-    config = {headers: {'Authorization': "Bearer " + kukie.get('token')}};
-      var newLink =`admin/loan`
-      if (this.props.location.search){
-        var hasil = this.getLink()
-        if(!isNaN(hasil)){
-          newLink += `?id=${hasil}`+this.state.halamanConfig
-        }else{
-          newLink += `?owner_name=${hasil}`+this.state.halamanConfig
-        }
+  getAllData = async function(){
+    const param ={
+      rows:10,
+      page:this.state.page
+    }
+
+    let searching = this.state.searchRows;
+
+    if(searching){
+      //search function
+      if(!isNaN(searching)){
+        param.id = searching
       }else{
-        newLink += `?`+this.state.halamanConfig
+        param.owner_name = searching
       }
-      axios.get(serverUrlBorrower+newLink,config)
-      .then((res)=>{
-          this.setState({loading:false,
-            rows:res.data.data, 
-            rowsPerPage:res.data.rows,
-            totalData:res.data.total_data,
-            last_page:res.data.last_page,
-            page:res.data.current_page})
-      })
-      .catch((err)=>{
-          console.log(err)
-      })
-
-  }
-  getLink = ()=>{
-    var obj = QueryString.parse(this.props.location.search)
-   return obj.query 
-  }
-  pushUrl = ()=>{
-    var newLink ='/permintaanpinjaman/search'
-    var params =[]
-    //categoryDropdown,search
-    if(this.refs.search.value){
-        params.push({
-            params:'query',
-            value:this.refs.search.value
-        })
+      
     }
-    
-
-    for (var i=0;i<params.length;i++){
-        if(i===0){
-            newLink += '?'+params[i].params+ '='+ params[i].value
-        }else{
-            newLink += '&'+params[i].params+ '='+ params[i].value
-        }
+    const data = await getAllPermintaanPinjamanFunction(param)
+    if(data){
+      if(!data.error){
+        this.setState({loading:false,
+          rows:data.data.data, 
+          rowsPerPage:data.data.rows,
+          totalData:data.data.total_data,
+          last_page:data.data.last_page,
+          page:data.data.current_page})
+      }else{
+        this.setState({errorMessage:data.error})
+      }
     }
-    this.props.history.push(newLink)
-}
+  }
 
 
 
   onBtnSearch = ()=>{
-    this.pushUrl()
     var searching = this.refs.search.value
-    this.setState({loading:true,searchRows:searching})
-  
-    var newLink =``
-    if(searching){
-      //search function
-      if(!isNaN(searching)){
-        newLink +=`admin/loan?id=${searching}&${this.state.halamanConfig}`
-      }else{
-        newLink +=`admin/loan?owner_name=${searching}&${this.state.halamanConfig}`
-      }
-  
-    }else{
-      newLink+=`admin/loan?${this.state.halamanConfig}`
-    
-    }  
-    axios.get(serverUrlBorrower+newLink,config)
-    .then((res)=>{
-        this.setState({loading:false,rows:res.data.data,searchRows:null, rowsPerPage:res.data.rows,
-            totalData:res.data.total_data})
-    })
-    .catch((err)=>{
-        console.log(err)
+    this.setState({loading:true,searchRows:searching,page:1},()=>{
+      this.getAllData()
     })
   }
 
 
   onChangePage = (current, pageSize) => {
-    this.setState({loading:true})
-    console.log('onChange:current=', current);
-    console.log('onChange:pageSize=', pageSize);
-    var searching = this.refs.search.value
-    var newLink =``
-
-    if(searching){
-      //search function
-      if(!isNaN(searching)){
-        newLink +=`admin/loan?id=${searching}&${this.state.halamanConfig}&page=${current}`
-      }else{
-        newLink +=`admin/loan?owner_name=${searching}&${this.state.halamanConfig}&page=${current}`
-      }
-  
-    }else{
-      newLink+=`admin/loan?${this.state.halamanConfig}&page=${current}`
-    
-    }  
-    axios.get(serverUrlBorrower+newLink,config)
-    .then((res)=>{
-        console.log(res.data)
-        this.setState({loading:false,rows:res.data.data,dataPerhalaman:res.data.rows,page:current, rowsPerPage:res.data.rows,
-          totalData:res.data.total_data})
-    })
-    .catch((err)=>{
-        console.log(err)
+    this.setState({loading:true,page:current},()=>{
+      this.getAllData()
     })
   }
 
@@ -180,16 +112,20 @@ class PermintaanPinjaman extends React.Component {
             <tr key={index}>
               <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
               <td align="center">{val.id}</td>
-              <td align="center">{val.borrower_info.fullname}</td>
+              <td align="center">{val.owner_name}</td>
               {/* <td align="center"> {val.borrower_info.bank.Int64} </td>
               <td align="center"> {val.service} </td>
               <td align="center"> {val.product} </td> */}
               <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
               <td align="center">{val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Diproses"}</td>
               <td align="center">
-              <Link style={{textDecoration:"none"}} to={`/permintaanpinjamanDetail/${val.id}/${val.owner.Int64}`}>
-              <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
-              </Link>
+            
+                {   checkPermission('core_loan_get_details') &&
+                      <Link style={{textDecoration:"none"}} to={`/permintaanpinjamanDetail/${val.id}/${val.owner.Int64}`}>
+                      <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
+                      </Link>
+                }
+                         
               </td>
             </tr>
         )
@@ -203,10 +139,7 @@ class PermintaanPinjaman extends React.Component {
   
     
   render() {
-   
-  
-if(kukie.get("token")){
-      
+   if(getToken()){
     return (
         <div className="container">
         <div className="row">
@@ -253,6 +186,7 @@ if(kukie.get("token")){
                 pageSize={this.state.rowsPerPage}
                 onChange={this.onChangePage}
                 locale={localeInfo}
+                current={this.state.page}
                 />     
           </nav>
         </div>
@@ -262,9 +196,10 @@ if(kukie.get("token")){
   
   
 
-}else if (!kukie.get("token")){
-  return  <Redirect to='/login' />
 }
+    else if(getToken()){
+      return  <Redirect to='/login' />
+    }
     
   }
 }
