@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
@@ -9,9 +8,8 @@ import Pagination from 'rc-pagination';
 import {getAllUserFunction} from './saga'
 import { checkPermission } from '../global/globalFunction';
 import { getAllRoleFunction } from '../rolePermission/saga';
+import { getToken } from '../index/token'
 
-
-const cookie = new Cookies()
 
 // const columnDataRole = [
 //     {
@@ -71,10 +69,10 @@ class UserList extends React.Component{
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {
-                        dataListUser[key].role = this.findRole(dataListUser[key].role_id, data.dataRole || [])
+                        dataListUser[key].role = this.findRole(dataListUser[key].roles || [], data.dataRole || [])
                     }
                 }
-                
+
                 this.setState({
                     listUser: dataListUser,
                     totalData: data.totalData,
@@ -89,14 +87,19 @@ class UserList extends React.Component{
         }
     }
 
-    findRole = (roleId, dataRole) => {
+    findRole = (roleUser, dataRole) => {
         let role = '';
-
-        for(const key in dataRole) {
-            if(dataRole[key].id === roleId) {
-                role = dataRole[key].name
+        for(const keyRole in roleUser) {
+            for(const key in dataRole) {
+                if(dataRole[key].id === roleUser[keyRole]) {
+                    if(role.trim().length !== 0) {
+                        role += ', ';
+                    }
+                    role += dataRole[key].name;
+                }
             }
         }
+        
 
         return role;
     }
@@ -128,14 +131,16 @@ class UserList extends React.Component{
                     <td align="center">{val.role}</td>
                     <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
                     <td align="center">
-                        {   checkPermission('User_Edit') &&
+                        {   checkPermission('core_user_patch') &&
                             <Link to={`/editUser/${val.id}`} className="mr-2">
                                 <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
                             </Link>
                         }
-                        <Link to={`/detailUser/${val.id}`} >
-                            <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                        </Link>
+                        {   checkPermission('core_user_details') &&
+                            <Link to={`/detailUser/${val.id}`} >
+                                <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
+                            </Link>
+                        }
                     </td>
                 </tr>  
             )
@@ -159,7 +164,7 @@ class UserList extends React.Component{
 
     render(){
 
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                     <div className="row">
@@ -212,7 +217,7 @@ class UserList extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

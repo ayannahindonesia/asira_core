@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import CheckBox from '@material-ui/core/Checkbox';
@@ -15,6 +14,7 @@ import { getAllRoleFunction } from './../rolePermission/saga'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { postUserAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
+import { getToken } from '../index/token';
 
 const styles = (theme) => ({
     container: {
@@ -24,9 +24,6 @@ const styles = (theme) => ({
       border: '1px solid',
     },
   });
-
-const cookie = new Cookies();
-
 
 
 class userAdd extends React.Component{
@@ -87,10 +84,10 @@ class userAdd extends React.Component{
       if (this.validate()) {
         const dataUser = {
           username : this.state.username,
-          role_id : parseInt(this.state.role),
+          roles : [parseInt(this.state.role)],
           phone : this.state.phone,
           email : this.state.email,
-          status : this.state.status,
+          status : this.state.status ? 'active' : 'inactive',
         }
 
         const param = {
@@ -197,7 +194,7 @@ class userAdd extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
           return(
               <div className="container mt-4">
                 <h3>Akun - Tambah</h3>
@@ -327,7 +324,7 @@ class userAdd extends React.Component{
               
               </div>
           )
-        } else if(!cookie.get('token')){
+        } else if(getToken()){
           return (
               <Redirect to='/login' />
           )    

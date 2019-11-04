@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert';
@@ -15,14 +14,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { getUserFunction, patchUserAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import DropDown from '../subComponent/DropDown';
+import { getToken } from '../index/token';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 
 class userEdit extends React.Component{
@@ -71,7 +69,7 @@ class userEdit extends React.Component{
           if(!data.error && !dataUser.error) {
             this.setState({
               listRole: data.dataRole,
-              role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.role_id) || 0,
+              role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.roles && dataUser.dataUser.roles[0]) || 0,
               id: dataUser.dataUser.id,
               username: dataUser.dataUser.username,
               password: dataUser.dataUser.password,
@@ -100,7 +98,7 @@ class userEdit extends React.Component{
     btnSave=()=>{
       if (this.validate()) {
         const dataUser = {
-          role_id : parseInt(this.state.role),
+          roles : [parseInt(this.state.role)],
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
@@ -139,8 +137,16 @@ class userEdit extends React.Component{
 
 
     onChangeCheck = (e) => {
+      let status = this.state.status;
+
+      if(status === 'active') {
+        status = 'inactive'
+      } else {
+        status = 'active'
+      }
+
       this.setState({
-        status: !this.state.status,
+        status,
       });
     };
 
@@ -213,7 +219,7 @@ class userEdit extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
             return(
                 <div className="container mt-4">
                  <h3>Akun - Edit</h3>
@@ -339,11 +345,11 @@ class userEdit extends React.Component{
                             <CheckBox       
                               color="default"           
                               onChange={this.onChangeCheck}
-                              checked={this.state.status}
+                              checked={ this.state.status && this.state.status === 'active' ? true : false }
                               style={{justifyContent:'left'}}
                             />  
                           }
-                          label={this.state.status ? "Aktif" : "Tidak Aktif"}
+                          label={this.state.status && this.state.status === 'active' ? "Aktif" : "Tidak Aktif"}
                         />
                         
                       </div>           
@@ -360,7 +366,7 @@ class userEdit extends React.Component{
                 
                 </div>
             )
-        }else if(!cookie.get('token')){
+        }else if(!getToken()){
           return (
               <Redirect to='/login' />
           )    

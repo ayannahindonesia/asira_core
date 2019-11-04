@@ -1,29 +1,11 @@
 import axios from 'axios'
-import Cookie from 'universal-cookie'
 import {serverUrl} from '../url'
-const cookie = new Cookie()
-
-export async function getBankServiceFunction(param){
-    return new Promise(async (resolve)=>{
-        const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
-        };
-        axios.get(serverUrl+'admin/services',config)
-        .then((res)=>{
-            resolve(res)
-        })
-        .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
-            param.error = error;
-            resolve(param);
-        })
-    })
-}
+import { getToken } from '../index/token'
 
 export async function addProductFunction(param){
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.post(serverUrl+'admin/products',param,config)
         .then((res)=>{
@@ -40,7 +22,7 @@ export async function addProductFunction(param){
 export async function listProductFunction (param){
     return new Promise (async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         let filter = '';
 
@@ -64,7 +46,7 @@ export async function listProductFunction (param){
 export async function detailProductFunction(param,next) {
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.get(serverUrl+`admin/products/${param.id}`,config)
         .then((res)=>{
@@ -86,7 +68,7 @@ export async function detailProductFunction(param,next) {
 export async function detailServiceProductFunction(param,next) {
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.get(serverUrl+`admin/services/${param.dataProduct.service_id}`,config)
         .then((res)=>{
@@ -108,7 +90,7 @@ export async function detailServiceProductFunction(param,next) {
 export async function editProductFunction (param) {
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + cookie.get('token')}
+            headers: {'Authorization': "Bearer " + getToken()}
         };
         axios.patch(serverUrl+`admin/products/${param.id}`,param.newData,config)
         .then((res)=>{

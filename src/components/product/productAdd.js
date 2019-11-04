@@ -1,13 +1,13 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
-import Select from 'react-select';
+import Select from 'react-select/creatable';
 import './../../support/css/productAdd.css'
 import NumberFormat from 'react-number-format';
 import swal from 'sweetalert'
-import { addProductFunction, getBankServiceFunction} from './saga';
+import { addProductFunction} from './saga';
+import { getToken } from '../index/token';
+import { getAllLayananListFunction } from '../layanan/saga';
 
-const cookie = new Cookies()
 const options = [
     { value: 'Pendidikan', label: 'Pendidikan' },
     { value: 'Konsumtif', label: 'Konsumtif' }
@@ -169,7 +169,7 @@ class ProductAdd extends React.Component{
       
     
     getBankService = async function (params) {
-        const data = await getBankServiceFunction(params)
+        const data = await getAllLayananListFunction(params)
         if(data){
             if(!data.error){
                     this.setState({bankService:data.data.data})
@@ -206,7 +206,7 @@ class ProductAdd extends React.Component{
             return <Redirect to='/listproduct'/>            
 
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container">
                     <h2 className="mb-5">Produk - Tambah</h2>
@@ -433,7 +433,7 @@ class ProductAdd extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(getToken()){
             return (
                 <Redirect to='/login' />
             )    

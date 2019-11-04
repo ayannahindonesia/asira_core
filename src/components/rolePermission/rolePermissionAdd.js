@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import CheckBox from '../subComponent/CheckBox';
@@ -11,16 +10,15 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from './../global/globalConstant'
-import { getAllRoleFunction, getAllRolePermissionAddFunction, postRolePermissionFunction } from './saga'
+import { getAllRoleFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
+import { getToken } from '../index/token';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 
 
@@ -33,7 +31,7 @@ class rolePermissionAdd extends React.Component{
       listAllRolePermission,
       listRolePermission: [],
       disabled: false,
-      role : '',
+      role : 0,
       listRole: [],
       loading: true,
     };
@@ -50,19 +48,37 @@ class rolePermissionAdd extends React.Component{
     refresh = async function(){
       const param = {};
 
-      const data = await getAllRoleFunction(param, getAllRolePermissionAddFunction);
+      const data = await getAllRoleFunction(param);
 
       if(data) {
         if(!data.error) {
-          this.setState({
-            listRole: data.dataRole,
-            role: data.role,
-            loading: false,
-          })
+          const listRole = [];
+          const dataRole = data.dataRole;
+          let role = 0;
+
+          for(const key in dataRole) {
+            if(!dataRole[key].permissions || (dataRole[key].permissions && dataRole[key].permissions.length === 0)) {
+              listRole.push(dataRole[key])
+              role = dataRole[key].id
+            }
+          }
+          if(listRole.length !== 0) {
+            this.setState({
+              listRole,
+              role,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: 'Data Role yang belum di setup tidak ditemukan',
+              disabled: true,
+              loading: false,
+            })
+          }
+          
         } else {
           this.setState({
             errorMessage: data.error,
-            disabled: true,
             loading: false,
           })
         }      
@@ -85,10 +101,11 @@ class rolePermissionAdd extends React.Component{
       } else{
         const listRolePermission = this.state.listRolePermission;
         const dataRolePermission = {};
-        dataRolePermission.role_id = parseInt(this.state.role);
+        dataRolePermission.id = parseInt(this.state.role);
         dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
         const param = {
+          roleId: parseInt(this.state.role),
           dataRolePermission,
         };
   
@@ -98,7 +115,7 @@ class rolePermissionAdd extends React.Component{
     }
 
     postRolePermission = async function (param) {
-      const data = await postRolePermissionFunction(param)
+      const data = await patchRolePermissionFunction(param)
   
       this.setState({loading: true})
 
@@ -134,8 +151,8 @@ class rolePermissionAdd extends React.Component{
       const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
       const profileUser = Object.assign({}, this.state.listRolePermission);
       const profileUserNew = [];
+
       let flag = false;
-      let name = '';
       let modules = '';
   
       for (const key in profileUserAll) {
@@ -143,7 +160,6 @@ class rolePermissionAdd extends React.Component{
           profileUserAll[key].id.toString().trim() ===
           e.target.value.toString().trim()
         ) {
-          name = profileUserAll[key].name;
           modules = profileUserAll[key].modules;
 
           for(const keyRole in profileUser) {
@@ -157,11 +173,14 @@ class rolePermissionAdd extends React.Component{
       }
   
       if (!flag) {
-        profileUserNew.push({
-          id: e.target.value,
-          name: name,
-          modules: modules,
-        });
+        const modulesSplit = modules.split(' ');
+
+        for(const key in modulesSplit) {
+          profileUserNew.push({
+            id: e.target.value,
+            modules: modulesSplit[key],
+          });
+        } 
       }
       
       this.setState({
@@ -189,7 +208,7 @@ class rolePermissionAdd extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
           return(
               <div className="container mt-4">
                 <h3>Role Permission - Tambah</h3>
@@ -248,7 +267,7 @@ class rolePermissionAdd extends React.Component{
               
               </div>
           )
-        } else if(!cookie.get('token')){
+        } else if(!getToken()){
           return (
               <Redirect to='/login' />
           )    

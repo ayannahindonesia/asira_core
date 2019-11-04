@@ -1,10 +1,8 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import swal from 'sweetalert'
 import { AddRoleFunction } from './saga';
-
-const cookie = new Cookies()
+import { getToken } from '../index/token';
 
 class RoleAdd extends React.Component{
     _isMounted = false;
@@ -31,17 +29,16 @@ class RoleAdd extends React.Component{
         var name = this.refs.namaRole.value
         var system = this.refs.sistem.value
         var description = this.refs.deskripsi.value
-        var status = this.state.check
-
+        var status = this.state.check ? "active" :"inactive"
+        var permissions =[]
         if(name.trim()==="" || name ===""){
             this.setState({errorMessage:"Nama Role Kosong - Harap Cek Ulang"})
         }else if(system === "0" ){
             this.setState({errorMessage:"Sistem Role Kosong - Harap Cek Ulang"})            
         }else{
             this.setState({submit:true})
-            var newData = {name,system,description,status}
+            var newData = {name,system,description,status,permissions}
             this.addRole(newData)
-         
         }
     }
     
@@ -72,7 +69,7 @@ class RoleAdd extends React.Component{
         if(this.state.diKlik){
             return <Redirect to='/listrole'/>            
         }
-        if(cookie.get('token')){
+        if(getToken()){
             return(
                 <div className="container mt-4">
                  <h3>Role - Tambah</h3>
@@ -101,7 +98,7 @@ class RoleAdd extends React.Component{
                                 <option value={0}>====== Pilih Sistem =====</option>
                                 <option value="Mobile">Mobile</option>
                                 <option value="Core">Core</option>
-                                <option value="Bank Dashboard">Bank Dashboard</option>
+                                <option value="Dashboard">Dashboard</option>
                             </select>
                             </div>
                             </div>
@@ -131,7 +128,7 @@ class RoleAdd extends React.Component{
                 </div>
             )
         }
-        if(!cookie.get('token')){
+        if(!getToken()){
             return (
                 <Redirect to='/login' />
             )    

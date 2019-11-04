@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie';
 import { Redirect } from 'react-router-dom'
 import CheckBox from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
@@ -10,16 +9,16 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { listAllRolePermission } from '../global/globalConstant'
-import { getRoleFunction, getRolePermissionFunction, patchRolePermissionFunction } from './saga'
+import { getRoleFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission } from './function'
+import { getToken } from '../index/token';
+import { destructRolePermission } from './function';
 
 const styles = (theme) => ({
     container: {
       flexGrow: 1,
     },
   });
-
-const cookie = new Cookies();
 
 
 class rolePermissionEdit extends React.Component{
@@ -52,25 +51,26 @@ class rolePermissionEdit extends React.Component{
     refresh = async function(){
       const param = {};
       param.roleId = this.state.roleId;
-      param.listAllRolePermission = this.state.listAllRolePermission;
 
-      const data = await getRoleFunction(param, getRolePermissionFunction);
-      
+      const data = await getRoleFunction(param);
+
       if(data) {
-        if(!data.error) {
-          this.setState({
-            listRole: data.dataRole,
-            listRolePermission: data.dataRolePermission,
-            loading: false,
-          })
-        } else {
-          this.setState({
-            errorMessage: data.error,
-            disabled: true,
-            loading: false,
-          })
-        }      
-      } 
+          const listRolePermission = destructRolePermission(data.dataRole.permissions, this.state.listAllRolePermission)
+          
+          if(!data.error) {
+            this.setState({
+              listRole: data.dataRole,
+              listRolePermission,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: data.error,
+              disabled: true,
+              loading: false,
+            })
+          }      
+      }
     }
 
     btnCancel = ()=>{
@@ -83,13 +83,15 @@ class rolePermissionEdit extends React.Component{
     btnSave = () =>{
       const listRolePermission = this.state.listRolePermission;
       const dataRolePermission = {};
-      dataRolePermission.role_id = parseInt(this.state.listRole.id);
+      
+      dataRolePermission.id = parseInt(this.state.listRole.id);
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
       const param = {
+        roleId: parseInt(this.state.listRole.id),
         dataRolePermission,
       };
-
+      
       this.patchRolePermission(param)
         
     }
@@ -132,8 +134,8 @@ class rolePermissionEdit extends React.Component{
       const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
       const profileUser = Object.assign({}, this.state.listRolePermission);
       const profileUserNew = [];
+
       let flag = false;
-      let name = '';
       let modules = '';
   
       for (const key in profileUserAll) {
@@ -141,7 +143,6 @@ class rolePermissionEdit extends React.Component{
           profileUserAll[key].id.toString().trim() ===
           e.target.value.toString().trim()
         ) {
-          name = profileUserAll[key].name;
           modules = profileUserAll[key].modules;
 
           for(const keyRole in profileUser) {
@@ -155,11 +156,14 @@ class rolePermissionEdit extends React.Component{
       }
   
       if (!flag) {
-        profileUserNew.push({
-          id: e.target.value,
-          name: name,
-          modules: modules,
-        });
+        const modulesSplit = modules.split(' ');
+
+        for(const key in modulesSplit) {
+          profileUserNew.push({
+            id: e.target.value,
+            modules: modulesSplit[key],
+          });
+        } 
       }
       
       this.setState({
@@ -183,7 +187,7 @@ class rolePermissionEdit extends React.Component{
               </div>
             </div>
           )
-        } else if(cookie.get('token')){
+        } else if(getToken()){
           return(
             <div className="container mt-4">
               <h3>Role Permission - Ubah</h3>
@@ -231,7 +235,7 @@ class rolePermissionEdit extends React.Component{
             
             </div>
           )
-        } else if(!cookie.get('token')){
+        } else if(!getToken()){
           return (
             <Redirect to='/login' />
           )    

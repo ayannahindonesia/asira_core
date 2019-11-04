@@ -1,15 +1,12 @@
 import axios from 'axios';
 import { serverUrl, serverUrlGeo } from '../url';
-import Cookies from 'universal-cookie';
-import SecureLS from 'secure-ls';
-import md5 from 'md5';
-
-const cookie = new Cookies()
+import jsonWebToken from 'jsonwebtoken';
+import { setToken, setTokenGeo, getTokenAuth } from './token';
 
 export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRole, nextPermission) {
     return new Promise(async (resolve) => { 
-        const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'}); 
-        const tokenAuth = newLs.get(md5('tokenAuth'))    
+        const tokenAuth = getTokenAuth();
+
         
         const config = {
             headers: {'Authorization': "Bearer " + tokenAuth}
@@ -20,12 +17,11 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
         const logindata ={key: param.key,password: param.password};
   
         axios.post(url,logindata,config).then((res)=>{
-            const date = new Date();
-            date.setTime(date.getTime() + (res.data.expires_in*1000));
-            cookie.set('token',res.data.token,{expires: date})
+
+            setToken(res.data.token, new Date().getTime() + (res.data.expires_in*1000))
             
             param.dataToken = res.data.token;
-            param.expires = res.data.expires_in;
+            param.expires = res.data.expires_in;      
 
             delete param.password;
 
@@ -47,7 +43,8 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
 }
 
 export async function getTokenGeoFunction(param, next) {
-    return new Promise(async (resolve) => {     
+    return new Promise(async (resolve) => {    
+        
         const config = {
             headers: {'Authorization': "Bearer " + param.dataToken}
         };
@@ -62,9 +59,7 @@ export async function getTokenGeoFunction(param, next) {
         }
   
         axios.get(url,geoData,config).then((res)=>{
-            const date = new Date();
-            date.setTime(date.getTime() + (res.data.expires*1000));
-            cookie.set('tokenGeo',res.data.token,{expires: date})
+            setTokenGeo(res.data.token);
 
             param.dataGeoToken = res.data.token;
 
@@ -85,30 +80,19 @@ export async function getTokenGeoFunction(param, next) {
 }
 
 export async function getUserProfileFunction(param, next, nextPermission) {
-    return new Promise(async (resolve) => {     
-        const config = {
-            headers: {'Authorization': "Bearer " + param.dataToken}
-        };
+    return new Promise(async (resolve) => {    
+        try {
+            var token = jsonWebToken.verify(param.dataToken,'sXQ8jUMpueOvN5P3cdCR');
 
-        const url = serverUrl+"admin/profile"
-
-  
-        axios.get(url,config).then((res)=>{
-            param.user = res.data;
-            param.roleId = res.data.role_id || 0;
-
-            if(next) {
-                resolve(next(param, nextPermission))
-            } else {
-                resolve(param)
-            }
-            
-        }).catch((err)=>{
-            console.log(err.toString())
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah User'
+            param.dataPermission = token.permissions;
+            resolve(param)
+        } catch (err) {
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal memuat profile User'
             param.error = error
             resolve(param);
-        })
+        }
+        
+        
     });
     
 }
