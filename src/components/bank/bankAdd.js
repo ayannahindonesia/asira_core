@@ -186,9 +186,9 @@ class Main extends React.Component{
         const data = await ListTipeBankFunction()
         if(data){
             if(!data.error){
-                this.setState({typeBank:data})
+                this.setState({typeBank:data.data.data})
             }else{
-
+                this.setState({error:data.error})
             }
         }
     } 
