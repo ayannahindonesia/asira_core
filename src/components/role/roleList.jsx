@@ -131,6 +131,7 @@ class RoleList extends React.Component{
                             onChange={this.onChangePage}
                             locale={localeInfo}
                             current={this.state.page}
+                            showLessItems
                             />
                         </nav>
                 </div>

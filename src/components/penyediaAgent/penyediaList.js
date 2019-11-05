@@ -1,6 +1,5 @@
 import React from 'react';
 import Loader from 'react-loader-spinner'
-import Moment from 'react-moment';
 import {connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import {Link} from 'react-router-dom'
@@ -183,6 +182,7 @@ if(getToken()){
                 onChange={this.onChangePage}
                 locale={localeInfo}
                 current={this.state.page}
+                showLessItems
                 />     
           </nav>
         </div>

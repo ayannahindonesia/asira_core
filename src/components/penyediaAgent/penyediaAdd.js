@@ -43,7 +43,7 @@ class PenyediaAdd extends React.Component{
 
     btnSaveAgen =()=>{
         let status = this.state.check ? "active": "inactive"
-        let alamat = this.refs.alamat.value
+        let address = this.refs.alamat.value
         let name = this.refs.namaAgent.value
         let pic = this.refs.pic.value
         let phone = this.state.phone
@@ -54,7 +54,7 @@ class PenyediaAdd extends React.Component{
             this.setState({errorMessage:"Nama Penyedia Agen Kosong - Harap cek kembali"})
         }else if(pic.trim().length ===0){
             this.setState({errorMessage:"Nama PIC Kosong - Harap cek kembali"})
-        }else if(alamat.trim().length ===0){
+        }else if(address.trim().length ===0){
             this.setState({errorMessage:"Alamat Kosong - Harap cek kembali"})
         }else if(this.state.phone===''){
             this.setState({errorMessage:"Nomor Telepon Kosong - Harap cek kembali"})
