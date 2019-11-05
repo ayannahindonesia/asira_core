@@ -15,6 +15,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { postUserAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
+import { getAllBankList } from '../bank/saga';
 
 const styles = (theme) => ({
     container: {
@@ -32,9 +33,10 @@ class userAdd extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listRolePermission: [],
       role : 0,
+      bank: 0,
       listRole: [],
+      listBank: [],
       loading: true,
       status: true,
       username: '',
@@ -61,8 +63,7 @@ class userAdd extends React.Component{
           this.setState({
             listRole: data.dataRole,
             role: (data.dataRole && data.dataRole[0] && data.dataRole[0].id) || 0,
-            loading: false,
-          })
+          }, () => { this.getBankList() })
         } else {
           this.setState({
             errorMessage: data.error,
@@ -72,6 +73,52 @@ class userAdd extends React.Component{
       }
     }
 
+    getBankList = async function() {
+      const roleBank = this.isRoleBank(this.state.role); 
+      if(roleBank) {
+        const data = await getAllBankList({rows: 'all'}) ;
+
+        if(data) {
+          if(!data.error) {
+            this.setState({
+              listBank: data.data.data,
+              bank: (data.data && data.data.data && data.data.data[0] && data.data.data[0].id) || 0,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: data.error,
+              loading: false,
+            })
+          }      
+        }
+      } else {
+        this.setState({
+          listBank: [],
+          bank: 0,
+          loading: false,
+        })
+      }
+      
+    }
+
+    isRoleBank = (role) => {
+      let flag = false;
+      const dataRole = this.state.listRole;
+
+      if(role && role !== 0) {
+        for(const key in dataRole) {
+          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            flag = true;
+            break;
+          }
+        }
+        
+      } 
+
+      return flag;
+    }
+ 
     btnCancel = ()=>{
       this.setState({diKlik:true})
     }
@@ -85,6 +132,7 @@ class userAdd extends React.Component{
         const dataUser = {
           username : this.state.username,
           roles : [parseInt(this.state.role)],
+          bank: this.isRoleBank(this.state.role) ? this.state.bank : null,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status ? 'active' : 'inactive',
@@ -146,7 +194,13 @@ class userAdd extends React.Component{
     }
 
     onChangeDropDown = (e) => {
-      this.setState({role: e.target.value})
+      const labelName = e.target.name.toString().toLowerCase();
+
+      this.setState({[labelName]: e.target.value},(labelName) => { 
+        if(labelName === 'role') {
+          this.getBankList();
+        } 
+      })
     }
 
     validate = () => {
@@ -167,6 +221,9 @@ class userAdd extends React.Component{
       } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
+      } else if (!this.state.bank || this.state.bank === 0) {
+        flag = false;
+        errorMessage = 'Mohon input bank dengan benar'
       } else {
         errorMessage = ''
       }
@@ -227,7 +284,7 @@ class userAdd extends React.Component{
                     </div>                 
                   </div>
 
-                  <div className="form-group row" style={{marginBottom:20}}>                   
+                  <div className="form-group row" style={{marginBottom:7}}>                   
                     <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
                       Role
                     </label>
@@ -240,12 +297,35 @@ class userAdd extends React.Component{
                         label="Role"
                         data={this.state.listRole}
                         id="id"
-                        labelName="name"
+                        labelName={"name-system"}
                         onChange={this.onChangeDropDown}
                         fullWidth
                       />
                     </div>                 
                   </div>
+
+                  { this.isRoleBank(this.state.role) && 
+                    <div className="form-group row" style={{marginBottom:20}}>                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Bank
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <div className="col-sm-4">
+                        <DropDown
+                          value={this.state.bank}
+                          label="Bank"
+                          data={this.state.listBank}
+                          id="id"
+                          labelName="name"
+                          onChange={this.onChangeDropDown}
+                          disabled={!this.isRoleBank(this.state.role)}
+                          fullWidth
+                        />
+                      </div>                 
+                    </div>
+                  }
 
                   <div className="form-group row" style={{marginBottom:40}}>                   
                     <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
