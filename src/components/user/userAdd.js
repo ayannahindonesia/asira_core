@@ -221,7 +221,7 @@ class userAdd extends React.Component{
       } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
-      } else if (!this.state.bank || this.state.bank === 0) {
+      } else if (this.isRoleBank(this.state.role) && (!this.state.bank || this.state.bank === 0)) {
         flag = false;
         errorMessage = 'Mohon input bank dengan benar'
       } else {
