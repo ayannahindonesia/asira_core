@@ -62,6 +62,11 @@ import UserList from './components/user/userList'
 import UserDetail from './components/user/userDetail'
 import UserEdit from './components/user/userEdit'
 
+import penyediaAgentAdd from './components/penyediaAgent/penyediaAdd'
+import penyediaAgentEdit from './components/penyediaAgent/penyediaEdit'
+import penyediaAgentDetail from './components/penyediaAgent/penyediaDetail'
+import penyediaAgentList from './components/penyediaAgent/penyediaList'
+
 import axios from 'axios'
 import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
 
@@ -172,6 +177,11 @@ class App extends React.Component {
                   { checkPermission('core_user_details') && <Route path='/detailUser/:id' component={UserDetail}></Route>}
 
                   { checkPermission('convenience_fee_report') && <Route path='/report' component={Report}></Route>}
+
+                  { checkPermission('core_penyedia_agent_new') && <Route path='/penyediaAdd' component={penyediaAgentAdd}></Route>}
+                  { checkPermission('core_penyedia_agent_list') && <Route path='/penyediaList' component={penyediaAgentList}></Route>}
+                  { checkPermission('core_penyedia_agent_patch') && <Route path='/penyediaEdit/:id' component={penyediaAgentEdit}></Route>}
+                  { checkPermission('core_penyedia_agent_detail') && <Route path='/penyediaDetail/:id' component={penyediaAgentDetail}></Route>}
 
                   {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
