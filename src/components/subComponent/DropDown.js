@@ -47,7 +47,7 @@ class DropDown extends React.Component {
           value={value}
           onChange={this.props.onChange}
           fullWidth={fullWidth}
-          style={{border: '1px solid #ced4da'}}
+          style={{border: '1px solid #ced4da', paddingLeft:'5px'}}
           inputProps={{
             name: label,
             id: label,
