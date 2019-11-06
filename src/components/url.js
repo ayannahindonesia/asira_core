@@ -12,4 +12,3 @@ export const serverUrlBorrower=window.location.origin.includes('asira') ?
 export const serverUrlGeo=window.location.origin.includes('asira') ? 
 "http://asira.ayannah.com/api-geomapping/" :
 "https://cors-anywhere.herokuapp.com/http://asira.ayannah.com/api-geomapping/"
-
