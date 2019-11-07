@@ -101,6 +101,7 @@ class userEdit extends React.Component{
       if (this.validate()) {
         const dataUser = {
           roles : [parseInt(this.state.role)],
+          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
