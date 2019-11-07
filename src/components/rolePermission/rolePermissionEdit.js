@@ -8,9 +8,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { listAllRolePermission } from '../global/globalConstant'
 import { getRoleFunction, patchRolePermissionFunction } from './saga'
-import { constructRolePermission } from './function'
+import { constructRolePermission, checkingRole, checkingSystem } from './function'
 import { getToken } from '../index/token';
 import { destructRolePermission } from './function';
 
@@ -27,7 +26,7 @@ class rolePermissionEdit extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listAllRolePermission,
+      listAllRolePermission: [],
       listRolePermission: [],
       listRole : {},
       roleId: 0,
@@ -55,12 +54,13 @@ class rolePermissionEdit extends React.Component{
       const data = await getRoleFunction(param);
 
       if(data) {
-          const listRolePermission = destructRolePermission(data.dataRole.permissions, this.state.listAllRolePermission)
+          const listRolePermission = destructRolePermission(data.dataRole.permissions)
           
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
               listRolePermission,
+              listAllRolePermission: checkingSystem(this.state.roleId, [data.dataRole]),
               loading: false,
             })
           } else {
@@ -116,18 +116,6 @@ class rolePermissionEdit extends React.Component{
           })
         }      
       }
-    }
-
-    checkingRole = (role, idRolePermission) => {
-      for (const key in role) {
-        if (
-          role[key].id.toString().trim() ===
-          idRolePermission.toString().trim()
-        ) {
-          return true;
-        }
-      }
-      return false;
     }
 
     onChangeCheck = (e) => {
@@ -218,7 +206,7 @@ class rolePermissionEdit extends React.Component{
                           modules="menu"      
                           labelPlacement= "top"                       
                           onChange={this.onChangeCheck}
-                          onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
+                          onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
                           style={{ width: '97%'}}
                         />
                     </div>           

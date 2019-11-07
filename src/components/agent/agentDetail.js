@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getUserFunction } from './saga'
+import { getAgentFunction } from './saga'
 import { getAllRoleFunction } from '../rolePermission/saga';
 import { getToken } from '../index/token';
 
@@ -47,18 +47,17 @@ class UserDetail extends React.Component{
       const param = {};
       param.userId = this.state.userId;
 
-      const data = await getUserFunction(param, getAllRoleFunction);
+      const data = await getAgentFunction(param, getAllRoleFunction);
       
 
       if(data) {
           if(!data.error) {
             const dataUser = data.dataUser || {};
             
-            dataUser.role = this.findRole((dataUser && dataUser.roles) || [], data.dataRole || [])
+            dataUser.role = this.findRole((dataUser && dataUser.roles && dataUser.roles[0]) || 0, data.dataRole || [])
 
             this.setState({
               dataUser,
-              listRole: data.dataRole,
               loading: false,
             })
           } else {
@@ -71,34 +70,41 @@ class UserDetail extends React.Component{
       }
     }
 
-    findRole = (roleUser, dataRole) => {
+    findRole = (roleId, dataRole) => {
       let role = '';
-      for(const keyRole in roleUser) {
-          for(const key in dataRole) {
-              if(dataRole[key].id === roleUser[keyRole]) {
-                  if(role.trim().length !== 0) {
-                      role += ', ';
-                  }
-                  role += `${dataRole[key].name} (${dataRole[key].system})`;
-              }
+
+      for(const key in dataRole) {
+          if(dataRole[key].id === roleId) {
+              role = dataRole[key].name
           }
       }
-      
+
       return role;
-    }
+  }
 
     btnCancel = ()=>{
       this.setState({diKlik:true})
     }
-
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
+    }
+
+    checkingRole = (role, idRolePermission) => {
+        for (const key in role) {
+          if (
+            role[key].id.toString().trim() ===
+            idRolePermission.toString().trim()
+          ) {
+            return true;
+          }
+        }
+        return false;
     }
 
     isRoleBank = (role) => {
       let flag = false;
       const dataRole = this.state.listRole;
-      
+
       if(role && role !== 0) {
         for(const key in dataRole) {
           if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
@@ -156,7 +162,7 @@ class UserDetail extends React.Component{
 
                     <div className="form-group row">                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Username
+                        Nama Akun
                       </label>
                       <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                         :
@@ -200,7 +206,7 @@ class UserDetail extends React.Component{
                           :
                         </label>
                         <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                          {this.state.dataUser && this.state.dataUser.bank_name}
+                          {this.state.dataUser && this.state.dataUser.bank}
                         </label>               
                       </div>
                     }
