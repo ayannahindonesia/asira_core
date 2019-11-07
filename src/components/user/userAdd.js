@@ -76,7 +76,7 @@ class userAdd extends React.Component{
     getBankList = async function() {
       const roleBank = this.isRoleBank(this.state.role); 
       if(roleBank) {
-        const data = await getAllBankList({rows: 'all'}) ;
+        const data = await getAllBankList() ;
 
         if(data) {
           if(!data.error) {
