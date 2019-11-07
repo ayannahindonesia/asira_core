@@ -156,7 +156,7 @@ class UserDetail extends React.Component{
 
                     <div className="form-group row">                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Nama Akun
+                        Username
                       </label>
                       <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                         :

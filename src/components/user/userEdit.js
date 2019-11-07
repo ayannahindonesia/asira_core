@@ -186,7 +186,7 @@ class userEdit extends React.Component{
       const roleBank = this.isRoleBank(this.state.role); 
       
       if(roleBank) {
-        const data = await getAllBankList({rows: 'all'}) ;
+        const data = await getAllBankList() ;
 
         if(data) {
           if(!data.error) {
@@ -234,7 +234,7 @@ class userEdit extends React.Component{
 
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
-        errorMessage = 'Mohon input nama akun dengan benar'
+        errorMessage = 'Mohon input username dengan benar'
       } else if (!this.state.role || this.state.role === 0) {
         flag = false;
         errorMessage = 'Mohon input role dengan benar'
@@ -304,7 +304,7 @@ class userEdit extends React.Component{
 
                     <div className="form-group row" style={{marginBottom:40}}>                
                       <label className="col-sm-2 col-form-label" style={{height:3.5}}>
-                        Nama Akun
+                        Username
                       </label>
                       <label className="col-sm-1 col-form-label" style={{height:3.5}}>
                         :
