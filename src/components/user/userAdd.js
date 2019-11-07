@@ -132,12 +132,12 @@ class userAdd extends React.Component{
         const dataUser = {
           username : this.state.username,
           roles : [parseInt(this.state.role)],
-          bank: this.isRoleBank(this.state.role) ? this.state.bank : null,
+          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status ? 'active' : 'inactive',
         }
-
+        
         const param = {
           dataUser,
         }
@@ -159,6 +159,7 @@ class userAdd extends React.Component{
             loading: false,
           })
         } else {
+          
           this.setState({
             errorMessage: data.error,
             loading: false,
