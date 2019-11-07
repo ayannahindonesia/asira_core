@@ -158,6 +158,7 @@ class Example extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
+
             { checkPermission('core_penyedia_agent_new','core_penyedia_agent_list') &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
@@ -166,6 +167,18 @@ class Example extends React.Component {
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
                   { checkPermission('core_penyedia_agent_new') && <Link to="/penyediaAdd" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
                   { checkPermission('core_penyedia_agent_list') && <Link to="/penyediaList" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem></Link> }               
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            }
+
+            { checkPermission('core_agent_new','core_agent_list') &&
+              <UncontrolledDropdown  nav inNavbar>
+                <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
+                  <label><i className="fas fa-user"></i> Agen </label>
+                </DropdownToggle>
+                <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
+                  { checkPermission('core_agent_new') && <Link to="/tambahAgent" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
+                  { checkPermission('core_agent_list') && <Link to="/listAgent" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>List </DropdownItem></Link> }               
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
