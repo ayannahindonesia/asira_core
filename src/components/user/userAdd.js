@@ -76,7 +76,7 @@ class userAdd extends React.Component{
     getBankList = async function() {
       const roleBank = this.isRoleBank(this.state.role); 
       if(roleBank) {
-        const data = await getAllBankList({rows: 'all'}) ;
+        const data = await getAllBankList() ;
 
         if(data) {
           if(!data.error) {
@@ -209,7 +209,7 @@ class userAdd extends React.Component{
 
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
-        errorMessage = 'Mohon input nama akun dengan benar'
+        errorMessage = 'Mohon input username dengan benar'
       } else if (!this.state.role || this.state.role === 0) {
         flag = false;
         errorMessage = 'Mohon input role dengan benar'
@@ -266,7 +266,7 @@ class userAdd extends React.Component{
                   </div>
                   <div className="form-group row" style={{marginBottom:20}}>                
                     <label className="col-sm-2 col-form-label" style={{height:3.5}}>
-                      Nama Akun
+                      Username
                     </label>
                     <label className="col-sm-1 col-form-label" style={{height:3.5}}>
                       :
@@ -278,7 +278,7 @@ class userAdd extends React.Component{
                         value={this.state.username}
                         hiddenLabel
                         fullWidth
-                        placeholder="Nama Akun"
+                        placeholder="Username"
                         style={{border:'1px groove', paddingLeft:'5px'}}
                       />
                     </div>                 

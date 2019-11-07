@@ -1,38 +1,35 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
-import {Link} from 'react-router-dom'
-// import SubTable from './../subComponent/SubTable'
-import localeInfo from 'rc-pagination/lib/locale/id_ID'
-import Pagination from 'rc-pagination';
 import {getAllUserFunction} from './saga'
 import { checkPermission } from '../global/globalFunction';
 import { getAllRoleFunction } from '../rolePermission/saga';
 import { getToken } from '../index/token'
+import TableComponent from '../subComponent/TableComponent'
 
 
-// const columnDataRole = [
-//     {
-//         id: 'id',
-//         numeric: 'true',
-//         disablePadding: false,
-//         label: 'Id Role Permission',
-//     },
-//     {
-//         id: 'name',
-//         numeric: 'false',
-//         disablePadding: true,
-//         label: 'Nama Role',
-//     },
-//     { id: 'status', numeric: 'false', disablePadding: true, label: 'Status' },
-//     {
-//         id: 'updated_time',
-//         numeric: 'false',
-//         disablePadding: false,
-//         label: 'Update Date',
-//         time: 'true',
-//     },
-// ]
+const columnDataUser = [
+    {
+        id: 'id',
+        numeric: false,
+        label: 'ID Akun',
+    },
+    {
+        id: 'username',
+        numeric: false,
+        label: 'Username',
+    },
+    {
+        id: 'role',
+        numeric: false,
+        label: 'Role',
+    },
+    {
+        id: 'bank_name',
+        numeric: false,
+        label: 'Bank',
+    },
+    { id: 'status', numeric: false, disablePadding: true, label: 'Status' },
+]
 
 class UserList extends React.Component{
     _isMounted = false;
@@ -40,10 +37,12 @@ class UserList extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
+            paging:true,
             loading:true, 
             listUser: [],
             page: 1,
             rowsPerPage: 10,
+            totalData: 0,
         }
     }
 
@@ -69,6 +68,7 @@ class UserList extends React.Component{
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {
+                        dataListUser[key].status = dataListUser[key].status && dataListUser[key].status.toString().toLowerCase() === 'active' ? 'Aktif' : 'Tidak Aktif'
                         dataListUser[key].role = this.findRole(dataListUser[key].roles || [], data.dataRole || [])
                     }
                 }
@@ -95,68 +95,22 @@ class UserList extends React.Component{
                     if(role.trim().length !== 0) {
                         role += ', ';
                     }
-                    role += dataRole[key].name;
+                    role += `${dataRole[key].name} (${dataRole[key].system})`;
                 }
             }
         }
         
-
         return role;
     }
 
-    renderJSX = () => {
-
-        if (this.state.loading || !this.state.listUser){
-            return  (
-              <tr  key="zz">
-                <td align="center" colSpan={6}>
-                    <Loader 
-                        type="Circles"
-                        color="#00BFFF"
-                        height="40"	
-                        width="40"
-                    />   
-                </td>
-              </tr>
-            )
-        }
-        
-        
-        var jsx = this.state.listUser.map((val,index)=>{
-            return(
-                <tr key={index}>
-                    <td align="center">{this.state.page >1 ? (index+1 + this.state.rowsPerPage*(this.state.page-1)) : index+1}</td>
-                    <td align="center">{val.id}</td>
-                    <td align="center">{val.username}</td>
-                    <td align="center">{val.role}</td>
-                    <td align="center">{val.status ? "Aktif" : "Tidak Aktif"}</td>
-                    <td align="center">
-                        {   checkPermission('core_user_patch') &&
-                            <Link to={`/editUser/${val.id}`} className="mr-2">
-                                <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                            </Link>
-                        }
-                        {   checkPermission('core_user_details') &&
-                            <Link to={`/detailUser/${val.id}`} >
-                                <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                            </Link>
-                        }
-                    </td>
-                </tr>  
-            )
-                   
-        })
-                     
-        return jsx;
-
-    }
-
-    onChangePage = (current, pageSize) => {
+    onChangePage = (current) => {
         this.setState({
             loading:true,
             page:current,
         }, () => {
-            this.refresh();
+            if(this.state.paging) {
+                this.refresh()
+            };
         })
     }
     
@@ -177,44 +131,21 @@ class UserList extends React.Component{
                     </div>
                    <hr/>
 
-                   {/* <SubTable
-                        // headerTitle={'List Application'}
-                        // search={this.state.flagAdd ? searchBar : null}
-                        columnData={columnDataRole}
+                   < TableComponent
+                        id={"id"}
+                        paging={this.state.paging}
+                        loading={this.state.loading}
+                        columnData={columnDataUser}
                         data={this.state.listUser}
-                        idKey={'id'}
-                        // onAddFunction={
-                        //     // this.state.flagAdd ? this.handleAddApplication : null
-                        // }
-                        // onRowClickedFunction={this.handleViewApplication}
-                    /> */}
-                   <table className="table table-hover">
-                   <thead className="table-warning">
-                        <tr >
-                            <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">ID Akun</th>
-                            <th className="text-center" scope="col">Nama Akun</th>
-                            <th className="text-center" scope="col">Role</th>
-                            <th className="text-center" scope="col">Status</th>
-                            <th className="text-center" scope="col">Action</th>
-                        </tr>     
-                    </thead>
-                       <tbody>
-                          {this.renderJSX()}
-                       </tbody>
-                   </table>
-                   <hr></hr>
-                    <nav className="navbar" style={{float:"right"}}> 
+                        page={this.state.page}
+                        rowsPerPage={this.state.rowsPerPage}
+                        totalData={this.state.totalData}
+                        onChangePage={this.onChangePage}             
+                        permissionEdit={ checkPermission('core_user_patch') ? '/editUser/' : null}
+                        permissionDetail={ checkPermission('core_user_details') ? '/detailUser/' : null}
+                    />
 
-                        <Pagination className="ant-pagination"  
-                            showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
-                            total={this.state.totalData}
-                            showLessItems
-                            pageSize={this.state.rowsPerPage}
-                            onChange={this.onChangePage}
-                            locale={localeInfo}
-                        />     
-                    </nav>
+                  
                 </div>
             )
         }
