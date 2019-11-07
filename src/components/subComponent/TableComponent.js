@@ -66,7 +66,7 @@ class TableComponent extends React.Component {
                         this.props.columnData.map((dataRow, indexRow) => {                         
                           return(
                             <td align={dataRow.numeric ? "right" : "center"} key={indexRow}>
-                              {dataRow.numeric ? formatNumber(dataTable[dataRow.id]) : dataTable[dataRow.id]}
+                              {dataRow.numeric ? formatNumber(dataTable[dataRow.id]) : (dataTable[dataRow.id] || '-')}
                             </td>
                           );               
                         }, this)

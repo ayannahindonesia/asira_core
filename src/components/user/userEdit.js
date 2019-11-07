@@ -71,7 +71,7 @@ class userEdit extends React.Component{
           if(!data.error && !dataUser.error) {
             this.setState({
               listRole: data.dataRole,
-              bank: dataUser.dataUser.bank || 0,
+              bank: dataUser.dataUser.bank_id || 0,
               role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.roles && dataUser.dataUser.roles[0]) || 0,
               id: dataUser.dataUser.id,
               username: dataUser.dataUser.username,
