@@ -58,7 +58,7 @@ export async function getKabupatenFunction (param){
     })
 }
 
-export async function getAllBankList (param){
+export async function getAllBankList (param,next){
     return new Promise(async (resolve)=>{
         const config = {
             headers: {'Authorization': "Bearer " + getToken()}
@@ -72,7 +72,12 @@ export async function getAllBankList (param){
 
         axios.get(serverUrl+`admin/banks?orderby=id&sort=ASC${filter}`,config)
         .then((res)=>{
-            resolve(res)
+            param.bankList = res.data
+            if(next){
+                resolve(next(param))
+            }else{
+                resolve(param)
+            }
         })
         .catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
