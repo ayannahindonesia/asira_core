@@ -79,11 +79,10 @@ class userAdd extends React.Component{
         const data = await getAllBankList({}) ;
 
         if(data) {
-          console.log(data)
           if(!data.error) {
             this.setState({
               listBank: data.bankList.data,
-              bank: (data.data && data.data.data && data.data.data[0] && data.data.data[0].id) || 0,
+              bank: (data.bankList && data.bankList.data && data.bankList.data[0] && data.bankList.data[0].id) || 0,
               loading: false,
             })
           } else {
@@ -208,7 +207,7 @@ class userAdd extends React.Component{
     validate = () => {
       let flag = true;
       let errorMessage = '';
-
+      
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
         errorMessage = 'Mohon input username dengan benar'

@@ -61,6 +61,7 @@ class rolePermissionAdd extends React.Component{
               role = dataRole[key].id
             }
           }
+
           if(listRole.length !== 0) {
             this.setState({
               listRole,
@@ -102,7 +103,21 @@ class rolePermissionAdd extends React.Component{
         const listRolePermission = this.state.listRolePermission;
         const dataRolePermission = {};
         dataRolePermission.id = parseInt(this.state.role);
-        dataRolePermission.permissions = constructRolePermission(listRolePermission);
+        dataRolePermission.permissions = constructRolePermission(listRolePermission) || [];
+        let flag = true;
+        
+        if(this.isRoleBank(this.state.role)) {
+          for(const key in dataRolePermission.permissions) {
+            if(dataRolePermission.permissions[key] === 'lender_profile') {
+              flag = false;
+            }
+          }         
+        }
+
+        if(flag) {
+          dataRolePermission.permissions.push('lender_profile')
+          dataRolePermission.permissions.push('lender_profile_edit')
+        }
 
         const param = {
           roleId: parseInt(this.state.role),
@@ -112,6 +127,23 @@ class rolePermissionAdd extends React.Component{
         this.postRolePermission(param);
         
       }
+    }
+
+    isRoleBank = (role) => {
+      let flag = false;
+      const dataRole = this.state.listRole;
+
+      if(role && role !== 0) {
+        for(const key in dataRole) {
+          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            flag = true;
+            break;
+          }
+        }
+        
+      } 
+
+      return flag;
     }
 
     postRolePermission = async function (param) {
@@ -218,7 +250,7 @@ class rolePermissionAdd extends React.Component{
                           label="Role"
                           data={this.state.listRole}
                           id="id"
-                          labelName="name"
+                          labelName="name-system"
                           onChange={this.onChangeDropDown}
                           fullWidth
                           error={this.state.roleHelper}
