@@ -72,8 +72,7 @@ class DropDown extends React.Component {
       disabled,
       multiple,
     } = this.props;
-    console.log(data)
-    console.log(multiple)
+
     if(multiple) {
       return (
         <FormControl className={classes.formControl} error={!!this.state.error}>
@@ -105,7 +104,6 @@ class DropDown extends React.Component {
         </FormControl>
       ); 
     } else {
-      console.log('hit')
       return (
         <FormControl className={classes.selectField} error={!!this.state.error}>
           <NativeSelect
@@ -122,7 +120,6 @@ class DropDown extends React.Component {
             {data &&
               Object.keys(data).length &&
               data.map((object) => {
-                console.log(object)
                 const idObject = object[id];
                 const labelNames = labelName.split('-');
                 let labelObject = '';
