@@ -79,9 +79,10 @@ class userAdd extends React.Component{
         const data = await getAllBankList({}) ;
 
         if(data) {
+          console.log(data)
           if(!data.error) {
             this.setState({
-              listBank: data.data.data,
+              listBank: data.bankList.data,
               bank: (data.data && data.data.data && data.data.data[0] && data.data.data[0].id) || 0,
               loading: false,
             })

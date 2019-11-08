@@ -192,7 +192,7 @@ class userEdit extends React.Component{
         if(data) {
           if(!data.error) {
             this.setState({
-              listBank: data.data.data,
+              listBank: data.bankList.data,
               loading: false,
             })
           } else {
