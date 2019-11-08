@@ -86,6 +86,20 @@ class rolePermissionEdit extends React.Component{
       
       dataRolePermission.id = parseInt(this.state.listRole.id);
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
+      let flag = true;
+
+      if(this.isRoleBank(this.state.role)) {
+        for(const key in dataRolePermission.permissions) {
+          if(dataRolePermission.permissions[key] === 'lender_profile') {
+            flag = false;
+          }
+        }         
+      }
+
+      if(flag) {
+        dataRolePermission.permissions.push('lender_profile')
+        dataRolePermission.permissions.push('lender_profile_edit')
+      }
 
       const param = {
         roleId: parseInt(this.state.listRole.id),
@@ -116,6 +130,23 @@ class rolePermissionEdit extends React.Component{
           })
         }      
       }
+    }
+
+    isRoleBank = (role) => {
+      let flag = false;
+      const dataRole = this.state.listRole;
+
+      if(role && role !== 0) {
+        for(const key in dataRole) {
+          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            flag = true;
+            break;
+          }
+        }
+        
+      } 
+
+      return flag;
     }
 
     onChangeCheck = (e) => {

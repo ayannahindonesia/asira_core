@@ -52,14 +52,12 @@ class CheckBoxClass extends React.Component {
     
     return (
       <FormControl className={classes.FormControl} error={!!this.state.error}>
-        <FormLabel component="legend" style={{color: 'black'}}><h4>{data && (Object.keys(data).length || data.length) ? label : `No ${label}`}</h4></FormLabel>  
+        <FormLabel component="legend" style={{color: 'black'}}><h4>{ label }</h4></FormLabel>  
         {
-          data &&
-          (Object.keys(data).length || data.length) && (Object.keys(data).length !== 0 || data.length !== 0) &&
           <FormGroup row >
             <Grid container>              
               {
-                data.map((object) => {
+                data && data.length !== 0 && data.map((object) => {
                   if(dataJudul < 4) {
                     dataJudul += 1
                     if (dataJudul === 1) {
@@ -86,38 +84,31 @@ class CheckBoxClass extends React.Component {
                         
                       )
                     } 
-                      return(
-                        <Grid item sm={2} xs={12} key={object[id]}
-                          style={
-                            {
-                              paddingLeft: object[labelName].trim().length < 15 ? (object[labelName].trim().length < 5 ?'3vh' : '1vh') : '0vh',
-                              paddingTop:'5vh', 
-                              textAlign: 'left'
-                            }
-                        }>
-                          <h6>{object[labelName]}</h6>
-                        </Grid>
-                      )
-                    
-                    
-                    
+
+                    return(
+                      <Grid item sm={2} xs={12} key={object[id]}
+                        style={
+                          {
+                            paddingLeft: object[labelName].trim().length < 15 ? (object[labelName].trim().length < 5 ?'3vh' : '1vh') : '0vh',
+                            paddingTop:'5vh', 
+                            textAlign: 'left'
+                          }
+                      }>
+                        <h6>{object[labelName] || ''}</h6>
+                      </Grid>
+                    )  
                   } 
-                  return null;
-                })
+                }, data)
               }
             </Grid>
           </FormGroup>
         }
 
-
-
         {
-          data &&
-          (Object.keys(data).length || data.length) && (Object.keys(data).length !== 0 || data.length !== 0) &&
           <Grid container>
             <FormGroup row >
             {
-              data.map((object) => {
+              data && data.length !== 0 && data.map((object) => {
                 
                 if(newModules !== object[modules]) {
                   newModules = object[modules];
@@ -168,12 +159,19 @@ class CheckBoxClass extends React.Component {
                     </Grid>
                   )
                 }
-              })
+              }, data)
             }
 
             </FormGroup>
           </Grid>
         }
+        {
+          (!data || (data && data.length === 0)) &&
+          <FormGroup row >
+            No Data
+          </FormGroup>
+        }
+        
 
         {this.state.error && (
           <FormHelperText>{this.state.error}</FormHelperText>

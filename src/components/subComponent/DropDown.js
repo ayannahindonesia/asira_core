@@ -72,7 +72,7 @@ class DropDown extends React.Component {
       disabled,
       multiple,
     } = this.props;
-
+    
     if(multiple) {
       return (
         <FormControl className={classes.formControl} error={!!this.state.error}>
