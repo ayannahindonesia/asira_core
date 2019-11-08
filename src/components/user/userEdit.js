@@ -340,7 +340,7 @@ class userEdit extends React.Component{
                           label="Role"
                           data={this.state.listRole}
                           id="id"
-                          labelName="name"
+                          labelName="name-system"
                           onChange={this.onChangeDropDown}
                           fullWidth
                         />
@@ -361,7 +361,7 @@ class userEdit extends React.Component{
                             label="Bank"
                             data={this.state.listBank}
                             id="id"
-                            labelName="name-system"
+                            labelName="name"
                             onChange={this.onChangeDropDown}
                             disabled={this.state.listBank && this.state.listBank.length && this.state.listBank.length !== 0 ? false : true}
                             fullWidth
