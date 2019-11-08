@@ -98,7 +98,9 @@ class CheckBoxClass extends React.Component {
                       </Grid>
                     )  
                   } 
-                }, data)
+
+                  return 'No Data'
+                }, this)
               }
             </Grid>
           </FormGroup>
@@ -159,7 +161,7 @@ class CheckBoxClass extends React.Component {
                     </Grid>
                   )
                 }
-              }, data)
+              }, this)
             }
 
             </FormGroup>
