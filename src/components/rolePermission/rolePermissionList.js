@@ -194,6 +194,7 @@ class RolePermissionList extends React.Component{
                         <Pagination className="ant-pagination"  
                             showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
                             total={this.state.totalData}
+                            showLessItems
                             pageSize={this.state.rowsPerPage}
                             onChange={this.onChangePage}
                             locale={localeInfo}

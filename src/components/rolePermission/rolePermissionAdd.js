@@ -9,16 +9,15 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { listAllRolePermission } from './../global/globalConstant'
 import { getAllRoleFunction, patchRolePermissionFunction } from './saga'
-import { constructRolePermission } from './function'
+import { constructRolePermission, checkingSystem, checkingRole } from './function'
 import { getToken } from '../index/token';
 
 const styles = (theme) => ({
-    container: {
-      flexGrow: 1,
-    },
-  });
+  container: {
+    flexGrow: 1,
+  },
+});
 
 
 
@@ -28,7 +27,7 @@ class rolePermissionAdd extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listAllRolePermission,
+      listAllRolePermission: [],
       listRolePermission: [],
       disabled: false,
       role : 0,
@@ -66,6 +65,7 @@ class rolePermissionAdd extends React.Component{
             this.setState({
               listRole,
               role,
+              listAllRolePermission:checkingSystem(role,listRole),
               loading: false,
             })
           } else {
@@ -136,17 +136,6 @@ class rolePermissionAdd extends React.Component{
       }
     }
 
-    checkingRole = (role, id) => {
-      for (const key in role) {
-        if (
-          role[key].id.toString().trim() === id.toString().trim()
-        ) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     onChangeCheck = (e) => {
       const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
       const profileUser = Object.assign({}, this.state.listRolePermission);
@@ -189,7 +178,10 @@ class rolePermissionAdd extends React.Component{
     };
 
     onChangeDropDown = (e) => {
-      this.setState({role: e.target.value})
+      this.setState({
+        role: e.target.value,
+        listAllRolePermission: checkingSystem(e.target.value,this.state.listRole)
+      })
     }
 
     render(){
@@ -249,7 +241,7 @@ class rolePermissionAdd extends React.Component{
                           modules="menu"      
                           labelPlacement= "top"                       
                           onChange={this.onChangeCheck}
-                          onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
+                          onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
                           style={{ width: '97%'}}
                           disabled={this.state.disabled}
                         />

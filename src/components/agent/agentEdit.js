@@ -9,9 +9,9 @@ import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import CheckBox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-import { getAllRoleFunction } from './../rolePermission/saga'
+import { getAllRoleFunction } from '../rolePermission/saga'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { getUserFunction, patchUserAddFunction } from './saga';
+import { getAgentFunction, patchAgentAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import DropDown from '../subComponent/DropDown';
 import { getToken } from '../index/token';
@@ -65,13 +65,13 @@ class userEdit extends React.Component{
       };
 
       const data = await getAllRoleFunction(param);
-      const dataUser = await getUserFunction(paramUser);
+      const dataUser = await getAgentFunction(paramUser);
 
       if(data && dataUser) {
           if(!data.error && !dataUser.error) {
             this.setState({
               listRole: data.dataRole,
-              bank: dataUser.dataUser.bank_id || 0,
+              bank: dataUser.dataUser.bank || 0,
               role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.roles && dataUser.dataUser.roles[0]) || 0,
               id: dataUser.dataUser.id,
               username: dataUser.dataUser.username,
@@ -101,7 +101,6 @@ class userEdit extends React.Component{
       if (this.validate()) {
         const dataUser = {
           roles : [parseInt(this.state.role)],
-          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
@@ -119,7 +118,7 @@ class userEdit extends React.Component{
     }
 
     patchUser = async function(param) {
-      const data = await patchUserAddFunction(param);
+      const data = await patchAgentAddFunction(param);
 
       if(data) {
         if(!data.error) {
@@ -187,7 +186,7 @@ class userEdit extends React.Component{
       const roleBank = this.isRoleBank(this.state.role); 
       
       if(roleBank) {
-        const data = await getAllBankList({}) ;
+        const data = await getAllBankList({rows: 'all'}) ;
 
         if(data) {
           if(!data.error) {
@@ -235,7 +234,7 @@ class userEdit extends React.Component{
 
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
-        errorMessage = 'Mohon input username dengan benar'
+        errorMessage = 'Mohon input nama akun dengan benar'
       } else if (!this.state.role || this.state.role === 0) {
         flag = false;
         errorMessage = 'Mohon input role dengan benar'
@@ -305,7 +304,7 @@ class userEdit extends React.Component{
 
                     <div className="form-group row" style={{marginBottom:40}}>                
                       <label className="col-sm-2 col-form-label" style={{height:3.5}}>
-                        Username
+                        Nama Akun
                       </label>
                       <label className="col-sm-1 col-form-label" style={{height:3.5}}>
                         :

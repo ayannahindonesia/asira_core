@@ -10,9 +10,9 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import { compose } from 'redux';
-import { getAllRoleFunction } from './../rolePermission/saga'
+import { getAllRoleFunction } from '../rolePermission/saga'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { postUserAddFunction } from './saga';
+import { postAgentAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
 import { getAllBankList } from '../bank/saga';
@@ -76,7 +76,7 @@ class userAdd extends React.Component{
     getBankList = async function() {
       const roleBank = this.isRoleBank(this.state.role); 
       if(roleBank) {
-        const data = await getAllBankList({}) ;
+        const data = await getAllBankList({rows: 'all'}) ;
 
         if(data) {
           if(!data.error) {
@@ -132,12 +132,12 @@ class userAdd extends React.Component{
         const dataUser = {
           username : this.state.username,
           roles : [parseInt(this.state.role)],
-          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
+          bank: this.isRoleBank(this.state.role) ? this.state.bank : null,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status ? 'active' : 'inactive',
         }
-        
+
         const param = {
           dataUser,
         }
@@ -149,7 +149,7 @@ class userAdd extends React.Component{
     }
 
     postUser = async function(param) {
-      const data = await postUserAddFunction(param);
+      const data = await postAgentAddFunction(param);
 
       if(data) {
         if(!data.error) {
@@ -159,7 +159,6 @@ class userAdd extends React.Component{
             loading: false,
           })
         } else {
-          
           this.setState({
             errorMessage: data.error,
             loading: false,
@@ -210,7 +209,7 @@ class userAdd extends React.Component{
 
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
-        errorMessage = 'Mohon input username dengan benar'
+        errorMessage = 'Mohon input nama akun dengan benar'
       } else if (!this.state.role || this.state.role === 0) {
         flag = false;
         errorMessage = 'Mohon input role dengan benar'
@@ -267,7 +266,7 @@ class userAdd extends React.Component{
                   </div>
                   <div className="form-group row" style={{marginBottom:20}}>                
                     <label className="col-sm-2 col-form-label" style={{height:3.5}}>
-                      Username
+                      Nama Akun
                     </label>
                     <label className="col-sm-1 col-form-label" style={{height:3.5}}>
                       :
@@ -279,7 +278,7 @@ class userAdd extends React.Component{
                         value={this.state.username}
                         hiddenLabel
                         fullWidth
-                        placeholder="Username"
+                        placeholder="Nama Akun"
                         style={{border:'1px groove', paddingLeft:'5px'}}
                       />
                     </div>                 

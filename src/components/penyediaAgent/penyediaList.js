@@ -1,13 +1,11 @@
 import React from 'react';
 import Loader from 'react-loader-spinner'
-import Moment from 'react-moment';
 import {connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import {Link} from 'react-router-dom'
 import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
-import { getProfileNasabahFunction } from './saga';
 import { getToken } from '../index/token';
 import { checkPermission } from '../global/globalFunction';
 
@@ -29,7 +27,7 @@ class profileNasabah extends React.Component {
   
   _isMounted = false
   componentDidMount(){
-    this.getAllData()
+    // this.getAllData()
     this._isMounted = true
   }
   componentWillUnmount(){
@@ -43,6 +41,7 @@ class profileNasabah extends React.Component {
         page:this.state.page
       }
       let hasil = this.state.searchRows
+
       if (hasil){
         if(!isNaN(hasil)){
           param.id = hasil
@@ -51,15 +50,15 @@ class profileNasabah extends React.Component {
         }
       }
 
-      const data = await getProfileNasabahFunction(param)
+    //   const data = await getProfileNasabahFunction(param)
 
-      if(data){
-        if(!data.error){
-          this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
-        }else{
-          this.setState({errorMessage:data.error})
-        }
-      }
+    //   if(data){
+    //     if(!data.error){
+    //       this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
+    //     }else{
+    //       this.setState({errorMessage:data.error})
+    //     }
+    //   }
   }
 
   onBtnSearch = ()=>{
@@ -113,17 +112,20 @@ class profileNasabah extends React.Component {
         <tr key={index}>
             <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
             <td align="center">{val.id}</td>
-            <td align="center">{val.fullname}</td>
-            {/* <td align="center">{this.getBankName(val.bank.Int64)}</td>             */}
-            <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
-            {/* <TableCell align="center">{val.status}</TableCell> */}
+            <td align="center"></td>
             <td align="center">
-
-            {   checkPermission('core_borrower_get_details') &&
-                      <Link style={{textDecoration:"none"}} to={`/profileNasabahDetail/${val.id}`}>
-                      <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
-                    </Link>
-                }
+            </td>
+            <td align="center">
+            {checkPermission('core_penyedia_agent_patch') &&
+                <Link style={{textDecoration:"none"}} to={`/penyediaEdit/${val.id}`}>
+                <i className="fas fa-edit" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
+                </Link>
+            }
+            {checkPermission('core_penyedia_agent_detail') &&
+                <Link style={{textDecoration:"none"}} to={`/penyediaDetail/${val.id}`}>
+                <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
+                </Link>
+            }
                          
             
             </td>
@@ -145,7 +147,7 @@ if(getToken()){
         <div className="container">
          <div className="row">
                         <div className="col-6">
-                             <h2 className="mt-3">Nasabah - List</h2>
+                             <h2 className="mt-3">Penyedia Agen - List</h2>
                         </div>
                         <div className="col-5 mt-3 ml-5">
                         <div className="input-group">
@@ -160,11 +162,9 @@ if(getToken()){
           <thead className="table-warning">
               <tr>
                   <th className="text-center" scope="col">#</th>
-                  <th className="text-center" scope="col">Id Nasabah</th>
-                  <th className="text-center" scope="col">Nama Nasabah</th>
-                  {/* <th className="text-center" scope="col">Bank Akun</th> */}
-                  <th  className="text-center" scope="col">Tanggal Registrasi</th>
-                  {/* <TableCell align="center">Status Nasabah</TableCell> */}
+                  <th className="text-center" scope="col">Id Penyedia Agen</th>
+                  <th className="text-center" scope="col">Nama Penyedia Agen</th>
+                  <th  className="text-center" scope="col">Status</th>
                   <th  className="text-center" scope="col">Action</th>
                  
               </tr>     
