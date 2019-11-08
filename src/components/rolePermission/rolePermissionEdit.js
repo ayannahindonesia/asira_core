@@ -96,7 +96,7 @@ class rolePermissionEdit extends React.Component{
         }         
       }
 
-      if(flag) {
+      if(this.isRoleBank(this.state.role) && flag) {
         dataRolePermission.permissions.push('lender_profile')
         dataRolePermission.permissions.push('lender_profile_edit')
       }
