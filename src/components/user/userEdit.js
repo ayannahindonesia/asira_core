@@ -101,6 +101,7 @@ class userEdit extends React.Component{
       if (this.validate()) {
         const dataUser = {
           roles : [parseInt(this.state.role)],
+          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
@@ -186,12 +187,12 @@ class userEdit extends React.Component{
       const roleBank = this.isRoleBank(this.state.role); 
       
       if(roleBank) {
-        const data = await getAllBankList() ;
+        const data = await getAllBankList({}) ;
 
         if(data) {
           if(!data.error) {
             this.setState({
-              listBank: data.data.data,
+              listBank: data.bankList.data,
               loading: false,
             })
           } else {

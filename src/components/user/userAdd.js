@@ -76,12 +76,13 @@ class userAdd extends React.Component{
     getBankList = async function() {
       const roleBank = this.isRoleBank(this.state.role); 
       if(roleBank) {
-        const data = await getAllBankList() ;
+        const data = await getAllBankList({}) ;
 
         if(data) {
+          console.log(data)
           if(!data.error) {
             this.setState({
-              listBank: data.data.data,
+              listBank: data.bankList.data,
               bank: (data.data && data.data.data && data.data.data[0] && data.data.data[0].id) || 0,
               loading: false,
             })
@@ -132,12 +133,12 @@ class userAdd extends React.Component{
         const dataUser = {
           username : this.state.username,
           roles : [parseInt(this.state.role)],
-          bank: this.isRoleBank(this.state.role) ? this.state.bank : null,
+          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status ? 'active' : 'inactive',
         }
-
+        
         const param = {
           dataUser,
         }
@@ -159,6 +160,7 @@ class userAdd extends React.Component{
             loading: false,
           })
         } else {
+          
           this.setState({
             errorMessage: data.error,
             loading: false,
