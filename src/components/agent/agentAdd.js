@@ -33,8 +33,9 @@ class agentAdd extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      role : 0,
+      kategori : 'agen',
       bank: [],
+      instansi: 0,
       listKategori:[
         {
           id : 'Agen',
@@ -65,13 +66,24 @@ class agentAdd extends React.Component{
 
     refresh = async function() {
       const param = {};
-      const data = await getAllBankList(param, getAllRoleFunction) ;
+      const data = await getAllRoleFunction(param, getAllBankList) ;
 
       if(data) {
         if(!data.error) {
+          const listPenyediaAgent = data.dataRole;
+          let instansi = 0;
+
+          for(const key in listPenyediaAgent) {
+            if(listPenyediaAgent[key].id) {
+              instansi = listPenyediaAgent[key].id
+            }
+          }
+
           this.setState({
-            listBank: data.data.data,
-            listPenyediaAgent: data.dataRole,
+            listBank: data.bankList.data,
+            listPenyediaAgent,
+            instansi,
+            bank: [],
             loading: false,
           })
         } else {
@@ -81,23 +93,6 @@ class agentAdd extends React.Component{
           })
         }      
       }  
-    }
-
-    isRoleBank = (role) => {
-      let flag = false;
-      const dataRole = this.state.listRole;
-
-      if(role && role !== 0) {
-        for(const key in dataRole) {
-          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
-            flag = true;
-            break;
-          }
-        }
-        
-      } 
-
-      return flag;
     }
  
     btnCancel = ()=>{
@@ -112,8 +107,6 @@ class agentAdd extends React.Component{
       if (this.validate()) {
         const dataUser = {
           username : this.state.username,
-          roles : [parseInt(this.state.role)],
-          bank: this.isRoleBank(this.state.role) ? this.state.bank : null,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status ? 'active' : 'inactive',
@@ -159,7 +152,7 @@ class agentAdd extends React.Component{
       let labelName = e.target.id;
       let flag = true;
 
-      if(value.includes(' ') || value.includes('\'') || value.includes('"') || value.includes(',') ) {
+      if(labelName !== 'agentName' && (value.includes(' ') || value.includes('\'') || value.includes('"') || value.includes(',')) ) {
         flag = false
       }
 
@@ -177,11 +170,52 @@ class agentAdd extends React.Component{
     onChangeDropDown = (e) => {
       const labelName = e.target.name.toString().toLowerCase();
 
-      this.setState({[labelName]: e.target.value},(labelName) => { 
-        if(labelName === 'role') {
-          this.getBankList();
-        } 
+      if(labelName === 'kategori' && e.target.value === 'Agen') {
+        this.refresh()
+      }
+
+      this.setState({
+        [labelName]: e.target.value,
+        bank: [],
       })
+    }
+
+    onChangeDropDownMultiple = (e) => {
+      const dataBank = this.state.listBank;
+      const bank = this.state.bank;
+      const newBank = [];
+
+      let flag = true;
+
+      for(const key in bank) {
+        if(bank[key].id.toString().toLowerCase() !== e.target.value.toString().toLowerCase()) {
+          newBank.push(bank[key])
+        } else {
+          flag = false;
+        }
+      }
+
+      if(flag) {
+        for(const key in dataBank) {
+          if(dataBank[key].id.toString().toLowerCase() !== e.target.value.toString().toLowerCase()) {
+            newBank.push(dataBank[key])
+          }
+        }
+      }
+
+      this.setState({bank : newBank})
+
+    }
+
+    isRoleAccountExecutive = () => {
+      let flag = false;
+      const kategori = this.state.kategori;
+
+      if(kategori === 'Account Executive') {
+        flag = true;
+      }
+
+      return flag;
     }
 
     validate = () => {
@@ -202,7 +236,7 @@ class agentAdd extends React.Component{
       } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
-      } else if (this.isRoleBank(this.state.role) && (!this.state.bank || this.state.bank === 0)) {
+      } else if (this.isRoleAccountExecutive() && (!this.state.bank || this.state.bank.length === 0)) {
         flag = false;
         errorMessage = 'Mohon input bank dengan benar'
       } else {
@@ -233,6 +267,7 @@ class agentAdd extends React.Component{
             </div>
           )
         } else if(getToken()){
+          console.log(this.state.kategori)
           return(
               <div className="container mt-4">
                 <h3>Agen - Tambah</h3>
@@ -338,11 +373,11 @@ class agentAdd extends React.Component{
                     </label>
                     <div className="col-sm-4">
                       <DropDown
-                        value={this.state.role}
-                        label="Role"
+                        value={this.state.kategori}
+                        label="Kategori"
                         data={this.state.listKategori}
                         id="id"
-                        labelName={"name-system"}
+                        labelName={"name"}
                         onChange={this.onChangeDropDown}
                         fullWidth
                       />
@@ -372,7 +407,7 @@ class agentAdd extends React.Component{
                   
                   <div className="form-group row" style={{marginBottom:20}}>                   
                     <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                      Bank
+                      Bank Pelayanan
                     </label>
                     <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                       :
@@ -385,7 +420,7 @@ class agentAdd extends React.Component{
                         data={this.state.listBank}
                         id="id"
                         labelName="name"
-                        onChange={this.onChangeDropDown}
+                        onChange={this.onChangeDropDownMultiple}
                         fullWidth
                       />
                     </div>                 

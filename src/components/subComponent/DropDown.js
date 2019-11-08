@@ -104,7 +104,6 @@ class DropDown extends React.Component {
         </FormControl>
       ); 
     } else {
-      
       return (
         <FormControl className={classes.selectField} error={!!this.state.error}>
           <NativeSelect
