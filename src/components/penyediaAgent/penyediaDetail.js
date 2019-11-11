@@ -1,67 +1,47 @@
 import React from 'react'
-import swal from 'sweetalert'
-import PhoneInput from 'react-phone-number-input'
 import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import './../../support/css/penyediaAgent.css'
-
+import { getPenyediaAgentDetailFunction } from './saga';
 
 class PenyediaDetail extends React.Component{
     state = {
         diKlik:false,
         phone:'',
         submit:false,
-        check:false
+        check:false,
+        rows:{}
     };
 
     _isMounted = false;
 
     componentDidMount(){
         this._isMounted = true;
+        this.getDetailAgent()
     }
 
     componentWillUnmount() {
         this._isMounted = false;
     }
-    
-    handleChecked=(e)=>{
-        this.setState({check:!this.state.check})
-    }
+    getDetailAgent = async function () {
+        const id =this.props.match.params.id
 
+        const data = await getPenyediaAgentDetailFunction({id})
 
-    renderBtnSumbit =()=>{
-        if( this.state.submit) {
-         return <input type="button" disabled className="btn btn-primary" value="Simpan" onClick={this.btnSaveAgen} style={{cursor:"wait"}}/>
-        }else{
-        return <input type="button" className="btn btn-primary" value="Simpan" onClick={this.btnSaveAgen}/>
+        if(data){
+            console.log(data)
+            if(!data.error){
+                this.setState({
+                    rows:data.dataAgentDetail
+                })
+            }
+
         }
+        
     }
-
+    
     btnCancel = ()=>{
         this.setState({diKlik:true})
-    }
-
-    btnSaveAgen =()=>{
-        let status = this.state.check ? "active": "inactive"
-        let alamat = this.refs.alamat.value
-        let name = this.refs.namaAgent.value
-        let pic = this.refs.pic.value
-        let phone = this.state.phone
-
-        if(this.state.phone ===''){
-            this.setState({errorMessage:"Nomor Telepon Kosong - Harap cek kembali"})
-        }else if(name.trim().length ===0){
-            this.setState({errorMessage:"Nama Penyedia Agen Kosong - Harap cek kembali"})
-        }else if(pic.trim().length ===0){
-            this.setState({errorMessage:"Nama PIC Kosong - Harap cek kembali"})
-        }else if(alamat.trim().length ===0){
-            this.setState({errorMessage:"Alamat Kosong - Harap cek kembali"})
-        }else if(this.state.phone===''){
-            this.setState({errorMessage:"Nomor Telepon Kosong - Harap cek kembali"})
-        }else{
-            swal("WOI","NUNGGUIN API","warning")
-           
-        }
     }
 
     render(){
@@ -83,38 +63,38 @@ class PenyediaDetail extends React.Component{
                         <div className="form-group row">
                                 <label className="col-sm-3 col-form-label">Id Penyedia Agen</label>
                                 <div className="col-sm-9">
-                                    
+                                   : {this.state.rows.id}
                                 </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Nama Penyedia Agen</label>
                             <div className="col-sm-9">
-                                
+                                    : {this.state.rows.name}
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">PIC</label>
                             <div className="col-sm-9">
-                                               
+                            : {this.state.rows.pic}
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Nomor Telepon</label>
                             <div className="col-sm-9">
-                                                                         
+                            : {this.state.rows.phone}                         
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Alamat</label>
                             <div className="col-sm-9">
-                            
+                            : {this.state.rows.address}
                             </div>
                         </div>
                       
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Status</label>
                             <div className="col-sm-9">
-
+                            : {this.state.rows.status ==="active" ?"Aktif":"Tidak Aktif"}
                             </div>
                         </div>
                     
