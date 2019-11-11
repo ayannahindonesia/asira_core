@@ -19,7 +19,7 @@ export async function AddTipeBankFunction (param){
     })
 }
 
-export async function ListTipeBankFunction (param){
+export async function ListTipeBankFunction (param,next){
     return new Promise(async (resolve)=>{
         const config = {
             headers: {'Authorization': "Bearer " + getToken()}
@@ -31,7 +31,12 @@ export async function ListTipeBankFunction (param){
           }
         axios.get(serverUrl+`admin/bank_types?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
-            resolve(res)
+            param.listBankType = res.data
+            if(next){
+                resolve(next(param))
+            }else{
+                resolve(param)
+            }
             
         })
         .catch((err)=>{

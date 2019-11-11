@@ -25,6 +25,7 @@ export async function getAllLayananListFunction(param,next) {
             }
         })
         .catch((err)=>{
+            console.log(err.toString())
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
             param.error = error;
             resolve(param);

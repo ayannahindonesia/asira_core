@@ -192,11 +192,11 @@ class ProductEdit extends React.Component{
     }
     }
 
-    getBankService = async function (params) {
-    const data = await getAllLayananListFunction(params)
+    getBankService = async function () {
+    const data = await getAllLayananListFunction({})
     if(data){
     if(!data.error){
-        this.setState({bankService:data.data.data})
+        this.setState({bankService:data.listLayanan.data})
     }else{
         this.setState({errorMessage:data.error})
     }
