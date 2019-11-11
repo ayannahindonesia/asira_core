@@ -29,14 +29,13 @@ class ProductList extends React.Component{
         const data = await listProductFunction (params)
         if(data){
             if(!data.error){
-                this.setState({loading:false,rows:data.data.data,
-                    total_data:data.data.total_data,
-                    page:data.data.current_page,
-                    from:data.data.from,
-                    to:data.data.to,
-                    last_page:data.data.last_page,
-                    rowsPerPage:data.data.rows,
-                    
+                this.setState({loading:false,rows:data.productList.data,
+                    total_data:data.productList.total_data,
+                    page:data.productList.current_page,
+                    from:data.productList.from,
+                    to:data.productList.to,
+                    last_page:data.productList.last_page,
+                    rowsPerPage:data.productList.rows,
                 })
             }else{
                 console.log(data.error)

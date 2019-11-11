@@ -19,7 +19,7 @@ export async function addProductFunction(param){
     })
 }
 
-export async function listProductFunction (param){
+export async function listProductFunction (param,next){
     return new Promise (async (resolve)=>{
         const config = {
             headers: {'Authorization': "Bearer " + getToken()}
@@ -32,7 +32,12 @@ export async function listProductFunction (param){
 
         axios.get(serverUrl+`admin/products?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
-            resolve(res)
+            param.productList = res.data
+            if(next){
+                resolve(next(param))
+            }else{
+                resolve(param)
+            }
         })
         .catch((err)=>{
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`

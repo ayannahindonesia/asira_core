@@ -17,10 +17,11 @@ export async function getAllLayananListFunction(param,next) {
 
         axios.get(serverUrl+`admin/services?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
+            param.listLayanan = res.data
             if(next){
                 resolve(next(param))
             }else{
-                resolve(res)
+                resolve(param)
             }
         })
         .catch((err)=>{
