@@ -5,7 +5,7 @@ import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import './../../support/css/penyediaAgent.css'
 import { getPenyediaAgentDetailFunction, editPenyediaAgentFunction } from './saga';
-
+import Loader from 'react-loader-spinner'
 
 class PenyediaEdit extends React.Component{
     state = {
@@ -13,7 +13,8 @@ class PenyediaEdit extends React.Component{
         phone:'',
         submit:false,
         check:false,
-        rows:[]
+        rows:[],
+        loading:true
     };
 
     _isMounted = false;
@@ -32,10 +33,11 @@ class PenyediaEdit extends React.Component{
             if(!data.error){
                 this.setState({
                     rows:data.dataAgentDetail,
-                    check:data.dataAgentDetail.status ==="active"?true:false
+                    check:data.dataAgentDetail.status ==="active"?true:false,
+                    loading:false
                 })
             }else{
-                this.setState({errorMessage:data.error})
+                this.setState({errorMessage:data.error,loading:false})
             }
 
         }
@@ -100,6 +102,20 @@ class PenyediaEdit extends React.Component{
         }
     }
     render(){
+        if(this.state.loading){
+          
+            return (
+                <div className="mt-2">
+                 <Loader 
+                    type="ThreeDots"
+                    color="#00BFFF"
+                    height="30"	
+                    width="30"
+                />  
+                </div>
+            )
+        
+    }
         if(this.state.diKlik){
             return <Redirect to='/penyediaList'/>            
         }

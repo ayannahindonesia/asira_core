@@ -3,6 +3,7 @@ import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import './../../support/css/penyediaAgent.css'
 import { getPenyediaAgentDetailFunction } from './saga';
+import Loader from 'react-loader-spinner'
 
 class PenyediaDetail extends React.Component{
     state = {
@@ -10,7 +11,8 @@ class PenyediaDetail extends React.Component{
         phone:'',
         submit:false,
         check:false,
-        rows:{}
+        rows:{},
+        loading:true
     };
 
     _isMounted = false;
@@ -29,11 +31,10 @@ class PenyediaDetail extends React.Component{
         const data = await getPenyediaAgentDetailFunction({id})
 
         if(data){
-            console.log(data)
             if(!data.error){
-                this.setState({
-                    rows:data.dataAgentDetail
-                })
+                this.setState({ rows:data.dataAgentDetail,loading:false })
+            }else{
+                this.setState({errorMessage:data.error,loading:false})
             }
 
         }
@@ -45,6 +46,20 @@ class PenyediaDetail extends React.Component{
     }
 
     render(){
+        if(this.state.loading){
+          
+                return (
+                    <div className="mt-2">
+                     <Loader 
+                        type="ThreeDots"
+                        color="#00BFFF"
+                        height="30"	
+                        width="30"
+                    />  
+                    </div>
+                )
+            
+        }
         if(this.state.diKlik){
             return <Redirect to='/penyediaList'/>            
         }
