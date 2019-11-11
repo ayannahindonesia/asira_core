@@ -99,7 +99,7 @@ class CheckBoxClass extends React.Component {
                     )  
                   } 
 
-                  return 'No Data'
+                  return null
                 }, this)
               }
             </Grid>
