@@ -29,7 +29,6 @@ class PenyediaEdit extends React.Component{
         const data = await getPenyediaAgentDetailFunction({id})
 
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({
                     rows:data.dataAgentDetail,
@@ -96,7 +95,7 @@ class PenyediaEdit extends React.Component{
                 swal("Berhasil","Penyedia Agent Berhasil di ubah","success")
             }else{
                 this.setState({submit:false})
-                swal("Tidak Berhasil",data.error,"error")
+                swal("Tidak Berhasil",`Nomor Telp sudah terdaftar atau ada masalah di server\nSilahkan dicoba kembali`,"error")
 
             }
         }
