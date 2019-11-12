@@ -22,7 +22,7 @@ const customStyles = {
     control: () => ({
       // none of react-select's styles are passed to <Control />
       width: "50%",float:"left", marginLeft:"112px",
-      border:"0.5px solid #CED4DA", borderRadius:"2px"
+      border:"1px solid #CED4DA", borderRadius:"2px"
     }),
     singleValue: (provided, state) => {
       const opacity = state.isDisabled ? 0.5 : 1;
