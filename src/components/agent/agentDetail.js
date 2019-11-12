@@ -7,8 +7,10 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getAgentFunction } from './saga'
-import { getAllRoleFunction } from '../rolePermission/saga';
 import { getToken } from '../index/token';
+import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
+import { getAllBankList } from '../bank/saga';
+import { destructAgent, isRoleAccountExecutive } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -16,23 +18,31 @@ const styles = (theme) => ({
     },
   });
 
-class UserDetail extends React.Component{
+class AgentDetail extends React.Component{
     _isMounted = false;
 
     state = {
       diKlik:false,
       errorMessage:'',
-      dataUser: {},
-      userId: 0,
-      disabled: true,
+      agentId: 0,
+      kategori: 0,
+      kategori_name: '',
+      dataAgent: {},
+      bank_name: '',
       loading: true,
+      status: true,
+      agentName: '',
+      agent_provider_name: '',
+      username: '',
+      phone:'',
+      email:'',
     };
 
     componentDidMount(){
       this._isMounted = true;
 
       this.setState({
-        userId: this.props.match.params.id,
+        agentId: this.props.match.params.id,
       },() => {
         this.refresh();
       })
@@ -43,227 +53,207 @@ class UserDetail extends React.Component{
       this._isMounted = false;
     }
 
-    refresh = async function(){
-      const param = {};
-      param.userId = this.state.userId;
-
-      const data = await getAgentFunction(param, getAllRoleFunction);
-      
+    refresh = async function() {
+      const param = {
+        agentId: this.state.agentId
+      };
+      const data = await getAgentFunction(param, getPenyediaAgentListFunction, getAllBankList) ;
 
       if(data) {
-          if(!data.error) {
-            const dataUser = data.dataUser || {};
-            
-            dataUser.role = this.findRole((dataUser && dataUser.roles && dataUser.roles[0]) || 0, data.dataRole || [])
+        
+        if(!data.error) {
+          const dataAgent = destructAgent(data.dataAgent, data.bankList.data, data.dataListAgent.data);
 
-            this.setState({
-              dataUser,
-              loading: false,
-            })
-          } else {
-            this.setState({
-              errorMessage: data.error,
-              disabled: true,
-              loading: false,
-            })
-          }      
-      }
+          this.setState({
+            status: dataAgent.status,
+            agentId: dataAgent.id,
+            agentName: dataAgent.name,
+            username: dataAgent.username,
+            phone: dataAgent.phone,
+            email: dataAgent.email,
+            kategori: dataAgent.category,
+            kategori_name: dataAgent.category_name,
+            agent_provider_name: dataAgent.agent_provider_name,
+            bank_name: dataAgent.banks_name,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            loading: false,
+          })
+        }      
+      }  
     }
-
-    findRole = (roleId, dataRole) => {
-      let role = '';
-
-      for(const key in dataRole) {
-          if(dataRole[key].id === roleId) {
-              role = dataRole[key].name
-          }
-      }
-
-      return role;
-  }
 
     btnCancel = ()=>{
       this.setState({diKlik:true})
     }
+
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
 
-    checkingRole = (role, idRolePermission) => {
-        for (const key in role) {
-          if (
-            role[key].id.toString().trim() ===
-            idRolePermission.toString().trim()
-          ) {
-            return true;
-          }
-        }
-        return false;
-    }
-
-    isRoleBank = (role) => {
-      let flag = false;
-      const dataRole = this.state.listRole;
-
-      if(role && role !== 0) {
-        for(const key in dataRole) {
-          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
-            flag = true;
-            break;
-          }
-        }
-        
-      } 
-
-      return flag;
-    }
-
     render(){
-        if(this.state.diKlik){
-            return <Redirect to='/listUser'/>            
-        } else if (this.state.loading){
-          return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
+      if(this.state.diKlik){
+        return <Redirect to='/listAgent'/>            
+      } else if (this.state.loading){
+        return  (
+          <div key="zz">
+            <div align="center" colSpan={6}>
+              <Loader 
+                type="Circles"
+                color="#00BFFF"
+                height="40"	
+                width="40"
+              />   
             </div>
-          )
-        } else if(getToken()){
-            return(
-              <div className="container mt-4">
-                 <h3>Akun - Detail</h3>
-                 
-                 <hr/>
-                 
-                 <form>
-                    <div className="form-group row"> 
-                      <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                        {this.state.errorMessage}
-                      </div>     
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Id Akun
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.id}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Nama Akun
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.username}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Password
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        ********
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Role
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.role}
-                      </label>               
-                    </div>
-
-                    {
-                      this.isRoleBank(this.state.dataUser && this.state.dataUser.roles && this.state.dataUser.roles[0]) && 
-                      <div className="form-group row">                   
-                        <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                          Bank
-                        </label>
-                        <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                          :
-                        </label>
-                        <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                          {this.state.dataUser && this.state.dataUser.bank}
-                        </label>               
-                      </div>
-                    }
-                    
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Email
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.email}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Kontak PIC
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.phone}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Status
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.status && this.state.dataUser.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">
-                      <div className="col-sm-12 mt-3">
-                        <input type="button" value="Batal" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                      </div>
-                    </div>
-                    
-                 </form>
-                
+          </div>
+        )
+      } else if(getToken()){
+        return(
+            <div className="container mt-4">
+              <h3>Agen - Detail</h3>
+                              
+              <hr/>
+              
+              <form>
+                <div className="form-group row">   
+                  <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left', marginBottom:'2vh'}}>
+                    {this.state.errorMessage}
+                  </div>    
                 </div>
-            )
-        } else if(!getToken()){
-          return (
-              <Redirect to='/login' />
-          )    
-        }
-       
+
+                <div className="form-group row" style={{marginBottom:40}}>                
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Id Agen
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                    {this.state.agentId}
+                  </div>                 
+                </div>
+
+                <div className="form-group row" style={{marginBottom:40}}>                
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Nama Agen
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                    {this.state.agentName}
+                  </div>             
+                </div>
+
+                <div className="form-group row" style={{marginBottom:40}}>                
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Id Pengguna (username)
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                    { this.state.username }
+                  </div>                 
+                </div>
+
+                <div className="form-group row" style={{marginBottom:40}}>                   
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Email
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                    { this.state.email }
+                  </div>                  
+                </div>
+
+                <div className="form-group row" style={{marginBottom:40}}>                   
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    No HP
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                    { this.state.phone }
+                  </div>                  
+                </div>
+
+
+                <div className="form-group row" style={{marginBottom:40}}>                   
+                  <label className="col-sm-2 col-form-label" style={{height:1.5}}>
+                    Kategori
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:1.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:1.5}}>
+                    {this.state.kategori_name}
+                  </div>                 
+                </div>
+
+                
+                <div className="form-group row" style={{marginBottom:40}}>                   
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Instansi
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                    { this.state.agent_provider_name }
+                  </div>                 
+                </div>
+                
+ 
+                {
+                  !isRoleAccountExecutive(this.state.kategori) &&
+                  <div className="form-group row" style={{marginBottom:40}}>                   
+                    <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                      Bank Pelayanan
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                      { this.state.bank_name }
+                    </div>          
+                  </div>
+                }
+                
+                <div className="form-group row">
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Status
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                    { this.state.status ? 'Aktif' : 'Tidak Aktif'}
+                  </div>   
+                </div>
+                
+                <div className="form-group row">
+                    <div className="col-sm-12 mt-3">
+                       <input type="button" value="Batal" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
+                    </div>
+                </div>
+                
+              </form>
+            
+            </div>
+        )
+      } else if(getToken()){
+        return (
+            <Redirect to='/login' />
+        )    
+      }
+     
     }
 }
 
@@ -295,4 +285,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(UserDetail);
+  )(AgentDetail);
