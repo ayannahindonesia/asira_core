@@ -95,8 +95,10 @@ export async function editPenyediaAgentFunction (param,next){
             }
         })
         .catch((err)=>{
+            console.log(err);
             const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
             param.error = error;
+            console.log(param.error)
             resolve(param);
         })
     })
