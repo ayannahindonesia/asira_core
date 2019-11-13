@@ -34,7 +34,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
             
         }).catch((err)=>{
             console.log(err.toString())
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || || err.toString()
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error
             resolve(param);
         })
