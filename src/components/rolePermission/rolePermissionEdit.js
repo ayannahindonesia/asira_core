@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import CheckBox from '../subComponent/CheckBox';
+import CheckBoxClass from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
@@ -228,7 +228,7 @@ class rolePermissionEdit extends React.Component{
                         {this.state.errorMessage}
                     </div>     
                     <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                        <CheckBox
+                        <CheckBoxClass
                           label="Core - Permission Setup"
                           modulesName="Menu"
                           data={this.state.listAllRolePermission}
