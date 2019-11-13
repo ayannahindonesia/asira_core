@@ -29,7 +29,7 @@ export async function getAllAgentFunction(param, nextAgent, nextBank){
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -56,7 +56,7 @@ export async function getAgentFunction(param, nextAgent, nextBank) {
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -73,7 +73,7 @@ export async function patchAgentAddFunction(param) {
         axios.patch(serverUrl+`admin/agents/${param.agentId}`,param.dataAgent,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -92,7 +92,7 @@ export async function postAgentAddFunction(param) {
         axios.post(serverUrl+'admin/agents',param.dataAgent,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error
             resolve(param);
         })
