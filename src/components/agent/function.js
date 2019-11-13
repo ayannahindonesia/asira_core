@@ -13,14 +13,14 @@ export function constructAgent (dataState, post) {
     name: dataState.agentName,
     email: dataState.email,
     phone: dataState.phone,
-    banks: isRoleAccountExecutive() ? [parseInt(dataState.instansi)] : redefineBank(dataState.bank, dataState.listBank),
+    banks: isRoleAccountExecutive(dataState.kategori) ? [parseInt(dataState.instansi)] : redefineBank(dataState.bank, dataState.listBank),
     status: dataState.status ? 'active' : 'inactive',
   }
 
   if(post) {
     dataAgent.username = dataState.username;
     dataAgent.category = dataState.kategori;
-    if(!isRoleAccountExecutive()) {
+    if(!isRoleAccountExecutive(dataState.kategori)) {
       dataAgent.agent_provider = parseInt(dataState.instansi)
     }
   }
