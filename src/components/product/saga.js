@@ -12,7 +12,7 @@ export async function addProductFunction(param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -40,7 +40,7 @@ export async function listProductFunction (param,next){
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -62,7 +62,7 @@ export async function detailProductFunction(param,next) {
             resolve(res.data)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -85,7 +85,7 @@ export async function detailServiceProductFunction(param,next) {
             resolve(param)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -102,7 +102,7 @@ export async function editProductFunction (param) {
           resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             param.error = error;
             resolve(param);
         })

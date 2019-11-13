@@ -15,7 +15,7 @@ export async function addBankFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -34,7 +34,7 @@ export async function getProvinsiFunction(param) {
             })
         
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -51,7 +51,7 @@ export async function getKabupatenFunction (param){
                 resolve(res.data.data)
             })
             .catch((err)=>{
-                const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+                const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
                 param.error = error;
                 resolve(param);
             })
@@ -80,7 +80,7 @@ export async function getAllBankList (param,next){
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -103,7 +103,7 @@ export async function getBankDetailFunction (param,next){
                 }
             })
             .catch((err)=>{
-                const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+                const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
                 param.error = error;
                 resolve(param);
             })
@@ -125,7 +125,7 @@ export async function getBankTypesFunction (param,next){
            }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -146,7 +146,7 @@ export async function editBankFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })

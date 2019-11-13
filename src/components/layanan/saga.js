@@ -26,7 +26,7 @@ export async function getAllLayananListFunction(param,next) {
         })
         .catch((err)=>{
             console.log(err.toString())
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = ((err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -49,7 +49,7 @@ export async function getDetailLayananFunction(param,next) {
                 resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = ((err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -71,7 +71,7 @@ export async function getImageFunction(param,next) {
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = ((err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -90,7 +90,7 @@ export async function editLayananFunction (param,next){
            resolve(param)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = ((err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -105,7 +105,7 @@ export async function addLayananFunction (param, next){
            resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = ((err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri)|| err.toStri
             param.error = error;
             resolve(param);
         })
