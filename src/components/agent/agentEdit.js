@@ -202,7 +202,7 @@ class AgentEdit extends React.Component{
 
       if(data) {
         if(!data.error) {
-          swal("Success","Agen berhasil di tambah","success")
+          swal("Success","Agen berhasil di ubah","success")
           this.setState({
             diKlik: true,
             loading: false,
