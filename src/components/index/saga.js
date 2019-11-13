@@ -34,7 +34,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
             
         }).catch((err)=>{
             console.log(err.toString())
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) 
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || || err.toString()
             param.error = error
             resolve(param);
         })
@@ -71,7 +71,7 @@ export async function getTokenGeoFunction(param, next) {
             
         }).catch((err)=>{
             console.log(err.toString())
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah User'
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error
             resolve(param);
         })
@@ -87,7 +87,7 @@ export async function getUserProfileFunction(param, next, nextPermission) {
             param.dataPermission = token.permissions;
             resolve(param)
         } catch (err) {
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal memuat profile User'
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error
             resolve(param);
         }
