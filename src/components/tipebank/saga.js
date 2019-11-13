@@ -12,7 +12,7 @@ export async function AddTipeBankFunction (param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -40,7 +40,7 @@ export async function ListTipeBankFunction (param,next){
             
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             param.error = error;
             resolve(param);
         })
@@ -63,7 +63,7 @@ export async function DetailTipeBankFunction(params,next) {
                 }
             })
             .catch((err)=>{
-                const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+                const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
                 params.error = error;
                 resolve(params);
             })
@@ -81,7 +81,7 @@ export async function EditTipeBankFunction(params) {
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
             params.error = error;
             resolve(params);
         })
