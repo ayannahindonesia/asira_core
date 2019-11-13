@@ -76,12 +76,19 @@ import axios from 'axios'
 import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
 
 class App extends React.Component {
+  _isMounted = false;
+
   state = {
     loading : true , 
   }
 
   componentDidMount(){
+    this._isMounted=true;
     this.getAuth()
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps(nextProps) {
