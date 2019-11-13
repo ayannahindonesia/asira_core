@@ -126,7 +126,7 @@ class profileNasabah extends React.Component {
                 <i className="fas fa-edit" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>
             }
-            {checkPermission('core_penyedia_agent_detail') &&
+            {checkPermission('core_penyedia_agent_details') &&
                 <Link style={{textDecoration:"none"}} to={`/penyediaDetail/${val.id}`}>
                 <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>
