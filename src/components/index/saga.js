@@ -3,7 +3,7 @@ import { serverUrl, serverUrlGeo } from '../url';
 import jsonWebToken from 'jsonwebtoken';
 import { setToken, setTokenGeo, getTokenAuth } from './token';
 
-export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRole, nextPermission) {
+export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
     return new Promise(async (resolve) => { 
         const tokenAuth = getTokenAuth();
 
@@ -27,7 +27,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextRo
 
             if(nextGeo && nextProfile) {
                 nextGeo(param)
-                resolve(nextProfile(param, nextRole, nextPermission))
+                resolve(nextProfile(param))
             } else {
                 resolve(param)
             }
@@ -79,7 +79,7 @@ export async function getTokenGeoFunction(param, next) {
     
 }
 
-export async function getUserProfileFunction(param, next, nextPermission) {
+export async function getUserProfileFunction(param) {
     return new Promise(async (resolve) => {    
         try {
             var token = jsonWebToken.verify(param.dataToken,'sXQ8jUMpueOvN5P3cdCR');
