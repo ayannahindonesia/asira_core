@@ -18,7 +18,7 @@ export async function addPenyediaAgentFunction (param,next){
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -48,7 +48,7 @@ export async function getPenyediaAgentListFunction(param,next) {
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -73,7 +73,7 @@ export async function getPenyediaAgentDetailFunction(param,next) {
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
