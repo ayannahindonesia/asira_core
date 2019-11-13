@@ -10,12 +10,13 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import { compose } from 'redux';
-import { getAllRoleFunction } from '../rolePermission/saga'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { postAgentAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
 import { getAllBankList } from '../bank/saga';
+import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
+import { isRoleAccountExecutive, constructAgent } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -33,16 +34,16 @@ class agentAdd extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      kategori : 'agen',
+      kategori : 'agent',
       bank: [],
       instansi: 0,
       listKategori:[
         {
-          id : 'Agen',
+          id : 'agent',
           name: 'Agen',
         },
         {
-          id : 'Account Executive',
+          id : 'account_executive',
           name: 'Account Executive',
         }
       ],
@@ -50,6 +51,7 @@ class agentAdd extends React.Component{
       listBank: [],
       loading: true,
       status: true,
+      agentName: '',
       username: '',
       phone:'',
       email:'',
@@ -66,11 +68,11 @@ class agentAdd extends React.Component{
 
     refresh = async function() {
       const param = {};
-      const data = await getAllRoleFunction(param, getAllBankList) ;
+      const data = await getPenyediaAgentListFunction(param, getAllBankList) ;
 
       if(data) {
         if(!data.error) {
-          const listPenyediaAgent = data.dataRole;
+          const listPenyediaAgent = data.dataListAgent.data;
           let instansi = 0;
 
           for(const key in listPenyediaAgent) {
@@ -94,10 +96,6 @@ class agentAdd extends React.Component{
         }      
       }  
     }
- 
-    btnCancel = ()=>{
-      this.setState({diKlik:true})
-    }
 
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
@@ -105,40 +103,20 @@ class agentAdd extends React.Component{
 
     btnSave=()=>{
       if (this.validate()) {
-        const dataUser = {
-          username : this.state.username,
-          phone : this.state.phone,
-          email : this.state.email,
-          status : this.state.status ? 'active' : 'inactive',
-        }
-
+        const dataAgent = constructAgent(this.state, true);
+        
         const param = {
-          dataUser,
+          dataAgent,
         }
 
         this.setState({loading: true});
         
-        this.postUser(param)
+        this.postAgent(param)
       }
     }
 
-    postUser = async function(param) {
-      const data = await postAgentAddFunction(param);
-
-      if(data) {
-        if(!data.error) {
-          swal("Success","User berhasil di tambah","success")
-          this.setState({
-            diKlik: true,
-            loading: false,
-          })
-        } else {
-          this.setState({
-            errorMessage: data.error,
-            loading: false,
-          })
-        }      
-      }
+    btnCancel = ()=>{
+      this.setState({diKlik:true})
     }
 
     onChangeCheck = (e) => {
@@ -169,9 +147,21 @@ class agentAdd extends React.Component{
 
     onChangeDropDown = (e) => {
       const labelName = e.target.name.toString().toLowerCase();
+      let instansi = e.target.value;
 
-      if(labelName === 'kategori' && e.target.value === 'Agen') {
-        this.refresh()
+      if(labelName === 'kategori') {
+        if(e.target.value === 'agent') {
+          for(const key in this.state.listPenyediaAgent) {
+            instansi = this.state.listPenyediaAgent[key].id;
+            break;
+          }
+        } else if(e.target.value === 'account_executive') {
+          for(const key in this.state.listBank) {
+            instansi = this.state.listBank[key].id;
+            break;
+          }
+        }
+        this.setState({instansi})
       }
 
       this.setState({
@@ -182,40 +172,57 @@ class agentAdd extends React.Component{
 
     onChangeDropDownMultiple = (e) => {
       const dataBank = this.state.listBank;
-      const bank = this.state.bank;
+      const bank = e.target.value;
       const newBank = [];
+      
+      for(const key in dataBank) {
 
-      let flag = true;
-
-      for(const key in bank) {
-        if(bank[key].id.toString().toLowerCase() !== e.target.value.toString().toLowerCase()) {
-          newBank.push(bank[key])
-        } else {
-          flag = false;
-        }
-      }
-
-      if(flag) {
-        for(const key in dataBank) {
-          if(dataBank[key].id.toString().toLowerCase() !== e.target.value.toString().toLowerCase()) {
+        for(const keyBank in bank) {
+          if(
+            dataBank[key].id.toString().toLowerCase() === bank[keyBank].toString().toLowerCase() || 
+            (bank[keyBank].id && dataBank[key].id.toString().toLowerCase() === bank[keyBank].id.toString().toLowerCase())
+          ) {
             newBank.push(dataBank[key])
+            break;
           }
         }
+        
       }
 
       this.setState({bank : newBank})
 
     }
 
-    isRoleAccountExecutive = () => {
-      let flag = false;
-      const kategori = this.state.kategori;
+    postAgent = async function(param) {
+      const data = await postAgentAddFunction(param);
 
-      if(kategori === 'Account Executive') {
-        flag = true;
+      if(data) {
+        if(!data.error) {
+          swal("Success","Agen berhasil di tambah","success")
+          this.setState({
+            diKlik: true,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            loading: false,
+          })
+        }      
+      }
+    }
+
+    handleDelete = (e, value) => {
+      const bank = this.state.bank;
+      const newBank = [];
+
+      for(const key in bank) {
+        if(bank[key].id.toString().toLowerCase() !== value.toString().toLowerCase()) {
+          newBank.push(bank[key])
+        }
       }
 
-      return flag;
+      this.setState({bank : newBank})
     }
 
     validate = () => {
@@ -224,19 +231,20 @@ class agentAdd extends React.Component{
 
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
-        errorMessage = 'Mohon input nama akun dengan benar'
-      } else if (!this.state.role || this.state.role === 0) {
+        errorMessage = 'Mohon input username dengan benar'
+      } else if (!this.state.agentName || this.state.agentName.trim().length === 0) {
         flag = false;
-        errorMessage = 'Mohon input role dengan benar'
-      } else if (
-          !this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email)
-        ) {
+        errorMessage = 'Mohon input nama agen dengan benar'
+      } else if (!this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email) ) {
         flag = false;
         errorMessage = 'Mohon input email dengan benar'
       } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
-      } else if (this.isRoleAccountExecutive() && (!this.state.bank || this.state.bank.length === 0)) {
+      } else if (!this.state.instansi || this.state.instansi.length === 0) {
+        flag = false;
+        errorMessage = 'Mohon input instansi dengan benar'
+      }else if (!isRoleAccountExecutive(this.state.kategori) && (!this.state.bank || this.state.bank.length === 0)) {
         flag = false;
         errorMessage = 'Mohon input bank dengan benar'
       } else {
@@ -267,7 +275,6 @@ class agentAdd extends React.Component{
             </div>
           )
         } else if(getToken()){
-          console.log(this.state.kategori)
           return(
               <div className="container mt-4">
                 <h3>Agen - Tambah</h3>
@@ -384,49 +391,52 @@ class agentAdd extends React.Component{
                     </div>                 
                   </div>
 
-                  <div className="form-group row" style={{marginBottom:7}}>                   
-                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                      Instansi
-                    </label>
-                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                      :
-                    </label>
-                    <div className="col-sm-4">
-                      <DropDown
-                        value={this.state.role}
-                        label="Instansi"
-                        data={this.state.listPenyediaAgent}
-                        id="id"
-                        labelName={"name-system"}
-                        onChange={this.onChangeDropDown}
-                        fullWidth
-                      />
-                    </div>                 
-                  </div>
-
                   
-                  <div className="form-group row" style={{marginBottom:20}}>                   
-                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                      Bank Pelayanan
-                    </label>
-                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                      :
-                    </label>
-                    <div className="col-sm-4">
-                      <DropDown
-                        multiple={true}
-                        value={this.state.bank}
-                        label="Bank"
-                        data={this.state.listBank}
-                        id="id"
-                        labelName="name"
-                        onChange={this.onChangeDropDownMultiple}
-                        fullWidth
-                      />
-                    </div>                 
-                  </div>
+                    <div className="form-group row" style={{marginBottom:7}}>                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Instansi
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <div className="col-sm-4">
+                        <DropDown
+                          value={this.state.instansi}
+                          label="Instansi"
+                          data={isRoleAccountExecutive(this.state.kategori) ? this.state.listBank : this.state.listPenyediaAgent}
+                          id="id"
+                          labelName={"name"}
+                          onChange={this.onChangeDropDown}
+                          fullWidth
+                        />
+                      </div>                 
+                    </div>
                   
-
+   
+                  {
+                    !isRoleAccountExecutive(this.state.kategori) &&
+                    <div className="form-group row" style={{marginBottom:15}}>                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Bank Pelayanan
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <div className="col-sm-4">
+                        <DropDown
+                          multiple={true}
+                          value={this.state.bank}
+                          label="Bank"
+                          data={this.state.listBank}
+                          id="id"
+                          onDelete={this.handleDelete}
+                          labelName="name"
+                          onChange={this.onChangeDropDownMultiple}
+                          fullWidth
+                        />
+                      </div>                 
+                    </div>
+                  }
                   
                   <div className="form-group row">
                     <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>

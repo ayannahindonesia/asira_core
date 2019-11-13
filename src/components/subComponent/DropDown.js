@@ -31,7 +31,6 @@ const styles = (theme) => ({
 
   formControl: {
     minWidth: 120,
-    maxWidth: 300,
     display: 'flex',
     flexWrap: 'wrap',
     marginTop: '1em',
@@ -39,6 +38,7 @@ const styles = (theme) => ({
   chips: {
     display: 'flex',
     flexWrap: 'wrap',
+    marginRight: '10px',
   },
 });
 
@@ -69,6 +69,7 @@ class DropDown extends React.Component {
       labelName,
       value,
       onChange,
+      onDelete,
       disabled,
       multiple,
     } = this.props;
@@ -86,7 +87,13 @@ class DropDown extends React.Component {
             renderValue={value => (
               <div className={classes.chips}>
                 {value.map(dataChip => (
-                  <Chip key={dataChip[id]} label={dataChip[labelName]} className={classes.chip} />
+                  <Chip 
+                    key={dataChip[id]} 
+                    label={dataChip[labelName]} 
+                    className={classes.chip} 
+                    onDelete={(e) => onDelete(e, dataChip[id])}
+                    style={{marginRight: '10px', marginBottom: '5px'}}
+                  />
                 ))}
               </div>
             )}
@@ -156,6 +163,7 @@ DropDown.propTypes = {
   id: PropTypes.string.isRequired,
   labelName: PropTypes.string.isRequired,
   onChange: PropTypes.func,
+  onDelete: PropTypes.func,
   disabled: PropTypes.bool,
   error: PropTypes.string,
 };
