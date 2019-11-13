@@ -88,7 +88,6 @@ export async function editPenyediaAgentFunction (param,next){
         };
         axios.patch(serverUrl+`admin/agent_providers/${param.id}`,param.newData,config)
         .then((res)=>{
-            console.log(res)
             param.result = res.data
             if(next){
                 resolve(next(param))
@@ -97,10 +96,8 @@ export async function editPenyediaAgentFunction (param,next){
             }
         })
         .catch((err)=>{
-            console.log(err);
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
-            console.log(param.error)
             resolve(param);
         })
     })
