@@ -7,6 +7,7 @@ export async function addPenyediaAgentFunction (param,next){
         const config = {
             headers: {'Authorization': "Bearer " + getToken()}
         };
+        
         axios.post(serverUrl+'admin/agent_providers',param,config)
         .then((res)=>{
             param.result = res
@@ -87,7 +88,8 @@ export async function editPenyediaAgentFunction (param,next){
         };
         axios.patch(serverUrl+`admin/agent_providers/${param.id}`,param.newData,config)
         .then((res)=>{
-            param.result = res
+            console.log(res)
+            param.result = res.data
             if(next){
                 resolve(next(param))
             }else{
