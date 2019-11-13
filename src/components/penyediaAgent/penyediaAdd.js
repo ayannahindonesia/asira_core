@@ -76,9 +76,8 @@ class PenyediaAdd extends React.Component{
                 swal("Berhasil","Agen Berhasil Di Tambah","success")
                 this.setState({diKlik:true})
             }else{
-                swal("Gagal","Gagal Di Tambah - Harap coba kembali","error")
+                swal("Tidak Berhasil",`Nomor Telp sudah terdaftar atau ada masalah di server\nSilahkan dicoba kembali`,"error")
                 this.setState({submit:false})
-
             }
 
         }
