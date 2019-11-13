@@ -28,7 +28,7 @@ export async function getAllRoleFunction(param, next){
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}` || err.toString()
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
