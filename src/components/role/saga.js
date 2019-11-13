@@ -12,7 +12,7 @@ export async function AddRoleFunction (param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -34,7 +34,7 @@ export async function ListRoleFunction (param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -51,7 +51,7 @@ export async function DetailRoleFunction (param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -68,7 +68,7 @@ export async function EditRoleFunction (param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toStri
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
