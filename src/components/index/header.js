@@ -75,14 +75,14 @@ class Example extends React.Component {
             { checkPermission('core_borrower_get_all') && <Link to="/profileNasabah" style={{marginBottom:"10px"}} ><label><i className="fas fa-user-friends"></i> Nasabah</label></Link>}
             { checkPermission('core_loan_get_all') && <Link to="/permintaanpinjaman"><label><i className="fas fa-hand-holding-usd"></i> Pinjaman</label></Link>}
             
-            { checkPermission('core_bank_new','core_bank_list') && 
+            { checkPermission('core_service_new','core_service_list') && 
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-concierge-bell"></i> Layanan</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
-                  { checkPermission('core_bank_new') && <Link to="/tambahlayanan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
-                  { checkPermission('core_bank_list') && <Link to="/listlayanan" style={{color:"inherit",textDecoration:"none"}}> <DropdownItem>List</DropdownItem></Link> }               
+                  { checkPermission('core_service_new') && <Link to="/tambahlayanan" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
+                  { checkPermission('core_service_list') && <Link to="/listlayanan" style={{color:"inherit",textDecoration:"none"}}> <DropdownItem>List</DropdownItem></Link> }               
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
