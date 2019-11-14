@@ -94,20 +94,6 @@ class rolePermissionEdit extends React.Component{
       dataRolePermission.name = this.state.nameRole;
       dataRolePermission.system = this.state.system
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
-      let flag = true;
-
-      if(this.isRoleBank(this.state.role)) {
-        for(const key in dataRolePermission.permissions) {
-          if(dataRolePermission.permissions[key] === 'lender_profile') {
-            flag = false;
-          }
-        }         
-      }
-
-      if(this.isRoleBank(this.state.role) && flag) {
-        dataRolePermission.permissions.push('lender_profile')
-        dataRolePermission.permissions.push('lender_profile_edit')
-      }
 
       const param = {
         roleId: parseInt(this.state.listRole.id),
