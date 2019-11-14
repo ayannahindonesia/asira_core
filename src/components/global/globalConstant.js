@@ -56,6 +56,12 @@ exports.listAllRolePermission = [
         modules: 'lender_borrower_list lender_borrower_list_detail',
         menu: 'Nasabah (Bank Dashboard)',
     },
+    {
+        id: 'lender_borrower_list_download',
+        label: 'Download',
+        modules: 'lender_borrower_list_download',
+        menu: 'Nasabah (Bank Dashboard)',
+    },
     // {
     //     id: 'lender_borrower_new',
     //     label: 'Add',
@@ -104,6 +110,12 @@ exports.listAllRolePermission = [
         id: 'lender_loan_request_list',
         label: 'List and Detail',
         modules: 'lender_loan_request_list lender_loan_request_detail',
+        menu: 'Pinjaman (Bank Dashboard)',
+    },
+    {
+        id: 'lender_loan_request_list_download',
+        label: 'Download',
+        modules: 'lender_loan_request_list_download',
         menu: 'Pinjaman (Bank Dashboard)',
     },
     // {

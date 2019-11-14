@@ -54,7 +54,7 @@ class rolePermissionEdit extends React.Component{
       const data = await getRoleFunction(param);
 
       if(data) {
-          const listRolePermission = destructRolePermission(data.dataRole.permissions)
+          const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [])
           
           if(!data.error) {
             this.setState({
