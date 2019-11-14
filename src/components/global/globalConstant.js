@@ -28,7 +28,7 @@ exports.listAllRolePermission = [
     {
         id: 'core_borrower_get_all',
         label: 'List and Detail',
-        modules: 'core_borrower_get_all core_borrower_get_details core_view_image',
+        modules: 'core_borrower_get_all core_borrower_get_details',
         menu: 'Nasabah (Core)',
     },
     // {
@@ -140,19 +140,19 @@ exports.listAllRolePermission = [
     {
         id: 'core_service_list',
         label: 'List and Detail',
-        modules: 'core_service_list core_service_detail  core_view_image',
+        modules: 'core_service_list core_service_detail',
         menu: 'Layanan (Core)',
     },
     {
         id: 'core_service_new',
         label: 'Add',
-        modules: 'core_service_new  core_view_image',
+        modules: 'core_service_new',
         menu: 'Layanan (Core)',
     },
     {
         id: 'core_service_patch',
         label: 'Edit',
-        modules: 'core_service_patch  core_view_image',
+        modules: 'core_service_patch',
         menu: 'Layanan (Core)',
     },
     // {
