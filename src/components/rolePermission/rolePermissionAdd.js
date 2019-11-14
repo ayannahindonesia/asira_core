@@ -10,7 +10,7 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getAllRoleFunction, patchRolePermissionFunction } from './saga'
-import { constructRolePermission, checkingSystem, checkingRole } from './function'
+import { constructRolePermission, checkingSystem, checkingRole, findRoleName, findSystem } from './function'
 import { getToken } from '../index/token';
 
 const styles = (theme) => ({
@@ -31,6 +31,8 @@ class rolePermissionAdd extends React.Component{
       listRolePermission: [],
       disabled: false,
       role : 0,
+      nameRole: '',
+      system: '',
       listRole: [],
       loading: true,
     };
@@ -57,8 +59,8 @@ class rolePermissionAdd extends React.Component{
 
           for(const key in dataRole) {
             if(!dataRole[key].permissions || (dataRole[key].permissions && dataRole[key].permissions.length === 0)) {
-              listRole.push(dataRole[key])
-              role = dataRole[key].id
+              listRole.push(dataRole[key]);
+              role = dataRole[key].id;
             }
           }
 
@@ -66,6 +68,8 @@ class rolePermissionAdd extends React.Component{
             this.setState({
               listRole,
               role,
+              system: findSystem(role, listRole),
+              nameRole: findRoleName(role, listRole),
               listAllRolePermission:checkingSystem(role,listRole),
               loading: false,
             })
@@ -100,9 +104,14 @@ class rolePermissionAdd extends React.Component{
       } else if(this.state.listRole.length === 0 || this.state.role === 0) {
         this.setState({errorMessage:"ERROR : Data Role Tidak Boleh Kosong"})
       } else{
+        
+        this.setState({loading: true})
+
         const listRolePermission = this.state.listRolePermission;
         const dataRolePermission = {};
         dataRolePermission.id = parseInt(this.state.role);
+        dataRolePermission.name = this.state.nameRole;
+        dataRolePermission.system = this.state.system;
         dataRolePermission.permissions = constructRolePermission(listRolePermission) || [];
         let flag = true;
         
@@ -148,8 +157,6 @@ class rolePermissionAdd extends React.Component{
 
     postRolePermission = async function (param) {
       const data = await patchRolePermissionFunction(param)
-  
-      this.setState({loading: true})
 
       if(data) {
         if(!data.error) {
@@ -161,7 +168,6 @@ class rolePermissionAdd extends React.Component{
         } else {
           this.setState({
             errorMessage: data.error,
-            disabled: true,
             loading: false,
           })
         }      
@@ -212,6 +218,8 @@ class rolePermissionAdd extends React.Component{
     onChangeDropDown = (e) => {
       this.setState({
         role: e.target.value,
+        system: findSystem(e.target.value, this.state.listRole),
+        nameRole: findRoleName(e.target.value, this.state.listRole),
         listAllRolePermission: checkingSystem(e.target.value,this.state.listRole)
       })
     }

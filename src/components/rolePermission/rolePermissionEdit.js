@@ -30,6 +30,8 @@ class rolePermissionEdit extends React.Component{
       listRolePermission: [],
       listRole : {},
       roleId: 0,
+      nameRole: '',
+      system: '',
       loading: true,
       disabled:true,
     };
@@ -59,6 +61,8 @@ class rolePermissionEdit extends React.Component{
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
+              nameRole: data.dataRole.name,
+              system: data.dataRole.system,
               listRolePermission,
               listAllRolePermission: checkingSystem(this.state.roleId, [data.dataRole]),
               loading: false,
@@ -80,11 +84,15 @@ class rolePermissionEdit extends React.Component{
       this.setState({errorMessage:newProps.error})
     }
 
-    btnSave = () =>{
+    btnSave = () =>{ 
+      this.setState({loading: true})
+
       const listRolePermission = this.state.listRolePermission;
       const dataRolePermission = {};
       
       dataRolePermission.id = parseInt(this.state.listRole.id);
+      dataRolePermission.name = this.state.nameRole;
+      dataRolePermission.system = this.state.system
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
       let flag = true;
 
@@ -112,8 +120,6 @@ class rolePermissionEdit extends React.Component{
 
     patchRolePermission = async function(param) {
       const data = await patchRolePermissionFunction(param)
-
-      this.setState({loading: true})
 
       if(data) {
         if(!data.error) {

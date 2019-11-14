@@ -74,4 +74,30 @@ export function checkingRole (role, id){
       }
     }
     return false;
+}
+
+export function findRoleName (idRole, dataRole) {
+  let roleName = '';
+
+  for(const key in dataRole) {
+    if(idRole.toString().toLowerCase() === dataRole[key].id.toString().toLowerCase()) {
+      roleName = dataRole[key].name
+      break;
+    }
   }
+
+  return roleName;
+}
+
+export function findSystem (idRole, dataRole) {
+  let system = '';
+
+  for(const key in dataRole) {
+    if(idRole.toString().toLowerCase() === dataRole[key].id.toString().toLowerCase()) {
+      system = dataRole[key].system
+      break;
+    }
+  }
+
+  return system;
+}
