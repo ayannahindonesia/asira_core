@@ -29,6 +29,8 @@ class CheckBoxClass extends React.Component {
         'Add',
         'Edit',
         'Approval',
+        'Disburse',
+        'Download',
       ],
       dataModul: [],
     };
@@ -36,7 +38,6 @@ class CheckBoxClass extends React.Component {
 
   componentDidMount() {
     if(this.props.data) {
-      console.log(this.props.data);
       const data = this.props.data;
       const dataModul = [];
       let newModules = '';
@@ -50,6 +51,19 @@ class CheckBoxClass extends React.Component {
 
       this.setState({dataModul})
     }
+  }
+
+  lengthGrid = () => {
+    let pjgGrid = parseInt(12 / (this.state.dataJudul.length + 1))
+    return pjgGrid;
+  }
+
+  lengthJudul = () => {
+    let pjgGrid = 12 - (this.lengthGrid() * this.state.dataJudul.length);
+    if(pjgGrid > 3) {
+      pjgGrid = 4
+    }
+    return pjgGrid;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -83,7 +97,7 @@ class CheckBoxClass extends React.Component {
 
         if(flag) {
           return(
-            <Grid item sm={parseInt(12 / (this.state.dataJudul.length + 1)) } xs={parseInt(12 / (this.state.dataJudul.length + 1)) } key={dataRow[this.props.id]} style={{textAlign: 'center'}}>
+            <Grid item sm={this.lengthGrid() } xs={this.lengthGrid() } key={dataRow[this.props.id]} style={{textAlign: 'center'}}>
               <FormControlLabel
                 className={(this.props.vertical)?classes.formItem : null}
                 key={dataRow[this.props.id]}
@@ -102,7 +116,7 @@ class CheckBoxClass extends React.Component {
           ) 
         } else {
           return(
-            <Grid item sm={parseInt(12 / (this.state.dataJudul.length + 1)) } xs={parseInt(12 / (this.state.dataJudul.length + 1)) } key={index} style={{textAlign: 'center'}}>
+            <Grid item sm={this.lengthGrid() } xs={this.lengthGrid() } key={index} style={{textAlign: 'center'}}>
               <FormControlLabel
                 className={(this.props.vertical)?classes.formItem : null}
                 key={index}
@@ -142,13 +156,13 @@ class CheckBoxClass extends React.Component {
         { data && data.length !== 0 &&
           <FormGroup row >
             <Grid container> 
-              <Grid item sm={parseInt(12 / (this.state.dataJudul.length + 1)) + 1} xs={parseInt(12 / (this.state.dataJudul.length + 1))} key={'menu'}>
+              <Grid item sm={this.lengthJudul()} xs={this.lengthJudul()} key={'menu'}>
                 <h6><b>{modulesName}</b></h6>
               </Grid>   
               {
                 this.state.dataJudul.map((data) => {
                   return (
-                    <Grid item sm={parseInt(12 / (this.state.dataJudul.length + 1))} xs={parseInt(12 / (this.state.dataJudul.length + 1))} key={data} style={{textAlign:'center'}}>
+                    <Grid item sm={this.lengthGrid()} xs={this.lengthGrid()} key={data} style={{textAlign:'center'}}>
                       <h6><b>{data}</b></h6>
                     </Grid>
                   )
@@ -164,7 +178,7 @@ class CheckBoxClass extends React.Component {
             
             return(
               <Grid container key={object}> 
-                <Grid item sm={parseInt(12 / (this.state.dataJudul.length + 1)) + 1} style={{paddingTop:'10px'}}>
+                <Grid item sm={this.lengthJudul()} style={{paddingTop:'10px'}}>
                   <h6>{object}</h6> 
                 </Grid>
                 {
