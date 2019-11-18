@@ -28,7 +28,7 @@ export async function getAllRoleFunction(param, next){
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -52,7 +52,7 @@ export async function getRoleFunction(param, next) {
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error
             resolve(param);
         })
@@ -79,7 +79,7 @@ export async function getPermissionFunction(param, next) {
             }
     
         }).catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -97,7 +97,7 @@ export async function patchRolePermissionFunction(param) {
         axios.patch(serverUrl+`admin/roles/${param.roleId}`,param.dataRolePermission,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal mengubah Role Permission'
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -114,7 +114,7 @@ export async function postRolePermissionFunction(param) {
         axios.post(serverUrl+`admin/permission`,param.dataRolePermission,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || 'Gagal menambah Role Permission'
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error;
             resolve(param);
         })

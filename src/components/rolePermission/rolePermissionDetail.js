@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import CheckBox from '../subComponent/CheckBox';
+import CheckBoxClass from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -9,7 +9,7 @@ import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getRoleFunction } from './saga'
 import { getToken } from '../index/token';
-import { destructRolePermission, checkingSystem, checkingRole } from './function';
+import { destructRolePermission, checkingSystem, checkingRole, findSystem } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -29,6 +29,7 @@ class rolePermissionDetail extends React.Component{
       roleId: 0,
       disabled: true,
       loading: true,
+      system: '',
     };
 
     componentDidMount(){
@@ -52,12 +53,13 @@ class rolePermissionDetail extends React.Component{
       const data = await getRoleFunction(param);
 
       if(data) {
-          const listRolePermission = destructRolePermission(data.dataRole.permissions)
+          const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [])
 
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
               listAllRolePermission: checkingSystem(this.state.roleId, [data.dataRole]),
+              system: findSystem(this.state.roleId, [data.dataRole]),
               listRolePermission,
               loading: false,
             })
@@ -116,8 +118,8 @@ class rolePermissionDetail extends React.Component{
                             {this.state.errorMessage}
                         </div>     
                         <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                          <CheckBox
-                            label="Core - Permission Setup"
+                          <CheckBoxClass
+                            label={`${this.state.system} - Permission Setup`}
                             modulesName="Menu"
                             data={this.state.listAllRolePermission}
                             id="id"

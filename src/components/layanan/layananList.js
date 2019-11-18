@@ -31,13 +31,13 @@ class LayananList extends React.Component{
         const data = await getAllLayananListFunction(param)
         if(data){
             if(!data.error){
-                this.setState({loading:false,rows:data.data.data,
-                    total_data:data.data.total_data,
-                    page:data.data.current_page,
-                    from:data.data.from,
-                    to:data.data.to,
-                    last_page:data.data.last_page,
-                    dataPerhalaman:data.data.rows,
+                this.setState({loading:false,rows:data.listLayanan.data,
+                    total_data:data.listLayanan.total_data,
+                    page:data.listLayanan.current_page,
+                    from:data.listLayanan.from,
+                    to:data.listLayanan.to,
+                    last_page:data.listLayanan.last_page,
+                    dataPerhalaman:data.listLayanan.rows,
                 })
             }else{
                 this.setState({errorMessage:data.error,loading:false})

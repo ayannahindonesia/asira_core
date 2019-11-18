@@ -8,6 +8,7 @@ import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import { getToken } from '../index/token';
 import { checkPermission } from '../global/globalFunction';
+import { getPenyediaAgentListFunction } from './saga';
 
 class profileNasabah extends React.Component {
   state = {
@@ -27,7 +28,7 @@ class profileNasabah extends React.Component {
   
   _isMounted = false
   componentDidMount(){
-    // this.getAllData()
+    this.getAllData()
     this._isMounted = true
   }
   componentWillUnmount(){
@@ -46,19 +47,23 @@ class profileNasabah extends React.Component {
         if(!isNaN(hasil)){
           param.id = hasil
         }else{
-          param.fullname = hasil
+          param.name = hasil
         }
       }
 
-    //   const data = await getProfileNasabahFunction(param)
+      const data = await getPenyediaAgentListFunction(param)
 
-    //   if(data){
-    //     if(!data.error){
-    //       this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
-    //     }else{
-    //       this.setState({errorMessage:data.error})
-    //     }
-    //   }
+      if(data){
+        console.log(data)
+        if(!data.error){
+          this.setState({loading:false,rows:data.dataListAgent.data,
+            rowsPerPage:data.dataListAgent.rows,
+            jumlahBaris:null,totalData:data.dataListAgent.total_data,
+            last_page:data.dataListAgent.last_page,page:data.dataListAgent.current_page})
+        }else{
+          this.setState({errorMessage:data.error})
+        }
+      }
   }
 
   onBtnSearch = ()=>{
@@ -112,8 +117,8 @@ class profileNasabah extends React.Component {
         <tr key={index}>
             <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
             <td align="center">{val.id}</td>
-            <td align="center"></td>
-            <td align="center">
+            <td align="center">{val.name}</td>
+            <td align="center">{val.status ==="inactive"?"Tidak Aktif":"Aktif"}
             </td>
             <td align="center">
             {checkPermission('core_penyedia_agent_patch') &&
@@ -121,7 +126,7 @@ class profileNasabah extends React.Component {
                 <i className="fas fa-edit" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>
             }
-            {checkPermission('core_penyedia_agent_detail') &&
+            {checkPermission('core_penyedia_agent_details') &&
                 <Link style={{textDecoration:"none"}} to={`/penyediaDetail/${val.id}`}>
                 <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>

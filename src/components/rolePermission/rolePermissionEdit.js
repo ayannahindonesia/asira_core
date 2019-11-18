@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import CheckBox from '../subComponent/CheckBox';
+import CheckBoxClass from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
@@ -30,6 +30,8 @@ class rolePermissionEdit extends React.Component{
       listRolePermission: [],
       listRole : {},
       roleId: 0,
+      nameRole: '',
+      system: '',
       loading: true,
       disabled:true,
     };
@@ -54,11 +56,13 @@ class rolePermissionEdit extends React.Component{
       const data = await getRoleFunction(param);
 
       if(data) {
-          const listRolePermission = destructRolePermission(data.dataRole.permissions)
+          const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [])
           
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
+              nameRole: data.dataRole.name,
+              system: data.dataRole.system,
               listRolePermission,
               listAllRolePermission: checkingSystem(this.state.roleId, [data.dataRole]),
               loading: false,
@@ -80,11 +84,15 @@ class rolePermissionEdit extends React.Component{
       this.setState({errorMessage:newProps.error})
     }
 
-    btnSave = () =>{
+    btnSave = () =>{ 
+      this.setState({loading: true})
+
       const listRolePermission = this.state.listRolePermission;
       const dataRolePermission = {};
       
       dataRolePermission.id = parseInt(this.state.listRole.id);
+      dataRolePermission.name = this.state.nameRole;
+      dataRolePermission.system = this.state.system
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
 
       const param = {
@@ -98,8 +106,6 @@ class rolePermissionEdit extends React.Component{
 
     patchRolePermission = async function(param) {
       const data = await patchRolePermissionFunction(param)
-
-      this.setState({loading: true})
 
       if(data) {
         if(!data.error) {
@@ -116,6 +122,23 @@ class rolePermissionEdit extends React.Component{
           })
         }      
       }
+    }
+
+    isRoleBank = (role) => {
+      let flag = false;
+      const dataRole = this.state.listRole;
+
+      if(role && role !== 0) {
+        for(const key in dataRole) {
+          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            flag = true;
+            break;
+          }
+        }
+        
+      } 
+
+      return flag;
     }
 
     onChangeCheck = (e) => {
@@ -197,8 +220,8 @@ class rolePermissionEdit extends React.Component{
                         {this.state.errorMessage}
                     </div>     
                     <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                        <CheckBox
-                          label="Core - Permission Setup"
+                        <CheckBoxClass
+                          label={`${this.state.system} - Permission Setup`}
                           modulesName="Menu"
                           data={this.state.listAllRolePermission}
                           id="id"

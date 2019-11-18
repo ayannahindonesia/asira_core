@@ -12,14 +12,15 @@ export async function addProductFunction(param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+
             param.error = error;
             resolve(param);
         })
     })
 }
 
-export async function listProductFunction (param){
+export async function listProductFunction (param,next){
     return new Promise (async (resolve)=>{
         const config = {
             headers: {'Authorization': "Bearer " + getToken()}
@@ -32,10 +33,16 @@ export async function listProductFunction (param){
 
         axios.get(serverUrl+`admin/products?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
-            resolve(res)
+            param.productList = res.data
+            if(next){
+                resolve(next(param))
+            }else{
+                resolve(param)
+            }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+
             param.error = error;
             resolve(param);
         })
@@ -57,7 +64,8 @@ export async function detailProductFunction(param,next) {
             resolve(res.data)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+
             param.error = error;
             resolve(param);
         })
@@ -80,7 +88,8 @@ export async function detailServiceProductFunction(param,next) {
             resolve(param)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+
             param.error = error;
             resolve(param);
         })
@@ -97,7 +106,8 @@ export async function editProductFunction (param) {
           resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+
             param.error = error;
             resolve(param);
         })

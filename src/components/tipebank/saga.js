@@ -12,14 +12,14 @@ export async function AddTipeBankFunction (param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
     })
 }
 
-export async function ListTipeBankFunction (param){
+export async function ListTipeBankFunction (param,next){
     return new Promise(async (resolve)=>{
         const config = {
             headers: {'Authorization': "Bearer " + getToken()}
@@ -31,11 +31,16 @@ export async function ListTipeBankFunction (param){
           }
         axios.get(serverUrl+`admin/bank_types?orderby=updated_time&sort=asc${filter}`,config)
         .then((res)=>{
-            resolve(res)
+            param.listBankType = res.data
+            if(next){
+                resolve(next(param))
+            }else{
+                resolve(param)
+            }
             
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -58,7 +63,7 @@ export async function DetailTipeBankFunction(params,next) {
                 }
             })
             .catch((err)=>{
-                const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+                const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
                 params.error = error;
                 resolve(params);
             })
@@ -76,7 +81,7 @@ export async function EditTipeBankFunction(params) {
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             params.error = error;
             resolve(params);
         })

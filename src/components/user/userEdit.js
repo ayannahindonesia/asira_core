@@ -187,12 +187,12 @@ class userEdit extends React.Component{
       const roleBank = this.isRoleBank(this.state.role); 
       
       if(roleBank) {
-        const data = await getAllBankList() ;
+        const data = await getAllBankList({}) ;
 
         if(data) {
           if(!data.error) {
             this.setState({
-              listBank: data.data.data,
+              listBank: data.bankList.data,
               loading: false,
             })
           } else {
@@ -340,7 +340,7 @@ class userEdit extends React.Component{
                           label="Role"
                           data={this.state.listRole}
                           id="id"
-                          labelName="name"
+                          labelName="name-system"
                           onChange={this.onChangeDropDown}
                           fullWidth
                         />
@@ -361,7 +361,7 @@ class userEdit extends React.Component{
                             label="Bank"
                             data={this.state.listBank}
                             id="id"
-                            labelName="name-system"
+                            labelName="name"
                             onChange={this.onChangeDropDown}
                             disabled={this.state.listBank && this.state.listBank.length && this.state.listBank.length !== 0 ? false : true}
                             fullWidth

@@ -20,7 +20,7 @@ const customStyles = {
     control: () => ({
       // none of react-select's styles are passed to <Control />
       width: "50%",float:"left", marginLeft:"112px",
-      border:"0.5px solid #CED4DA", borderRadius:"2px"
+      border:"1px solid #CED4DA", borderRadius:"2px"
     }),
     singleValue: (provided, state) => {
       const opacity = state.isDisabled ? 0.5 : 1;
@@ -104,7 +104,7 @@ class BankEdit extends React.Component{
         const data = await listProductFunction(param)
         if (data){
             if(!data.error){
-                this.setState({bankProduct:data.data.data, productName: null})
+                this.setState({bankProduct:data.productList.data, productName: null})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -112,11 +112,11 @@ class BankEdit extends React.Component{
     }
 
     getBankService = async function () {
-        const data = await getAllLayananListFunction()
+        const data = await getAllLayananListFunction({})
 
         if(data){
             if(!data.error){
-                this.setState({bankService:data.data.data})
+                this.setState({bankService:data.listLayanan.data})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -174,7 +174,7 @@ class BankEdit extends React.Component{
 
         if(data){
             if(!data.error){
-                var serviceName = data.data.data.map((val)=>{
+                var serviceName = data.listLayanan.data.map((val)=>{
                     return {value:val.id,label:val.name,id:val.id}
                 })
                 this.setState({serviceName:serviceName})
@@ -192,7 +192,7 @@ class BankEdit extends React.Component{
 
         if(data){
             if(!data.error){
-                let productName = data.data.data.map((val)=>{
+                let productName = data.productList.data.map((val)=>{
                     return {value:val.id,label:val.name}
                 })
                 this.setState({productName:productName})
