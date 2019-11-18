@@ -186,6 +186,7 @@ class PermintaanPinjaman extends React.Component {
                 pageSize={this.state.rowsPerPage}
                 onChange={this.onChangePage}
                 locale={localeInfo}
+                showLessItems
                 current={this.state.page}
                 />     
           </nav>

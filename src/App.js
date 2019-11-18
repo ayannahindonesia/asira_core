@@ -62,16 +62,33 @@ import UserList from './components/user/userList'
 import UserDetail from './components/user/userDetail'
 import UserEdit from './components/user/userEdit'
 
+import penyediaAgentAdd from './components/penyediaAgent/penyediaAdd'
+import penyediaAgentEdit from './components/penyediaAgent/penyediaEdit'
+import penyediaAgentDetail from './components/penyediaAgent/penyediaDetail'
+import penyediaAgentList from './components/penyediaAgent/penyediaList'
+
+import AgentAdd from './components/agent/agentAdd'
+import AgentList from './components/agent/agentList'
+import AgentDetail from './components/agent/agentDetail'
+import AgentEdit from './components/agent/agentEdit'
+
 import axios from 'axios'
 import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
 
 class App extends React.Component {
+  _isMounted = false;
+
   state = {
     loading : true , 
   }
 
   componentDidMount(){
+    this._isMounted=true;
     this.getAuth()
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -111,7 +128,7 @@ class App extends React.Component {
         <ScrollTop>
           <div className="row">
           {
-            getToken() ? 
+            getToken() && getProfileUser() ? 
             <div className="col-2 col-md-3">
               <Header />
             </div>
@@ -172,6 +189,16 @@ class App extends React.Component {
                   { checkPermission('core_user_details') && <Route path='/detailUser/:id' component={UserDetail}></Route>}
 
                   { checkPermission('convenience_fee_report') && <Route path='/report' component={Report}></Route>}
+
+                  { checkPermission('core_agent_provider_new') && <Route path='/penyediaAdd' component={penyediaAgentAdd}></Route>}
+                  { checkPermission('core_agent_provider_list') && <Route path='/penyediaList' component={penyediaAgentList}></Route>}
+                  { checkPermission('core_agent_provider_patch') && <Route path='/penyediaEdit/:id' component={penyediaAgentEdit}></Route>}
+                  { checkPermission('core_agent_provider_details') && <Route path='/penyediaDetail/:id' component={penyediaAgentDetail}></Route>}
+
+                  { checkPermission('core_agent_new') && <Route path='/tambahAgent' component={AgentAdd}></Route>}
+                  { checkPermission('core_agent_list') && <Route path='/listAgent' component={AgentList}></Route>}
+                  { checkPermission('core_agent_patch') && <Route path='/editAgent/:id' component={AgentEdit}></Route>}
+                  { checkPermission('core_agent_details') && <Route path='/detailAgent/:id' component={AgentDetail}></Route>}
 
                   {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 

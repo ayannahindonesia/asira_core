@@ -47,13 +47,13 @@ class BankList extends React.Component{
         if(data){
           if(!data.error){
             this.setState({
-              rows:data.data.data,
-              total_data:data.data.total_data,
-              page:data.data.current_page,
-              from:data.data.from,
-              to:data.data.to,
-              last_page:data.data.last_page,
-              dataPerhalaman:data.data.rows,
+              rows:data.bankList.data,
+              total_data:data.bankList.total_data,
+              page:data.bankList.current_page,
+              from:data.bankList.from,
+              to:data.bankList.to,
+              last_page:data.bankList.last_page,
+              dataPerhalaman:data.bankList.rows,
               loading:false})
           }else{
               this.setState({errorMessage:data.error})
@@ -175,6 +175,7 @@ class BankList extends React.Component{
                 onChange={this.onChangePage}
                 locale={localeInfo}
                 current={this.state.page}
+                showLessItems
             />
                 </nav>
                

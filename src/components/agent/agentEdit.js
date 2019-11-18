@@ -10,12 +10,13 @@ import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import { compose } from 'redux';
-import { getAllRoleFunction } from './../rolePermission/saga'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { postUserAddFunction } from './saga';
+import { getAgentFunction, patchAgentAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
 import { getAllBankList } from '../bank/saga';
+import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
+import { isRoleAccountExecutive, destructAgent, constructAgent } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -27,18 +28,24 @@ const styles = (theme) => ({
   });
 
 
-class userAdd extends React.Component{
+class AgentEdit extends React.Component{
     _isMounted = false;
 
     state = {
       diKlik:false,
       errorMessage:'',
-      role : 0,
-      bank: 0,
-      listRole: [],
+      agentId: 0,
+      kategori : 'agent',
+      kategori_name: '',
+      dataAgent: {},
+      bank: [],
+      instansi: 0,
+      listPenyediaAgent: [],
       listBank: [],
       loading: true,
       status: true,
+      agentName: '',
+      agent_provider_name: '',
       username: '',
       phone:'',
       email:'',
@@ -46,81 +53,50 @@ class userAdd extends React.Component{
 
     componentDidMount(){
       this._isMounted = true;
-      this.refresh()
+      this.setState({
+        agentId: this.props.match.params.id,
+      },() => {
+        this.refresh();
+      })
     }
 
     componentWillUnmount() {
       this._isMounted = false;
     }
 
-    refresh = async function(){
-      const param = { };
-      
-      const data = await getAllRoleFunction(param);
-      
+    refresh = async function() {
+      const param = {
+        agentId: this.state.agentId
+      };
+      const data = await getAgentFunction(param, getPenyediaAgentListFunction, getAllBankList) ;
+
       if(data) {
         if(!data.error) {
+          const dataAgent = destructAgent(data.dataAgent, data.bankList.data, data.dataListAgent.data);
+
           this.setState({
-            listRole: data.dataRole,
-            role: (data.dataRole && data.dataRole[0] && data.dataRole[0].id) || 0,
-          }, () => { this.getBankList() })
+            listBank: data.bankList.data,
+            listPenyediaAgent : data.dataListAgent.data,
+            status: dataAgent.status,
+            agentId: dataAgent.id,
+            agentName: dataAgent.name,
+            username: dataAgent.username,
+            phone: dataAgent.phone,
+            email: dataAgent.email,
+            kategori: dataAgent.category,
+            kategori_name: dataAgent.category_name,
+            agent_provider_name: dataAgent.agent_provider_name,
+            bank: dataAgent.banks,
+            instansi: dataAgent.agent_provider,
+            loading: false,
+          })
         } else {
           this.setState({
             errorMessage: data.error,
             loading: false,
           })
         }      
-      }
-    }
-
-    getBankList = async function() {
-      const roleBank = this.isRoleBank(this.state.role); 
-      if(roleBank) {
-        const data = await getAllBankList({}) ;
-
-        if(data) {
-          if(!data.error) {
-            this.setState({
-              listBank: data.bankList.data,
-              bank: (data.bankList && data.bankList.data && data.bankList.data[0] && data.bankList.data[0].id) || 0,
-              loading: false,
-            })
-          } else {
-            this.setState({
-              errorMessage: data.error,
-              loading: false,
-            })
-          }      
-        }
-      } else {
-        this.setState({
-          listBank: [],
-          bank: 0,
-          loading: false,
-        })
-      }
-      
-    }
-
-    isRoleBank = (role) => {
-      let flag = false;
-      const dataRole = this.state.listRole;
-
-      if(role && role !== 0) {
-        for(const key in dataRole) {
-          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
-            flag = true;
-            break;
-          }
-        }
-        
-      } 
-
-      return flag;
-    }
- 
-    btnCancel = ()=>{
-      this.setState({diKlik:true})
+      }  
     }
 
     componentWillReceiveProps(newProps){
@@ -129,43 +105,22 @@ class userAdd extends React.Component{
 
     btnSave=()=>{
       if (this.validate()) {
-        const dataUser = {
-          username : this.state.username,
-          roles : [parseInt(this.state.role)],
-          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
-          phone : this.state.phone,
-          email : this.state.email,
-          status : this.state.status ? 'active' : 'inactive',
-        }
+
+        const dataAgent = constructAgent(this.state)
         
         const param = {
-          dataUser,
+          agentId: this.state.agentId,
+          dataAgent,
         }
 
         this.setState({loading: true});
         
-        this.postUser(param)
+        this.patchAgent(param)
       }
     }
 
-    postUser = async function(param) {
-      const data = await postUserAddFunction(param);
-
-      if(data) {
-        if(!data.error) {
-          swal("Success","User berhasil di tambah","success")
-          this.setState({
-            diKlik: true,
-            loading: false,
-          })
-        } else {
-          
-          this.setState({
-            errorMessage: data.error,
-            loading: false,
-          })
-        }      
-      }
+    btnCancel = ()=>{
+      this.setState({diKlik:true})
     }
 
     onChangeCheck = (e) => {
@@ -179,7 +134,7 @@ class userAdd extends React.Component{
       let labelName = e.target.id;
       let flag = true;
 
-      if(value.includes(' ') || value.includes('\'') || value.includes('"') || value.includes(',') ) {
+      if(labelName !== 'agentName' && (value.includes(' ') || value.includes('\'') || value.includes('"') || value.includes(',')) ) {
         flag = false
       }
 
@@ -196,33 +151,104 @@ class userAdd extends React.Component{
 
     onChangeDropDown = (e) => {
       const labelName = e.target.name.toString().toLowerCase();
+      let instansi = e.target.value;
 
-      this.setState({[labelName]: e.target.value},(labelName) => { 
-        if(labelName === 'role') {
-          this.getBankList();
-        } 
+      if(labelName === 'kategori') {
+        if(e.target.value === 'agent') {
+          for(const key in this.state.listPenyediaAgent) {
+            instansi = this.state.listPenyediaAgent[key].id;
+            break;
+          }
+        } else if(e.target.value === 'account_executive') {
+          for(const key in this.state.listBank) {
+            instansi = this.state.listBank[key].id;
+            break;
+          }
+        }
+        this.setState({instansi})
+      }
+
+      this.setState({
+        [labelName]: e.target.value,
+        bank: [],
       })
+    }
+
+    onChangeDropDownMultiple = (e) => {
+      const dataBank = this.state.listBank;
+      const bank = e.target.value;
+      const newBank = [];
+      
+      for(const key in dataBank) {
+
+        for(const keyBank in bank) {
+          if(
+            dataBank[key].id.toString().toLowerCase() === bank[keyBank].toString().toLowerCase() || 
+            (bank[keyBank].id && dataBank[key].id.toString().toLowerCase() === bank[keyBank].id.toString().toLowerCase())
+          ) {
+            newBank.push(dataBank[key])
+            break;
+          }
+        }
+        
+      }
+
+      this.setState({bank : newBank})
+
+    }
+
+    patchAgent = async function(param) {
+      const data = await patchAgentAddFunction(param);
+
+      if(data) {
+        if(!data.error) {
+          swal("Success","Agen berhasil di ubah","success")
+          this.setState({
+            diKlik: true,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            loading: false,
+          })
+        }      
+      }
+    }
+
+    handleDelete = (e, value) => {
+      const bank = this.state.bank;
+      const newBank = [];
+
+      for(const key in bank) {
+        if(bank[key].id.toString().toLowerCase() !== value.toString().toLowerCase()) {
+          newBank.push(bank[key])
+        }
+      }
+
+      this.setState({bank : newBank})
     }
 
     validate = () => {
       let flag = true;
       let errorMessage = '';
-      
+
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
         errorMessage = 'Mohon input username dengan benar'
-      } else if (!this.state.role || this.state.role === 0) {
+      } else if (!this.state.agentName || this.state.agentName.trim().length === 0) {
         flag = false;
-        errorMessage = 'Mohon input role dengan benar'
-      } else if (
-          !this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email)
-        ) {
+        errorMessage = 'Mohon input nama agen dengan benar'
+      } else if (!this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email) ) {
         flag = false;
         errorMessage = 'Mohon input email dengan benar'
       } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
-      } else if (this.isRoleBank(this.state.role) && (!this.state.bank || this.state.bank === 0)) {
+      } else if (!this.state.instansi || this.state.instansi.length === 0) {
+        flag = false;
+        errorMessage = 'Mohon input instansi dengan benar'
+      }else if (!isRoleAccountExecutive(this.state.kategori) && (!this.state.bank || this.state.bank.length === 0)) {
         flag = false;
         errorMessage = 'Mohon input bank dengan benar'
       } else {
@@ -238,7 +264,7 @@ class userAdd extends React.Component{
 
     render(){
         if(this.state.diKlik){
-          return <Redirect to='/listUser'/>            
+          return <Redirect to='/listAgent'/>            
         } else if (this.state.loading){
           return  (
             <div key="zz">
@@ -255,7 +281,7 @@ class userAdd extends React.Component{
         } else if(getToken()){
           return(
               <div className="container mt-4">
-                <h3>Akun - Tambah</h3>
+                <h3>Agen - Ubah</h3>
                                 
                 <hr/>
                 
@@ -265,68 +291,50 @@ class userAdd extends React.Component{
                       {this.state.errorMessage}
                     </div>    
                   </div>
+
+                  <div className="form-group row" style={{marginBottom:40}}>                
+                    <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                      Id Agen
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                      {this.state.agentId}
+                    </div>                 
+                  </div>
+
                   <div className="form-group row" style={{marginBottom:20}}>                
                     <label className="col-sm-2 col-form-label" style={{height:3.5}}>
-                      Username
+                      Nama Agen
                     </label>
                     <label className="col-sm-1 col-form-label" style={{height:3.5}}>
                       :
                     </label>
                     <div className="col-sm-4" >
                       <TextField
-                        id="username"
+                        id="agentName"
                         onChange={this.onChangeTextField}
-                        value={this.state.username}
+                        value={this.state.agentName}
                         hiddenLabel
                         fullWidth
-                        placeholder="Username"
+                        placeholder="Nama Agen"
                         style={{border:'1px groove', paddingLeft:'5px'}}
                       />
                     </div>                 
                   </div>
 
-                  <div className="form-group row" style={{marginBottom:7}}>                   
-                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                      Role
+                  <div className="form-group row" style={{marginBottom:40}}>                
+                    <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                      Id Pengguna (username)
                     </label>
-                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                    <label className="col-sm-1 col-form-label" style={{height:3.5}}>
                       :
                     </label>
-                    <div className="col-sm-4">
-                      <DropDown
-                        value={this.state.role}
-                        label="Role"
-                        data={this.state.listRole}
-                        id="id"
-                        labelName={"name-system"}
-                        onChange={this.onChangeDropDown}
-                        fullWidth
-                      />
+                    <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                      { this.state.username }
                     </div>                 
                   </div>
-
-                  { this.isRoleBank(this.state.role) && 
-                    <div className="form-group row" style={{marginBottom:20}}>                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Bank
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <div className="col-sm-4">
-                        <DropDown
-                          value={this.state.bank}
-                          label="Bank"
-                          data={this.state.listBank}
-                          id="id"
-                          labelName="name"
-                          onChange={this.onChangeDropDown}
-                          disabled={!this.isRoleBank(this.state.role)}
-                          fullWidth
-                        />
-                      </div>                 
-                    </div>
-                  }
 
                   <div className="form-group row" style={{marginBottom:40}}>                   
                     <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
@@ -351,7 +359,7 @@ class userAdd extends React.Component{
 
                   <div className="form-group row" style={{marginBottom:20}}>                   
                     <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
-                      Kontak PIC
+                      No HP
                     </label>
                     <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
                       :
@@ -364,12 +372,64 @@ class userAdd extends React.Component{
                         value={this.state.phone}
                         hiddenLabel
                         fullWidth
-                        placeholder="Telepon"
+                        placeholder="Nomor Handphone"
                         style={{border:'1px groove', paddingLeft:'5px'}}
                       />
                     </div>                   
                   </div>
 
+
+                  <div className="form-group row" style={{marginBottom:7}}>                   
+                    <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
+                      Kategori
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4 col-form-label" style={{height:1.5}}>
+                      {this.state.kategori_name}
+                    </div>                 
+                  </div>
+
+                  
+                  <div className="form-group row" style={{marginBottom:7}}>                   
+                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                      Instansi
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                      { this.state.agent_provider_name }
+                    </div>                 
+                  </div>
+                  
+   
+                  {
+                    !isRoleAccountExecutive(this.state.kategori) &&
+                    <div className="form-group row" style={{marginBottom:15}}>                   
+                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                        Bank Pelayanan
+                      </label>
+                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                        :
+                      </label>
+                      <div className="col-sm-4">
+                        <DropDown
+                          multiple={true}
+                          value={this.state.bank}
+                          label="Bank"
+                          data={this.state.listBank}
+                          id="id"
+                          onDelete={this.handleDelete}
+                          labelName="name"
+                          onChange={this.onChangeDropDownMultiple}
+                          fullWidth
+                        />
+                      </div>                 
+                    </div>
+                  }
+                  
                   <div className="form-group row">
                     <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
                       Status
@@ -396,7 +456,7 @@ class userAdd extends React.Component{
                   
                   <div className="form-group row">
                       <div className="col-sm-12 ml-3 mt-3">
-                        <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnSave} />
+                        <input type="button" value="Ubah" className="btn btn-success" onClick={this.btnSave} />
                         <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                       </div>
                   </div>
@@ -439,4 +499,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(userAdd);
+  )(AgentEdit);

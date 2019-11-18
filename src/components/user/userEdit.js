@@ -15,6 +15,7 @@ import { getUserFunction, patchUserAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import DropDown from '../subComponent/DropDown';
 import { getToken } from '../index/token';
+import { getAllBankList } from '../bank/saga';
 
 const styles = (theme) => ({
     container: {
@@ -29,13 +30,14 @@ class userEdit extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listRolePermission: [],
+      listBank: [],
       listRole : {},
       username: '',
       password: '',
       email:'',
       phone:'',
       role: 0,
+      bank: 0,
       userId: 0,
       loading: true,
       disabled:true,
@@ -69,6 +71,7 @@ class userEdit extends React.Component{
           if(!data.error && !dataUser.error) {
             this.setState({
               listRole: data.dataRole,
+              bank: dataUser.dataUser.bank_id || 0,
               role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.roles && dataUser.dataUser.roles[0]) || 0,
               id: dataUser.dataUser.id,
               username: dataUser.dataUser.username,
@@ -76,8 +79,7 @@ class userEdit extends React.Component{
               email: dataUser.dataUser.email,
               phone: dataUser.dataUser.phone,
               status: dataUser.dataUser.status,
-              loading: false,
-            })
+            }, () => { this.getBankList() })
           } else {
             this.setState({
               errorMessage: data.error || dataUser.error,
@@ -99,6 +101,7 @@ class userEdit extends React.Component{
       if (this.validate()) {
         const dataUser = {
           roles : [parseInt(this.state.role)],
+          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
           phone : this.state.phone,
           email : this.state.email,
           status : this.state.status,
@@ -171,7 +174,59 @@ class userEdit extends React.Component{
     }
 
     onChangeDropDown = (e) => {
-      this.setState({role: e.target.value})
+      const labelName = e.target.name.toString().toLowerCase();
+
+      this.setState({[labelName]: e.target.value}, (labelName) => {
+        if(labelName === 'role') {
+          this.getBankList();
+        } 
+      })
+    }
+
+    getBankList = async function() {
+      const roleBank = this.isRoleBank(this.state.role); 
+      
+      if(roleBank) {
+        const data = await getAllBankList({}) ;
+
+        if(data) {
+          if(!data.error) {
+            this.setState({
+              listBank: data.bankList.data,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: data.error,
+              loading: false,
+            })
+          }      
+        }
+      } else {
+        this.setState({
+          listBank: [],
+          bank: 0,
+          loading: false,
+        })
+      }
+      
+    }
+
+    isRoleBank = (role) => {
+      let flag = false;
+      const dataRole = this.state.listRole;
+
+      if(role && role !== 0) {
+        for(const key in dataRole) {
+          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            flag = true;
+            break;
+          }
+        }
+        
+      } 
+
+      return flag;
     }
 
     validate = () => {
@@ -180,7 +235,7 @@ class userEdit extends React.Component{
 
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
-        errorMessage = 'Mohon input nama akun dengan benar'
+        errorMessage = 'Mohon input username dengan benar'
       } else if (!this.state.role || this.state.role === 0) {
         flag = false;
         errorMessage = 'Mohon input role dengan benar'
@@ -192,6 +247,9 @@ class userEdit extends React.Component{
       } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
+      } else if ( this.isRoleBank(this.state.role) && (!this.state.bank || this.state.bank === 0)) {
+        flag = false;
+        errorMessage = 'Mohon input bank dengan benar'
       } else {
         errorMessage = ''
       }
@@ -247,7 +305,7 @@ class userEdit extends React.Component{
 
                     <div className="form-group row" style={{marginBottom:40}}>                
                       <label className="col-sm-2 col-form-label" style={{height:3.5}}>
-                        Nama Akun
+                        Username
                       </label>
                       <label className="col-sm-1 col-form-label" style={{height:3.5}}>
                         :
@@ -269,7 +327,7 @@ class userEdit extends React.Component{
                       </div>                 
                     </div>
 
-                    <div className="form-group row" style={{marginBottom:20}}>                   
+                    <div className="form-group row" style={{marginBottom:7}}>                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
                         Role
                       </label>
@@ -282,12 +340,35 @@ class userEdit extends React.Component{
                           label="Role"
                           data={this.state.listRole}
                           id="id"
-                          labelName="name"
+                          labelName="name-system"
                           onChange={this.onChangeDropDown}
                           fullWidth
                         />
                       </div>                 
                     </div>
+
+                    { this.isRoleBank(this.state.role) && 
+                      <div className="form-group row" style={{marginBottom:20}}>                   
+                        <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
+                          Bank
+                        </label>
+                        <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
+                          :
+                        </label>
+                        <div className="col-sm-4">
+                          <DropDown
+                            value={this.state.bank}
+                            label="Bank"
+                            data={this.state.listBank}
+                            id="id"
+                            labelName="name"
+                            onChange={this.onChangeDropDown}
+                            disabled={this.state.listBank && this.state.listBank.length && this.state.listBank.length !== 0 ? false : true}
+                            fullWidth
+                          />
+                        </div>                 
+                      </div>
+                    }
 
                     <div className="form-group row" style={{marginBottom:40}}>                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>

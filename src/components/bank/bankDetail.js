@@ -48,7 +48,7 @@ class BankDetail extends React.Component{
         if(data){
             console.log(data)
             if(!data.error){
-                var serviceName = data.data.data.map((val)=>{
+                var serviceName = data.listLayanan.data.map((val)=>{
                     return val.name
                 })
                 this.setState({serviceName:serviceName.toString()})
@@ -64,9 +64,8 @@ class BankDetail extends React.Component{
         }
         const data = await listProductFunction(param)
         if(data){
-            console.log(data)
             if(!data.error){
-                var productName = data.data.data.map((val)=>{
+                var productName = data.productList.data.map((val)=>{
                     return val.name
                 })
                 this.setState({productName:productName.toString(),loading:false})

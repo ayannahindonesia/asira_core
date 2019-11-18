@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import CheckBox from '../subComponent/CheckBox';
+import CheckBoxClass from '../subComponent/CheckBox';
 import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
@@ -9,16 +9,15 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { listAllRolePermission } from './../global/globalConstant'
 import { getAllRoleFunction, patchRolePermissionFunction } from './saga'
-import { constructRolePermission } from './function'
+import { constructRolePermission, checkingSystem, checkingRole, findRoleName, findSystem } from './function'
 import { getToken } from '../index/token';
 
 const styles = (theme) => ({
-    container: {
-      flexGrow: 1,
-    },
-  });
+  container: {
+    flexGrow: 1,
+  },
+});
 
 
 
@@ -28,10 +27,12 @@ class rolePermissionAdd extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listAllRolePermission,
+      listAllRolePermission: [],
       listRolePermission: [],
       disabled: false,
       role : 0,
+      nameRole: '',
+      system: '',
       listRole: [],
       loading: true,
     };
@@ -58,14 +59,18 @@ class rolePermissionAdd extends React.Component{
 
           for(const key in dataRole) {
             if(!dataRole[key].permissions || (dataRole[key].permissions && dataRole[key].permissions.length === 0)) {
-              listRole.push(dataRole[key])
-              role = dataRole[key].id
+              listRole.push(dataRole[key]);
+              role = dataRole[key].id;
             }
           }
+
           if(listRole.length !== 0) {
             this.setState({
               listRole,
               role,
+              system: findSystem(role, listRole),
+              nameRole: findRoleName(role, listRole),
+              listAllRolePermission:checkingSystem(role,listRole),
               loading: false,
             })
           } else {
@@ -99,10 +104,15 @@ class rolePermissionAdd extends React.Component{
       } else if(this.state.listRole.length === 0 || this.state.role === 0) {
         this.setState({errorMessage:"ERROR : Data Role Tidak Boleh Kosong"})
       } else{
+        
+        this.setState({loading: true})
+
         const listRolePermission = this.state.listRolePermission;
         const dataRolePermission = {};
         dataRolePermission.id = parseInt(this.state.role);
-        dataRolePermission.permissions = constructRolePermission(listRolePermission);
+        dataRolePermission.name = this.state.nameRole;
+        dataRolePermission.system = this.state.system;
+        dataRolePermission.permissions = constructRolePermission(listRolePermission) || [];
 
         const param = {
           roleId: parseInt(this.state.role),
@@ -114,10 +124,25 @@ class rolePermissionAdd extends React.Component{
       }
     }
 
+    isRoleBank = (role) => {
+      let flag = false;
+      const dataRole = this.state.listRole;
+
+      if(role && role !== 0) {
+        for(const key in dataRole) {
+          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            flag = true;
+            break;
+          }
+        }
+        
+      } 
+
+      return flag;
+    }
+
     postRolePermission = async function (param) {
       const data = await patchRolePermissionFunction(param)
-  
-      this.setState({loading: true})
 
       if(data) {
         if(!data.error) {
@@ -129,22 +154,10 @@ class rolePermissionAdd extends React.Component{
         } else {
           this.setState({
             errorMessage: data.error,
-            disabled: true,
             loading: false,
           })
         }      
       }
-    }
-
-    checkingRole = (role, id) => {
-      for (const key in role) {
-        if (
-          role[key].id.toString().trim() === id.toString().trim()
-        ) {
-          return true;
-        }
-      }
-      return false;
     }
 
     onChangeCheck = (e) => {
@@ -189,7 +202,12 @@ class rolePermissionAdd extends React.Component{
     };
 
     onChangeDropDown = (e) => {
-      this.setState({role: e.target.value})
+      this.setState({
+        role: e.target.value,
+        system: findSystem(e.target.value, this.state.listRole),
+        nameRole: findRoleName(e.target.value, this.state.listRole),
+        listAllRolePermission: checkingSystem(e.target.value,this.state.listRole)
+      })
     }
 
     render(){
@@ -226,7 +244,7 @@ class rolePermissionAdd extends React.Component{
                           label="Role"
                           data={this.state.listRole}
                           id="id"
-                          labelName="name"
+                          labelName="name-system"
                           onChange={this.onChangeDropDown}
                           fullWidth
                           error={this.state.roleHelper}
@@ -240,8 +258,8 @@ class rolePermissionAdd extends React.Component{
                         {this.state.errorMessage}
                       </div>     
                       <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                        <CheckBox
-                          label="Core - Permission Setup"
+                        <CheckBoxClass
+                          label={`${this.state.system} - Permission Setup`}
                           modulesName="Menu"
                           data={this.state.listAllRolePermission}
                           id="id"
@@ -249,7 +267,7 @@ class rolePermissionAdd extends React.Component{
                           modules="menu"      
                           labelPlacement= "top"                       
                           onChange={this.onChangeCheck}
-                          onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
+                          onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
                           style={{ width: '97%'}}
                           disabled={this.state.disabled}
                         />

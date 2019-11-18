@@ -15,7 +15,7 @@ export async function addBankFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -34,7 +34,7 @@ export async function getProvinsiFunction(param) {
             })
         
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -51,14 +51,14 @@ export async function getKabupatenFunction (param){
                 resolve(res.data.data)
             })
             .catch((err)=>{
-                const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+                const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
                 param.error = error;
                 resolve(param);
             })
     })
 }
 
-export async function getAllBankList (param){
+export async function getAllBankList (param,next){
     return new Promise(async (resolve)=>{
         const config = {
             headers: {'Authorization': "Bearer " + getToken()}
@@ -72,10 +72,15 @@ export async function getAllBankList (param){
 
         axios.get(serverUrl+`admin/banks?orderby=id&sort=ASC${filter}`,config)
         .then((res)=>{
-            resolve(res)
+            param.bankList = res.data
+            if(next){
+                resolve(next(param))
+            }else{
+                resolve(param)
+            }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -98,7 +103,7 @@ export async function getBankDetailFunction (param,next){
                 }
             })
             .catch((err)=>{
-                const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+                const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
                 param.error = error;
                 resolve(param);
             })
@@ -120,7 +125,7 @@ export async function getBankTypesFunction (param,next){
            }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -141,7 +146,7 @@ export async function editBankFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })

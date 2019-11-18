@@ -31,13 +31,13 @@ class TambahBankList extends React.Component{
         if(data){
             if(!data.error){
                 this.setState({loading:false,
-                    rows:data.data.data,
-                    total_data:data.data.total_data,
-                    page:data.data.current_page,
-                    from:data.data.from,
-                    to:data.data.to,
-                    last_page:data.data.last_page,
-                    dataPerhalaman:data.data.rows,
+                    rows:data.listBankType.data,
+                    total_data:data.listBankType.total_data,
+                    page:data.listBankType.current_page,
+                    from:data.listBankType.from,
+                    to:data.listBankType.to,
+                    last_page:data.listBankType.last_page,
+                    dataPerhalaman:data.listBankType.rows,
                 })
             }else{
                 this.setState({loading:false,errorMessage:data.error})
@@ -131,6 +131,7 @@ class TambahBankList extends React.Component{
                         onChange={this.onChangePage}
                         locale={localeInfo}
                         current={this.state.page}
+                        showLessItems
                         />
                     </nav>
     

@@ -1,16 +1,15 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import CheckBox from '../subComponent/CheckBox';
+import CheckBoxClass from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { listAllRolePermission } from '../global/globalConstant'
-import {getRoleFunction} from './saga'
+import { getRoleFunction } from './saga'
 import { getToken } from '../index/token';
-import { destructRolePermission } from './function';
+import { destructRolePermission, checkingSystem, checkingRole, findSystem } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -24,13 +23,13 @@ class rolePermissionDetail extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listAllRolePermission,
+      listAllRolePermission : [],
       listRolePermission: [],
       listRole: {},
-      role : {},
       roleId: 0,
       disabled: true,
       loading: true,
+      system: '',
     };
 
     componentDidMount(){
@@ -54,11 +53,13 @@ class rolePermissionDetail extends React.Component{
       const data = await getRoleFunction(param);
 
       if(data) {
-          const listRolePermission = destructRolePermission(data.dataRole.permissions, this.state.listAllRolePermission)
+          const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [])
 
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
+              listAllRolePermission: checkingSystem(this.state.roleId, [data.dataRole]),
+              system: findSystem(this.state.roleId, [data.dataRole]),
               listRolePermission,
               loading: false,
             })
@@ -77,18 +78,6 @@ class rolePermissionDetail extends React.Component{
     }
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
-    }
-
-    checkingRole = (role, idRolePermission) => {
-        for (const key in role) {
-          if (
-            role[key].id.toString().trim() ===
-            idRolePermission.toString().trim()
-          ) {
-            return true;
-          }
-        }
-        return false;
     }
 
     render(){
@@ -129,15 +118,15 @@ class rolePermissionDetail extends React.Component{
                             {this.state.errorMessage}
                         </div>     
                         <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                          <CheckBox
-                            label="Core - Permission Setup"
+                          <CheckBoxClass
+                            label={`${this.state.system} - Permission Setup`}
                             modulesName="Menu"
                             data={this.state.listAllRolePermission}
                             id="id"
                             labelName="label"
                             modules="menu"      
                             labelPlacement= "top"            
-                            onChecked={(id) => this.checkingRole(this.state.listRolePermission, id)}
+                            onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
                             style={{ width: '97%'}}
                             disabled={this.state.disabled}
                           />

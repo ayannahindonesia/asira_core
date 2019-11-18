@@ -42,3 +42,43 @@ export function checkPermission(stringPermission, stringPermissionSecond) {
   
   return flag;
 }
+
+export function deleteSeparator(number, separator) {
+  while(number.includes(separator)){
+    number = number.replace(separator,"")
+  }
+  return number
+}
+
+export function isNumeric(value) {
+  return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
+export function formatNumber(number,money) {
+  number = (number && number.toString().trim()) || ''
+  number = deleteSeparator(number,",")
+  let pjg = number.length
+  if(!isNumeric(number)){
+    pjg = pjg-1
+    number = number.substr(0,pjg)
+  }
+  let tmp = ""
+  if(pjg>3){
+    while(pjg>3){
+      pjg -= 3
+      tmp = number.substr(pjg,3) + "." + tmp
+    }
+    if(pjg<=3){
+      tmp = number.substr(0,pjg) + "." + tmp
+    }
+    tmp = tmp.substr(0, tmp.length-1)
+  }else{
+    tmp = number
+  }
+
+  if(money && tmp.length !== 0) {
+    tmp += ',00';
+  } 
+
+  return tmp.toString().length !== 0 ? tmp : '-'
+}
