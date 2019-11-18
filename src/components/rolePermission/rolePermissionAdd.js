@@ -259,7 +259,7 @@ class rolePermissionAdd extends React.Component{
                       </div>     
                       <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
                         <CheckBoxClass
-                          label="Core - Permission Setup"
+                          label={`${this.state.system} - Permission Setup`}
                           modulesName="Menu"
                           data={this.state.listAllRolePermission}
                           id="id"

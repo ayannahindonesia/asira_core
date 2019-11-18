@@ -9,7 +9,7 @@ import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getRoleFunction } from './saga'
 import { getToken } from '../index/token';
-import { destructRolePermission, checkingSystem, checkingRole } from './function';
+import { destructRolePermission, checkingSystem, checkingRole, findSystem } from './function';
 
 const styles = (theme) => ({
     container: {
@@ -29,6 +29,7 @@ class rolePermissionDetail extends React.Component{
       roleId: 0,
       disabled: true,
       loading: true,
+      system: '',
     };
 
     componentDidMount(){
@@ -58,6 +59,7 @@ class rolePermissionDetail extends React.Component{
             this.setState({
               listRole: data.dataRole,
               listAllRolePermission: checkingSystem(this.state.roleId, [data.dataRole]),
+              system: findSystem(this.state.roleId, [data.dataRole]),
               listRolePermission,
               loading: false,
             })
@@ -117,7 +119,7 @@ class rolePermissionDetail extends React.Component{
                         </div>     
                         <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
                           <CheckBoxClass
-                            label="Core - Permission Setup"
+                            label={`${this.state.system} - Permission Setup`}
                             modulesName="Menu"
                             data={this.state.listAllRolePermission}
                             id="id"
