@@ -32,6 +32,7 @@ class CheckBoxClass extends React.Component {
         'Disburse',
         'Download',
       ],
+      label: this.props.label,
       dataModul: [],
     };
   }
@@ -45,6 +46,12 @@ class CheckBoxClass extends React.Component {
   componentWillReceiveProps(nextProps) {
     if(this.props.data !== nextProps.data) {
       this.refresh(nextProps.data)
+    }
+
+    if (nextProps.label !== this.props.label) {
+      this.setState({
+        label: nextProps.label,
+      });
     }
 
     if (nextProps.error !== this.props.error) {
@@ -149,26 +156,25 @@ class CheckBoxClass extends React.Component {
   render() {
     const {
       classes,
-      label,
       data,
       modulesName,
     } = this.props;
     
     return (
       <FormControl className={classes.FormControl} error={!!this.state.error}>
-        <FormLabel component="legend" style={{color: 'black'}}><h4>{ label }</h4></FormLabel>  
+        <FormLabel component="legend" style={{color: 'black'}}><h4>{ this.state.label }</h4></FormLabel>  
 
         { data && data.length !== 0 &&
           <FormGroup row >
             <Grid container> 
               <Grid item sm={this.lengthJudul()} xs={this.lengthJudul()} key={'menu'}>
-                <h6><b>{modulesName}</b></h6>
+                <h5><b>{modulesName}</b></h5>
               </Grid>   
               {
                 this.state.dataJudul.map((data) => {
                   return (
                     <Grid item sm={this.lengthGrid()} xs={this.lengthGrid()} key={data} style={{textAlign:'center'}}>
-                      <h6><b>{data}</b></h6>
+                      <h5><b>{data}</b></h5>
                     </Grid>
                   )
                 
