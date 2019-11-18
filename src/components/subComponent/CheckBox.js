@@ -38,19 +38,34 @@ class CheckBoxClass extends React.Component {
 
   componentDidMount() {
     if(this.props.data) {
-      const data = this.props.data;
-      const dataModul = [];
-      let newModules = '';
-
-      for(const key in data) {
-        if(newModules !== data[key][this.props.modules]) {
-          newModules = data[key][this.props.modules];
-          dataModul.push(data[key][this.props.modules])
-        }
-      }
-
-      this.setState({dataModul})
+      this.refresh(this.props.data)
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(this.props.data !== nextProps.data) {
+      this.refresh(nextProps.data)
+    }
+
+    if (nextProps.error !== this.props.error) {
+      this.setState({
+        error: nextProps.error,
+      });
+    }
+  }
+
+  refresh = (data) => {
+    const dataModul = [];
+    let newModules = '';
+
+    for(const key in data) {
+      if(newModules !== data[key][this.props.modules]) {
+        newModules = data[key][this.props.modules];
+        dataModul.push(data[key][this.props.modules])
+      }
+    }
+
+    this.setState({dataModul})
   }
 
   lengthGrid = () => {
@@ -64,16 +79,6 @@ class CheckBoxClass extends React.Component {
       pjgGrid = 4
     }
     return pjgGrid;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.error !== this.props.error) {
-      this.setState({
-        error: nextProps.error,
-      });
-    }
-
-    
   }
 
   renderData = (object, data, classes) => {
