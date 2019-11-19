@@ -18,12 +18,6 @@ exports.listAllRolePermission = [
         modules: 'core_bank_patch',
         menu: 'Bank (Core)',
     },
-    // {
-    //     id: 'core_bank_approval',
-    //     label: 'Approval',
-    //     modules: 'core_bank_approval',
-    //     menu: 'Bank (Core)',
-    // },
     // Nasabah Core
     {
         id: 'core_borrower_get_all',
@@ -31,24 +25,6 @@ exports.listAllRolePermission = [
         modules: 'core_borrower_get_all core_borrower_get_details',
         menu: 'Nasabah (Core)',
     },
-    // {
-    //     id: 'core_borrower_new',
-    //     label: 'Add',
-    //     modules: 'core_borrower_new  core_view_image',
-    //     menu: 'Nasabah (Core)',
-    // },
-    // {
-    //     id: 'core_borrower_patch',
-    //     label: 'Edit',
-    //     modules: 'core_borrower_patch core_view_image',
-    //     menu: 'Nasabah (Core)',
-    // },
-    // {
-    //     id: 'core_borrower_approval',
-    //     label: 'Approval',
-    //     modules: 'core_borrower_approval',
-    //     menu: 'Nasabah (Core)',
-    // },
     // Nasabah Bank Dashboard
     {
         id: 'lender_borrower_list',
@@ -62,24 +38,6 @@ exports.listAllRolePermission = [
         modules: 'lender_borrower_list_download',
         menu: 'Nasabah (Bank Dashboard)',
     },
-    // {
-    //     id: 'lender_borrower_new',
-    //     label: 'Add',
-    //     modules: 'lender_borrower_new',
-    //     menu: 'Nasabah (Bank Dashboard)',
-    // },
-    // {
-    //     id: 'lender_borrower_patch',
-    //     label: 'Edit',
-    //     modules: 'lender_borrower_patch',
-    //     menu: 'Nasabah (Bank Dashboard)',
-    // },
-    // {
-    //     id: 'lender_borrower_approval',
-    //     label: 'Approval',
-    //     modules: 'lender_borrower_approval',
-    //     menu: 'Nasabah (Bank Dashboard)',
-    // },
     // Pinjaman Core
     {
         id: 'core_loan_get_all',
@@ -87,24 +45,6 @@ exports.listAllRolePermission = [
         modules: 'core_loan_get_all core_loan_get_details',
         menu: 'Pinjaman (Core)',
     },
-    // {
-    //     id: 'core_loan_new',
-    //     label: 'Add',
-    //     modules: 'core_loan_new',
-    //     menu: 'Pinjaman (Core)',
-    // },
-    // {
-    //     id: 'core_loan_patch',
-    //     label: 'Edit',
-    //     modules: 'core_loan_patch',
-    //     menu: 'Pinjaman (Core)',
-    // },
-    // {
-    //     id: 'core_loan_approval',
-    //     label: 'Approval',
-    //     modules: 'core_loan_approval',
-    //     menu: 'Pinjaman (Core)',
-    // },
     // Pinjaman Bank Dashboard
     {
         id: 'lender_loan_request_list',
@@ -118,18 +58,6 @@ exports.listAllRolePermission = [
         modules: 'lender_loan_request_list_download',
         menu: 'Pinjaman (Bank Dashboard)',
     },
-    // {
-    //     id: 'lender_loan_request_new',
-    //     label: 'Add',
-    //     modules: 'lender_loan_request_new',
-    //     menu: 'Pinjaman (Bank Dashboard)',
-    // },
-    // {
-    //     id: 'lender_loan_request_patch',
-    //     label: 'Edit',
-    //     modules: 'lender_loan_request_patch',
-    //     menu: 'Pinjaman (Bank Dashboard)',
-    // },
     {
         id: 'lender_loan_approve_reject',
         label: 'Approval',
@@ -155,12 +83,6 @@ exports.listAllRolePermission = [
         modules: 'core_service_patch',
         menu: 'Layanan (Core)',
     },
-    // {
-    //     id: 'core_service_approval',
-    //     label: 'Approval',
-    //     modules: 'core_service_approval',
-    //     menu: 'Layanan (Core)',
-    // },
     // Produk Core
     {
         id: 'core_product_list',
@@ -180,12 +102,6 @@ exports.listAllRolePermission = [
         modules: 'core_product_patch',
         menu: 'Produk (Core)',
     },
-    // {
-    //     id: 'core_product_approval',
-    //     label: 'Approval',
-    //     modules: 'core_product_approval',
-    //     menu: 'Produk (Core)',
-    // },
     // Tipe Bank Core
     {
         id: 'core_bank_type_list',
@@ -205,12 +121,6 @@ exports.listAllRolePermission = [
         modules: 'core_bank_type_patch',
         menu: 'Tipe Bank (Core)',
     },
-    // {
-    //     id: 'core_bank_type_approval',
-    //     label: 'Approval',
-    //     modules: 'core_bank_type_approval',
-    //     menu: 'Tipe Bank (Core)',
-    // },
     // Tujuan Core
     {
         id: 'core_loan_purpose_list',
@@ -230,12 +140,6 @@ exports.listAllRolePermission = [
         modules: 'core_loan_purpose_patch',
         menu: 'Tujuan (Core)',
     },
-    // {
-    //     id: 'core_loan_purpose_approval',
-    //     label: 'Approval',
-    //     modules: 'core_loan_purpose_approval',
-    //     menu: 'Tujuan (Core)',
-    // },
     // Role Core
     {
         id: 'core_role_list',
@@ -255,12 +159,6 @@ exports.listAllRolePermission = [
         modules: 'core_role_patch',
         menu: 'Role (Core)',
     },
-    // {
-    //     id: 'core_role_approval',
-    //     label: 'Approval',
-    //     modules: 'core_role_approval',
-    //     menu: 'Role (Core)',
-    // },
     // Permission Core
     {
         id: 'core_permission_list',
@@ -280,12 +178,6 @@ exports.listAllRolePermission = [
         modules: 'core_permission_patch',
         menu: 'Role Permission (Core)',
     },
-    // {
-    //     id: 'core_permission_approval',
-    //     label: 'Approval',
-    //     modules: 'core_permission_approval',
-    //     menu: 'Role Permission (Core)',
-    // },
     // User Core
     {
         id: 'core_user_list',
@@ -305,12 +197,6 @@ exports.listAllRolePermission = [
         modules: 'core_user_patch',
         menu: 'Akun (Core)',
     },
-    // {
-    //     id: 'core_user_approval',
-    //     label: 'Approval',
-    //     modules: 'core_user_approval',
-    //     menu: 'Akun (Core)',
-    // },
     // Convenience Fee Report
     {
         id: 'convenience_fee_report',
@@ -318,24 +204,6 @@ exports.listAllRolePermission = [
         modules: 'convenience_fee_report',
         menu: 'Report (Core)',
     },
-    // {
-    //     id: 'convenience_fee_report_new',
-    //     label: 'Add',
-    //     modules: 'convenience_fee_report_new',
-    //     menu: 'Report (Core)',
-    // },
-    // {
-    //     id: 'convenience_fee_report_patch',
-    //     label: 'Edit',
-    //     modules: 'convenience_fee_report_patch',
-    //     menu: 'Report (Core)',
-    // },
-    // {
-    //     id: 'convenience_fee_report_approval',
-    //     label: 'Approval',
-    //     modules: 'convenience_fee_report_approval',
-    //     menu: 'Report (Core)',
-    // },
     // Penyedia Agen Core
     {
         id: 'core_agent_provider_list',
@@ -355,12 +223,6 @@ exports.listAllRolePermission = [
         modules: 'core_agent_provider_patch',
         menu: 'Penyedia Agen (Core)',
     },
-    // {
-    //     id: 'core_agent_provider_approval',
-    //     label: 'Approval',
-    //     modules: 'core_agent_provider_approval',
-    //     menu: 'Penyedia Agen (Core)',
-    // },
     // Agent Core
     {
         id: 'core_agent_list',
@@ -380,10 +242,24 @@ exports.listAllRolePermission = [
         modules: 'core_agent_patch',
         menu: 'Agen (Core)',
     },
-    // {
-    //     id: 'core_agent_approval',
-    //     label: 'Approval',
-    //     modules: 'core_agent_approval',
-    //     menu: 'Agen (Core)',
-    // },
+     // Calon Nasabah Core
+     {
+        id: 'core_calon_nasabah_list',
+        label: 'List and Detail',
+        modules: 'core_calon_nasabah_list core_calon_nasabah_list',
+        menu: 'Calon Nasabah (Core)',
+    },
+    // Calon Nasabah Dashboard
+    {
+        id: 'lender_calon_nasabah_list',
+        label: 'List and Detail',
+        modules: 'lender_calon_nasabah_list lender_calon_nasabah_details',
+        menu: 'Calon Nasabah (Bank Dashboard)',
+    },
+    {
+        id: 'lender_calon_nasabah_approve_reject',
+        label: 'Approval',
+        modules: 'lender_calon_nasabah_approve_reject',
+        menu: 'Calon Nasabah (Bank Dashboard)',
+    },
   ]
