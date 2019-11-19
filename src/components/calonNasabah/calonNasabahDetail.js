@@ -193,7 +193,7 @@ class CalonNasabahDetail extends React.Component{
                   gridLabel={[4,5,7]}
                   label={[
                     ['Jenis Pekerjaan','No Induk Pegawai','Nama Instansi','Alamat Kantor'],
-                    ['Jabatan','Lama Bekerja','Nama Atasan','No Tlp kantor'],
+                    ['Jabatan','Lama Bekerja','Nama Atasan','No Tlp Kantor'],
                     ['Gaji (perbulan)','Pendapatan Lain','Sumber Pendapatan Lain',],
                   ]}
                   data={this.state.dataUser && [
