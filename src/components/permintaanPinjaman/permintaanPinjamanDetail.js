@@ -101,33 +101,22 @@ class Main extends React.Component{
 
                     {/* -----------------------------------------------------FIRST ROW----------------------------------------------------------------- */}
                     <div className="row" style={{marginTop:"20px", background:"#f7f7f7f7"}}>
-                        <div className="col-12 col-md-6">
-                            <table key={this.props.match.params.idLoan}>
+                        <div className="col col-md col-xs">
+                            <table style={{width:"100%"}}>
                                 <tbody>
-                                <tr>
-                                    <td>ID Pinjaman</td>
-                                    <td>: {this.state.rows.id}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nama Nasabah</td>
-                                    <td>: {this.state.rows.owner_name}</td>
-                                </tr>
-                                </tbody>
-                             
-                            </table>
-
-                        </div>
-                        <div className="col-12 col-md-6">
-                        <table key={this.props.match.params.idLoan}>
-                            
-                                <tbody>
-                                <tr>
-                                    <td>Rekening Peminjam</td>
-                                    <td>: {this.state.borrowerDetail.idcard_number}</td>
-                                </tr>
-                                <tr>
-                                    <td>Status Pinjaman</td>
-                                    <td>: {
+                                    <tr>
+                                        <td>ID Pinjaman</td>
+                                        <td>: {this.state.rows.id}</td>
+                                        <td>Rekening Peminjam</td>
+                                        <td>: {this.state.borrowerDetail.idcard_number}</td>
+                                        <td>Kategori</td>
+                                        <td>: LOREM IPSUM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nama Nasabah</td>
+                                        <td>: {this.state.rows.owner_name}</td>
+                                        <td>Status Pinjaman</td>
+                                        <td>: {
                                     this.state.status === "processing"?
                                         <label style={{color:"blue"}}>Diproses</label>
                                     : this.state.status === "approved"?
@@ -135,13 +124,13 @@ class Main extends React.Component{
                                     <label style={{color:"red"}}>Ditolak</label>
                                     
                                     }</td>
-                                </tr>
+                                        <td>Agen/ AE</td>
+                                        <td>: LOREM IPSUM</td>
+                                    </tr>
                                 </tbody>
-                               
                             </table>
-
                         </div>
-                        
+                       
 
                     </div>
              {/* -----------------------------------------------------SECOND ROW----------------------------------------------------------------- */}

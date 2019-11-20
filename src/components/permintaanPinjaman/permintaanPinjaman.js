@@ -55,6 +55,7 @@ class PermintaanPinjaman extends React.Component {
     }
     const data = await getAllPermintaanPinjamanFunction(param)
     if(data){
+      console.log(data)
       if(!data.error){
         this.setState({loading:false,
           rows:data.data.data, 
@@ -89,7 +90,7 @@ class PermintaanPinjaman extends React.Component {
     if (this.state.loading){
       return  (
         <tr>
-          <td align="center" colSpan={9}>
+          <td align="center" colSpan={10}>
                 <Loader 
             type="Circles"
             color="#00BFFF"
@@ -103,7 +104,7 @@ class PermintaanPinjaman extends React.Component {
     if(this.state.rows.length===0){
       return(
         <tr>
-           <td align="center" colSpan={9}>Data empty</td>
+           <td align="center" colSpan={10}>Data empty</td>
         </tr>
       )
     }else{
@@ -113,9 +114,10 @@ class PermintaanPinjaman extends React.Component {
               <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
               <td align="center">{val.id}</td>
               <td align="center">{val.owner_name}</td>
-              {/* <td align="center"> {val.borrower_info.bank.Int64} </td>
-              <td align="center"> {val.service} </td>
-              <td align="center"> {val.product} </td> */}
+              <td align="center"> {val.bank.Int64} </td>
+              <td align="center"> API </td>
+              <td align="center"> API </td>
+              <td align="center"> {val.product} </td>
               <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
               <td align="center">{val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Diproses"}</td>
               <td align="center">
@@ -162,9 +164,10 @@ class PermintaanPinjaman extends React.Component {
                   <th className="text-center" scope="col">#</th>
                   <th className="text-center" scope="col">Id Pinjaman</th>
                   <th className="text-center" scope="col">Nama Nasabah</th>
-                  {/* <th className="text-center" scope="col">Bank Akun</th>
+                  <th className="text-center" scope="col">Bank Akun</th>
+                  <th className="text-center" scope="col">Kategori</th>
                   <th className="text-center" scope="col">Layanan</th>
-                  <th className="text-center" scope="col">Produk</th> */}
+                  <th className="text-center" scope="col">Produk</th>
                   <th className="text-center" scope="col">Tanggal Pengajuan</th>
                   <th className="text-center" scope="col">Status Pinjaman</th>
                   <th className="text-center" scope="col">Action</th>
