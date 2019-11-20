@@ -74,6 +74,8 @@ import AgentEdit from './components/agent/agentEdit'
 
 import axios from 'axios'
 import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
+import CalonNasabahList from './components/calonNasabah/calonNasabahList';
+import calonNasabahDetail from './components/calonNasabah/calonNasabahDetail';
 
 class App extends React.Component {
   _isMounted = false;
@@ -199,6 +201,9 @@ class App extends React.Component {
                   { checkPermission('core_agent_list') && <Route path='/listAgent' component={AgentList}></Route>}
                   { checkPermission('core_agent_patch') && <Route path='/editAgent/:id' component={AgentEdit}></Route>}
                   { checkPermission('core_agent_details') && <Route path='/detailAgent/:id' component={AgentDetail}></Route>}
+
+                  { checkPermission('core_calon_nasabah_list') && <Route path='/listCalonNasabah' component={CalonNasabahList}></Route>}
+                  { checkPermission('core_calon_nasabah_details') && <Route path='/detailCalonNasabah/:id' component={calonNasabahDetail}></Route>}
 
                   {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
