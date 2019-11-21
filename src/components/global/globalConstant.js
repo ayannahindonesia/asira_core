@@ -244,22 +244,22 @@ exports.listAllRolePermission = [
     },
      // Calon Nasabah Core
      {
-        id: 'core_calon_nasabah_list',
+        id: 'core_borrower_get_all',
         label: 'List and Detail',
-        modules: 'core_calon_nasabah_list core_calon_nasabah_list',
+        modules: 'core_borrower_get_all core_borrower_get_details',
         menu: 'Calon Nasabah (Core)',
     },
     // Calon Nasabah Dashboard
     {
-        id: 'lender_calon_nasabah_list',
+        id: 'lender_borrower_list',
         label: 'List and Detail',
-        modules: 'lender_calon_nasabah_list lender_calon_nasabah_details',
+        modules: 'lender_borrower_list lender_borrower_list_detail',
         menu: 'Calon Nasabah (Bank Dashboard)',
     },
     {
-        id: 'lender_calon_nasabah_approve_reject',
+        id: 'lender_borrower_approve_reject',
         label: 'Approval',
-        modules: 'lender_calon_nasabah_approve_reject',
+        modules: 'lender_borrower_approve_reject',
         menu: 'Calon Nasabah (Bank Dashboard)',
     },
   ]

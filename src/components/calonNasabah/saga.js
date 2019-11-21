@@ -2,7 +2,7 @@ import axios from 'axios';
 import { serverUrl } from '../url';
 import { getToken } from '../index/token';
 
-export async function getAllUserFunction(param, next){
+export async function getAllBorrowerFunction(param, next){
     return new Promise(async (resolve) => {
 
         const token = getToken();
@@ -16,7 +16,7 @@ export async function getAllUserFunction(param, next){
             filter += `&${key}=${param[key]}`
         }
 
-        const urlNew = serverUrl+`admin/users?orderby=updated_time&sort=desc${filter}`
+        const urlNew = serverUrl+`admin/borrower?orderby=updated_time&sort=desc${filter}`
     
         axios.get(urlNew,config).then((res)=>{
             const listUser = res.data && res.data.data
@@ -36,7 +36,7 @@ export async function getAllUserFunction(param, next){
     });
 };
 
-export async function getUserFunction(param, next) {
+export async function getBorrowerFunction(param, next) {
     return new Promise(async (resolve) => {
 
         const token = getToken();
@@ -61,41 +61,4 @@ export async function getUserFunction(param, next) {
             resolve(param);
         })
     });
-}
-
-export async function patchUserAddFunction(param) {
-    return new Promise(async (resolve) => {   
-        const token = getToken() 
-        const config = {
-            headers: {'Authorization': "Bearer " + token}
-          };
-  
-        axios.patch(serverUrl+`admin/users/${param.id}`,param.dataUser,config).then((res)=>{
-            resolve(res)
-        }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
-            param.error = error;
-            resolve(param);
-        })
-    });
-    
-}
-
-export async function postUserAddFunction(param) {
-    return new Promise(async (resolve) => {     
-
-        const token = getToken()
-        const config = {
-            headers: {'Authorization': "Bearer " + token}
-          };
-  
-        axios.post(serverUrl+'admin/users',param.dataUser,config).then((res)=>{
-            resolve(res)
-        }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
-            param.error = error
-            resolve(param);
-        })
-    });
-    
 }

@@ -6,11 +6,11 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getUserFunction } from './saga'
-import { getAllRoleFunction } from '../rolePermission/saga';
+import { getBorrowerFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate } from '../global/globalFunction';
+import DialogComponent from './../subComponent/DialogComponent'
 
 const styles = (theme) => ({
     container: {
@@ -28,6 +28,9 @@ class CalonNasabahDetail extends React.Component{
       calonNasabahId: 0,
       disabled: true,
       loading: true,
+      dialog: false,
+      title: '',
+      message: '',
     };
 
     componentDidMount(){
@@ -45,16 +48,29 @@ class CalonNasabahDetail extends React.Component{
       this._isMounted = false;
     }
 
+    isCategoryExist = (category) => {
+      if(category && category.toString().toLowerCase() === 'agent') {
+        return 'Agen'
+      } else if(category && category.toString().toLowerCase() === 'acount_executive') {
+        return 'Account Executive'
+      } 
+
+      return 'Personal';
+    }
+
     refresh = async function(){
       const param = {};
       param.calonNasabahId = this.state.calonNasabahId;
 
-      const data = await getUserFunction(param, getAllRoleFunction);
+      const data = await getBorrowerFunction(param);
       
 
       if(data) {
           if(!data.error) {
+            console.log(data)
             const dataUser = data.dataUser || {};
+            
+            dataUser.category = this.isCategoryExist(dataUser.category) ;
 
             this.setState({
               dataUser,
@@ -77,6 +93,31 @@ class CalonNasabahDetail extends React.Component{
 
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
+    }
+
+    handleDialog = (e) => {
+      let label = e.target.value
+      let message = '';
+      let title = '';
+
+      if(label.toLowerCase().includes('ktp')) {
+        title = 'KTP'
+        message = "https://bucket.cloud.lintasarta.co.id:8082/bucket-ayannah/Capture.jpg"
+      } else if(label.toLowerCase().includes('npwp')) {
+        title = 'NPWP'
+        message = "https://bucket.cloud.lintasarta.co.id:8082/bucket-ayannah/Capture.jpg"
+      }
+
+      this.setState({
+        title,
+        message,
+        dialog:true,
+      })
+      console.log(e.target.value)
+    }
+
+    handleClose = () => {
+      this.setState({dialog: false})
     }
 
     render(){
@@ -102,12 +143,17 @@ class CalonNasabahDetail extends React.Component{
                 
                 <hr/>
                  
-                <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
+                <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left', marginBottom:'10px'}}>
                   {this.state.errorMessage}
                 </div>   
 
+                <div className="col-sm-12" style={{marginBottom:'10px'}}>
+                  <input type="button" value="KTP Detail" className="btn" onClick={this.handleDialog} style={{backgroundColor:"blue",color:"white",marginRight:'10px'}}/>
+                  <input type="button" value="NPWP Detail" className="btn" onClick={this.handleDialog} style={{backgroundColor:"blue",color:"white"}}/>               
+                </div>
+
                 <GridDetail
-                  gridLabel={[4,5,7]}
+                  gridLabel={[4,3,5]}
                   background
                   label={[
                     ['Id Nasabah','Bank Nasabah'],
@@ -120,8 +166,8 @@ class CalonNasabahDetail extends React.Component{
                       this.state.dataUser.bank_name
                     ],
                     [
-                      this.state.dataUser.kategori,
-                      this.state.dataUser.agency_provider,
+                      this.state.dataUser.category,
+                      `${this.state.dataUser.agent_name}` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : ''),
                     ],
                     [
                       handleFormatDate(this.state.dataUser.created_time)
@@ -182,7 +228,7 @@ class CalonNasabahDetail extends React.Component{
                       this.state.dataUser.subdistrict,
                       this.state.dataUser.urban_village,
                       this.state.dataUser.home_ownership,
-                      `${this.state.dataUser.lived_for} bulan`,
+                      `${this.state.dataUser.lived_for} tahun`,
                     ],
                     [],
                   ]}                 
@@ -205,7 +251,7 @@ class CalonNasabahDetail extends React.Component{
                     ],
                     [
                       this.state.dataUser.occupation,
-                      `${this.state.dataUser.been_workingfor} bulan`,
+                      `${this.state.dataUser.been_workingfor} tahun`,
                       this.state.dataUser.direct_superiorname,
                       this.state.dataUser.employer_number,
                     ],
@@ -237,9 +283,19 @@ class CalonNasabahDetail extends React.Component{
                 />
 
 
+                <div className="col-sm-12">
+                  <DialogComponent
+                    title={this.state.title}
+                    openDialog={this.state.dialog}
+                    message={this.state.message}
+                    type='image'
+                    onClose={this.handleClose}
+                  />
+                </div>
+
                     
                 <div className="col-sm-12">
-                  <input type="button" value="Batal" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
+                  <input type="button" value="Kembali" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                 </div>
                     
                     
