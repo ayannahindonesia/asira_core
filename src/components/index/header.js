@@ -183,7 +183,7 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
 
-            { checkPermission('core_calon_nasabah_list') && <Link to="/listCalonNasabah" style={{marginBottom:"10px"}}><label><i className="far fa-newspaper"></i> Calon Nasabah </label></Link>}
+            { checkPermission('core_borrower_get_all') && <Link to="/listCalonNasabah" style={{marginBottom:"10px"}}><label><i className="fas fa-user-plus"></i> Calon Nasabah </label></Link>}
             
             
             { checkPermission('convenience_fee_report') && <Link to="/report" style={{marginBottom:"10px"}}><label><i className="far fa-newspaper"></i> Report</label></Link>}

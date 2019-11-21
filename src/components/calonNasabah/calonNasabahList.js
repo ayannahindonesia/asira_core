@@ -1,8 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import {getAllUserFunction} from './saga'
+import {getAllBorrowerFunction} from './saga'
 import { checkPermission, handleFormatDate } from '../global/globalFunction';
-import { getAllRoleFunction } from '../rolePermission/saga';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
 import SearchBar from '../subComponent/SearchBar';
@@ -15,12 +14,12 @@ const columnDataUser = [
         label: 'ID Nasabah',
     },
     {
-        id: 'username',
+        id: 'fullname',
         numeric: false,
         label: 'Nama Nasabah',
     },
     {
-        id: 'role',
+        id: 'category',
         numeric: false,
         label: 'Kategori',
     },
@@ -61,15 +60,18 @@ class CalonNasabahList extends React.Component{
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
 
-        const data = await getAllUserFunction(param, getAllRoleFunction);
+        const data = await getAllBorrowerFunction(param);
 
         if(data) {
             if(!data.error) {
+                console.log(data)
                 const dataListUser = data.dataUser || [];
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {
                         dataListUser[key].created_time = dataListUser[key].created_time && handleFormatDate(dataListUser[key].created_time)
+                        dataListUser[key].category = this.isCategoryExist(dataListUser[key].category) 
+                        dataListUser[key].bank_name = dataListUser[key].agent_provider_name && dataListUser[key].agent_provider_name.length !== 0 ? dataListUser[key].agent_provider_name : dataListUser[key].bank_name
                     }
                 }
 
@@ -87,20 +89,14 @@ class CalonNasabahList extends React.Component{
         }
     }
 
-    findRole = (roleUser, dataRole) => {
-        let role = '';
-        for(const keyRole in roleUser) {
-            for(const key in dataRole) {
-                if(dataRole[key].id === roleUser[keyRole]) {
-                    if(role.trim().length !== 0) {
-                        role += ', ';
-                    }
-                    role += `${dataRole[key].name} (${dataRole[key].system})`;
-                }
-            }
-        }
-        
-        return role;
+    isCategoryExist = (category) => {
+        if(category && category.toString().toLowerCase() === 'agent') {
+          return 'Agen'
+        } else if(category && category.toString().toLowerCase() === 'acount_executive') {
+          return 'Account Executive'
+        } 
+  
+        return 'Personal';
     }
 
     onChangePage = (current) => {
@@ -123,8 +119,6 @@ class CalonNasabahList extends React.Component{
             this.refresh();
         })
     }
-    
-
 
     render(){
 
@@ -160,7 +154,7 @@ class CalonNasabahList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('core_user_details') ? '/detailCalonNasabah/' : null}
+                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/detailCalonNasabah/' : null}
                     />
 
                   
