@@ -43,6 +43,7 @@ class CalonNasabahList extends React.Component{
             page: 1,
             rowsPerPage: 10,
             totalData: 0,
+            search: '',
         }
     }
 
@@ -57,6 +58,9 @@ class CalonNasabahList extends React.Component{
 
     refresh = async function(){
         const param = {};
+        param.fullname = this.state.search;
+        param.category = this.state.search;
+
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
 
@@ -64,7 +68,6 @@ class CalonNasabahList extends React.Component{
 
         if(data) {
             if(!data.error) {
-                console.log(data)
                 const dataListUser = data.dataUser || [];
 
                 if(dataListUser.length !== 0) {
@@ -76,6 +79,7 @@ class CalonNasabahList extends React.Component{
                 }
 
                 this.setState({
+                    errorMessage:'',
                     listUser: dataListUser,
                     totalData: data.totalData,
                     loading: false,
@@ -92,7 +96,7 @@ class CalonNasabahList extends React.Component{
     isCategoryExist = (category) => {
         if(category && category.toString().toLowerCase() === 'agent') {
           return 'Agen'
-        } else if(category && category.toString().toLowerCase() === 'acount_executive') {
+        } else if(category && category.toString().toLowerCase() === 'account_executive') {
           return 'Account Executive'
         } 
   
@@ -135,9 +139,8 @@ class CalonNasabahList extends React.Component{
                         <div className="col-4">
                             <SearchBar
                                 id="search"
-                                hiddenLabel
                                 value={this.state.search}
-                                placeholder="Search"
+                                placeholder="Search Nama Nasabah, Kategori"
                                 onChange={this.changeSearch} 
                             />
                         </div>  
