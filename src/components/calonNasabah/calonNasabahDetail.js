@@ -138,6 +138,7 @@ class CalonNasabahDetail extends React.Component{
             loading: false,
           })
         }      
+      }
     }
 
 
