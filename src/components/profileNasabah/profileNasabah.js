@@ -54,6 +54,7 @@ class profileNasabah extends React.Component {
       const data = await getProfileNasabahFunction(param)
 
       if(data){
+        console.log(data)
         if(!data.error){
           this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
         }else{
@@ -87,7 +88,7 @@ class profileNasabah extends React.Component {
     if (this.state.loading){
       return  (
         <tr>
-          <td align="center" colSpan={6}>
+          <td align="center" colSpan={7}>
                 <Loader 
             type="Circles"
             color="#00BFFF"
@@ -104,7 +105,7 @@ class profileNasabah extends React.Component {
     if (this.state.rows.length===0){
       return(
         <tr>
-          <td align="center" colSpan={6}>Data empty</td>
+          <td align="center" colSpan={7}>Data empty</td>
         </tr>
       )
     }else{
@@ -114,9 +115,9 @@ class profileNasabah extends React.Component {
             <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
             <td align="center">{val.id}</td>
             <td align="center">{val.fullname}</td>
-            {/* <td align="center">{this.getBankName(val.bank.Int64)}</td>             */}
+            <td align="center"> TUNGGU API</td>
             <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
-            {/* <TableCell align="center">{val.status}</TableCell> */}
+            <td align="center"> {val.status ?val.status : "-"} </td>
             <td align="center">
 
             {   checkPermission('core_borrower_get_details') &&
@@ -162,9 +163,9 @@ if(getToken()){
                   <th className="text-center" scope="col">#</th>
                   <th className="text-center" scope="col">Id Nasabah</th>
                   <th className="text-center" scope="col">Nama Nasabah</th>
-                  {/* <th className="text-center" scope="col">Bank Akun</th> */}
+                  <th className="text-center" scope="col">Kategori</th>
                   <th  className="text-center" scope="col">Tanggal Registrasi</th>
-                  {/* <TableCell align="center">Status Nasabah</TableCell> */}
+                  <th  className="text-center" scope="col">Status Nasabah</th>
                   <th  className="text-center" scope="col">Action</th>
                  
               </tr>     

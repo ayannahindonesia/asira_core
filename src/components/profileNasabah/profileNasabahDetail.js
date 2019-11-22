@@ -31,6 +31,7 @@ class profileNasabahDetail extends React.Component{
 
         const data = await getProfileNasabahDetailFunction(param)
         if(data){
+            console.log(data)
             if(!data.error){
                 this.setState({rows:data.data,ktp:data.data.idcard_image,npwp:data.data.taxid_image, bankID:data.data.bank.Int64})
                   //KTP WAJIB KALO NPWP OPTIONAL
@@ -115,7 +116,7 @@ class profileNasabahDetail extends React.Component{
         }
         if(getToken()){
             return(
-                <div className="container">
+                <div className="container-fluid">
    {/* ------------------------------------------------------FOTO KTP------------------------------------------------------ */}
 
    <Modal isOpen={this.state.modalKTP} className={this.props.className}>
@@ -160,62 +161,31 @@ class profileNasabahDetail extends React.Component{
               <hr/>
                     {/* =========================================FIRST================================ */}
                     <div className="row firstrow">
-                        <div className="col-12 col-md-4">
+                        <div className="col col-md col-xs">
                             <table>
                                 <tbody>
-                                    <tr>
+                                <tr>
                                     <td>Id Nasabah</td>
                                     <td>: {this.state.rows.id}</td>
+                                    <td>Rekening Pinjaman</td>
+                                    <td>: {this.state.rows.bank_accountnumber}</td>
+                                    <td>Status Pinjaman</td>
+                                    <td>: {this.state.rows.status}</td>
+                                    <td>Kategori Pinjaman</td>
+                                    <td>: API</td>
                                 </tr>
                                 <tr>
                                     <td>Bank Nasabah</td>
                                     <td>: {this.state.bankName}</td>
-                                </tr>
-
-                                </tbody>
-                                
-                            </table>
-    
-                        </div>
-                        <div className="col-12 col-md-4">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>Rekening Peminjam</td>
-                                    <td style={{fontSize:"13px"}}>: {this.state.rows.bank_accountnumber}</td>
-                                </tr>
-                                <tr>
-                                    {/* <td>Pinjaman ke</td>
-                                    <td>: NO DATA</td> */}
+                                    <td>Pinjaman ke-</td>
+                                    <td>: API </td>
+                                    <td>Tanggal Register</td>
+                                    <td>: <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" /></td>
+                                    <td>Agen/AE</td>
+                                    <td>: API </td>
                                 </tr>
                                 </tbody>
-                                
                             </table>
-    
-                        </div>
-                        
-                        <div className="col-12 col-md-4">
-                        <table>
-                            <tbody>
-                                 <tr>
-                                    {/* <td>Status Pinjaman</td>
-                                    <td>: {this.state.rows.status}</td> */}
-                                </tr>
-                                <tr>
-                                    <td>Tanggal Register </td>
-                                    <td>: 
-                                    <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" />
-                                    
-{/*                                     
-                                    {String(this.state.rows.created_time).substr(0, String(this.state.rows.created_time).indexOf('T'))}
-                                     */}
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                              
-                        </table>
-    
                         </div>
                     </div>
                     {/* ==============================SECOND===================================== */}
@@ -276,16 +246,16 @@ class profileNasabahDetail extends React.Component{
                                     <td>Status Pernikahan</td><td>: {this.state.rows.marriage_status}</td>
                                 </tr>
                                 <tr>
-                                    <td>Nama Pasangan</td><td>: {this.state.rows.spouse_name}</td>
+                                    <td>Nama Pasangan</td><td>: {this.state.rows.marriage_status==="Menikah"?this.state.rows.spouse_name:"-"}</td>
                                 </tr>
                                 <tr>
-                                    <td>Tanggal lahir Pasangan</td><td>: {String(this.state.rows.spouse_birthday).substr(0, String(this.state.rows.spouse_birthday).indexOf('T'))}</td>
+                                    <td>Tanggal lahir Pasangan</td><td>: {this.state.rows.marriage_status==="Menikah"?String(this.state.rows.spouse_birthday).substr(0, String(this.state.rows.spouse_birthday).indexOf('T')):"-"}</td>
                                 </tr>
                                 <tr>
-                                    <td>Pendidikan Pasangan</td><td>: {this.state.rows.spouse_lasteducation}</td>
+                                    <td>Pendidikan Pasangan</td><td>: {this.state.rows.marriage_status==="Menikah"?this.state.rows.spouse_lasteducation:"-"}</td>
                                 </tr>
                                 <tr>
-                                    <td>Tanggungan (Orang)</td><td>: {this.state.rows.dependants}</td>
+                                    <td>Tanggungan (Orang)</td><td>: {this.state.rows.marriage_status==="Menikah"?this.state.rows.dependants:"-"}</td>
                                 </tr>
 
                             </tbody>

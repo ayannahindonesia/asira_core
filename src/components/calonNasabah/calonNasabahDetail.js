@@ -96,7 +96,6 @@ class CalonNasabahDetail extends React.Component{
 
     handleDialog = (e) => {
       let label = e.target.value
-      
       let title = '';
 
       if(label.toLowerCase().includes('ktp')) {
@@ -141,7 +140,6 @@ class CalonNasabahDetail extends React.Component{
         }      
     }
 
-    }
 
     handleClose = () => {
       this.setState({dialog: false})
