@@ -67,20 +67,32 @@ class DialogComponent extends React.Component {
       };
     }
 
-    imageArea = (classes, message, title) => {
+    imageArea = (classes, message, title, base64Boolean) => {
 
-        return (
-          <Card className={classes.card}>
-            <CardActionArea>
+      const dataImage = message;
+
+      return (
+        <Card className={classes.card}>
+          <CardActionArea>
+            {
+              base64Boolean && 
+              <img alt={title} className={classes.media} src={`data:image/PNG;base64,${dataImage}`}/>
+            }
+
+            {
+              !base64Boolean && 
               <CardMedia
                 className={classes.media}
-                image={message}
+                image={dataImage}
                 title={title}
               />
-            </CardActionArea>
-          </Card>
-        );
-      }
+            }
+            
+            
+          </CardActionArea>
+        </Card>
+      );
+    }
 
     render() {
         const {
@@ -98,7 +110,7 @@ class DialogComponent extends React.Component {
                         {title}
                     </DialogTitle>
                     <DialogContent dividers>
-                        { type && type === 'image' && this.imageArea(classes, message, title)}
+                        { type && type === 'image' && this.imageArea(classes, message, title, this.props.base64Boolean)}
                         { type && type !== 'image' && 
                             <Typography gutterBottom>
                                 {message}

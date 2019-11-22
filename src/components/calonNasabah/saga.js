@@ -62,3 +62,26 @@ export async function getBorrowerFunction(param, next) {
         })
     });
 }
+
+export async function getImageFunction (param,next){
+    return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + getToken()}
+          };
+
+          axios.get(serverUrl+`admin/image/${param.idImage}`,config)
+          .then((res)=>{
+              if(next){
+                  resolve(next(param))
+              }else{
+                param.image = res.data;
+                resolve(param)
+              }
+          })
+          .catch((err)=>{
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            param.error = error;
+            resolve(param);
+        })
+    })
+}

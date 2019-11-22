@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getBorrowerFunction } from './saga'
+import { getBorrowerFunction, getImageFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate } from '../global/globalFunction';
@@ -80,7 +80,6 @@ class CalonNasabahDetail extends React.Component{
           } else {
             this.setState({
               errorMessage: data.error,
-              disabled: true,
               loading: false,
             })
           }      
@@ -97,24 +96,50 @@ class CalonNasabahDetail extends React.Component{
 
     handleDialog = (e) => {
       let label = e.target.value
-      let message = '';
       let title = '';
 
       if(label.toLowerCase().includes('ktp')) {
         title = 'KTP'
-        message = "https://bucket.cloud.lintasarta.co.id:8082/bucket-ayannah/Capture.jpg"
       } else if(label.toLowerCase().includes('npwp')) {
         title = 'NPWP'
-        message = "https://bucket.cloud.lintasarta.co.id:8082/bucket-ayannah/Capture.jpg"
       }
 
       this.setState({
         title,
-        message,
-        dialog:true,
+      }, () => {
+        this.getImage(this.state.title)
       })
-      console.log(e.target.value)
     }
+
+    getImage = async function(title) {
+      let data = {
+        idImage: 0,
+      };
+
+      if(title.toLowerCase().includes('ktp')) {
+        data.idImage = this.state.dataUser && this.state.dataUser.idcard_imageid  
+      } else if(title.toLowerCase().includes('npwp')) {
+        data.idImage = this.state.dataUser && this.state.dataUser.taxid_imageid
+      }
+
+      data = await getImageFunction(data)
+
+      if(data) {
+        if(!data.error) {
+          let message = data.dataImage && data.dataImage.image_string;
+
+          this.setState({
+            dialog:true,
+            message,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            loading: false,
+          })
+        }      
+    }
+
 
     handleClose = () => {
       this.setState({dialog: false})
@@ -167,10 +192,10 @@ class CalonNasabahDetail extends React.Component{
                     ],
                     [
                       this.state.dataUser.category,
-                      `${this.state.dataUser.agent_name}` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : ''),
+                      this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
                     ],
                     [
-                      handleFormatDate(this.state.dataUser.created_time)
+                      this.state.dataUser.created_time && handleFormatDate(this.state.dataUser.created_time)
                     ],
                   ]}                 
                 />
@@ -186,13 +211,13 @@ class CalonNasabahDetail extends React.Component{
                   data={this.state.dataUser && [
                     [
                       this.state.dataUser.fullname, 
-                      this.state.dataUser.gender && this.state.dataUser.gender === 'M' ? 'Pria' : 'Perempuan',
+                      this.state.dataUser.gender && (this.state.dataUser.gender === 'M' ? 'Pria' : 'Perempuan'),
                       this.state.dataUser.idcard_number,
                       this.state.dataUser.taxid_number,
                       this.state.dataUser.email
                     ],
                     [
-                      handleFormatDate(this.state.dataUser.birthday),
+                      this.state.dataUser.birthday && handleFormatDate(this.state.dataUser.birthday),
                       this.state.dataUser.birthplace,
                       this.state.dataUser.last_education,
                       this.state.dataUser.mother_name,
@@ -228,7 +253,7 @@ class CalonNasabahDetail extends React.Component{
                       this.state.dataUser.subdistrict,
                       this.state.dataUser.urban_village,
                       this.state.dataUser.home_ownership,
-                      `${this.state.dataUser.lived_for} tahun`,
+                      this.state.dataUser.lived_for && `${this.state.dataUser.lived_for} tahun`,
                     ],
                     [],
                   ]}                 
@@ -251,13 +276,13 @@ class CalonNasabahDetail extends React.Component{
                     ],
                     [
                       this.state.dataUser.occupation,
-                      `${this.state.dataUser.been_workingfor} tahun`,
+                      this.state.dataUser.been_workingfor && `${this.state.dataUser.been_workingfor} tahun`,
                       this.state.dataUser.direct_superiorname,
                       this.state.dataUser.employer_number,
                     ],
                     [
-                      `Rp ${formatNumber(this.state.dataUser.monthly_income,true)}`,
-                      `Rp ${formatNumber(this.state.dataUser.other_income,true)}`,
+                      this.state.dataUser.monthly_income && `Rp ${formatNumber(this.state.dataUser.monthly_income,true)}`,
+                      this.state.dataUser.other_income && `Rp ${formatNumber(this.state.dataUser.other_income,true)}`,
                       this.state.dataUser.other_incomesource,
                     ],
                   ]}                 
@@ -289,6 +314,7 @@ class CalonNasabahDetail extends React.Component{
                     openDialog={this.state.dialog}
                     message={this.state.message}
                     type='image'
+                    base64Boolean
                     onClose={this.handleClose}
                   />
                 </div>
