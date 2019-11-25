@@ -117,14 +117,14 @@ class profileNasabah extends React.Component {
             <td align="center">{val.fullname}</td>
             <td align="center"> {val.category ==="account_executive"?"Account Executive" :val.category === "agent"?"Agent":"Personal"}</td>
             <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
-            <td align="center"> {val.status ?val.status : "-"} </td>
+            <td align="center"> {val.loan_status==="inactive" ?"Tidak Aktif" : "Aktif"} </td>
             <td align="center">
 
             {   checkPermission('core_borrower_get_details') &&
                       <Link style={{textDecoration:"none"}} to={`/profileNasabahDetail/${val.id}`}>
                       <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                     </Link>
-                }
+            }
                          
             
             </td>
