@@ -67,12 +67,17 @@ class CalonNasabahDetail extends React.Component{
 
       if(data) {
           if(!data.error) {
-            console.log(data)
             const dataUser = data.dataUser || {};
+            let flag = false;
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
 
+            if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
+              flag = true
+            }
+
             this.setState({
+              diKlik: flag,
               dataUser,
               listRole: data.dataRole,
               loading: false,
