@@ -115,7 +115,7 @@ class profileNasabah extends React.Component {
             <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
             <td align="center">{val.id}</td>
             <td align="center">{val.fullname}</td>
-            <td align="center"> TUNGGU API</td>
+            <td align="center"> {val.category ==="account_executive"?"Account Executive" :val.category === "agent"?"Agent":"Personal"}</td>
             <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
             <td align="center"> {val.status ?val.status : "-"} </td>
             <td align="center">

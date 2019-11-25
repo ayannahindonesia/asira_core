@@ -170,9 +170,10 @@ class profileNasabahDetail extends React.Component{
                                     <td>Rekening Pinjaman</td>
                                     <td>: {this.state.rows.bank_accountnumber}</td>
                                     <td>Status Pinjaman</td>
-                                    <td>: {this.state.rows.status}</td>
+                                    <td>: {this.state.rows.status?this.state.rows.status:"-"}</td>
                                     <td>Kategori Pinjaman</td>
-                                    <td>: API</td>
+                                    <td>: {this.state.rows.category ==="account_executive"?"Account Executive" :
+                                           this.state.rows.category === "agent"?"Agent":"Personal"}</td>
                                 </tr>
                                 <tr>
                                     <td>Bank Nasabah</td>
@@ -182,7 +183,7 @@ class profileNasabahDetail extends React.Component{
                                     <td>Tanggal Register</td>
                                     <td>: <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" /></td>
                                     <td>Agen/AE</td>
-                                    <td>: API </td>
+                                    <td>: {this.state.rows.agent_name ===""?"-":this.state.rows.agent_name} / {this.state.rows.agent_provider_name ===""?"-":this.state.rows.agent_provider_name} </td>
                                 </tr>
                                 </tbody>
                             </table>
