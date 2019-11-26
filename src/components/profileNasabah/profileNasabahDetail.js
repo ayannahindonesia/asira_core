@@ -168,7 +168,7 @@ class profileNasabahDetail extends React.Component{
                                     <td>: {this.state.rows.id}</td>
                                     <td>Rekening Pinjaman</td>
                                     <td>: {this.state.rows.bank_accountnumber}</td>
-                                    <td>Status Pinjaman</td>
+                                    <td>Status Nasabah</td>
                                     <td>: {this.state.rows.loan_status ==="inactive"?"Tidak Aktif":"Aktif"}</td>
                                    
                                 </tr>
