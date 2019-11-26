@@ -120,7 +120,7 @@ class PermintaanPinjaman extends React.Component {
               <td align="center"> {val.product} </td>
               <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
               <td align="center" style={val.status==="approved"?{color:"green"}:val.status==="rejected"?{color:"red"}:{color:"blue"}}>
-                {val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Diproses"}</td>
+                {val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Dalam Proses"}</td>
               <td align="center">
             
                 {   checkPermission('core_loan_get_details') &&
