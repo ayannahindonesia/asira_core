@@ -51,7 +51,7 @@ class CalonNasabahDetail extends React.Component{
     isCategoryExist = (category) => {
       if(category && category.toString().toLowerCase() === 'agent') {
         return 'Agen'
-      } else if(category && category.toString().toLowerCase() === 'acount_executive') {
+      } else if(category && category.toString().toLowerCase() === 'account_executive') {
         return 'Account Executive'
       } 
 
