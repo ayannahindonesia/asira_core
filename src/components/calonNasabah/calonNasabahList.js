@@ -68,7 +68,6 @@ class CalonNasabahList extends React.Component{
 
         if(data) {
             if(!data.error) {
-                console.log(data)
                 const dataListUser = data.dataUser || [];
 
                 if(dataListUser.length !== 0) {

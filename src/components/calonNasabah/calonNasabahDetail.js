@@ -51,7 +51,7 @@ class CalonNasabahDetail extends React.Component{
     isCategoryExist = (category) => {
       if(category && category.toString().toLowerCase() === 'agent') {
         return 'Agen'
-      } else if(category && category.toString().toLowerCase() === 'acount_executive') {
+      } else if(category && category.toString().toLowerCase() === 'account_executive') {
         return 'Account Executive'
       } 
 
@@ -67,12 +67,17 @@ class CalonNasabahDetail extends React.Component{
 
       if(data) {
           if(!data.error) {
-            console.log(data)
             const dataUser = data.dataUser || {};
+            let flag = false;
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
 
+            if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
+              flag = true
+            }
+
             this.setState({
+              diKlik: flag,
               dataUser,
               listRole: data.dataRole,
               loading: false,
