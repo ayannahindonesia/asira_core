@@ -114,12 +114,13 @@ class PermintaanPinjaman extends React.Component {
               <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
               <td align="center">{val.id}</td>
               <td align="center">{val.owner_name}</td>
-              <td align="center"> {val.bank.Int64} </td>
-              <td align="center"> API </td>
-              <td align="center"> API </td>
+              <td align="center"> {val.bank_name} </td>
+              <td align="center"> {val.category ==="account_executive"?"Account Executive" :val.category === "agent"?"Agent":"Personal"} </td>
+              <td align="center"> {val.product.toString()} </td>
               <td align="center"> {val.product} </td>
               <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
-              <td align="center">{val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Diproses"}</td>
+              <td align="center" style={val.status==="approved"?{color:"green"}:val.status==="rejected"?{color:"red"}:{color:"blue"}}>
+                {val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Diproses"}</td>
               <td align="center">
             
                 {   checkPermission('core_loan_get_details') &&

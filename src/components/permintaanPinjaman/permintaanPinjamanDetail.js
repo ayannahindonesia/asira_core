@@ -61,6 +61,7 @@ class Main extends React.Component{
         const data = await getDetailBorrowerFunction(param)
 
         if(data){
+            console.log(data)
             if(!data.error){
                 this.setState({borrowerDetail:data.data})
             }else{
@@ -110,7 +111,7 @@ class Main extends React.Component{
                                         <td>Rekening Peminjam</td>
                                         <td>: {this.state.borrowerDetail.idcard_number}</td>
                                         <td>Kategori</td>
-                                        <td>: LOREM IPSUM</td>
+                                        <td>: {this.state.borrowerDetail.category ==="account_executive"?"Account Executive" :this.state.borrowerDetail.category === "agent"?"Agent":"Personal"}</td>
                                     </tr>
                                     <tr>
                                         <td>Nama Nasabah</td>
@@ -125,7 +126,7 @@ class Main extends React.Component{
                                     
                                     }</td>
                                         <td>Agen/ AE</td>
-                                        <td>: LOREM IPSUM</td>
+                                        <td>: {this.state.borrowerDetail.agent_name?this.state.borrowerDetail.agent_name:"-"} ({this.state.borrowerDetail.agent_provider_name?this.state.borrowerDetail.agent_provider_name:"-"})</td>
                                     </tr>
                                 </tbody>
                             </table>
