@@ -9,10 +9,11 @@ import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import { getToken } from '../index/token';
 import { checkPermission } from '../global/globalFunction';
 import { getPenyediaAgentListFunction } from './saga';
+import SearchBar from './../subComponent/SearchBar'
 
 class profileNasabah extends React.Component {
   state = {
-    rows: [], searchRows:null,
+    rows: [], searchRows:'',
     page: 1,
     rowsPerPage: 5,
     isEdit: false,
@@ -44,11 +45,7 @@ class profileNasabah extends React.Component {
       let hasil = this.state.searchRows
 
       if (hasil){
-        if(!isNaN(hasil)){
-          param.id = hasil
-        }else{
-          param.name = hasil
-        }
+       param.search_all = hasil
       }
 
       const data = await getPenyediaAgentListFunction(param)
@@ -66,10 +63,8 @@ class profileNasabah extends React.Component {
       }
   }
 
-  onBtnSearch = ()=>{
-    
-    var searching = this.refs.search.value
-    this.setState({loading:true,searchRows:searching,page:1},()=>{
+  onBtnSearch = (e)=>{
+    this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
         this.getAllData()
     })
   
@@ -156,9 +151,12 @@ if(getToken()){
                         </div>
                         <div className="col-5 mt-3 ml-5">
                         <div className="input-group">
-                            <input type="text" className="form-control" ref="search" placeholder="Search.." style={{width:"150px"}} />
-                            <span className="input-group-addon ml-2" style={{border:"1px solid grey",width:"35px",height:"35px",paddingTop:"2px",borderRadius:"4px",paddingLeft:"2px",marginTop:"6px",cursor:"pointer"}} onClick={this.onBtnSearch}> 
-                            <i className="fas fa-search" style={{fontSize:"28px"}} ></i></span>
+                        <SearchBar 
+                            onChange={this.onBtnSearch}
+                            placeholder="Search Nama Agen, ID Agen.."
+                            value={this.state.search}
+                          />
+                        
                         </div>
                         </div>
           </div>
