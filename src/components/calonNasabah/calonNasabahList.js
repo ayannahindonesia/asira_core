@@ -73,7 +73,6 @@ class CalonNasabahList extends React.Component{
                     for(const key in dataListUser) {
                         dataListUser[key].created_time = dataListUser[key].created_time && handleFormatDate(dataListUser[key].created_time)
                         dataListUser[key].category = this.isCategoryExist(dataListUser[key].category) 
-                        dataListUser[key].bank_name = dataListUser[key].agent_provider_name && dataListUser[key].agent_provider_name.length !== 0 ? dataListUser[key].agent_provider_name : dataListUser[key].bank_name
                     }
                 }
 
