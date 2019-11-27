@@ -97,7 +97,7 @@ class Main extends React.Component{
             return(
                 <div>
 
-                    <h2>Permintaan Pinjaman - Detail</h2>
+                    <h2>Pinjaman - Detail</h2>
                     <hr></hr>
 
                     {/* -----------------------------------------------------FIRST ROW----------------------------------------------------------------- */}
