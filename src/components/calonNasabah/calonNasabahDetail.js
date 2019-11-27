@@ -179,8 +179,8 @@ class CalonNasabahDetail extends React.Component{
                 </div>   
 
                 <div className="col-sm-12" style={{marginBottom:'10px'}}>
-                  <input type="button" value="KTP Detail" className="btn" onClick={this.handleDialog} style={{backgroundColor:"blue",color:"white",marginRight:'10px'}}/>
-                  <input type="button" value="NPWP Detail" className="btn" onClick={this.handleDialog} style={{backgroundColor:"blue",color:"white"}}/>               
+                  <input type="button" value="KTP Detail" className="btn" onClick={this.handleDialog} style={{width:'120px',backgroundColor:"blue",color:"white",marginRight:'10px'}}/>
+                  <input type="button" value="NPWP Detail" className="btn" onClick={this.handleDialog} style={{width:'120px',backgroundColor:"blue",color:"white"}}/>               
                 </div>
 
                 <GridDetail
