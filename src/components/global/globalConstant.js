@@ -257,9 +257,9 @@ exports.listAllRolePermission = [
         menu: 'Calon Nasabah (Bank Dashboard)',
     },
     {
-        id: 'lender_borrower_approve_reject',
+        id: 'lender_prospective_borrower_approval',
         label: 'Approval',
-        modules: 'lender_borrower_approve_reject',
+        modules: 'lender_prospective_borrower_approval',
         menu: 'Calon Nasabah (Bank Dashboard)',
     },
   ]

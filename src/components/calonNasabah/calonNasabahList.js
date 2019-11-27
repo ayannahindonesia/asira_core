@@ -58,8 +58,7 @@ class CalonNasabahList extends React.Component{
 
     refresh = async function(){
         const param = {};
-        param.fullname = this.state.search;
-        param.category = this.state.search;
+        param.search_all = this.state.search;
 
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
