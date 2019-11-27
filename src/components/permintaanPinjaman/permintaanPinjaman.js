@@ -10,10 +10,11 @@ import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import { getToken } from '../index/token';
 import { getAllPermintaanPinjamanFunction } from './saga';
 import { checkPermission } from '../global/globalFunction';
+import SearchBar from './../subComponent/SearchBar'
 
 class PermintaanPinjaman extends React.Component {
   state = {
-    rows: [],detailNasabah:{}, searchRows:null,
+    rows: [],detailNasabah:{}, searchRows:'',
     page: 1,
     rowsPerPage: 10,
     isEdit: false,
@@ -42,17 +43,12 @@ class PermintaanPinjaman extends React.Component {
       page:this.state.page
     }
 
-    let searching = this.state.searchRows;
+    let hasil = this.state.searchRows;
 
-    if(searching){
-      //search function
-      if(!isNaN(searching)){
-        param.id = searching
-      }else{
-        param.owner_name = searching
-      }
-      
+    if(hasil){
+      param.search_all = hasil
     }
+
     const data = await getAllPermintaanPinjamanFunction(param)
     if(data){
       console.log(data)
@@ -71,9 +67,8 @@ class PermintaanPinjaman extends React.Component {
 
 
 
-  onBtnSearch = ()=>{
-    var searching = this.refs.search.value
-    this.setState({loading:true,searchRows:searching,page:1},()=>{
+  onBtnSearch = (e)=>{
+      this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
       this.getAllData()
     })
   }
@@ -151,9 +146,12 @@ class PermintaanPinjaman extends React.Component {
                         </div>
                         <div className="col-4 mt-3 ml-5">
                         <div className="input-group">
-                            <input type="text" className="form-control" ref="search" placeholder="Search Bank.." />
-                            <span className="input-group-addon ml-2" style={{border:"1px solid grey",width:"35px",height:"35px",paddingTop:"2px",borderRadius:"4px",paddingLeft:"2px",marginTop:"6px",cursor:"pointer"}} onClick={this.onBtnSearch}> 
-                            <i className="fas fa-search" style={{fontSize:"28px"}} ></i></span>
+                        <SearchBar 
+                            onChange={this.onBtnSearch}
+                            placeholder="Search Nama Nasabah, ID Nasabah.."
+                            value={this.state.search}
+                          />
+                           
                         </div>
                         </div>
                     </div>
