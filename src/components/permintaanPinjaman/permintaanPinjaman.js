@@ -147,7 +147,7 @@ class PermintaanPinjaman extends React.Component {
         <div className="container">
         <div className="row">
                         <div className="col-7">
-                             <h2 className="mt-3">Permintaan Pinjaman</h2>
+                             <h2 className="mt-3">Permintaan Pinjaman - List</h2>
                         </div>
                         <div className="col-4 mt-3 ml-5">
                         <div className="input-group">
