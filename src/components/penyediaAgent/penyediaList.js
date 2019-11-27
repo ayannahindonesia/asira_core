@@ -153,7 +153,7 @@ if(getToken()){
                         <div className="input-group">
                         <SearchBar 
                             onChange={this.onBtnSearch}
-                            placeholder="Search Nama Agen, ID Agen.."
+                            placeholder="Search Nama Penyedia Agen dan Status.."
                             value={this.state.search}
                           />
                         
