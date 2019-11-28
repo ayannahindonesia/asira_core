@@ -116,12 +116,12 @@ class profileNasabah extends React.Component {
             <td align="center">{val.status ==="inactive"?"Tidak Aktif":"Aktif"}
             </td>
             <td align="center">
-            {checkPermission('core_penyedia_agent_patch') &&
+            {checkPermission('core_agent_provider_patch') &&
                 <Link style={{textDecoration:"none"}} to={`/penyediaEdit/${val.id}`}>
                 <i className="fas fa-edit" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>
             }
-            {checkPermission('core_penyedia_agent_details') &&
+            {checkPermission('core_agent_provider_details') &&
                 <Link style={{textDecoration:"none"}} to={`/penyediaDetail/${val.id}`}>
                 <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>
