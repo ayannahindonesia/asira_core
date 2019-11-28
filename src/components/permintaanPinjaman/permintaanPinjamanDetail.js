@@ -109,7 +109,7 @@ class Main extends React.Component{
                                         <td>ID Pinjaman</td>
                                         <td>: {this.state.rows.id}</td>
                                         <td>Rekening Peminjam</td>
-                                        <td>: {this.state.borrowerDetail.bank_accountnumber}</td>
+                                        <td>: {this.state.rows.bank_account}</td>
                                         <td>Kategori</td>
                                         <td>: {this.state.borrowerDetail.category ==="account_executive"?"Account Executive" :this.state.borrowerDetail.category === "agent"?"Agent":"Personal"}</td>
                                     </tr>
