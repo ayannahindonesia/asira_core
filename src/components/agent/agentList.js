@@ -85,7 +85,7 @@ class AgentList extends React.Component{
             param.page = this.state.page;
         }
 
-        param.name = this.state.search
+        param.search_all = this.state.search
 
         const data = await getAllAgentFunction(param, getPenyediaAgentListFunction, getAllBankList);
 
