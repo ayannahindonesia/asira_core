@@ -58,8 +58,7 @@ class CalonNasabahList extends React.Component{
 
     refresh = async function(){
         const param = {};
-        param.fullname = this.state.search;
-        param.category = this.state.search;
+        param.search_all = this.state.search;
 
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
@@ -74,7 +73,6 @@ class CalonNasabahList extends React.Component{
                     for(const key in dataListUser) {
                         dataListUser[key].created_time = dataListUser[key].created_time && handleFormatDate(dataListUser[key].created_time)
                         dataListUser[key].category = this.isCategoryExist(dataListUser[key].category) 
-                        dataListUser[key].bank_name = dataListUser[key].agent_provider_name && dataListUser[key].agent_provider_name.length !== 0 ? dataListUser[key].agent_provider_name : dataListUser[key].bank_name
                     }
                 }
 
