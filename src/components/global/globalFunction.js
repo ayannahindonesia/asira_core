@@ -12,7 +12,7 @@ export function validateEmail(email) {
 
 export function  validatePhone(phone) {
     let flag = false;
-    let phoneRegex = /^(^\+62\s?|^0)(\d{3,4}){2}\d{3,4}$/;
+    let phoneRegex = /^(^62\s?)(\d{3,4}){2}\d{3,4}$/;
 
     if(phone.match(phoneRegex)) {
       flag = true
@@ -81,4 +81,46 @@ export function formatNumber(number,money) {
   } 
 
   return tmp.toString().length !== 0 ? tmp : '-'
+}
+
+export function handleFormatDate (dateBefore){
+  let dateAfter = new Date(dateBefore);
+
+  return `${dateAfter.getDate()} ${getMonthNow(dateAfter.getMonth().toString())} ${dateAfter.getFullYear()}`;
+};
+
+export function getMonthNow(bulanNow) {
+  let bulan = '';
+
+  if(bulanNow) {
+    if(bulanNow.toString() === '0') {
+      bulan = 'Januari';
+    } else if(bulanNow.toString() === '1') {
+      bulan = 'Februari';
+    } else if(bulanNow.toString() === '2') {
+      bulan = 'Maret';
+    } else if(bulanNow.toString() === '3') {
+      bulan = 'April';
+    } else if(bulanNow.toString() === '4') {
+      bulan = 'Mei';
+    } else if(bulanNow.toString() === '5') {
+      bulan = 'Juni';
+    } else if(bulanNow.toString() === '6') {
+      bulan = 'Juli';
+    } else if(bulanNow.toString() === '7') {
+      bulan = 'Agustus';
+    } else if(bulanNow.toString() === '8') {
+      bulan = 'September';
+    } else if(bulanNow.toString() === '9') {
+      bulan = 'Oktober';
+    } else if(bulanNow.toString() === '10') {
+      bulan = 'November';
+    } else if(bulanNow.toString() === '11') {
+      bulan = 'Desember';
+    }
+  }
+
+
+
+  return bulan
 }
