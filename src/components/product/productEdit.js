@@ -23,7 +23,7 @@ const customStyles = {
     control: () => ({
       // none of react-select's styles are passed to <Control />
       width: "50%",float:"left", marginLeft:"112px",
-      border:"0.5px solid #CED4DA", borderRadius:"2px"
+      border:"1px solid #CED4DA", borderRadius:"2px"
     }),
     singleValue: (provided, state) => {
       const opacity = state.isDisabled ? 0.5 : 1;
@@ -192,11 +192,11 @@ class ProductEdit extends React.Component{
     }
     }
 
-    getBankService = async function (params) {
-    const data = await getAllLayananListFunction(params)
+    getBankService = async function () {
+    const data = await getAllLayananListFunction({})
     if(data){
     if(!data.error){
-        this.setState({bankService:data.data.data})
+        this.setState({bankService:data.listLayanan.data})
     }else{
         this.setState({errorMessage:data.error})
     }

@@ -9,6 +9,7 @@ import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import { getToken } from '../index/token';
+import SearchBar from './../subComponent/SearchBar'
 
 class BankList extends React.Component{
     _isMounted=false;
@@ -35,11 +36,7 @@ class BankList extends React.Component{
         var hasil = this.state.search;
 
         if(hasil.toString().trim().length !== 0) {
-          if(!isNaN(hasil)){
-              param.id = hasil
-          }else{
-              param.name = hasil
-          }
+          param.search_all = hasil
         }
         
         
@@ -61,8 +58,8 @@ class BankList extends React.Component{
         }
     }
 
-    onBtnSearch = ()=>{
-      this.setState({loading : true, page:1},()=>{
+    onBtnSearch = (e)=>{
+      this.setState({loading : true, page:1,search:e.target.value},()=>{
         this.getAllBankData()
       })
     }
@@ -122,15 +119,12 @@ class BankList extends React.Component{
     }
 
     onChangePage = (current) => {
+      if(this.state.search)
         this.setState({loading:true, page : current}, () => {
           this.getAllBankData()
         })
     }
 
-    changeSearch = (e) => {
-      console.log(e.target.value)
-      this.setState({search: e.target.value})
-    }
  
     render(){
         if(getToken()){
@@ -142,9 +136,12 @@ class BankList extends React.Component{
                         </div>
                         <div className="col-4 mt-3 ml-5">
                         <div className="input-group">
-                            <input type="text" className="form-control" ref="search" placeholder="Search Bank.."  onChange={this.changeSearch} value={this.state.search}/>
-                            <span className="input-group-addon ml-2" style={{border:"1px solid grey",width:"35px",height:"35px",paddingTop:"2px",borderRadius:"4px",paddingLeft:"2px",marginTop:"6px",cursor:"pointer"}} onClick={this.onBtnSearch}> 
-                            <i className="fas fa-search" style={{fontSize:"28px"}} ></i></span>
+                          <SearchBar 
+                            onChange={this.onBtnSearch}
+                            placeholder="Search Nama Bank, ID Bank.."
+                            value={this.state.search}
+                          />
+
                         </div>
                         </div>
                     </div>

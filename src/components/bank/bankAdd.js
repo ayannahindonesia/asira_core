@@ -21,7 +21,7 @@ import { getAllLayananListFunction } from '../layanan/saga';
     control: () => ({
       // none of react-select's styles are passed to <Control />
       width: "50%",float:"left", marginLeft:"112px",
-      border:"0.5px solid #CED4DA", borderRadius:"2px"
+      border:"1px solid #CED4DA", borderRadius:"2px"
     }),
     singleValue: (provided, state) => {
       const opacity = state.isDisabled ? 0.5 : 1;
@@ -117,7 +117,7 @@ class Main extends React.Component{
         const data = await listProductFunction(param)
         if (data){
             if(!data.error){
-                this.setState({bankProduct:data.data.data, jenisProduct: null})
+                this.setState({bankProduct:data.productList.data, jenisProduct: null})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -125,11 +125,11 @@ class Main extends React.Component{
     }
 
     getBankService = async function () {
-        const data = await getAllLayananListFunction()
+        const data = await getAllLayananListFunction({})
 
         if(data){
             if(!data.error){
-                this.setState({bankService:data.data.data})
+                this.setState({bankService:data.listLayanan.data})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -182,11 +182,11 @@ class Main extends React.Component{
     }
 
 
-    getBankType = async function (params) {
-        const data = await ListTipeBankFunction()
+    getBankType = async function () {
+        const data = await ListTipeBankFunction({})
         if(data){
             if(!data.error){
-                this.setState({typeBank:data.data.data})
+                this.setState({typeBank:data.listBankType.data})
             }else{
                 this.setState({error:data.error})
             }

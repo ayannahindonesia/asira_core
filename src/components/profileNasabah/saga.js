@@ -11,7 +11,7 @@ export async function getProfileNasabahFunction (param,next){
             filter += `&${[key]}=${param[key]}`
         }
 
-        axios.get(serverUrl+`admin/borrower?orderby=id&sort=ASC${filter}`,config)
+        axios.get(serverUrl+`admin/borrower?account_number=not null&orderby=id&sort=ASC${filter}`,config)
         .then((res)=>{
             if(next){
                 resolve(next(param))
@@ -20,7 +20,7 @@ export async function getProfileNasabahFunction (param,next){
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -41,7 +41,7 @@ export async function getProfileNasabahDetailFunction (param,next){
             }
         })
         .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -63,7 +63,7 @@ export async function getImageFunction (param,next){
               }
           })
           .catch((err)=>{
-            const error = err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
             param.error = error;
             resolve(param);
         })

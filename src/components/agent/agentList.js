@@ -4,6 +4,9 @@ import {getAllAgentFunction} from './saga'
 import { checkPermission } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
+import { destructAgent } from './function';
+import { getAllBankList } from '../bank/saga';
+import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
 
 
 const columnDataAgent = [
@@ -13,19 +16,18 @@ const columnDataAgent = [
         label: 'Id Agen',
     },
     {
-        id: 'username',
+        id: 'name',
         numeric: false,
         label: 'Nama Agen',
     },
     {
-        id: 'username',
+        id: 'category_name',
         numeric: false,
         label: 'Kategori',
     },
     {
-        id: 'username',
+        id: 'agent_provider_name',
         numeric: false,
-        disablePadding: true,
         label: 'Instansi',
     },
     { 
@@ -85,16 +87,13 @@ class AgentList extends React.Component{
 
         param.name = this.state.search
 
-        const data = await getAllAgentFunction(param);
+        const data = await getAllAgentFunction(param, getPenyediaAgentListFunction, getAllBankList);
 
         if(data) {
+            
             if(!data.error) {
-                const dataListAgent = data.dataAgent || [];
-
-                for(const key in dataListAgent) {
-                    dataListAgent[key].status = dataListAgent[key].status.toString().toLowerCase() === 'active' ? 'Aktif' : 'Tidak Aktif'
-                }
-
+                const dataListAgent = destructAgent(data.dataAgent || [], data.bankList.data, data.dataListAgent.data, true);
+                
                 this.setState({
                     listAgent: dataListAgent,
                     totalData: data.totalData,

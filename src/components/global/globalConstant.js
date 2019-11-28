@@ -262,4 +262,5 @@ exports.listAllRolePermission = [
         modules: 'lender_prospective_borrower_approval',
         menu: 'Calon Nasabah (Bank Dashboard)',
     },
+
 ]

@@ -4,6 +4,7 @@ import PhoneInput from 'react-phone-number-input'
 import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import './../../support/css/penyediaAgent.css'
+import { addPenyediaAgentFunction } from './saga';
 
 
 class PenyediaAdd extends React.Component{
@@ -59,8 +60,26 @@ class PenyediaAdd extends React.Component{
         }else if(this.state.phone===''){
             this.setState({errorMessage:"Nomor Telepon Kosong - Harap cek kembali"})
         }else{
-            swal("WOI","NUNGGUIN API","warning")
+            this.setState({submit:true})
+            const newData = {
+                name,pic,phone,address,status
+            }
+             this.addAgent(newData)
            
+        }
+    }
+
+    addAgent = async function (params) {
+        const data = await addPenyediaAgentFunction(params)
+        if(data){
+            if(!data.error){
+                swal("Berhasil","Agen Berhasil Di Tambah","success")
+                this.setState({diKlik:true})
+            }else{
+                swal("Tidak Berhasil",`Nomor Telp sudah terdaftar atau ada masalah di server\nSilahkan dicoba kembali`,"error")
+                this.setState({submit:false})
+            }
+
         }
     }
 

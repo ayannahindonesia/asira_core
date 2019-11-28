@@ -10,10 +10,11 @@ import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import { getProfileNasabahFunction } from './saga';
 import { getToken } from '../index/token';
 import { checkPermission } from '../global/globalFunction';
+import SearchBar from './../subComponent/SearchBar'
 
 class profileNasabah extends React.Component {
   state = {
-    rows: [], searchRows:null,
+    rows: [], searchRows:'',
     page: 1,
     rowsPerPage: 5,
     isEdit: false,
@@ -44,16 +45,13 @@ class profileNasabah extends React.Component {
       }
       let hasil = this.state.searchRows
       if (hasil){
-        if(!isNaN(hasil)){
-          param.id = hasil
-        }else{
-          param.fullname = hasil
-        }
+        param.search_all = hasil
       }
 
       const data = await getProfileNasabahFunction(param)
 
       if(data){
+        console.log(data)
         if(!data.error){
           this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
         }else{
@@ -62,9 +60,9 @@ class profileNasabah extends React.Component {
       }
   }
 
-  onBtnSearch = ()=>{
+  onBtnSearch = (e)=>{
     
-    var searching = this.refs.search.value
+    var searching = e.target.value
     this.setState({loading:true,searchRows:searching,page:1},()=>{
         this.getAllData()
     })
@@ -87,7 +85,7 @@ class profileNasabah extends React.Component {
     if (this.state.loading){
       return  (
         <tr>
-          <td align="center" colSpan={6}>
+          <td align="center" colSpan={7}>
                 <Loader 
             type="Circles"
             color="#00BFFF"
@@ -104,7 +102,7 @@ class profileNasabah extends React.Component {
     if (this.state.rows.length===0){
       return(
         <tr>
-          <td align="center" colSpan={6}>Data empty</td>
+          <td align="center" colSpan={7}>Data empty</td>
         </tr>
       )
     }else{
@@ -114,16 +112,16 @@ class profileNasabah extends React.Component {
             <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
             <td align="center">{val.id}</td>
             <td align="center">{val.fullname}</td>
-            {/* <td align="center">{this.getBankName(val.bank.Int64)}</td>             */}
+            <td align="center"> {val.category ==="account_executive"?"Account Executive" :val.category === "agent"?"Agent":"Personal"}</td>
             <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
-            {/* <TableCell align="center">{val.status}</TableCell> */}
+            <td align="center"> {val.loan_status==="inactive" ?"Tidak Aktif" : "Aktif"} </td>
             <td align="center">
 
             {   checkPermission('core_borrower_get_details') &&
                       <Link style={{textDecoration:"none"}} to={`/profileNasabahDetail/${val.id}`}>
                       <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                     </Link>
-                }
+            }
                          
             
             </td>
@@ -149,9 +147,12 @@ if(getToken()){
                         </div>
                         <div className="col-5 mt-3 ml-5">
                         <div className="input-group">
-                            <input type="text" className="form-control" ref="search" placeholder="Search.." style={{width:"150px"}} />
-                            <span className="input-group-addon ml-2" style={{border:"1px solid grey",width:"35px",height:"35px",paddingTop:"2px",borderRadius:"4px",paddingLeft:"2px",marginTop:"6px",cursor:"pointer"}} onClick={this.onBtnSearch}> 
-                            <i className="fas fa-search" style={{fontSize:"28px"}} ></i></span>
+                        <SearchBar 
+                            onChange={this.onBtnSearch}
+                            placeholder="Search Nama Nasabah, ID Nasabah.."
+                            value={this.state.searchRows}
+                          />
+                           
                         </div>
                         </div>
           </div>
@@ -162,9 +163,9 @@ if(getToken()){
                   <th className="text-center" scope="col">#</th>
                   <th className="text-center" scope="col">Id Nasabah</th>
                   <th className="text-center" scope="col">Nama Nasabah</th>
-                  {/* <th className="text-center" scope="col">Bank Akun</th> */}
+                  <th className="text-center" scope="col">Kategori</th>
                   <th  className="text-center" scope="col">Tanggal Registrasi</th>
-                  {/* <TableCell align="center">Status Nasabah</TableCell> */}
+                  <th  className="text-center" scope="col">Status Nasabah</th>
                   <th  className="text-center" scope="col">Action</th>
                  
               </tr>     

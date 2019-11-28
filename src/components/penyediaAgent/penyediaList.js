@@ -8,10 +8,12 @@ import './../../support/css/pagination.css'
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import { getToken } from '../index/token';
 import { checkPermission } from '../global/globalFunction';
+import { getPenyediaAgentListFunction } from './saga';
+import SearchBar from './../subComponent/SearchBar'
 
 class profileNasabah extends React.Component {
   state = {
-    rows: [], searchRows:null,
+    rows: [], searchRows:'',
     page: 1,
     rowsPerPage: 5,
     isEdit: false,
@@ -27,7 +29,7 @@ class profileNasabah extends React.Component {
   
   _isMounted = false
   componentDidMount(){
-    // this.getAllData()
+    this.getAllData()
     this._isMounted = true
   }
   componentWillUnmount(){
@@ -43,28 +45,26 @@ class profileNasabah extends React.Component {
       let hasil = this.state.searchRows
 
       if (hasil){
-        if(!isNaN(hasil)){
-          param.id = hasil
-        }else{
-          param.fullname = hasil
-        }
+       param.search_all = hasil
       }
 
-    //   const data = await getProfileNasabahFunction(param)
+      const data = await getPenyediaAgentListFunction(param)
 
-    //   if(data){
-    //     if(!data.error){
-    //       this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
-    //     }else{
-    //       this.setState({errorMessage:data.error})
-    //     }
-    //   }
+      if(data){
+        console.log(data)
+        if(!data.error){
+          this.setState({loading:false,rows:data.dataListAgent.data,
+            rowsPerPage:data.dataListAgent.rows,
+            jumlahBaris:null,totalData:data.dataListAgent.total_data,
+            last_page:data.dataListAgent.last_page,page:data.dataListAgent.current_page})
+        }else{
+          this.setState({errorMessage:data.error})
+        }
+      }
   }
 
-  onBtnSearch = ()=>{
-    
-    var searching = this.refs.search.value
-    this.setState({loading:true,searchRows:searching,page:1},()=>{
+  onBtnSearch = (e)=>{
+    this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
         this.getAllData()
     })
   
@@ -112,8 +112,8 @@ class profileNasabah extends React.Component {
         <tr key={index}>
             <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
             <td align="center">{val.id}</td>
-            <td align="center"></td>
-            <td align="center">
+            <td align="center">{val.name}</td>
+            <td align="center">{val.status ==="inactive"?"Tidak Aktif":"Aktif"}
             </td>
             <td align="center">
             {checkPermission('core_penyedia_agent_patch') &&
@@ -121,7 +121,7 @@ class profileNasabah extends React.Component {
                 <i className="fas fa-edit" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>
             }
-            {checkPermission('core_penyedia_agent_detail') &&
+            {checkPermission('core_penyedia_agent_details') &&
                 <Link style={{textDecoration:"none"}} to={`/penyediaDetail/${val.id}`}>
                 <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
                 </Link>
@@ -151,9 +151,12 @@ if(getToken()){
                         </div>
                         <div className="col-5 mt-3 ml-5">
                         <div className="input-group">
-                            <input type="text" className="form-control" ref="search" placeholder="Search.." style={{width:"150px"}} />
-                            <span className="input-group-addon ml-2" style={{border:"1px solid grey",width:"35px",height:"35px",paddingTop:"2px",borderRadius:"4px",paddingLeft:"2px",marginTop:"6px",cursor:"pointer"}} onClick={this.onBtnSearch}> 
-                            <i className="fas fa-search" style={{fontSize:"28px"}} ></i></span>
+                        <SearchBar 
+                            onChange={this.onBtnSearch}
+                            placeholder="Search Nama Penyedia Agen dan Status.."
+                            value={this.state.search}
+                          />
+                        
                         </div>
                         </div>
           </div>

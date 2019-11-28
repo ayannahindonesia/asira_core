@@ -182,6 +182,9 @@ class Example extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
+
+            { checkPermission('core_borrower_get_all') && <Link to="/listCalonNasabah" style={{marginBottom:"10px"}}><label><i className="fas fa-user-plus"></i> Calon Nasabah </label></Link>}
+            
             
             { checkPermission('convenience_fee_report') && <Link to="/report" style={{marginBottom:"10px"}}><label><i className="far fa-newspaper"></i> Report</label></Link>}
            
