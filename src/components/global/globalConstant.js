@@ -163,19 +163,19 @@ exports.listAllRolePermission = [
     {
         id: 'core_permission_list',
         label: 'List and Detail',
-        modules: 'core_permission_list core_permission_detail',
+        modules: 'core_permission_list core_permission_detail core_role_list core_role_details',
         menu: 'Role Permission (Core)',
     },
     {
         id: 'core_permission_new',
         label: 'Add',
-        modules: 'core_permission_new',
+        modules: 'core_permission_new core_role_patch',
         menu: 'Role Permission (Core)',
     },
     {
         id: 'core_permission_patch',
         label: 'Edit',
-        modules: 'core_permission_patch',
+        modules: 'core_permission_patch core_role_patch',
         menu: 'Role Permission (Core)',
     },
     // User Core
@@ -262,4 +262,5 @@ exports.listAllRolePermission = [
         modules: 'lender_prospective_borrower_approval',
         menu: 'Calon Nasabah (Bank Dashboard)',
     },
-  ]
+
+]
