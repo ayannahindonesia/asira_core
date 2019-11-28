@@ -32,12 +32,6 @@ exports.listAllRolePermission = [
         modules: 'lender_borrower_list lender_borrower_list_detail',
         menu: 'Nasabah (Bank Dashboard)',
     },
-    {
-        id: 'lender_borrower_list_download',
-        label: 'Download',
-        modules: 'lender_borrower_list_download',
-        menu: 'Nasabah (Bank Dashboard)',
-    },
     // Pinjaman Core
     {
         id: 'core_loan_get_all',
@@ -59,9 +53,15 @@ exports.listAllRolePermission = [
         menu: 'Pinjaman (Bank Dashboard)',
     },
     {
+        id: 'lender_loan_confirm_disburse',
+        label: 'Disburse',
+        modules: 'lender_loan_confirm_disburse',
+        menu: 'Pinjaman (Bank Dashboard)',
+    },
+    {
         id: 'lender_loan_approve_reject',
         label: 'Approval',
-        modules: 'lender_loan_approve_reject',
+        modules: 'lender_loan_approve_reject lender_loan_change_disburse_date',
         menu: 'Pinjaman (Bank Dashboard)',
     },
     // Layanan Core
@@ -214,7 +214,7 @@ exports.listAllRolePermission = [
     {
         id: 'core_agent_provider_new',
         label: 'Add',
-        modules: 'core_penyedia_agent_new',
+        modules: 'core_agent_provider_new',
         menu: 'Penyedia Agen (Core)',
     },
     {
