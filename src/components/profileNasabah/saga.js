@@ -54,7 +54,7 @@ export async function getImageFunction (param,next){
             headers: {'Authorization': "Bearer " + getToken()}
           };
 
-          axios.get(serverUrl+`admin/image/${param.idImage}`,config)
+          axios.get(serverUrl+`admin/image/${param.id}`,config)
           .then((res)=>{
               if(next){
                   resolve(next(param))
