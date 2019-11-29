@@ -122,9 +122,9 @@ class CalonNasabahDetail extends React.Component{
       };
 
       if(title.toLowerCase().includes('ktp')) {
-        data.idImage = this.state.dataUser && this.state.dataUser.idcard_imageid  
+        data.idImage = this.state.dataUser && this.state.dataUser.idcard_image  
       } else if(title.toLowerCase().includes('npwp')) {
-        data.idImage = this.state.dataUser && this.state.dataUser.taxid_imageid
+        data.idImage = this.state.dataUser && this.state.dataUser.taxid_image
       }
 
       data = await getImageFunction(data)
