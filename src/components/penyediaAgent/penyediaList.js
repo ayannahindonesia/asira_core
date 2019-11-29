@@ -154,7 +154,7 @@ if(getToken()){
                         <SearchBar 
                             onChange={this.onBtnSearch}
                             placeholder="Search Nama Penyedia Agen dan Status.."
-                            value={this.state.search}
+                            value={this.state.searchRows}
                           />
                         
                         </div>

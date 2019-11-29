@@ -149,7 +149,7 @@ class PermintaanPinjaman extends React.Component {
                         <SearchBar 
                             onChange={this.onBtnSearch}
                             placeholder="Search Nama Nasabah, ID Nasabah.."
-                            value={this.state.search}
+                            value={this.state.searchRows}
                           />
                            
                         </div>
