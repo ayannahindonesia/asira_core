@@ -33,7 +33,7 @@ class profileNasabahDetail extends React.Component{
         if(data){
             console.log(data)
             if(!data.error){
-                this.setState({rows:data.data,ktp:data.data.idcard_imageid,npwp:data.data.taxid_imageid, bankID:data.data.bank.Int64})
+                this.setState({rows:data.data,ktp:data.data.idcard_image,npwp:data.data.taxid_image, bankID:data.data.bank.Int64})
                   //KTP WAJIB KALO NPWP OPTIONAL
                     this.getBankName() 
                     this.getImage(this.state.ktp,'gambarKTP')
