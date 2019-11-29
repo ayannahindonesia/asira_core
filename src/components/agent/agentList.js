@@ -7,6 +7,7 @@ import TableComponent from '../subComponent/TableComponent'
 import { destructAgent } from './function';
 import { getAllBankList } from '../bank/saga';
 import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
+import SearchBar from '../subComponent/SearchBar';
 
 
 const columnDataAgent = [
@@ -132,11 +133,11 @@ class AgentList extends React.Component{
                             {this.state.errorMessage}
                         </div>   
                         <div className="col-4">
-                            <div className="input-group">
-                                <input type="text" className="form-control" placeholder="Search" value={this.state.search} onChange={this.changeSearch} style={{width:"150px"}} />
-                                <span className="input-group-addon ml-2" style={{border:"1px solid grey",width:"35px",height:"35px",paddingTop:"2px",borderRadius:"4px",paddingLeft:"2px",marginTop:"6px",cursor:"pointer"}} onClick={this.onBtnSearch}> 
-                                <i className="fas fa-search" style={{fontSize:"28px"}} ></i></span>
-                            </div>
+                            <SearchBar
+                                onChange={this.changeSearch}
+                                placeholder="Search Nama Agen, Status.."
+                                value={this.state.search}
+                            />
                         </div> 
                     </div>
 
