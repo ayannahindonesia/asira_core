@@ -111,8 +111,8 @@ class PermintaanPinjaman extends React.Component {
               <td align="center">{val.owner_name}</td>
               <td align="center"> {val.bank_name} </td>
               <td align="center"> {val.category ==="account_executive"?"Account Executive" :val.category === "agent"?"Agent":"Personal"} </td>
+              <td align="center"> {val.service.toString()} </td>
               <td align="center"> {val.product.toString()} </td>
-              <td align="center"> {val.product} </td>
               <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
               <td align="center" style={val.status==="approved"?{color:"green"}:val.status==="rejected"?{color:"red"}:{color:"blue"}}>
                 {val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Dalam Proses"}</td>
