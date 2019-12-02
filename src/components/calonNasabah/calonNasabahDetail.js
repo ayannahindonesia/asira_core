@@ -122,16 +122,16 @@ class CalonNasabahDetail extends React.Component{
       };
 
       if(title.toLowerCase().includes('ktp')) {
-        data.idImage = this.state.dataUser && this.state.dataUser.idcard_imageid  
+        data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image && this.state.dataUser.idcard_image.Int64) || 0
       } else if(title.toLowerCase().includes('npwp')) {
-        data.idImage = this.state.dataUser && this.state.dataUser.taxid_imageid
+        data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image && this.state.dataUser.idcard_image.Int64) || 0
       }
 
       data = await getImageFunction(data)
 
       if(data) {
         if(!data.error) {
-          let message = data.dataImage && data.dataImage.image_string;
+          let message = data.image && data.image.image_string;
 
           this.setState({
             dialog:true,
