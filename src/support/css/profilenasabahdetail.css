@@ -1,8 +1,9 @@
-table td:last-child{
-    padding-right: 5px;
-    padding-left: 20px;
-}
+
 .firstrow{
     background-color: #f7f7f7;
     font-weight: 700;
+}
+
+.firstrow table{
+    width: 100%;
 }

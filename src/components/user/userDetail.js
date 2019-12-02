@@ -244,7 +244,7 @@ class UserDetail extends React.Component{
 
                     <div className="form-group row">
                       <div className="col-sm-12 mt-3">
-                        <input type="button" value="Batal" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
+                        <input type="button" value="Kembali" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
                       </div>
                     </div>
                     
