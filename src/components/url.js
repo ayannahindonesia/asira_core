@@ -5,7 +5,7 @@ export const serverUrl=window.location.origin.includes('asira') ?
 "http://asira.ayannah.com/api-lender/" :
 "https://cors-anywhere.herokuapp.com/http://asira.ayannah.com/api-lender/";
 
-export const serverUrlBorrower=window.location.origin.includes('asira') ? 
+export const serverUrlBorrower=window.location.origin.includes('asir') ? 
 "http://asira.ayannah.com/api-borrower/" :
 "https://cors-anywhere.herokuapp.com/http://asira.ayannah.com/api-borrower/";
 
