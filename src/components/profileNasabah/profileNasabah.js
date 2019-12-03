@@ -1,16 +1,41 @@
 import React from 'react';
-import Loader from 'react-loader-spinner'
 import Moment from 'react-moment';
 import {connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-import {Link} from 'react-router-dom'
-import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
-import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import { getProfileNasabahFunction } from './saga';
 import { getToken } from '../index/token';
 import { checkPermission } from '../global/globalFunction';
 import SearchBar from './../subComponent/SearchBar'
+import TableComponent from './../subComponent/TableComponent'
+
+const columnDataUser = [
+  {
+      id: 'id',
+      numeric: false,
+      label: 'ID Nasabah',
+  },
+  {
+      id: 'fullname',
+      numeric: false,
+      label: 'Nama Nasabah',
+  },
+  {
+      id: 'category',
+      numeric: false,
+      label: 'Kategori',
+  },
+  {
+    id: 'created_time',
+    numeric: false,
+    label: 'Tanggal Registrasi',
+  },
+  {
+    id: 'loan_status',
+    numeric: false,
+    label: 'Status Nasabah',
+  },
+]
 
 class profileNasabah extends React.Component {
   state = {
@@ -23,6 +48,7 @@ class profileNasabah extends React.Component {
     last_page:1,
     loading:true,
     bankID:0,bankName:'',
+    paging:true
   
   };
 
@@ -49,93 +75,47 @@ class profileNasabah extends React.Component {
       }
 
       const data = await getProfileNasabahFunction(param)
-
+      console.log(data.listNasabah.data)
+      
       if(data){
-        console.log(data)
+
         if(!data.error){
-          this.setState({loading:false,rows:data.data.data,rowsPerPage:data.data.rows,jumlahBaris:null,totalData:data.data.total_data,last_page:data.data.last_page,page:data.data.current_page})
+          const dataNasabah = data.listNasabah.data;
+          console.log(dataNasabah)
+
+          for (const key in dataNasabah){
+             dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
+             dataNasabah[key].loan_status = dataNasabah[key].loan_status && dataNasabah[key].loan_status==="active"?"Aktif" :"Tidak Aktif"
+             dataNasabah[key].created_time =   <Moment date={dataNasabah[key].created_time } format=" DD  MMMM  YYYY" />
+
+          }
+
+          this.setState({loading:false,rows:dataNasabah,rowsPerPage:data.listNasabah.rows,total_data:data.listNasabah.total_data,last_page:data.listNasabah.last_page,page:data.listNasabah.current_page})
         }else{
           this.setState({errorMessage:data.error})
         }
-      }
+      } 
   }
 
   onBtnSearch = (e)=>{
-    
     var searching = e.target.value
     this.setState({loading:true,searchRows:searching,page:1},()=>{
+      if (this.state.paging){
         this.getAllData()
+      }
     })
   
   }
-
- 
- 
- // rpp =5
- // p = 3
- // index = 11
 
  onChangePage = (current) => {
   this.setState({loading:true,page:current},()=>{
-    this.getAllData()
+    if (this.state.paging){
+      this.getAllData()
+    }
   })
 }
   
-  renderJSX = ()=>{
-    if (this.state.loading){
-      return  (
-        <tr>
-          <td align="center" colSpan={7}>
-                <Loader 
-            type="Circles"
-            color="#00BFFF"
-            height="40"	
-            width="40"
-        />   
-          </td>
-        </tr>
-      )
-      
-      
-   
-  }else{
-    if (this.state.rows.length===0){
-      return(
-        <tr>
-          <td align="center" colSpan={7}>Data empty</td>
-        </tr>
-      )
-    }else{
-      var jsx = this.state.rows.map((val,index)=>{
-        return (
-        <tr key={index}>
-            <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
-            <td align="center">{val.id}</td>
-            <td align="center">{val.fullname}</td>
-            <td align="center"> {val.category ==="account_executive"?"Account Executive" :val.category === "agent"?"Agent":"Personal"}</td>
-            <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
-            <td align="center"> {val.loan_status==="inactive" ?"Tidak Aktif" : "Aktif"} </td>
-            <td align="center">
 
-            {   checkPermission('core_borrower_get_details') &&
-                      <Link style={{textDecoration:"none"}} to={`/profileNasabahDetail/${val.id}`}>
-                      <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
-                    </Link>
-            }
-                         
-            
-            </td>
-        </tr>
-        )
-    })
-     return jsx;
-    }
-    
-  }
-
-     
-  }
-    
   render() {
    
 if(getToken()){
@@ -157,35 +137,20 @@ if(getToken()){
                         </div>
           </div>
         <hr></hr>
-          <table className="table table-hover">
-          <thead className="table-warning">
-              <tr>
-                  <th className="text-center" scope="col">#</th>
-                  <th className="text-center" scope="col">Id Nasabah</th>
-                  <th className="text-center" scope="col">Nama Nasabah</th>
-                  <th className="text-center" scope="col">Kategori</th>
-                  <th  className="text-center" scope="col">Tanggal Registrasi</th>
-                  <th  className="text-center" scope="col">Status Nasabah</th>
-                  <th  className="text-center" scope="col">Action</th>
-                 
-              </tr>     
-          </thead>
-          <tbody>
-            {this.renderJSX()}
-          </tbody>  
-          </table>
-                <hr/>
-          <nav className="navbar" style={{float:"right"}}> 
-                <Pagination className="ant-pagination"  
-                showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
-                total={this.state.totalData}
-                pageSize={this.state.rowsPerPage}
-                onChange={this.onChangePage}
-                locale={localeInfo}
-                current={this.state.page}
-                showLessItems
-                />     
-          </nav>
+                     < TableComponent
+                        id={"id"}
+                        paging={this.state.paging}
+                        loading={this.state.loading}
+                        columnData={columnDataUser}
+                        data={this.state.rows}
+                        page={this.state.page}
+                        rowsPerPage={this.state.rowsPerPage}
+                        totalData={this.state.total_data}
+                        onChangePage={this.onChangePage}             
+                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/profileNasabahDetail/' : null}
+
+                    /> 
+         
         </div>
     );
 
