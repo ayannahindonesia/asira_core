@@ -16,7 +16,8 @@ export async function getProfileNasabahFunction (param,next){
             if(next){
                 resolve(next(param))
             }else{
-                resolve(res)
+                param.listNasabah = res.data;
+                resolve(param)
             }
         })
         .catch((err)=>{

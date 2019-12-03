@@ -146,7 +146,7 @@ class App extends React.Component {
                   { checkPermission('core_borrower_get_details') && <Route path="/profileNasabahDetail/:id" component={profileNasabahDetail}></Route>}
 
                   { checkPermission('core_loan_get_all') && <Route path="/permintaanpinjaman" component={PermintaanPinjaman}></Route>}
-                  { checkPermission('core_loan_get_details') && <Route path="/permintaanpinjamanDetail/:idLoan/:idBorrower" component={PermintaanPinjamanDetail}></Route>}
+                  { checkPermission('core_loan_get_details') && <Route path="/permintaanpinjamanDetail/:idLoan" component={PermintaanPinjamanDetail}></Route>}
 
                   { checkPermission('core_bank_new') && <Route path='/tambahbank' component={TambahBank}></Route>}
                   { checkPermission('core_bank_list') && <Route path='/listbank' component={ListBank}></Route>}

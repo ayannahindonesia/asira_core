@@ -5,13 +5,35 @@ import Loader from 'react-loader-spinner'
 import {Link} from 'react-router-dom'
 import {checkPermission} from './../global/globalFunction'
 import { getToken } from '../index/token';
-import localeInfo from 'rc-pagination/lib/locale/id_ID';
-import Pagination from 'rc-pagination';
+import TableComponent from './../subComponent/TableComponent'
 
+const columnDataUser = [
+    {
+        id: 'id',
+        numeric: false,
+        label: 'ID Role',
+    },
+    {
+        id: 'name',
+        numeric: false,
+        label: 'Nama Role',
+    },
+    {
+        id: 'system',
+        numeric: false,
+        label: 'Sistem',
+    },
+    {
+        id: 'status',
+        numeric: false,
+        label: 'Status Pembiayaan',
+    }
+
+]
 class RoleList extends React.Component{
     _isMounted = false;
     state={
-        loading:true,rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,
+        loading:true,rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,paging:true,
         errorMessage:''
     }
     componentDidMount(){
@@ -29,8 +51,11 @@ class RoleList extends React.Component{
             rows:10
         };
         const data  = await ListRoleFunction(param)
+        const dataRole = data.data && data.data.data
+        for (const key in dataRole){
+            dataRole[key].status = dataRole[key].status ==='active'?"Aktif":"Tidak Aktif"
+        }
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({loading:false,
                     rows:data.data.data,
@@ -39,8 +64,7 @@ class RoleList extends React.Component{
                     from:data.data.from,
                     to:data.data.to,
                     last_page:data.data.last_page,
-                    dataPerhalaman:data.data.rows,
-                    
+                    rowsPerPage:data.data.rows,
                     errorMessage:''})
             }else{
                 this.setState({loading:false,errorMessage:data.error})
@@ -49,7 +73,9 @@ class RoleList extends React.Component{
     }
     onChangePage = (current) => {
         this.setState({loading:true, page : current}, () => {
-          this.getAllRole()
+            if(this.state.paging){
+                this.getAllRole()
+            }
         })
     }
     renderJSX = () => {
@@ -106,34 +132,21 @@ class RoleList extends React.Component{
                         </div>
                     </div>
                    <hr/>
-                   <table className="table table-hover">
-                   <thead className="table-warning">
-                        <tr >
-                            <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">ID Role</th>
-                            <th className="text-center" scope="col">Nama Role</th>
-                            <th className="text-center" scope="col">Sistem</th>
-                            <th className="text-center" scope="col">Status</th>
-                            <th className="text-center" scope="col">Action</th>
-                        </tr>     
-                    </thead>
-                       <tbody>
-                          {this.renderJSX()}
-                       </tbody>
-                   </table>
-                   <hr></hr>
-                        <nav style={{float:"right",color:"black"}}> 
-                            <Pagination 
-                            className="ant-pagination"  
-                            showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
-                            total={this.state.total_data}
-                            pageSize={this.state.dataPerhalaman}
-                            onChange={this.onChangePage}
-                            locale={localeInfo}
-                            current={this.state.page}
-                            showLessItems
-                            />
-                        </nav>
+                   < TableComponent
+                        id={"id"}
+                        paging={this.state.paging}
+                        loading={this.state.loading}
+                        columnData={columnDataUser}
+                        data={this.state.rows}
+                        page={this.state.page}
+                        rowsPerPage={this.state.rowsPerPage}
+                        totalData={this.state.total_data}
+                        onChangePage={this.onChangePage}             
+                        permissionEdit={ checkPermission('core_role_patch') ? '/editrole/' : null}
+                        permissionDetail={ checkPermission('core_role_details') ? '/detailrole/' : null}
+
+                    /> 
+                  
                 </div>
             )
         }

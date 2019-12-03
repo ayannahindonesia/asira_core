@@ -5,13 +5,29 @@ import { listProductFunction } from './saga';
 import {checkPermission} from './../global/globalFunction'
 import { Redirect } from 'react-router-dom'
 import { getToken } from '../index/token';
-import localeInfo from 'rc-pagination/lib/locale/id_ID';
-import Pagination from 'rc-pagination';
+import TableComponent from './../subComponent/TableComponent'
 
+const columnDataUser = [
+    {
+        id: 'id',
+        numeric: false,
+        label: 'ID Produk',
+    },
+    {
+        id: 'name',
+        numeric: false,
+        label: 'Nama Produk',
+    },
+    {
+        id: 'status',
+        numeric: false,
+        label: 'Status Produk',
+    }
+]
 class ProductList extends React.Component{
     _isMounted = false;
     state={
-        loading:true,
+        loading:true,paging:true,
         rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,
     }
     componentWillUnmount() {
@@ -27,6 +43,13 @@ class ProductList extends React.Component{
             rows:10
         }
         const data = await listProductFunction (params)
+
+        const dataProduct = data.productList && data.productList.data;
+        
+        for(const key in dataProduct) {
+            dataProduct[key].status = dataProduct[key].status && dataProduct[key].status === 'active' ? 'Aktif' : 'Tidak Aktif'
+        }
+        
         if(data){
             if(!data.error){
                 this.setState({loading:false,rows:data.productList.data,
@@ -45,7 +68,9 @@ class ProductList extends React.Component{
 
     onChangePage = (current) => {
         this.setState({loading:true, page : current}, () => {
-          this.getAllProduct()
+            if(this.state.paging){
+                this.getAllProduct()
+            }
         })
     }
 
@@ -108,35 +133,21 @@ class ProductList extends React.Component{
                 <div className="container">
                     <h2>Product - List</h2>
                     <hr></hr>
+                    < TableComponent
+                        id={"id"}
+                        paging={this.state.paging}
+                        loading={this.state.loading}
+                        columnData={columnDataUser}
+                        data={this.state.rows}
+                        page={this.state.page}
+                        rowsPerPage={this.state.rowsPerPage}
+                        totalData={this.state.total_data}
+                        onChangePage={this.onChangePage}             
+                        permissionDetail={ checkPermission('core_product_detail') ? '/productdetail/' : null}
+                        permissionEdit={ checkPermission('core_product_patch') ? '/productedit/' : null}
 
-                    <table className="table table-hover">
-                   <thead className="table-warning">
-                        <tr >
-                            <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">Id Produk</th>
-                            <th className="text-center" scope="col">Nama Produk</th>
-                            <th className="text-center" scope="col">Status Produk</th>
-                            <th className="text-center" scope="col">Action</th>  
-                        </tr>     
-                    </thead>
-                       <tbody>
-                          {this.renderJSX()}
+                    /> 
 
-                       </tbody>
-                   </table>
-                   <hr></hr>
-                        <nav style={{float:"right",color:"black"}}> 
-                            <Pagination 
-                            className="ant-pagination"  
-                            showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
-                            total={this.state.total_data}
-                            pageSize={this.state.rowsPerPage}
-                            onChange={this.onChangePage}
-                            locale={localeInfo}
-                            current={this.state.page}
-                            showLessItems
-                            />
-                        </nav>
                 </div>
             )
         }
