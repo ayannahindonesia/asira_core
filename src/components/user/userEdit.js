@@ -69,15 +69,29 @@ class userEdit extends React.Component{
 
       if(data && dataUser) {
           if(!data.error && !dataUser.error) {
+            const roleUser = (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.roles && dataUser.dataUser.roles[0]) || 0;
+            
+            let dataListRole = data.dataRole;
+            const listRoleNew = []
+
+            let flagBank = this.isRoleBank(roleUser ,dataListRole);
+
+            for(const key in dataListRole) {
+              if(flagBank === this.isRoleBank(dataListRole[key].id, dataListRole)) {
+                listRoleNew.push(dataListRole[key])
+              }
+            }
+            
             this.setState({
-              listRole: data.dataRole,
+              listRole: listRoleNew,
               bank: dataUser.dataUser.bank_id || 0,
-              role: (dataUser.dataUser && dataUser.dataUser && dataUser.dataUser.roles && dataUser.dataUser.roles[0]) || 0,
+              bank_name: dataUser.dataUser.bank_name,
+              role: roleUser,
               id: dataUser.dataUser.id,
               username: dataUser.dataUser.username,
               password: dataUser.dataUser.password,
               email: dataUser.dataUser.email,
-              phone: dataUser.dataUser.phone,
+              phone: dataUser.dataUser.phone && dataUser.dataUser.phone.substring(2,dataUser.dataUser.phone.length),
               status: dataUser.dataUser.status,
             }, () => { this.getBankList() })
           } else {
@@ -101,8 +115,8 @@ class userEdit extends React.Component{
       if (this.validate()) {
         const dataUser = {
           roles : [parseInt(this.state.role)],
-          bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
-          phone : this.state.phone,
+          bank: this.isRoleBank(this.state.role, this.state.listRole) ? parseInt(this.state.bank) : 0,
+          phone : `62${this.state.phone}`,
           email : this.state.email,
           status : this.state.status,
         }
@@ -184,7 +198,7 @@ class userEdit extends React.Component{
     }
 
     getBankList = async function() {
-      const roleBank = this.isRoleBank(this.state.role); 
+      const roleBank = this.isRoleBank(this.state.role, this.state.listRole); 
       
       if(roleBank) {
         const data = await getAllBankList({}) ;
@@ -212,9 +226,9 @@ class userEdit extends React.Component{
       
     }
 
-    isRoleBank = (role) => {
+    isRoleBank = (role, listRole) => {
       let flag = false;
-      const dataRole = this.state.listRole;
+      const dataRole = listRole;
 
       if(role && role !== 0) {
         for(const key in dataRole) {
@@ -244,10 +258,10 @@ class userEdit extends React.Component{
         ) {
         flag = false;
         errorMessage = 'Mohon input email dengan benar'
-      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
+      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(`62${this.state.phone}`)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
-      } else if ( this.isRoleBank(this.state.role) && (!this.state.bank || this.state.bank === 0)) {
+      } else if ( this.isRoleBank(this.state.role, this.state.listRole) && (!this.state.bank || this.state.bank === 0)) {
         flag = false;
         errorMessage = 'Mohon input bank dengan benar'
       } else {
@@ -327,7 +341,7 @@ class userEdit extends React.Component{
                       </div>                 
                     </div>
 
-                    <div className="form-group row" style={{marginBottom:7}}>                   
+                    <div className="form-group row" style={{marginBottom:this.isRoleBank(this.state.role,this.state.listRole) ? 7 : 20}}>                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
                         Role
                       </label>
@@ -347,7 +361,7 @@ class userEdit extends React.Component{
                       </div>                 
                     </div>
 
-                    { this.isRoleBank(this.state.role) && 
+                    { this.isRoleBank(this.state.role, this.state.listRole) && 
                       <div className="form-group row" style={{marginBottom:20}}>                   
                         <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
                           Bank
@@ -355,18 +369,9 @@ class userEdit extends React.Component{
                         <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                           :
                         </label>
-                        <div className="col-sm-4">
-                          <DropDown
-                            value={this.state.bank}
-                            label="Bank"
-                            data={this.state.listBank}
-                            id="id"
-                            labelName="name"
-                            onChange={this.onChangeDropDown}
-                            disabled={this.state.listBank && this.state.listBank.length && this.state.listBank.length !== 0 ? false : true}
-                            fullWidth
-                          />
-                        </div>                 
+                        <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
+                          {this.state.bank_name}
+                        </label>              
                       </div>
                     }
 
@@ -398,7 +403,10 @@ class userEdit extends React.Component{
                       <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
                         :
                       </label>
-                      <div className="col-sm-4">
+                      <div className="col-sm-1" style={{lineHeight:1.5, textAlign:'center', paddingTop:'5px', paddingRight:'0px', paddingLeft:'0px'}}>
+                        (+62)
+                      </div>
+                      <div className="col-sm-3" style={{paddingLeft:'0px'}}>
                         <TextField
                           id="phone"
                           type="tel"
