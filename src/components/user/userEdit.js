@@ -77,7 +77,7 @@ class userEdit extends React.Component{
               username: dataUser.dataUser.username,
               password: dataUser.dataUser.password,
               email: dataUser.dataUser.email,
-              phone: dataUser.dataUser.phone,
+              phone: dataUser.dataUser.phone && dataUser.dataUser.phone.substring(2,dataUser.dataUser.phone.length),
               status: dataUser.dataUser.status,
             }, () => { this.getBankList() })
           } else {
@@ -102,7 +102,7 @@ class userEdit extends React.Component{
         const dataUser = {
           roles : [parseInt(this.state.role)],
           bank: this.isRoleBank(this.state.role) ? parseInt(this.state.bank) : 0,
-          phone : this.state.phone,
+          phone : `62${this.state.phone}`,
           email : this.state.email,
           status : this.state.status,
         }
@@ -244,7 +244,7 @@ class userEdit extends React.Component{
         ) {
         flag = false;
         errorMessage = 'Mohon input email dengan benar'
-      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
+      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(`62${this.state.phone}`)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
       } else if ( this.isRoleBank(this.state.role) && (!this.state.bank || this.state.bank === 0)) {
@@ -398,7 +398,10 @@ class userEdit extends React.Component{
                       <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
                         :
                       </label>
-                      <div className="col-sm-4">
+                      <div className="col-sm-1" style={{lineHeight:1.5, textAlign:'center', paddingTop:'5px', paddingRight:'0px', paddingLeft:'0px'}}>
+                        (+62)
+                      </div>
+                      <div className="col-sm-3" style={{paddingLeft:'0px'}}>
                         <TextField
                           id="phone"
                           type="tel"
