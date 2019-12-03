@@ -81,9 +81,6 @@ class userEdit extends React.Component{
                 listRoleNew.push(dataListRole[key])
               }
             }
-            console.log(listRoleNew)
-
-            console.log(dataUser)
             
             this.setState({
               listRole: listRoleNew,
