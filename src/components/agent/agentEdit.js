@@ -39,8 +39,7 @@ class AgentEdit extends React.Component{
       kategori_name: '',
       dataAgent: {},
       bank: [],
-      instansi: 0,
-      listPenyediaAgent: [],
+      instansi: '',
       listBank: [],
       loading: true,
       status: true,
@@ -72,22 +71,21 @@ class AgentEdit extends React.Component{
 
       if(data) {
         if(!data.error) {
-          const dataAgent = destructAgent(data.dataAgent, data.bankList.data, data.dataListAgent.data);
+          const dataAgent = destructAgent(data.dataAgent, false, data.bankList.data);
 
           this.setState({
             listBank: data.bankList.data,
-            listPenyediaAgent : data.dataListAgent.data,
             status: dataAgent.status,
             agentId: dataAgent.id,
             agentName: dataAgent.name,
             username: dataAgent.username,
-            phone: dataAgent.phone,
+            phone: dataAgent.phone && dataAgent.phone.toString().substring(2,dataAgent.phone.length),
             email: dataAgent.email,
             kategori: dataAgent.category,
             kategori_name: dataAgent.category_name,
             agent_provider_name: dataAgent.agent_provider_name,
             bank: dataAgent.banks,
-            instansi: dataAgent.agent_provider,
+            instansi: dataAgent.instansi,
             loading: false,
           })
         } else {
@@ -147,31 +145,6 @@ class AgentEdit extends React.Component{
           [labelName]: value,
         })
       } 
-    }
-
-    onChangeDropDown = (e) => {
-      const labelName = e.target.name.toString().toLowerCase();
-      let instansi = e.target.value;
-
-      if(labelName === 'kategori') {
-        if(e.target.value === 'agent') {
-          for(const key in this.state.listPenyediaAgent) {
-            instansi = this.state.listPenyediaAgent[key].id;
-            break;
-          }
-        } else if(e.target.value === 'account_executive') {
-          for(const key in this.state.listBank) {
-            instansi = this.state.listBank[key].id;
-            break;
-          }
-        }
-        this.setState({instansi})
-      }
-
-      this.setState({
-        [labelName]: e.target.value,
-        bank: [],
-      })
     }
 
     onChangeDropDownMultiple = (e) => {
@@ -242,7 +215,7 @@ class AgentEdit extends React.Component{
       } else if (!this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email) ) {
         flag = false;
         errorMessage = 'Mohon input email dengan benar'
-      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
+      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(`62${this.state.phone}`)) {
         flag = false;
         errorMessage = 'Mohon input kontak pic dengan benar'
       } else if (!this.state.instansi || this.state.instansi.length === 0) {
@@ -364,7 +337,10 @@ class AgentEdit extends React.Component{
                     <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
                       :
                     </label>
-                    <div className="col-sm-4">
+                    <div className="col-sm-1" style={{lineHeight:1.5, textAlign:'right', paddingTop:'5px', paddingRight:'0px', paddingLeft:'0px'}}>
+                      (+62)
+                    </div>
+                    <div className="col-sm-3">
                       <TextField
                         id="phone"
                         type="tel"
@@ -400,7 +376,7 @@ class AgentEdit extends React.Component{
                       :
                     </label>
                     <div className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                      { this.state.agent_provider_name }
+                      { this.state.instansi }
                     </div>                 
                   </div>
                   
