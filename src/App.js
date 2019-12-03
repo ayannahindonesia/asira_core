@@ -76,6 +76,8 @@ import axios from 'axios'
 import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
 import CalonNasabahList from './components/calonNasabah/calonNasabahList';
 import calonNasabahDetail from './components/calonNasabah/calonNasabahDetail';
+import CalonNasabahArsipList from './components/calonNasabah/calonNasabahArsipList';
+import CalonNasabahArsipDetail from './components/calonNasabah/calonNasabahArsipDetail';
 
 class App extends React.Component {
   _isMounted = false;
@@ -204,6 +206,9 @@ class App extends React.Component {
 
                   { checkPermission('core_borrower_get_all') && <Route path='/listCalonNasabah' component={CalonNasabahList}></Route>}
                   { checkPermission('core_borrower_get_details') && <Route path='/detailCalonNasabah/:id' component={calonNasabahDetail}></Route>}
+
+                  { checkPermission('core_borrower_get_all') && <Route path='/listCalonNasabahArsip' component={CalonNasabahArsipList}></Route>}
+                  { checkPermission('core_borrower_get_details') && <Route path='/detailCalonNasabahArsip/:id' component={CalonNasabahArsipDetail}></Route>}
 
                   {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
 
