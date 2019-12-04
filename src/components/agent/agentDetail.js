@@ -8,8 +8,6 @@ import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getAgentFunction } from './saga'
 import { getToken } from '../index/token';
-import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
-import { getAllBankList } from '../bank/saga';
 import { destructAgent, isRoleAccountExecutive } from './function';
 
 const styles = (theme) => ({
@@ -34,6 +32,7 @@ class AgentDetail extends React.Component{
       agentName: '',
       agent_provider_name: '',
       username: '',
+      instansi:'',
       phone:'',
       email:'',
     };
@@ -57,12 +56,11 @@ class AgentDetail extends React.Component{
       const param = {
         agentId: this.state.agentId
       };
-      const data = await getAgentFunction(param, getPenyediaAgentListFunction, getAllBankList) ;
+      const data = await getAgentFunction(param) ;
 
       if(data) {
-        
         if(!data.error) {
-          const dataAgent = destructAgent(data.dataAgent, data.bankList.data, data.dataListAgent.data);
+          const dataAgent = destructAgent(data.dataAgent);
 
           this.setState({
             status: dataAgent.status,
@@ -75,6 +73,7 @@ class AgentDetail extends React.Component{
             kategori_name: dataAgent.category_name,
             agent_provider_name: dataAgent.agent_provider_name,
             bank_name: dataAgent.banks_name,
+            instansi: dataAgent.instansi,
             loading: false,
           })
         } else {
@@ -206,7 +205,7 @@ class AgentDetail extends React.Component{
                     :
                   </label>
                   <div className="col-sm-4 col-form-label" style={{height:3.5}}>
-                    { this.state.agent_provider_name }
+                    { this.state.instansi }
                   </div>                 
                 </div>
                 
