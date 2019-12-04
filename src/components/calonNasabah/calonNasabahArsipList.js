@@ -57,7 +57,9 @@ class CalonNasabahArsipList extends React.Component{
     }
 
     refresh = async function(){
-        const param = {};
+        const param = {
+            status: 'rejected'
+        };
         param.search_all = this.state.search;
 
         param.rows = this.state.rowsPerPage;
@@ -155,7 +157,7 @@ class CalonNasabahArsipList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/detailCalonNasabah/' : null}
+                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/detailCalonNasabahArsip/' : null}
                     />
 
                   

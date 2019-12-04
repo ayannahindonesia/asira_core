@@ -69,6 +69,10 @@ class CalonNasabahArsipDetail extends React.Component{
           if(!data.error) {
             const dataUser = data.dataUser || {};
             let flag = false;
+
+            if(dataUser && dataUser.status && dataUser.status !== 'rejected') {
+              flag = true;
+            }
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
 
@@ -153,7 +157,7 @@ class CalonNasabahArsipDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listCalonNasabah'/>            
+            return <Redirect to='/listCalonNasabahArsip'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
