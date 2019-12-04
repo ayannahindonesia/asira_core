@@ -72,6 +72,10 @@ class CalonNasabahDetail extends React.Component{
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
 
+            if(dataUser && dataUser.status && dataUser.status === 'rejected') {
+              flag = true
+            }
+
             if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
               flag = true
             }
