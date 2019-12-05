@@ -356,7 +356,10 @@ class agentAdd extends React.Component{
                     <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
                       :
                     </label>
-                    <div className="col-sm-4">
+                    <div className="col-sm-1" style={{lineHeight:1.5, textAlign:'right', paddingTop:'5px', paddingRight:'0px', paddingLeft:'0px'}}>
+                      (+62)
+                    </div>
+                    <div className="col-sm-3">
                       <TextField
                         id="phone"
                         type="tel"

@@ -10,7 +10,7 @@ import { getBorrowerFunction, getImageFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate } from '../global/globalFunction';
-import DialogComponent from './../subComponent/DialogComponent'
+import DialogComponent from '../subComponent/DialogComponent'
 
 const styles = (theme) => ({
     container: {
@@ -18,7 +18,7 @@ const styles = (theme) => ({
     },
   });
 
-class CalonNasabahDetail extends React.Component{
+class CalonNasabahArsipDetail extends React.Component{
     _isMounted = false;
 
     state = {
@@ -69,12 +69,12 @@ class CalonNasabahDetail extends React.Component{
           if(!data.error) {
             const dataUser = data.dataUser || {};
             let flag = false;
+
+            if(dataUser && dataUser.status && dataUser.status !== 'rejected') {
+              flag = true;
+            }
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
-
-            if(dataUser && dataUser.status && dataUser.status === 'rejected') {
-              flag = true
-            }
 
             if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
               flag = true
@@ -157,7 +157,7 @@ class CalonNasabahDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listCalonNasabah'/>            
+            return <Redirect to='/listCalonNasabahArsip'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -174,7 +174,7 @@ class CalonNasabahDetail extends React.Component{
         } else if(getToken()){
             return(
               <div className="container mt-4">
-                <h3>Calon Nasabah - Detail</h3>
+                <h3> Calon Nasabah Arsip  - Detail</h3>
                 
                 <hr/>
                  
@@ -376,4 +376,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(CalonNasabahDetail);
+  )(CalonNasabahArsipDetail);
