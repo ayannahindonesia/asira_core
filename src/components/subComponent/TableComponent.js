@@ -5,6 +5,7 @@ import Pagination from 'rc-pagination';
 import {Link} from 'react-router-dom';
 import Loader from 'react-loader-spinner';
 import { formatNumber } from '../global/globalFunction';
+import CheckBox from '@material-ui/core/Checkbox';
 
 
 class TableComponent extends React.Component {
@@ -17,12 +18,31 @@ class TableComponent extends React.Component {
     };
   }
 
+  onChecked = (id, arrayCheckedBox) => {
+    let flag = false;
+
+    for(const key in arrayCheckedBox) {
+      if(arrayCheckedBox[key].toString() === id.toString()) {
+        flag = true;
+        break;
+      }
+    }
+
+    return flag;
+  }
+
   render() {
     return (
       <div>
         <table className="table table-hover">
           <thead className="table-warning">
             <tr >
+              {
+                this.props.checkBoxAction &&
+                <th className="text-center" scope="col" key={'CheckBox'}>
+                  <i class="fas fa-check-square"></i>
+                </th>
+              }
               <th className="text-center" scope="col" key={'#'}>#</th>
               {
                 this.props.columnData.map((data,index) => {
@@ -61,6 +81,18 @@ class TableComponent extends React.Component {
                 if(this.props.paging || (index >= ((this.props.page-1) * (this.props.rowsPerPage)) && index <= (this.props.rowsPerPage * this.props.page) - 1 )) {   
                   return (
                     <tr key={index}> 
+                      {
+                        this.props.checkBoxAction &&
+                        <td align="center" style={{paddingTop: '0px'}}>
+                          <CheckBox
+                            checked={this.onChecked(dataTable[this.props.id], this.props.arrayCheckBox)}
+                            onClick={this.props.checkBoxAction}
+                            value={dataTable[this.props.id]}
+                            color="default"
+                          />
+                        </td>
+                      }
+                     
                       <td align="center">{this.props.paging ? (index+1 + this.props.rowsPerPage*(this.props.page-1)) : index+1}</td>
                       {
                         this.props.columnData.map((dataRow, indexRow) => {                         
