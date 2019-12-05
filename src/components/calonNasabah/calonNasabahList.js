@@ -138,7 +138,7 @@ class CalonNasabahList extends React.Component{
                             <SearchBar
                                 id="search"
                                 value={this.state.search}
-                                placeholder="Search Nama Nasabah, Kategori"
+                                placeholder="Search ID Nasabah, Nama Nasabah"
                                 onChange={this.changeSearch} 
                             />
                         </div>  
