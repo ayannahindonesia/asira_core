@@ -132,7 +132,7 @@ class AgentList extends React.Component{
                         <div className="col-4">
                             <SearchBar
                                 onChange={this.changeSearch}
-                                placeholder="Search Nama Agen, Status.."
+                                placeholder="Search ID Agen, Nama Agen.."
                                 value={this.state.search}
                             />
                         </div> 
