@@ -97,7 +97,7 @@ class Main extends React.Component{
                                     </tr>
                                     <tr>
                                         <td>Nama Nasabah</td>
-                                        <td>: {this.state.rows.owner_name}</td>
+                                        <td>: {this.state.rows.borrower_name}</td>
                                         <td>Status Pinjaman</td>
                                         <td>: {
                                     this.state.status === "processing"?
