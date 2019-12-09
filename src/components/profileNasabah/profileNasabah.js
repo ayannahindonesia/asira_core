@@ -121,28 +121,28 @@ class profileNasabah extends React.Component {
 if(getToken()){
     return (
         <div className="container">
-         <div className="row">
-              <div className="form-group row">
-                      <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
-                              {this.state.errorMessage}
-                      </div>
-                          
-              </div>
-           
-              <div className="col-6">
-                    <h2 className="mt-3">Nasabah - List</h2>
-              </div>
-              <div className="col-5 mt-3 ml-5">
-              <div className="input-group">
-              <SearchBar 
-                  onChange={this.onBtnSearch}
-                  placeholder="Search Nama Nasabah, ID Nasabah.."
-                  value={this.state.searchRows}
-                />
-                  
-              </div>
-              </div>
+          <div className="row">
+          <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                                    {this.state.errorMessage}
+          </div> 
           </div>
+          <div className="row">
+          
+                        <div className="col-7">
+                             <h2 className="mt-3">Nasabah - List</h2>
+                        </div>
+                        <div className="col-4 mt-3 ml-5">
+                        <div className="input-group">
+                          <SearchBar 
+                            onChange={this.onBtnSearch}
+                            placeholder="Search Nama Nasabah, ID Nasabah.."
+                            value={this.state.searchRows}
+                          />
+                           
+                        </div>
+                        </div>
+            </div>
+
         <hr></hr>
                      < TableComponent
                         id={"id"}
