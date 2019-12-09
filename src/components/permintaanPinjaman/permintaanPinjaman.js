@@ -16,7 +16,7 @@ const columnDataUser = [
         label: 'ID Penyedia Agen',
       },
       {
-        id: 'owner_name',
+        id: 'borrower_name',
         numeric: false,
         label: 'Nama Nasabah',
       },
