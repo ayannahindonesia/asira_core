@@ -59,7 +59,7 @@ class LayananAdd extends React.Component{
                 this.addLayananBtn(newData)
             };
             reader.onerror = function (error) {
-              console.log('Error: ', error);
+              this.setState({errorMessage:"Gambar gagal tersimpan"})
             };
         }
         

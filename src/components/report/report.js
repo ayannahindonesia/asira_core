@@ -168,7 +168,6 @@ class Report extends React.Component{
     getAllLoanData = async function (params) {
         const data = await getAllLoanDataFunction(params)
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({dataReport:data.reportFee.data,errorMessage:"",errorMessageBank:'',errorMessagePencairan:'',munculinTable:true,loading:false})
             }else{
@@ -218,6 +217,12 @@ class Report extends React.Component{
         if(getToken()){
             return(
                 <div className="container mt-2">
+                     <div className="form-group row">
+                                        <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                                                {this.state.errorMessage}
+                                        </div>
+                                            
+                                </div>
                     <h2>Report</h2>
                     <hr></hr>
                     <div className="form-group row">

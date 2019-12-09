@@ -2,7 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import Moment from 'react-moment';
 import { GlobalFunction } from '../globalFunction'
-import { getDetailFunction, getDetailBorrowerFunction } from './saga';
+import { getDetailFunction } from './saga';
 import { getToken } from '../index/token';
 
 class Main extends React.Component{
@@ -11,7 +11,6 @@ class Main extends React.Component{
     componentDidMount(){
         this._isMounted=true
         this.getDataDetail()
-        this.getDataBorrower()
     }
     componentWillUnmount(){
         this._isMounted = false
@@ -24,7 +23,7 @@ class Main extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({rows:data.data,items:data.data.fees,status:data.data.status})
+                this.setState({borrowerDetail:data.data.borrower_info,rows:data.data,items:data.data.fees,status:data.data.status})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -53,23 +52,6 @@ class Main extends React.Component{
         return jsx
     }
     
-    getDataBorrower = async function () {
-        const param ={
-            id:this.props.match.params.idBorrower
-        }
-
-        const data = await getDetailBorrowerFunction(param)
-
-        if(data){
-            console.log(data)
-            if(!data.error){
-                this.setState({borrowerDetail:data.data})
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-        }
-        
-    }
 
 
     btnBack = ()=>{
