@@ -21,23 +21,34 @@ export function  validatePhone(phone) {
     return flag;
 }
 
-export function checkPermission(stringPermission, stringPermissionSecond) {
+export function checkPermission(stringPermission) {
   let flag = false;
   
   const listPermission = getProfileUser() ? JSON.parse(getProfileUser()) : [];
 
 
   for(const key in listPermission) {
-    if(stringPermission && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
-      flag = true;
-      break;
-    } else if(stringPermissionSecond && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermissionSecond.toString().toLowerCase()) {
-      flag = true;
-      break;
-    } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
-      flag = true;
-      break;
+    
+    if(typeof(stringPermission) !== 'object') {
+      if(stringPermission && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
+        flag = true;
+        break;
+      } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
+        flag = true;
+        break;
+      }
+    } else {
+      for(const keyPermission in stringPermission) {
+        if(stringPermission[keyPermission] && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission[keyPermission].toString().toLowerCase()) {
+          flag = true;
+          break;
+        } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
+          flag = true;
+          break;
+        }
+      }
     }
+
   }
   
   return flag;
