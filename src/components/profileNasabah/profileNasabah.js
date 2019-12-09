@@ -62,7 +62,9 @@ class profileNasabah extends React.Component {
   componentWillUnmount(){
     this._isMounted = false
   }
-
+  componentWillReceiveProps(newProps){
+    this.setState({errorMessage:newProps.error})
+}
   //Ambil data pertama kali
   getAllData = async function(){
       const param ={
@@ -75,13 +77,11 @@ class profileNasabah extends React.Component {
       }
 
       const data = await getProfileNasabahFunction(param)
-      console.log(data.listNasabah.data)
       
       if(data){
 
         if(!data.error){
           const dataNasabah = data.listNasabah.data;
-          console.log(dataNasabah)
 
           for (const key in dataNasabah){
              dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
@@ -122,19 +122,26 @@ if(getToken()){
     return (
         <div className="container">
          <div className="row">
-                        <div className="col-6">
-                             <h2 className="mt-3">Nasabah - List</h2>
-                        </div>
-                        <div className="col-5 mt-3 ml-5">
-                        <div className="input-group">
-                        <SearchBar 
-                            onChange={this.onBtnSearch}
-                            placeholder="Search Nama Nasabah, ID Nasabah.."
-                            value={this.state.searchRows}
-                          />
-                           
-                        </div>
-                        </div>
+              <div className="form-group row">
+                      <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                              {this.state.errorMessage}
+                      </div>
+                          
+              </div>
+           
+              <div className="col-6">
+                    <h2 className="mt-3">Nasabah - List</h2>
+              </div>
+              <div className="col-5 mt-3 ml-5">
+              <div className="input-group">
+              <SearchBar 
+                  onChange={this.onBtnSearch}
+                  placeholder="Search Nama Nasabah, ID Nasabah.."
+                  value={this.state.searchRows}
+                />
+                  
+              </div>
+              </div>
           </div>
         <hr></hr>
                      < TableComponent

@@ -79,7 +79,6 @@ class ProductEdit extends React.Component{
       
     handleChange = (selectedOption) => {
     this.setState({ financing_sector: selectedOption });
-    console.log(`Option selected:`, selectedOption);
     };
 
     btnEditProduct = ()=>{

@@ -6,7 +6,7 @@ import { getToken } from '../index/token';
 import Loader from 'react-loader-spinner'
 
 class ProductDetail extends React.Component{
-    state = {rows:[],fees:[],collaterals:[],financing_sector:[],layanan:"",loading:true}
+    state = {rows:[],fees:[],collaterals:[],financing_sector:[],layanan:"",loading:true,errorMessage:null}
     _isMounted = false
     componentDidMount(){
         this.getDetailProduct()
@@ -14,6 +14,9 @@ class ProductDetail extends React.Component{
     }
     componentWillUnmount(){
         this._isMounted = false
+    }
+    componentWillReceiveProps(newProps){
+        this.setState({errorMessage:newProps.error})
     }
     getDetailProduct = async function () {
         var id = this.props.match.params.id
@@ -23,7 +26,7 @@ class ProductDetail extends React.Component{
             if(!data.error){
                 this.setState({loading:false,layanan:data.serviceProduct.name,rows:data.dataProduct,fees:data.dataProduct.fees,collaterals:data.dataProduct.collaterals,financing_sector:data.dataProduct.financing_sector})
             }else{
-                console.log(data.error)
+                this.setState({errorMessage:data.error})
             }
         }
     }
@@ -60,6 +63,12 @@ class ProductDetail extends React.Component{
         if(getToken()){
             return(
                 <div className="container">
+                     <div className="form-group row">
+                                        <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                                                {this.state.errorMessage}
+                                        </div>
+                                            
+                    </div>
                    <h2>Produk - Detail</h2>
                     <hr></hr>
                     <form>

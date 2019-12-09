@@ -51,7 +51,6 @@ class LayananEdit extends React.Component{
         this.setState({selectedFile:event.target.files[0]})
     }
     valueHandler = ()=>{
-        console.log(this.state.selectedFile)
         return  this.state.selectedFile ? this.state.selectedFile.name :"Browse Image"
         
     }
@@ -62,7 +61,8 @@ class LayananEdit extends React.Component{
             callback(reader.result.replace("data:image/jpeg;base64,",""))
         };
         reader.onerror = function (error) {
-          console.log('Error: ', error);
+          this.setState({errorMessage:"Gambar gagal tersimpan"})
+
         };
      }
 
@@ -92,7 +92,8 @@ class LayananEdit extends React.Component{
                         this.editLayananBtn(param)
                     };
                     reader.onerror = function (error) {
-                      console.log('Error: ', error);
+                        this.setState({errorMessage:"Gambar gagal tersimpan"})
+
                     };
                 }
              
@@ -152,7 +153,6 @@ class LayananEdit extends React.Component{
 
         }
         if(getToken()){
-            console.log(this.state.check)
             return(
                 <div className="container">
                    <h2 className="mt-3">Layanan - Ubah</h2>
