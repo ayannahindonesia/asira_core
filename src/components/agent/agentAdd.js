@@ -238,9 +238,9 @@ class agentAdd extends React.Component{
       } else if (!this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email) ) {
         flag = false;
         errorMessage = 'Mohon input email dengan benar'
-      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(this.state.phone)) {
+      } else if (!this.state.phone || this.state.phone.length === 0 || !validatePhone(`62${this.state.phone}`)) {
         flag = false;
-        errorMessage = 'Mohon input kontak pic dengan benar'
+        errorMessage = 'Mohon input nomor hp dengan benar'
       } else if (!this.state.instansi || this.state.instansi.length === 0) {
         flag = false;
         errorMessage = 'Mohon input instansi dengan benar'
