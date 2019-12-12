@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { getDetailLayananFunction, getImageFunction } from './saga'
+import { getDetailLayananFunction } from './saga'
 import { getToken } from '../index/token';
 
 
