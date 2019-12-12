@@ -1,7 +1,7 @@
 import React from 'react'
 import swal from 'sweetalert'
 import Loader from 'react-loader-spinner'
-import { editLayananFunction, getDetailLayananFunction, getImageFunction } from './saga'
+import { editLayananFunction, getDetailLayananFunction } from './saga'
 import { Redirect } from 'react-router-dom'
 import './../../support/css/layananAdd.css'
 import { getToken } from '../index/token';
