@@ -35,11 +35,11 @@ class LayananEdit extends React.Component{
 
     getLayananEdit = async function(){
         const id = this.props.match.params.id
-        const data = await getDetailLayananFunction({id},getImageFunction)
+        const data = await getDetailLayananFunction({id})
 
         if(data){
             if(!data.error){
-                this.setState({rows:data.data,imageVal:data.imageData.image_string,loading:false, check: data.data && data.data.status && data.data.status ==='active' ? true : false})
+                this.setState({rows:data.data,imageVal:data.data.image,loading:false, check: data.data && data.data.status && data.data.status ==='active' ? true : false})
             }else{
                 this.setState({errorMessage:data.error,loading:false})
             }
@@ -174,7 +174,7 @@ class LayananEdit extends React.Component{
                             <div className="col-sm-9">
                             <input className="AddStyleButton btn btn-primary" type="button" onClick={()=>this.refs.input.click()} value={this.valueHandler()}></input>
                             <input ref="input" style={{display:"none"}} type="file" accept="image/*" onChange={this.onChangeHandler}></input>
-                            <img alt={this.state.rows.name} style={{marginLeft:"20px",width:"100px"}} src={`data:image/jpeg;png;base64,${this.state.imageVal}`}></img>
+                            <img alt={this.state.rows.name} style={{marginLeft:"20px",width:"100px"}} src={this.state.imageVal}></img>
                             </div>
                     </div>
                     <div className="form-group row">
