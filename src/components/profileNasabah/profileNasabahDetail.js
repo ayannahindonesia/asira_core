@@ -261,7 +261,7 @@ class profileNasabahDetail extends React.Component{
                                     <td>Pendidikan Pasangan</td><td>: {this.state.rows.marriage_status==="Menikah"?this.state.rows.spouse_lasteducation:"-"}</td>
                                 </tr>
                                 <tr>
-                                    <td>Tanggungan (Orang)</td><td>: {this.state.rows.marriage_status==="Menikah"?this.state.rows.dependants:"-"}</td>
+                                    <td>Tanggungan (Orang)</td><td>: { this.state.rows.dependants > 5?"Lebih dari 5":this.state.rows.dependants}</td>
                                 </tr>
 
                             </tbody>
