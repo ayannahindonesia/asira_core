@@ -25,8 +25,9 @@ class changePassword extends React.Component{
     }else if(password1.trim()==='' || password2.trim()===''){
         this.setState({errorMessage:"Field ada yang kosong - Harap periksa kembali",loading:false})
     }else{
-        const arr =  window.location.href.split("=")
-        const token = arr[1]
+        const arr =  window.location.href.split("?")
+        const token = arr[1].slice(arr[1].indexOf('=')+1,arr[1].length)
+
         const param = {
             token,
             password:password1
