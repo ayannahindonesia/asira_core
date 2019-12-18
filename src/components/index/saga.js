@@ -3,22 +3,18 @@ import { serverUrl, serverUrlGeo } from '../url';
 import jsonWebToken from 'jsonwebtoken';
 import { setToken, setTokenGeo, getTokenAuth } from './token';
 
-// const cors = require('cors');
-
-// console.log(cors)
-
-// axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
-// axios.defaults.headers.post['Access-Control-Allow-Method'] = '*'
-
 export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
     return new Promise(async (resolve) => { 
         const tokenAuth = getTokenAuth();
 
         
-        const config = {
+        const config = {          
             headers: {
                 'Authorization': "Bearer " + tokenAuth,
-            }
+            },
+            mode:'no-cors',
+            credentials: 'same-origin',
+            crossDomain:true,
         };
 
         const url = serverUrl + "client/admin_login"
