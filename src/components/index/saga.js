@@ -96,3 +96,48 @@ export async function getUserProfileFunction(param) {
     });
     
 }
+
+export async function sendEmailFunction (param,next){
+    return new Promise(async (resolve)=>{
+        const tokenAuth = getTokenAuth();
+
+        const config = {
+            headers: {'Authorization': "Bearer " + tokenAuth}
+        };
+        axios.post(serverUrl+'client/forgotpassword',param,config)
+        .then((res)=>{
+            if(next){
+                resolve(next(param))
+            }
+            resolve(res)
+        })
+        .catch((err)=>{
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            param.error = error;
+            resolve(param);
+        })
+
+    })
+}
+
+export async function changePasswordFunction (param,next){
+    return new Promise(async(resolve)=>{
+        const tokenAuth = getTokenAuth();
+
+        const config = {
+            headers: {'Authorization': "Bearer " + tokenAuth}
+        };
+        axios.post(serverUrl+'client/resetpassword',param,config)
+        .then((res)=>{
+            if(next){
+                resolve(next(param))
+            }
+            resolve(res)
+        })
+        .catch((err)=>{
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            param.error = error;
+            resolve(param);
+        })
+    })
+}
