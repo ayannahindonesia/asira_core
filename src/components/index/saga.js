@@ -3,8 +3,12 @@ import { serverUrl, serverUrlGeo } from '../url';
 import jsonWebToken from 'jsonwebtoken';
 import { setToken, setTokenGeo, getTokenAuth } from './token';
 
-axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
-axios.defaults.headers.post['Access-Control-Allow-Method'] = '*'
+// const cors = require('cors');
+
+// console.log(cors)
+
+// axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
+// axios.defaults.headers.post['Access-Control-Allow-Method'] = '*'
 
 export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
     return new Promise(async (resolve) => { 
@@ -14,8 +18,6 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
         const config = {
             headers: {
                 'Authorization': "Bearer " + tokenAuth,
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Method' : '*',
             }
         };
 
