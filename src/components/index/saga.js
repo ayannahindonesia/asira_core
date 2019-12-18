@@ -3,13 +3,20 @@ import { serverUrl, serverUrlGeo } from '../url';
 import jsonWebToken from 'jsonwebtoken';
 import { setToken, setTokenGeo, getTokenAuth } from './token';
 
+axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
+axios.defaults.headers.post['Access-Control-Allow-Method'] = '*'
+
 export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
     return new Promise(async (resolve) => { 
         const tokenAuth = getTokenAuth();
 
         
         const config = {
-            headers: {'Authorization': "Bearer " + tokenAuth}
+            headers: {
+                'Authorization': "Bearer " + tokenAuth,
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Method' : '*',
+            }
         };
 
         const url = serverUrl + "client/admin_login"
@@ -17,7 +24,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
         const logindata ={key: param.key,password: param.password};
   
         axios.post(url,logindata,config).then((res)=>{
-
+            console.log(res.headers)
             setToken(res.data.token, new Date().getTime() + (res.data.expires_in*1000))
             
             param.dataToken = res.data.token;
@@ -33,6 +40,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
             }
             
         }).catch((err)=>{
+            console.log(err)
             console.log(err.toString())
             const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error
