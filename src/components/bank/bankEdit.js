@@ -342,19 +342,19 @@ class BankEdit extends React.Component{
                        <div className="form-group row">
                             <label className="col-sm-2 col-form-label">ID Bank</label>
                             <div className="col-sm-10">
-                            <input type="text" id="disabledTextInput" className="form-control" ref="idBank" defaultValue={this.state.dataBank.id} />
+                            <input type="text" name="idBank" className="form-control" ref="idBank" defaultValue={this.state.dataBank.id} />
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Nama Bank</label>
                             <div className="col-sm-10">
-                            <input type="text" id="disabledTextInput" className="form-control" ref="namaBank" defaultValue={this.state.dataBank.name}/>
+                            <input type="text" name="namaBank" className="form-control" ref="namaBank" defaultValue={this.state.dataBank.name}/>
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Tipe Bank</label>
                             <div className="col-sm-10">
-                            <input type="text" id="disabledTextInput" className="form-control" ref="tipeBank"  defaultValue={this.state.namaTipeBank}/>
+                            <input type="text" name="tipeBank" className="form-control" ref="tipeBank"  defaultValue={this.state.namaTipeBank}/>
                             </div>
                         </div>
                        </fieldset>
