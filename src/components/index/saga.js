@@ -104,7 +104,7 @@ export async function sendEmailFunction (param,next){
         const config = {
             headers: {'Authorization': "Bearer " + tokenAuth}
         };
-        axios.post(serverUrl+'client/forgotpassword',param,config)
+        axios.post(serverUrl+'client/forgotpassword?system=core',param,config)
         .then((res)=>{
             if(next){
                 resolve(next(param))
