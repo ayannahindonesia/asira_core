@@ -8,15 +8,10 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
         const tokenAuth = getTokenAuth();
 
         
-        const config = {          
+        const config = {
             headers: {
                 'Authorization': "Bearer " + tokenAuth,
-                'Access-Control-Allow-Origin': '*',
-            },          
-            mode:'no-cors',
-            credentials: 'same-origin',
-            crossDomain:true,
-            crossdomain:true,
+            },
         };
 
         const url = serverUrl + "client/admin_login"
