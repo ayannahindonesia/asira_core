@@ -6,7 +6,6 @@ import swal from 'sweetalert'
 import {Redirect} from 'react-router-dom'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction,sendEmailFunction} from './saga'
 import { setProfileUser } from './token'
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
