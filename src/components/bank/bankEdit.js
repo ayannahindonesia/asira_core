@@ -132,7 +132,6 @@ class BankEdit extends React.Component{
         const data = await getBankDetailFunction(param)
 
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({dataBank:data,productID:data.products,serviceID:data.services})
                 if (this.state.dataBank){
@@ -236,7 +235,6 @@ class BankEdit extends React.Component{
 
     findServiceName = (service_id) => {
         let stringService = '';
-        console.log(this.state.serviceName)
         for(const key in this.state.serviceName) {
             if(this.state.serviceName[key].id.toString() === service_id.toString()) {
                 stringService = this.state.serviceName[key].label
