@@ -32,6 +32,7 @@ class agentAdd extends React.Component{
     _isMounted = false;
 
     state = {
+      selectedFile:null,
       diKlik:false,
       errorMessage:'',
       kategori : 'agent',
@@ -64,6 +65,15 @@ class agentAdd extends React.Component{
 
     componentWillUnmount() {
       this._isMounted = false;
+    }
+
+    valueHandler = ()=>{
+      return  this.state.selectedFile ? this.state.selectedFile.name :"Browse Image"
+      
+    }
+    onChangeHandler = (event)=>{
+    //untuk mendapatkan file image
+       this.setState({selectedFile:event.target.files[0]})
     }
 
     refresh = async function() {
@@ -103,15 +113,25 @@ class agentAdd extends React.Component{
 
     btnSave=()=>{
       if (this.validate()) {
-        const dataAgent = constructAgent(this.state, true);
         
+        const dataAgent = constructAgent(this.state, true);
         const param = {
           dataAgent,
         }
-
-        this.setState({loading: true});
+        const pic = this.state.selectedFile
+        const reader = new FileReader();
+        reader.readAsDataURL(pic);
+        reader.onload =  () => {   
+          var arr = reader.result.split(",")   
+          var image = arr[1].toString()
+          param.dataAgent.image = image
+          
+          this.postAgent(param)
+      };
+      reader.onerror = function (error) {
+        this.setState({errorMessage:"Gambar gagal tersimpan"})
+      };
         
-        this.postAgent(param)
       }
     }
 
@@ -463,6 +483,19 @@ class agentAdd extends React.Component{
                       />
                       
                     </div>           
+                  </div>
+
+                  <div className="form-group row" style={{marginBottom:40}}>                
+                    <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                      Upload Gambar
+                    </label>
+                    <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                      :
+                    </label>
+                    <div className="col-sm-4" >
+                       <input className="btn btn-primary" type="button" onClick={()=>this.refs.input.click()} value={this.valueHandler()}></input>
+                       <input ref="input" style={{display:"none"}} type="file" accept="image/*" onChange={this.onChangeHandler}></input> 
+                    </div>                 
                   </div>
                   
                   <div className="form-group row">
