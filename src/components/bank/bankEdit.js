@@ -132,6 +132,7 @@ class BankEdit extends React.Component{
         const data = await getBankDetailFunction(param)
 
         if(data){
+            console.log(data)
             if(!data.error){
                 this.setState({dataBank:data,productID:data.products,serviceID:data.services})
                 if (this.state.dataBank){
@@ -167,7 +168,7 @@ class BankEdit extends React.Component{
 
     getServiceDataSudahTerpilih = async function(){
         let param = {
-            id:this.state.dataBank.products.toString()
+            id:this.state.dataBank.services.toString()
         }
 
         const data = await getAllLayananListFunction(param)
