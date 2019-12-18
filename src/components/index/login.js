@@ -24,7 +24,8 @@ class Login extends React.Component{
         isLogin : false,
         open:false,
         email:'',
-        error:''
+        error:'',
+        sendMail:false
     }
   
     componentDidMount(){
@@ -70,8 +71,9 @@ class Login extends React.Component{
         
     }
     handleSend=()=>{
+        this.setState({sendMail:true})
         if(!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))){
-            this.setState({error:"Masukan format email yang benar"})
+            this.setState({error:"Masukan format email yang benar",sendMail:false})
         }else{
             let newData = {
                 email:this.state.email
@@ -87,7 +89,7 @@ class Login extends React.Component{
                 swal("Email Terkirim",`Harap cek di ${this.state.email}`,"success")
                 this.setState({error:'',open:false})
             }else{
-                this.setState({error:data.error})
+                this.setState({error:data.error,sendMail:false})
             }
         }
     }
@@ -130,6 +132,18 @@ class Login extends React.Component{
         }
     }
 
+    renderBtnOrLoadingEmail =()=>{
+        if (this.state.sendMail){
+            return ( 
+                <input type="button" className="btn btn-primary" disabled={true} style={{cursor:"progress"}} value="Kirim Email"/> 
+            );
+        }
+        else{
+            return(
+                <input type="button" className="btn btn-primary" onClick={this.handleSend} value="Kirim Email"/> 
+            )
+        }
+    }
     render(){
         if(this.state.isLogin){
             return(
@@ -162,12 +176,8 @@ class Login extends React.Component{
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={this.handleSend} color="primary">
-            Kirim
-          </Button>
+          <input type="button" className="btn btn-info" onClick={this.handleClose} value="Tutup"/> 
+          {this.renderBtnOrLoadingEmail()}
         </DialogActions>
       </Dialog>
                 <div className="row">
