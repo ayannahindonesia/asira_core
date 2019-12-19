@@ -35,7 +35,7 @@ class changePassword extends React.Component{
     
             this.changePass(param)
         }else{
-           this.setState({errorMessage:"Token kosong/ Invalid"})
+           this.setState({errorMessage:"Token kosong/ Invalid - Harap Periksa Kembali"})
         }
 
         }
@@ -49,7 +49,7 @@ class changePassword extends React.Component{
                 swal("Berhasil","Password berhasil dirubah","success")
                 this.setState({errorMessage:null,diKlik:true})
              }else{
-                this.setState({errorMessage:data.error})
+                this.setState({errorMessage:"Terjadi Kesalahan - Harap Periksa Kembali"})
 
              }
          }
