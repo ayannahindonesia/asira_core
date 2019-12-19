@@ -69,6 +69,7 @@ class BankEdit extends React.Component{
         this._isMounted=true
         this.getAllProvinsi()
         this.getBankDataById()
+
     }
     componentWillUnmount(){
         this._isMounted=false
@@ -137,6 +138,7 @@ class BankEdit extends React.Component{
                 if (this.state.dataBank){
                   this.getTypeBank()
                   this.getBankService()
+                  this.getBankProduct(this.state.serviceID)
                   this.getServiceDataSudahTerpilih()
                   this.getProductDataSudahTerpilih()
                 }
