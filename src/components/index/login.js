@@ -6,13 +6,13 @@ import swal from 'sweetalert'
 import {Redirect} from 'react-router-dom'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction,sendEmailFunction} from './saga'
 import { setProfileUser } from './token'
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 
 class Login extends React.Component{
     _isMounted = false;
@@ -24,7 +24,8 @@ class Login extends React.Component{
         isLogin : false,
         open:false,
         email:'',
-        error:''
+        error:'',
+        loadMail:false,
     }
   
     componentDidMount(){
@@ -70,8 +71,9 @@ class Login extends React.Component{
         
     }
     handleSend=()=>{
+        this.setState({loadMail:true})
         if(!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))){
-            this.setState({error:"Masukan format email yang benar"})
+            this.setState({error:"Masukan format email yang benar",loadMail:false})
         }else{
             let newData = {
                 email:this.state.email
@@ -87,8 +89,30 @@ class Login extends React.Component{
                 swal("Email Terkirim",`Harap cek di ${this.state.email}`,"success")
                 this.setState({error:'',open:false})
             }else{
-                this.setState({error:data.error})
+                this.setState({error:'Email tidak terdaftar/ Jaringan Error - Harap Periksa Kembali',loadMail:false})
             }
+        }
+    }
+
+    renderBtnEmail =()=>{
+        if(this.state.loadMail){
+            return(
+                <Button color="primary">
+                    <Loader 
+                    type="ThreeDots"
+                    color="#00BFFF"
+                    height="10"	
+                    width="10"
+                />   
+                </Button>
+            )
+        }
+        else{
+            return(
+                <Button onClick={this.handleSend} color="primary">
+                    Kirim
+                </Button>
+            )
         }
     }
     
@@ -130,6 +154,18 @@ class Login extends React.Component{
         }
     }
 
+    renderBtnOrLoadingEmail =()=>{
+        if (this.state.sendMail){
+            return ( 
+                <input type="button" className="btn btn-primary" disabled={true} style={{cursor:"progress"}} value="Kirim Email"/> 
+            );
+        }
+        else{
+            return(
+                <input type="button" className="btn btn-primary" onClick={this.handleSend} value="Kirim Email"/> 
+            )
+        }
+    }
     render(){
         if(this.state.isLogin){
             return(
@@ -162,12 +198,10 @@ class Login extends React.Component{
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={this.handleSend} color="primary">
-            Kirim
-          </Button>
+                <Button onClick={this.handleClose} color="primary">
+                     Cancel
+                </Button>
+                {this.renderBtnEmail()}
         </DialogActions>
       </Dialog>
                 <div className="row">

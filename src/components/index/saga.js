@@ -103,7 +103,6 @@ export async function getUserProfileFunction(param) {
 export async function sendEmailFunction (param,next){
     return new Promise(async (resolve)=>{
         const tokenAuth = getTokenAuth();
-
         const config = {
             headers: {'Authorization': "Bearer " + tokenAuth}
         };
@@ -115,12 +114,9 @@ export async function sendEmailFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            console.log(err)
-            // console.log(err.response)
-            // console.log(err.response.data)
-            // console.log(err.toString())
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
-            param.error = error;
+            console.log(err.toString())
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            param.error = error
             resolve(param);
         })
 
