@@ -89,7 +89,7 @@ class Login extends React.Component{
                 swal("Email Terkirim",`Harap cek di ${this.state.email}`,"success")
                 this.setState({error:'',open:false})
             }else{
-                this.setState({error:'Email tidak terdaftar/ Jaringan Error - Harap Periksa Kembali',loadMail:false})
+                this.setState({error:data.error,loadMail:false})
             }
         }
     }
