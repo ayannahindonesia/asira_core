@@ -30,7 +30,7 @@ export async function TujuanListFunction(param) {
         for(const key in param) {
             filter += `&${key}=${param[key]}`
         }
-        axios.get(serverUrl+`admin/loan_purposes?orderby=updated_time&sort=asc${filter}`,config)
+        axios.get(serverUrl+`admin/loan_purposes?orderby=updated_time&sort=desc${filter}`,config)
         .then((res)=>{
             resolve(res)
         })
