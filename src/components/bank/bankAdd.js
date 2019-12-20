@@ -9,7 +9,7 @@ import { listProductFunction } from './../product/saga'
 import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import { getAllLayananListFunction } from '../layanan/saga';
-
+import CryptoJS from 'crypto-js/aes'
 
   const customStyles = {
     option: (provided, state) => ({
@@ -32,7 +32,8 @@ import { getAllLayananListFunction } from '../layanan/saga';
   }
 
 class Main extends React.Component{
-    state = {
+    state = {  
+        selectedFile:null,
         jenisProduct:null, 
         jenisLayanan: null, 
         errorMessage: null, 
@@ -80,7 +81,7 @@ class Main extends React.Component{
         this.getBankService()
         this.getAllProvinsi()
     }
-
+ 
     componentWillUnmount() {
         this._isMounted = false;
     }
@@ -217,12 +218,14 @@ class Main extends React.Component{
         var phone = this.state.phone
         var adminfee_setup = this.state.adminFeeRadioValue
         var convfee_setup = this.state.adminFeeRadioValue
-
+        
         if(this.state.jenisLayanan===null || this.state.jenisProduct===null || 
         this.refs.namaBank.value === "" || this.refs.tipeBank.value ==="0" || 
         this.refs.alamat.value ==="" || this.refs.provinsi.value==="0" || 
         this.refs.kota.value==="0" || this.refs.pic.value ===""){
             this.setState({errorMessage:"Harap cek ulang masih ada data yang belum terisi"})
+        }else if(this.state.selectedFile ===null){
+            this.setState({errorMessage:"Gambar belum terisi -  Harap Cek Ulang"})
         }
         else if (name.trim() ===""){
             this.setState({errorMessage:"Nama Bank belum terisi - Harap Cek Ulang"}) 
@@ -233,17 +236,29 @@ class Main extends React.Component{
         }
         else{
                 this.setState({submit:true})
-                for (var i=0; i<this.state.jenisLayanan.length;i++){
-                    services.push (this.state.jenisLayanan[i].value)
-                }
-                for ( i=0; i<this.state.jenisProduct.length;i++){
-                    products.push (this.state.jenisProduct[i].value)
-                }
-                var newData = {
-                    name,type,address,province,city,pic,phone,services,products,adminfee_setup,convfee_setup
-                }
-                
-               this.addBankSubmit(newData)
+                var picture = this.state.selectedFile
+                var reader = new FileReader();
+                reader.readAsDataURL(picture);
+
+                reader.onload =  () => {   
+                    var arr = reader.result.split(",")   
+                    var image = arr[1].toString()
+                    for (var i=0; i<this.state.jenisLayanan.length;i++){
+                        services.push (this.state.jenisLayanan[i].value)
+                    }
+                    for ( i=0; i<this.state.jenisProduct.length;i++){
+                        products.push (this.state.jenisProduct[i].value)
+                    }
+                    var newData = {
+                        name,type,address,province,city,pic,phone,services,products,adminfee_setup,convfee_setup,image
+                    }
+                    
+                   this.addBankSubmit(newData)
+                };
+                reader.onerror = function (error) {
+                  this.setState({errorMessage:"Gambar gagal tersimpan"})
+                };
+               
         }
     }
 
@@ -258,7 +273,11 @@ class Main extends React.Component{
             }
         }        
     }
-
+    valueHandler = ()=>{
+        
+        return  this.state.selectedFile ? this.state.selectedFile.name :"Browse Image"
+        
+    }
     handleChangeRadioAdmin =(e)=>{
         this.setState({adminFeeRadioValue:e.target.value})
     }
@@ -273,6 +292,10 @@ class Main extends React.Component{
        }
     }
 
+    onChangeHandler = (event)=>{
+        //untuk mendapatkan file image
+        this.setState({selectedFile:event.target.files[0]})
+    }
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            
@@ -401,6 +424,14 @@ class Main extends React.Component{
                             onChange={ phone => this.setState({ phone }) } className="form-control" />                                                  
                             </div>
                         </div>
+
+                        <div className="form-group row">
+                            <label className="col-sm-2 col-form-label">Gambar</label>
+                            <div className="col-sm-10">
+                            <input className="AddStyleButton btn btn-primary" type="button" onClick={()=>this.refs.input.click()} value={this.valueHandler()}></input>
+                            <input ref="input" style={{display:"none"}} type="file" accept="image/*" onChange={this.onChangeHandler}></input>             
+                            </div>
+                    </div>
                             {this.renderBtnSumbit()}
                             <input type="button" className="btn btn-secondary ml-2" value="Batal" onClick={this.btnCancel}/>
                             
