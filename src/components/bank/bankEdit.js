@@ -33,28 +33,19 @@ const customStyles = {
 class BankEdit extends React.Component{
     _isMounted=false;
     state = {
-        productID:[],serviceID:[],productSelected:[],
+        productSelected:[],
         errorMessage: null, diKlik:false,
         typeBank:[],bankService:[],bankProduct:[],
         provinsi:[],kabupaten:[],idProvinsi:null,dataBank:[],phone:'',provinsiEdit:null,namaTipeBank:'',adminFeeRadioValue:'',convinienceFeeRadioValue:'',
-        serviceName:null,productName:null,submit:false
+        serviceName:[],productName:[],submit:false
     };
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
 
     handleChangejenisLayanan = (jenisLayanan) => {
-        this.setState({ serviceName:jenisLayanan , productName: null}, (() => {
-            let stringServiceId = '';
-            if(this.state.serviceName) {
-                for(let key = 0; key < this.state.serviceName.length; key++) {
-                    stringServiceId += `${this.state.serviceName[key].value}`;
-                    if(this.state.serviceName[key + 1]) {
-                        stringServiceId += ',';
-                    }
-                }
-                this.getBankProduct(stringServiceId)
-            }
+        this.setState({ serviceName:jenisLayanan , productName: []}, (() => {
+            this.getBankProduct(this.handleServiceString(jenisLayanan))
         }));
 
     };
@@ -106,23 +97,27 @@ class BankEdit extends React.Component{
                 const dataProductList = data.productList.data || [];
                 const newProduct =[]
                 const productSelected =[]
+                
                 for(const key in dataProductList){
-                    for (const keyValue in this.state.productID){
-                    
-                        if (this.state.productID[keyValue].toString() === dataProductList[key].id.toString()) {
+                    for (const keyValue in this.state.productName){
+                        
+                        if (this.state.productName[keyValue].toString() === dataProductList[key].id.toString()) {
                             productSelected.push({
+                                key: dataProductList[key].id,
                                 value: dataProductList[key].id,
-                                label: `${dataProductList[key].name} [${this.findServiceName(dataProductList[key].id.toString())}]`,
+                                label: `${dataProductList[key].name} [${this.findServiceName(dataProductList[key].service_id.toString())}]`,
                             })
                             break;
                         }
                     }
 
                     newProduct.push({
+                        key:dataProductList[key].id,
                         value:dataProductList[key].id,
-                        label:`${dataProductList[key].name} [${this.findServiceName(dataProductList[key].id.toString())}]`
+                        label:`${dataProductList[key].name} [${this.findServiceName(dataProductList[key].service_id.toString())}]`
                     })
                 }
+                
                 this.setState({bankProduct:newProduct, productName: productSelected})
             }else{
                 this.setState({errorMessage:data.error})
@@ -140,9 +135,10 @@ class BankEdit extends React.Component{
                 const newValueService = [];
 
                 for(const key in dataListService) {
-                    for(const keyValue in this.state.serviceID) {
-                        if (this.state.serviceID[keyValue].toString() === dataListService[key].id.toString()) {
+                    for(const keyValue in this.state.serviceName) {
+                        if (this.state.serviceName[keyValue].toString() === dataListService[key].id.toString()) {
                             newValueService.push({
+                                key: dataListService[key].id,
                                 value: dataListService[key].id,
                                 label: dataListService[key].name, 
                             })
@@ -151,14 +147,16 @@ class BankEdit extends React.Component{
                     }
                     newService.push(
                         {
+                           key: dataListService[key].id,
                            value: dataListService[key].id,
                            label: dataListService[key].name, 
                         }
                     )
                 }
+                
                 this.setState(
                     {bankService:newService, serviceName:newValueService},()=>{
-                        this.getBankProduct(this.state.serviceID)
+                        this.getBankProduct(this.handleServiceString(this.state.serviceName))
                     }
                 )
             }else{
@@ -166,6 +164,21 @@ class BankEdit extends React.Component{
             }
         }
     } 
+
+    handleServiceString = (arrayService) => {
+        let stringService = '';
+
+        for(const key in arrayService) {
+            if(key.toString() !== '0') {
+                stringService += ', '
+            }
+            if(arrayService[key] && arrayService[key].value) {
+                stringService += `${arrayService[key].value}`
+            }
+        }
+
+        return stringService;
+    }
 
 
     getBankDataById = async function (){
@@ -177,7 +190,7 @@ class BankEdit extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({dataBank:data,productID:data.products,serviceID:data.services})
+                this.setState({dataBank:data,productName:data.products,serviceName:data.services})
                 if (this.state.dataBank){
                   this.getTypeBank()
                   this.getBankService()
@@ -226,11 +239,13 @@ class BankEdit extends React.Component{
 
     findServiceName = (service_id) => {
         let stringService = '';
+        
         for(const key in this.state.serviceName) {
             if(this.state.serviceName && this.state.serviceName[key] && this.state.serviceName[key].value.toString() === service_id.toString()) {
                 stringService = this.state.serviceName[key].label
             }
         }
+        
         return stringService;
     }
 
