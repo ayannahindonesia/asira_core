@@ -9,6 +9,7 @@ import { getProvinsiFunction, getKabupatenFunction, getBankDetailFunction, getBa
 import { listProductFunction } from './../product/saga'
 import { getToken } from '../index/token';
 import { getAllLayananListFunction } from '../layanan/saga';
+import BrokenLink from './../../support/img/default.png'
 
 const customStyles = {
     option: (provided, state) => ({
@@ -33,6 +34,7 @@ const customStyles = {
 class BankEdit extends React.Component{
     _isMounted=false;
     state = {
+        selectedFile:null,
         productSelected:[],
         errorMessage: null, diKlik:false,
         typeBank:[],bankService:[],bankProduct:[],
@@ -140,6 +142,7 @@ class BankEdit extends React.Component{
                             newValueService.push({
                                 key: dataListService[key].id,
                                 value: dataListService[key].id,
+                                id: dataListService[key].id,
                                 label: dataListService[key].name, 
                             })
                             break;
@@ -148,6 +151,7 @@ class BankEdit extends React.Component{
                     newService.push(
                         {
                            key: dataListService[key].id,
+                           id: dataListService[key].id,
                            value: dataListService[key].id,
                            label: dataListService[key].name, 
                         }
@@ -278,7 +282,6 @@ class BankEdit extends React.Component{
         var convfee_setup =  this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
        
 
-
         if(city === "0" || city === null){
             this.setState({errorMessage:"Kota Kosong - Harap cek ulang"})
         }else if (pic.trim()===""){
@@ -302,16 +305,29 @@ class BankEdit extends React.Component{
             }else{
                 products = []
             }
-            
-            var newData = {
-                name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup
-            }
-            const param = {
-                id:id,
-                newData
-            }
+            var picture = this.state.selectedFile
+            var reader = new FileReader();
+            reader.readAsDataURL(picture);
+
+            reader.onload =  () => {   
+                var arr = reader.result.split(",")   
+                var image = arr[1].toString()
+                
+                var newData = {
+                    name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup,image
+                }
+                const param = {
+                    id:id,
+                    newData
+                }
            
-            this.editBankBtn(param)
+                this.editBankBtn(param)
+            };
+            reader.onerror = function (error) {
+              this.setState({errorMessage:"Gambar gagal tersimpan"})
+            };
+
+            
            
        }
     }
@@ -327,7 +343,17 @@ class BankEdit extends React.Component{
             }
         }
     }
+    //=====================================GAMBAR====================
     
+    valueHandler = ()=>{
+        return  this.state.selectedFile ? this.state.selectedFile.name :"Pilih Gambar"
+    }
+
+    onChangeHandler = (event)=>{
+        //untuk mendapatkan file image
+        this.setState({selectedFile:event.target.files[0]})
+    }
+
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            
@@ -345,6 +371,15 @@ class BankEdit extends React.Component{
                    
                    <form>
                        <fieldset disabled>
+                       <div className="form-group row">
+                            <label className="col-sm-5 col-form-label">Logo Bank</label>
+                            <div className="col-sm-5">
+                            <img src={`${this.state.dataBank.image}`} width="100px" height="100px" alt="Foto agen" onError={(e)=>{
+                            e.target.attributes.getNamedItem("src").value = BrokenLink
+                            }} ></img>                    
+
+                            </div>
+                        </div>
                        <div className="form-group row">
                             <label className="col-sm-2 col-form-label">ID Bank</label>
                             <div className="col-sm-10">
@@ -437,6 +472,7 @@ class BankEdit extends React.Component{
                                 isMulti={true}
                                 options={this.state.bankService}
                                 styles={customStyles}
+                                
                             />
                             </div>
                         </div>
@@ -474,6 +510,13 @@ class BankEdit extends React.Component{
                             onChange={ phone => this.setState({ phone }) } className="form-control" />                                                       
                             </div>
                         </div>
+                        <div className="form-group row">
+                            <label className="col-sm-2 col-form-label">Gambar</label>
+                            <div className="col-sm-10">
+                            <input className="AddStyleButton btn btn-primary" type="button" onClick={()=>this.refs.input.click()} value={this.valueHandler()}></input>
+                            <input ref="input" style={{display:"none"}} type="file" accept="image/*" onChange={this.onChangeHandler}></input>             
+                            </div>
+                    </div>
                         {this.renderBtnSumbit()}
                        
                         <input type="button" className="btn btn-secondary ml-2" value="Batal" onClick={()=>this.setState({diKlik:true})}/>
