@@ -33,7 +33,7 @@ const customStyles = {
 class BankEdit extends React.Component{
     _isMounted=false;
     state = {
-        productID:[],serviceID:[],
+        productID:[],serviceID:[],productSelected:[],
         errorMessage: null, diKlik:false,
         typeBank:[],bankService:[],bankProduct:[],
         provinsi:[],kabupaten:[],idProvinsi:null,dataBank:[],phone:'',provinsiEdit:null,namaTipeBank:'',adminFeeRadioValue:'',convinienceFeeRadioValue:'',
@@ -42,9 +42,6 @@ class BankEdit extends React.Component{
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
-    handleChangejenisLayanan = (jenisLayanan) => {
-      this.setState({ serviceName: jenisLayanan });
-    };
 
     handleChangejenisLayanan = (jenisLayanan) => {
         this.setState({ serviceName:jenisLayanan , productName: null}, (() => {
@@ -65,6 +62,7 @@ class BankEdit extends React.Component{
     handleChangejenisProduct = (jenisProduct) => {
         this.setState({ productName:jenisProduct });
     };
+
     componentDidMount(){
         this._isMounted=true
         this.getAllProvinsi()
@@ -105,7 +103,27 @@ class BankEdit extends React.Component{
         const data = await listProductFunction(param)
         if (data){
             if(!data.error){
-                this.setState({bankProduct:data.productList.data, productName: null})
+                const dataProductList = data.productList.data || [];
+                const newProduct =[]
+                const productSelected =[]
+                for(const key in dataProductList){
+                    for (const keyValue in this.state.productID){
+                    
+                        if (this.state.productID[keyValue].toString() === dataProductList[key].id.toString()) {
+                            productSelected.push({
+                                value: dataProductList[key].id,
+                                label: `${dataProductList[key].name} [${this.findServiceName(dataProductList[key].id.toString())}]`,
+                            })
+                            break;
+                        }
+                    }
+
+                    newProduct.push({
+                        value:dataProductList[key].id,
+                        label:`${dataProductList[key].name} [${this.findServiceName(dataProductList[key].id.toString())}]`
+                    })
+                }
+                this.setState({bankProduct:newProduct, productName: productSelected})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -117,7 +135,32 @@ class BankEdit extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({bankService:data.listLayanan.data})
+                const dataListService = data.listLayanan.data || [];
+                const newService = [];
+                const newValueService = [];
+
+                for(const key in dataListService) {
+                    for(const keyValue in this.state.serviceID) {
+                        if (this.state.serviceID[keyValue].toString() === dataListService[key].id.toString()) {
+                            newValueService.push({
+                                value: dataListService[key].id,
+                                label: dataListService[key].name, 
+                            })
+                            break;
+                        }
+                    }
+                    newService.push(
+                        {
+                           value: dataListService[key].id,
+                           label: dataListService[key].name, 
+                        }
+                    )
+                }
+                this.setState(
+                    {bankService:newService, serviceName:newValueService},()=>{
+                        this.getBankProduct(this.state.serviceID)
+                    }
+                )
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -138,9 +181,6 @@ class BankEdit extends React.Component{
                 if (this.state.dataBank){
                   this.getTypeBank()
                   this.getBankService()
-                  this.getBankProduct(this.state.serviceID)
-                  this.getServiceDataSudahTerpilih()
-                  this.getProductDataSudahTerpilih()
                 }
             }else{
                 this.setState({errorMessage:data.error})
@@ -165,45 +205,6 @@ class BankEdit extends React.Component{
    
     }
 
-   
-
-    getServiceDataSudahTerpilih = async function(){
-        let param = {
-            id:this.state.dataBank.services.toString()
-        }
-
-        const data = await getAllLayananListFunction(param)
-
-        if(data){
-            if(!data.error){
-                var serviceName = data.listLayanan.data.map((val)=>{
-                    return {value:val.id,label:val.name,id:val.id}
-                })
-                this.setState({serviceName:serviceName})
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-        }
-    }
-   
-    getProductDataSudahTerpilih = async function(){
-        let param = {
-            id:this.state.dataBank.products.toString()
-        }
-        const data = await listProductFunction(param)
-
-        if(data){
-            if(!data.error){
-                let productName = data.productList.data.map((val)=>{
-                    return {value:val.id,label:val.name}
-                })
-                this.setState({productName:productName})
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-        }
-    }
-
     renderProvinsiJsx = ()=>{
         var jsx = this.state.provinsi.map((val,index)=>{
             return (
@@ -222,23 +223,11 @@ class BankEdit extends React.Component{
         return jsx
     }
 
-    renderJenisLayananJsx = ()=>{
-        var jsx = this.state.bankService.map((val,index)=>{
-            return {id:val.id, value: val.id, label: val.name}
-        })
-        return jsx
-    }
-    renderJenisProductJsx = ()=>{
-        var jsx = this.state.bankProduct.map((val)=>{
-                return {id:val.id, value: val.id, label: " [ "+this.findServiceName(val.service_id)+" ] "+val.name }
-        })
-        return jsx
-    }
 
     findServiceName = (service_id) => {
         let stringService = '';
         for(const key in this.state.serviceName) {
-            if(this.state.serviceName[key].id.toString() === service_id.toString()) {
+            if(this.state.serviceName && this.state.serviceName[key] && this.state.serviceName[key].value.toString() === service_id.toString()) {
                 stringService = this.state.serviceName[key].label
             }
         }
@@ -273,6 +262,8 @@ class BankEdit extends React.Component{
         var adminfee_setup = this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
         var convfee_setup =  this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
        
+
+
         if(city === "0" || city === null){
             this.setState({errorMessage:"Kota Kosong - Harap cek ulang"})
         }else if (pic.trim()===""){
@@ -429,7 +420,7 @@ class BankEdit extends React.Component{
                                 value={this.state.serviceName}
                                 onChange={this.handleChangejenisLayanan}
                                 isMulti={true}
-                                options={this.renderJenisLayananJsx()}
+                                options={this.state.bankService}
                                 styles={customStyles}
                             />
                             </div>
@@ -443,7 +434,7 @@ class BankEdit extends React.Component{
                                 value={this.state.productName}
                                 onChange={this.handleChangejenisProduct}
                                 isMulti={true}
-                                options={this.renderJenisProductJsx()}
+                                options={this.state.bankProduct}
                                 styles={customStyles}
                             />
 
