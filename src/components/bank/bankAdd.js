@@ -9,7 +9,6 @@ import { listProductFunction } from './../product/saga'
 import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import { getAllLayananListFunction } from '../layanan/saga';
-import CryptoJS from 'crypto-js/aes'
 
   const customStyles = {
     option: (provided, state) => ({
@@ -275,7 +274,7 @@ class Main extends React.Component{
     }
     valueHandler = ()=>{
         
-        return  this.state.selectedFile ? this.state.selectedFile.name :"Browse Image"
+        return  this.state.selectedFile ? this.state.selectedFile.name :"Pilih Gambar"
         
     }
     handleChangeRadioAdmin =(e)=>{
