@@ -252,7 +252,11 @@ class agentAdd extends React.Component{
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
         errorMessage = 'Mohon input username dengan benar'
-      } else if (!this.state.agentName || this.state.agentName.trim().length === 0) {
+      }else if(!this.state.selectedFile && this.state.selectedFile===null){
+        flag = false;
+        errorMessage = 'Mohon input gambar dengan benar'
+      } 
+      else if (!this.state.agentName || this.state.agentName.trim().length === 0) {
         flag = false;
         errorMessage = 'Mohon input nama agen dengan benar'
       } else if (!this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email) ) {
