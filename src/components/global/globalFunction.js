@@ -1,4 +1,5 @@
 import { getProfileUser } from '../index/token';
+var crypto = require("crypto");
 
 export function validateEmail(email) {
     let flag = false;
@@ -134,4 +135,19 @@ export function getMonthNow(bulanNow) {
 
 
   return bulan
+}
+
+export function decryptImage(text){
+  let keyStr = "BpLnfgDsc3WD9F3qap394rjd239smsdk"
+  const algorithm = 'aes-256-cfb';
+
+  const contents = Buffer.from(text, 'base64');
+  const iv = contents.slice(0, 16);
+  const textBytes = contents.slice(16);
+  const decipher = crypto.createDecipheriv(algorithm, keyStr, iv);
+  let res = decipher.update(textBytes, '', 'utf8');
+
+  res += decipher.final('utf8');
+  
+  return res
 }

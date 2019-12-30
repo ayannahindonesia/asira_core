@@ -6,14 +6,16 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Moment from 'react-moment';
 import BrokenLink from './../../support/img/default.png'
 import Loader from 'react-loader-spinner'
-import {getProfileNasabahDetailFunction, getImageFunction} from './saga'
+import {getProfileNasabahDetailFunction} from './saga'
 import { getToken } from '../index/token';
 import { getBankDetailFunction } from '../bank/saga';
+import {decryptImage} from './../global/globalFunction'
+
 
 
 class profileNasabahDetail extends React.Component{
     state={rows:[],modalKTP:false,modalNPWP:false,npwp:0,ktp:0,gambarKTP:null,gambarNPWP:null,
-        bankID:0,bankName:'',diKlik:false,progress:false,errorMessage:''}
+        bankID:0,bankName:'',diKlik:false,progress:true,errorMessage:''}
     
     _isMounted = false
     componentDidMount(){
@@ -21,6 +23,19 @@ class profileNasabahDetail extends React.Component{
         this._isMounted = true
        
     }
+    // decryptImage = (text,stringStates)=>{
+    //     let keyStr = "BpLnfgDsc3WD9F3qap394rjd239smsdk"
+
+    //     const contents = Buffer.from(text, 'base64');
+    //     const iv = contents.slice(0, 16);
+    //     const textBytes = contents.slice(16);
+    //     const decipher = crypto.createDecipheriv(algorithm, keyStr, iv);
+    //     let res = decipher.update(textBytes, '', 'utf8');
+    //     res += decipher.final('utf8');
+
+    //     this.setState({[stringStates]:res})
+        
+    // }
     componentWillUnmount(){
         this._isMounted = false
     }
@@ -32,12 +47,11 @@ class profileNasabahDetail extends React.Component{
         const data = await getProfileNasabahDetailFunction(param)
         if(data){
             if(!data.error){
-                this.setState({rows:data.data,ktp:data.data.idcard_image.Int64,npwp:data.data.taxid_image.Int64, bankID:data.data.bank.Int64},
+                this.setState({rows:data.data,ktp:data.data.idcard_image,npwp:data.data.taxid_image, bankID:data.data.bank.Int64},
                     ()=>{
                     //KTP WAJIB KALO NPWP OPTIONAL
                     this.getBankName() 
-                    this.getImage(this.state.ktp,'gambarKTP')
-                    this.getImage(this.state.npwp,'gambarNPWP')
+                   
                 })
                   
             }else{
@@ -53,30 +67,14 @@ class profileNasabahDetail extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({bankName:data.name})
+                this.setState({bankName:data.name,progress:false})
             }else{
-                this.setState({errorMessage:data.error})
+                this.setState({errorMessage:data.error,progress:false})
             }
         }
         return this.state.bankName
     }
-
-    getImage =  async function(idImage, stringStates){
-        const param ={
-            id:idImage
-        }
-
-        const data = await getImageFunction(param)
-
-        if(data){
-            if(!data.error){
-            this.setState({[stringStates]:data.data.image_string,progress:false})
-            }else{
-            this.setState({progress:false,errorMessage:'ID Gambar KTP dalam Database Tidak ditemukan'})                  
-            }
-        }
-    }
-    
+   
     formatMoney=(number)=>
     { return number.toLocaleString('in-RP', {style : 'currency', currency: 'IDR'})}
 
@@ -123,10 +121,10 @@ class profileNasabahDetail extends React.Component{
    <Modal isOpen={this.state.modalKTP} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>KTP Detail</ModalHeader>
           <ModalBody>
-              {this.state.ktp ===0 || this.state.gambarKTP === '' ?"Gambar KTP Tidak ada":
+              {this.state.ktp && this.state.ktp.length === 0 ?"Gambar KTP Tidak ada":
              <img width="100%" height="300px" alt="KTP" onError={(e)=>{
                 e.target.attributes.getNamedItem("src").value = BrokenLink
-             }} src={`data:image/*;base64,${this.state.gambarKTP}`}></img>
+             }} src={`${decryptImage(this.state.ktp)}`}></img>
             }
           </ModalBody>
           <ModalFooter>
@@ -140,10 +138,10 @@ class profileNasabahDetail extends React.Component{
     <Modal isOpen={this.state.modalNPWP} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>NPWP Detail</ModalHeader>
           <ModalBody>
-            {this.state.npwp ===0 || this.state.gambarNPWP === '' ?"Gambar NPWP Tidak ada":
+            {this.state.npwp && this.state.npwp.length===0 ?"Gambar NPWP Tidak ada":
                 <img width="100%" height="300px" alt="NPWP" onError={(e)=>{
                     e.target.attributes.getNamedItem("src").value = BrokenLink
-                 }} src={`data:image/*;base64,${this.state.gambarNPWP}`}></img>}
+                 }} src={`${decryptImage(this.state.npwp)}`}></img>}
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.btnModalCancelNPWP}>Close</Button>
