@@ -29,7 +29,7 @@ export async function ListRoleFunction (param){
         for(const key in param) {
             filter += `&${key}=${param[key]}`
         }
-        axios.get(serverUrl+`admin/roles?orderby=updated_time&sort=asc${filter}`,config)
+        axios.get(serverUrl+`admin/roles?orderby=updated_time&sort=desc${filter}`,config)
         .then((res)=>{
             resolve(res)
         })

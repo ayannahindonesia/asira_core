@@ -9,6 +9,7 @@ import { getProvinsiFunction, getKabupatenFunction, getBankDetailFunction, getBa
 import { listProductFunction } from './../product/saga'
 import { getToken } from '../index/token';
 import { getAllLayananListFunction } from '../layanan/saga';
+import BrokenLink from './../../support/img/default.png'
 
 const customStyles = {
     option: (provided, state) => ({
@@ -33,31 +34,20 @@ const customStyles = {
 class BankEdit extends React.Component{
     _isMounted=false;
     state = {
-        productID:[],serviceID:[],
+        selectedFile:null,
+        productSelected:[],
         errorMessage: null, diKlik:false,
         typeBank:[],bankService:[],bankProduct:[],
         provinsi:[],kabupaten:[],idProvinsi:null,dataBank:[],phone:'',provinsiEdit:null,namaTipeBank:'',adminFeeRadioValue:'',convinienceFeeRadioValue:'',
-        serviceName:null,productName:null,submit:false
+        serviceName:[],productName:[],submit:false
     };
     componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
-    handleChangejenisLayanan = (jenisLayanan) => {
-      this.setState({ serviceName: jenisLayanan });
-    };
 
     handleChangejenisLayanan = (jenisLayanan) => {
-        this.setState({ serviceName:jenisLayanan , productName: null}, (() => {
-            let stringServiceId = '';
-            if(this.state.serviceName) {
-                for(let key = 0; key < this.state.serviceName.length; key++) {
-                    stringServiceId += `${this.state.serviceName[key].value}`;
-                    if(this.state.serviceName[key + 1]) {
-                        stringServiceId += ',';
-                    }
-                }
-                this.getBankProduct(stringServiceId)
-            }
+        this.setState({ serviceName:jenisLayanan , productName: []}, (() => {
+            this.getBankProduct(this.handleServiceString(jenisLayanan))
         }));
 
     };
@@ -65,10 +55,12 @@ class BankEdit extends React.Component{
     handleChangejenisProduct = (jenisProduct) => {
         this.setState({ productName:jenisProduct });
     };
+
     componentDidMount(){
         this._isMounted=true
         this.getAllProvinsi()
         this.getBankDataById()
+
     }
     componentWillUnmount(){
         this._isMounted=false
@@ -104,7 +96,31 @@ class BankEdit extends React.Component{
         const data = await listProductFunction(param)
         if (data){
             if(!data.error){
-                this.setState({bankProduct:data.productList.data, productName: null})
+                const dataProductList = data.productList.data || [];
+                const newProduct =[]
+                const productSelected =[]
+                
+                for(const key in dataProductList){
+                    for (const keyValue in this.state.productName){
+                        
+                        if (this.state.productName[keyValue].toString() === dataProductList[key].id.toString()) {
+                            productSelected.push({
+                                key: dataProductList[key].id,
+                                value: dataProductList[key].id,
+                                label: `${dataProductList[key].name} [${this.findServiceName(dataProductList[key].service_id.toString())}]`,
+                            })
+                            break;
+                        }
+                    }
+
+                    newProduct.push({
+                        key:dataProductList[key].id,
+                        value:dataProductList[key].id,
+                        label:`${dataProductList[key].name} [${this.findServiceName(dataProductList[key].service_id.toString())}]`
+                    })
+                }
+                
+                this.setState({bankProduct:newProduct, productName: productSelected})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -116,12 +132,57 @@ class BankEdit extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({bankService:data.listLayanan.data})
+                const dataListService = data.listLayanan.data || [];
+                const newService = [];
+                const newValueService = [];
+
+                for(const key in dataListService) {
+                    for(const keyValue in this.state.serviceName) {
+                        if (this.state.serviceName[keyValue].toString() === dataListService[key].id.toString()) {
+                            newValueService.push({
+                                key: dataListService[key].id,
+                                value: dataListService[key].id,
+                                id: dataListService[key].id,
+                                label: dataListService[key].name, 
+                            })
+                            break;
+                        }
+                    }
+                    newService.push(
+                        {
+                           key: dataListService[key].id,
+                           id: dataListService[key].id,
+                           value: dataListService[key].id,
+                           label: dataListService[key].name, 
+                        }
+                    )
+                }
+                
+                this.setState(
+                    {bankService:newService, serviceName:newValueService},()=>{
+                        this.getBankProduct(this.handleServiceString(this.state.serviceName))
+                    }
+                )
             }else{
                 this.setState({errorMessage:data.error})
             }
         }
     } 
+
+    handleServiceString = (arrayService) => {
+        let stringService = '';
+
+        for(const key in arrayService) {
+            if(key.toString() !== '0') {
+                stringService += ', '
+            }
+            if(arrayService[key] && arrayService[key].value) {
+                stringService += `${arrayService[key].value}`
+            }
+        }
+
+        return stringService;
+    }
 
 
     getBankDataById = async function (){
@@ -133,12 +194,10 @@ class BankEdit extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({dataBank:data,productID:data.products,serviceID:data.services})
+                this.setState({dataBank:data,productName:data.products,serviceName:data.services})
                 if (this.state.dataBank){
                   this.getTypeBank()
                   this.getBankService()
-                  this.getServiceDataSudahTerpilih()
-                  this.getProductDataSudahTerpilih()
                 }
             }else{
                 this.setState({errorMessage:data.error})
@@ -163,45 +222,6 @@ class BankEdit extends React.Component{
    
     }
 
-   
-
-    getServiceDataSudahTerpilih = async function(){
-        let param = {
-            id:this.state.dataBank.products.toString()
-        }
-
-        const data = await getAllLayananListFunction(param)
-
-        if(data){
-            if(!data.error){
-                var serviceName = data.listLayanan.data.map((val)=>{
-                    return {value:val.id,label:val.name,id:val.id}
-                })
-                this.setState({serviceName:serviceName})
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-        }
-    }
-   
-    getProductDataSudahTerpilih = async function(){
-        let param = {
-            id:this.state.dataBank.products.toString()
-        }
-        const data = await listProductFunction(param)
-
-        if(data){
-            if(!data.error){
-                let productName = data.productList.data.map((val)=>{
-                    return {value:val.id,label:val.name}
-                })
-                this.setState({productName:productName})
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-        }
-    }
-
     renderProvinsiJsx = ()=>{
         var jsx = this.state.provinsi.map((val,index)=>{
             return (
@@ -220,27 +240,16 @@ class BankEdit extends React.Component{
         return jsx
     }
 
-    renderJenisLayananJsx = ()=>{
-        var jsx = this.state.bankService.map((val,index)=>{
-            return {id:val.id, value: val.id, label: val.name}
-        })
-        return jsx
-    }
-    renderJenisProductJsx = ()=>{
-        var jsx = this.state.bankProduct.map((val)=>{
-                return {id:val.id, value: val.id, label: " [ "+this.findServiceName(val.service_id)+" ] "+val.name }
-        })
-        return jsx
-    }
 
     findServiceName = (service_id) => {
         let stringService = '';
-        console.log(this.state.serviceName)
+        
         for(const key in this.state.serviceName) {
-            if(this.state.serviceName[key].id.toString() === service_id.toString()) {
+            if(this.state.serviceName && this.state.serviceName[key] && this.state.serviceName[key].value.toString() === service_id.toString()) {
                 stringService = this.state.serviceName[key].label
             }
         }
+        
         return stringService;
     }
 
@@ -272,6 +281,7 @@ class BankEdit extends React.Component{
         var adminfee_setup = this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
         var convfee_setup =  this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
        
+
         if(city === "0" || city === null){
             this.setState({errorMessage:"Kota Kosong - Harap cek ulang"})
         }else if (pic.trim()===""){
@@ -295,16 +305,29 @@ class BankEdit extends React.Component{
             }else{
                 products = []
             }
-            
-            var newData = {
-                name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup
-            }
-            const param = {
-                id:id,
-                newData
-            }
+            var picture = this.state.selectedFile
+            var reader = new FileReader();
+            reader.readAsDataURL(picture);
+
+            reader.onload =  () => {   
+                var arr = reader.result.split(",")   
+                var image = arr[1].toString()
+                
+                var newData = {
+                    name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup,image
+                }
+                const param = {
+                    id:id,
+                    newData
+                }
            
-            this.editBankBtn(param)
+                this.editBankBtn(param)
+            };
+            reader.onerror = function (error) {
+              this.setState({errorMessage:"Gambar gagal tersimpan"})
+            };
+
+            
            
        }
     }
@@ -320,7 +343,17 @@ class BankEdit extends React.Component{
             }
         }
     }
+    //=====================================GAMBAR====================
     
+    valueHandler = ()=>{
+        return  this.state.selectedFile ? this.state.selectedFile.name :"Pilih Gambar"
+    }
+
+    onChangeHandler = (event)=>{
+        //untuk mendapatkan file image
+        this.setState({selectedFile:event.target.files[0]})
+    }
+
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listbank'/>            
@@ -339,21 +372,30 @@ class BankEdit extends React.Component{
                    <form>
                        <fieldset disabled>
                        <div className="form-group row">
+                            <label className="col-sm-5 col-form-label">Logo Bank</label>
+                            <div className="col-sm-5">
+                            <img src={`${this.state.dataBank.image}`} width="100px" height="100px" alt="Foto agen" onError={(e)=>{
+                            e.target.attributes.getNamedItem("src").value = BrokenLink
+                            }} ></img>                    
+
+                            </div>
+                        </div>
+                       <div className="form-group row">
                             <label className="col-sm-2 col-form-label">ID Bank</label>
                             <div className="col-sm-10">
-                            <input type="text" id="disabledTextInput" className="form-control" ref="idBank" defaultValue={this.state.dataBank.id} />
+                            <input type="text" name="idBank" className="form-control" ref="idBank" defaultValue={this.state.dataBank.id} />
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Nama Bank</label>
                             <div className="col-sm-10">
-                            <input type="text" id="disabledTextInput" className="form-control" ref="namaBank" defaultValue={this.state.dataBank.name}/>
+                            <input type="text" name="namaBank" className="form-control" ref="namaBank" defaultValue={this.state.dataBank.name}/>
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Tipe Bank</label>
                             <div className="col-sm-10">
-                            <input type="text" id="disabledTextInput" className="form-control" ref="tipeBank"  defaultValue={this.state.namaTipeBank}/>
+                            <input type="text" name="tipeBank" className="form-control" ref="tipeBank"  defaultValue={this.state.namaTipeBank}/>
                             </div>
                         </div>
                        </fieldset>
@@ -428,8 +470,9 @@ class BankEdit extends React.Component{
                                 value={this.state.serviceName}
                                 onChange={this.handleChangejenisLayanan}
                                 isMulti={true}
-                                options={this.renderJenisLayananJsx()}
+                                options={this.state.bankService}
                                 styles={customStyles}
+                                
                             />
                             </div>
                         </div>
@@ -442,7 +485,7 @@ class BankEdit extends React.Component{
                                 value={this.state.productName}
                                 onChange={this.handleChangejenisProduct}
                                 isMulti={true}
-                                options={this.renderJenisProductJsx()}
+                                options={this.state.bankProduct}
                                 styles={customStyles}
                             />
 
@@ -467,6 +510,13 @@ class BankEdit extends React.Component{
                             onChange={ phone => this.setState({ phone }) } className="form-control" />                                                       
                             </div>
                         </div>
+                        <div className="form-group row">
+                            <label className="col-sm-2 col-form-label">Gambar</label>
+                            <div className="col-sm-10">
+                            <input className="AddStyleButton btn btn-primary" type="button" onClick={()=>this.refs.input.click()} value={this.valueHandler()}></input>
+                            <input ref="input" style={{display:"none"}} type="file" accept="image/*" onChange={this.onChangeHandler}></input>             
+                            </div>
+                    </div>
                         {this.renderBtnSumbit()}
                        
                         <input type="button" className="btn btn-secondary ml-2" value="Batal" onClick={()=>this.setState({diKlik:true})}/>

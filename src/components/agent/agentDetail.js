@@ -9,6 +9,7 @@ import { compose } from 'redux';
 import { getAgentFunction } from './saga'
 import { getToken } from '../index/token';
 import { destructAgent, isRoleAccountExecutive } from './function';
+import BrokenLink from './../../support/img/default.png'
 
 const styles = (theme) => ({
     container: {
@@ -35,6 +36,7 @@ class AgentDetail extends React.Component{
       instansi:'',
       phone:'',
       email:'',
+      image:''
     };
 
     componentDidMount(){
@@ -74,6 +76,7 @@ class AgentDetail extends React.Component{
             agent_provider_name: dataAgent.agent_provider_name,
             bank_name: dataAgent.banks_name,
             instansi: dataAgent.instansi,
+            image:dataAgent.image,
             loading: false,
           })
         } else {
@@ -235,6 +238,20 @@ class AgentDetail extends React.Component{
                   <div className="col-sm-4 col-form-label" style={{height:3.5}}>
                     { this.state.status ? 'Aktif' : 'Tidak Aktif'}
                   </div>   
+                </div>
+
+                <div className="form-group row">                
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Gambar Agen
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                <img src={`${this.state.image}`} width="100px" height="100px" alt="Foto agen" onError={(e)=>{
+                e.target.attributes.getNamedItem("src").value = BrokenLink
+                }} ></img>
+                </div>             
                 </div>
                 
                 <div className="form-group row">
