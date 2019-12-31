@@ -75,6 +75,8 @@ class CalonNasabahArsipDetail extends React.Component{
             }
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
+            dataUser.idcard_image = decryptImage(dataUser.idcard_image);
+            dataUser.taxid_image = decryptImage(dataUser.taxid_image)
 
             if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
               flag = true
@@ -126,9 +128,9 @@ class CalonNasabahArsipDetail extends React.Component{
       };
 
       if(title.toLowerCase().includes('ktp')) {
-        data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image && this.state.dataUser.idcard_image.Int64) || 0
+        data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image ) || 0
       } else if(title.toLowerCase().includes('npwp')) {
-        data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image && this.state.dataUser.idcard_image.Int64) || 0
+        data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image ) || 0
       }
 
       data = await getImageFunction(data)
