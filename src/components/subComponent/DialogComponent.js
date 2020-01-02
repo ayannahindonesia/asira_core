@@ -83,7 +83,7 @@ class DialogComponent extends React.Component {
               !base64Boolean && 
               <CardMedia
                 className={classes.media}
-                image={dataImage}
+                image={dataImage && dataImage.includes('http') ? dataImage : require('./../../support/img/default.png')}
                 title={title}
               />
             }

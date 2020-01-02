@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getBorrowerFunction, getImageFunction } from './saga'
+import { getBorrowerFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
@@ -331,7 +331,6 @@ class CalonNasabahDetail extends React.Component{
                     openDialog={this.state.dialog}
                     message={this.state.message}
                     type='image'
-                    base64Boolean
                     onClose={this.handleClose}
                   />
                 </div>
