@@ -9,7 +9,7 @@ import { compose } from 'redux';
 import { getBorrowerFunction, getImageFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
-import { formatNumber, handleFormatDate } from '../global/globalFunction';
+import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from '../subComponent/DialogComponent'
 
 const styles = (theme) => ({
@@ -326,7 +326,6 @@ class CalonNasabahArsipDetail extends React.Component{
                     openDialog={this.state.dialog}
                     message={this.state.message}
                     type='image'
-                    base64Boolean
                     onClose={this.handleClose}
                   />
                 </div>
