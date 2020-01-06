@@ -259,7 +259,7 @@ class Report extends React.Component{
                                         label = 'Dari Tanggal'
                                         onChange ={this.handleStartChange}
                                         value={this.state.tanggalAwal}
-                                        error={this.state.errorMessage.trim().length !== 0}
+                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0}
                                     />
                                 </div>
                                 <div className="form-inline mr-3 ml-3"><i className="fas fa-long-arrow-alt-right"></i></div>
@@ -268,7 +268,7 @@ class Report extends React.Component{
                                         label = 'Sampai Tanggal'
                                         onChange ={this.handleEndChange}
                                         value={this.state.tanggalAkhir}
-                                        error={this.state.errorMessage.trim().length !== 0}
+                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0}
                                     />
                                 </div>
                             </div>
@@ -284,7 +284,7 @@ class Report extends React.Component{
                                         label = 'Dari Tanggal'
                                         onChange ={this.handleStartPencairanChange}
                                         value={this.state.tanggalAwalPencairan}
-                                        error={this.state.errorMessagePencairan.trim().length !== 0}
+                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0}
                                     />
                                 </div>
                                 <div className="form-inline mr-3 ml-3"><i className="fas fa-long-arrow-alt-right"></i></div>
@@ -293,7 +293,7 @@ class Report extends React.Component{
                                         label = 'Sampai Tanggal'
                                         onChange ={this.handleEndPencairanChange}
                                         value={this.state.tanggalAkhirPencairan}
-                                        error={this.state.errorMessagePencairan.trim().length !== 0}
+                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0}
                                     />
                                 </div>
                             </div>
