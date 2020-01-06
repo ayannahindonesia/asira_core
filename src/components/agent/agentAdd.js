@@ -32,7 +32,7 @@ class agentAdd extends React.Component{
     _isMounted = false;
 
     state = {
-      selectedFile:null,
+      selectedFile:'',
       diKlik:false,
       errorMessage:'',
       kategori : 'agent',
@@ -118,19 +118,24 @@ class agentAdd extends React.Component{
         const param = {
           dataAgent,
         }
-        const pic = this.state.selectedFile
-        const reader = new FileReader();
-        reader.readAsDataURL(pic);
-        reader.onload =  () => {   
-          var arr = reader.result.split(",")   
-          var image = arr[1].toString()
-          param.dataAgent.image = image
-          
+        if (this.state.selectedFile){
+            const pic = this.state.selectedFile
+            const reader = new FileReader();
+            reader.readAsDataURL(pic);
+            reader.onload =  () => {   
+              var arr = reader.result.split(",")   
+              var image = arr[1].toString()
+              param.dataAgent.image = image
+              
+              this.postAgent(param)
+            };
+            reader.onerror = function (error) {
+            this.setState({errorMessage:"Gambar gagal tersimpan"})
+            };
+        }else{
           this.postAgent(param)
-      };
-      reader.onerror = function (error) {
-        this.setState({errorMessage:"Gambar gagal tersimpan"})
-      };
+        }
+       
         
       }
     }
@@ -252,10 +257,11 @@ class agentAdd extends React.Component{
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
         errorMessage = 'Mohon input username dengan benar'
-      }else if(!this.state.selectedFile && this.state.selectedFile===null){
-        flag = false;
-        errorMessage = 'Mohon input gambar dengan benar'
-      } 
+      }
+      // else if(!this.state.selectedFile && this.state.selectedFile===null){
+      //   flag = false;
+      //   errorMessage = 'Mohon input gambar dengan benar'
+      // } 
       else if (!this.state.agentName || this.state.agentName.trim().length === 0) {
         flag = false;
         errorMessage = 'Mohon input nama agen dengan benar'
