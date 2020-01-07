@@ -62,7 +62,7 @@ class ProductEdit extends React.Component{
         const data = await detailProductFunction({id},detailServiceProductFunction)
 
         if(data){
-           
+           console.log(data)
         if(!data.error){
             this.setState({
                 rows:data.dataProduct,
@@ -74,7 +74,14 @@ class ProductEdit extends React.Component{
                 }),
                 check:data.dataProduct.status ==="active"? true: false,
                 checkAsuransi: data.dataProduct.assurance === "null" ?false:true,
-                checkAgunan:data.dataProduct.collaterals[0] !=="BPKB Kendaraan"?true:false,
+                checkAgunan:data.dataProduct.collaterals[0] !== ("Sertifikat Tanah")
+                && data.dataProduct.collaterals[0] !==("Sertifikat Rumah")
+                && data.dataProduct.collaterals[0] !== ("Kios/Lapak")
+                && data.dataProduct.collaterals[0] !== ("Deposito")
+                && data.dataProduct.collaterals[0] !== ("BPKB Kendaraan")
+                && data.dataProduct.collaterals[0].trim().length !== 0
+                
+                ?true:false,
                 bankServicebyID:data.serviceProduct,loading:false
             })
         }else{
@@ -110,7 +117,8 @@ class ProductEdit extends React.Component{
 
     assurance = assurance ? assurance = this.refs.asuransi.value : assurance="null"
     
-    otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan = "null"
+    otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan = ""
+
     if(min_timespan==="0" || max_timespan==="0"){
     this.setState({errorMessage:"Jangka Waktu Kosong"})
     }else if(parseInt(min_timespan) > parseInt(max_timespan)){
@@ -165,24 +173,24 @@ class ProductEdit extends React.Component{
             var collaterals =[]
             var agunan = document.querySelectorAll('.agunan:checked')
 
-            if (agunan.length===0){
-                collaterals=[]
+            if (agunan.length===0 && otheragunan === ''){
+                collaterals=['']
             }else{
                 for ( i = 0; i < agunan.length; i++) {
                     collaterals.push(agunan[i].value)   
                 }
-                if (otheragunan !== "null"){
+                if (otheragunan !== ""){
                     collaterals.push(otheragunan)
                 }
             }
             
             collaterals.reverse()
-            
+            console.log(collaterals)
     var newData = {
         name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,asn_fee,service_id,collaterals,financing_sector,assurance,status
     }
     const param = {newData,id}
-
+    this.setState({submit:false})
     this.editProductBtn(param)
     }
     }
@@ -299,6 +307,7 @@ class ProductEdit extends React.Component{
 
     if (!this.state.agunan.includes(this.state.collaterals[i]))
     {
+        console.log(this.state.checkAgunan)
     return (
         <div className="form-check form-check-inline">
         <input checked={this.state.checkAgunan} className="form-check-input otheragunan" onChange={this.handleCheckAgunan} type="checkbox" value="lainnya"/>
