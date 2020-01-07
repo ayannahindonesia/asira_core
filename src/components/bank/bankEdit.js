@@ -305,16 +305,31 @@ class BankEdit extends React.Component{
             }else{
                 products = []
             }
-            var picture = this.state.selectedFile
-            var reader = new FileReader();
-            reader.readAsDataURL(picture);
-
-            reader.onload =  () => {   
-                var arr = reader.result.split(",")   
-                var image = arr[1].toString()
-                
+            if(this.state.selectedFile){
+                var picture = this.state.selectedFile
+                var reader = new FileReader();
+                reader.readAsDataURL(picture);
+    
+                reader.onload =  () => {   
+                    var arr = reader.result.split(",")   
+                    var image = arr[1].toString()
+                    
+                    var newData = {
+                        name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup,image
+                    }
+                    const param = {
+                        id:id,
+                        newData
+                    }
+               
+                    this.editBankBtn(param)
+                };
+                reader.onerror = function (error) {
+                  this.setState({errorMessage:"Gambar gagal tersimpan"})
+                };
+            }else{
                 var newData = {
-                    name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup,image
+                    name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup
                 }
                 const param = {
                     id:id,
@@ -322,10 +337,8 @@ class BankEdit extends React.Component{
                 }
            
                 this.editBankBtn(param)
-            };
-            reader.onerror = function (error) {
-              this.setState({errorMessage:"Gambar gagal tersimpan"})
-            };
+            }
+          
 
             
            
