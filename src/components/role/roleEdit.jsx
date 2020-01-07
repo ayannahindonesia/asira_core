@@ -35,7 +35,7 @@ class RoleEdit extends React.Component{
             if(data.error){
                 this.setState({errorMessage:data.error})
             }else{
-                this.setState({dataRole:data.data,check:data.data.status})
+                this.setState({dataRole:data.data,check:data.data.status && data.data.status === 'active' ? true : false})
             }
         }
 
@@ -76,6 +76,7 @@ class RoleEdit extends React.Component{
         this.setState({check:!this.state.check})
     }
     render(){
+        console.log(this.state.dataRole)
         if(this.state.diKlik){
             return <Redirect to='/listrole'/>            
         }
