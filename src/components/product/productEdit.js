@@ -62,7 +62,6 @@ class ProductEdit extends React.Component{
         const data = await detailProductFunction({id},detailServiceProductFunction)
 
         if(data){
-            console.log(data)
            
         if(!data.error){
             this.setState({
@@ -337,7 +336,6 @@ class ProductEdit extends React.Component{
     }  
     handleCheckAgunan = ()=>{
         this.setState({checkAgunan:!this.state.checkAgunan},()=>{
-            console.log(this.state.checkAgunan)
             if(!this.state.checkAgunan){
                 this.refs.lainnya.value=''
             }
