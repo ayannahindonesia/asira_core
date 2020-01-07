@@ -40,7 +40,11 @@ class ProductEdit extends React.Component{
     selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,loading:true,
     collaterals:[],
     bankService:[],diKlik:false,rows:[],fees:[],bankServicebyID:{},financing_sector:[],asn_fee:'',
-    agunan:["Sertifikat Tanah","Sertifikat Rumah","Kios/Lapak","Deposito","BPKB Kendaraan"],check:false,submit:false
+    agunan:["Sertifikat Tanah","Sertifikat Rumah","Kios/Lapak","Deposito","BPKB Kendaraan"],
+    check:false,
+    submit:false,
+    checkAsuransi:false,
+    checkAgunan:false
     };
     _isMounted = false
     componentDidMount(){
@@ -58,6 +62,8 @@ class ProductEdit extends React.Component{
         const data = await detailProductFunction({id},detailServiceProductFunction)
 
         if(data){
+            console.log(data)
+           
         if(!data.error){
             this.setState({
                 rows:data.dataProduct,
@@ -68,6 +74,8 @@ class ProductEdit extends React.Component{
                     return   { value: val, label: val }
                 }),
                 check:data.dataProduct.status ==="active"? true: false,
+                checkAsuransi: data.dataProduct.assurance === "null" ?false:true,
+                checkAgunan:data.dataProduct.collaterals[0] !=="BPKB Kendaraan"?true:false,
                 bankServicebyID:data.serviceProduct,loading:false
             })
         }else{
@@ -80,6 +88,8 @@ class ProductEdit extends React.Component{
     handleChange = (selectedOption) => {
     this.setState({ financing_sector: selectedOption });
     };
+
+    
 
     btnEditProduct = ()=>{
     var id = this.props.match.params.id
@@ -99,8 +109,9 @@ class ProductEdit extends React.Component{
     var assurance =  document.querySelector('.asuransi').checked;
     var otheragunan =  document.querySelector('.otheragunan').checked;
 
-    assurance = assurance ? assurance = this.refs.asuransi.value : assurance=""
-    otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan = ""
+    assurance = assurance ? assurance = this.refs.asuransi.value : assurance="null"
+    
+    otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan = "null"
     if(min_timespan==="0" || max_timespan==="0"){
     this.setState({errorMessage:"Jangka Waktu Kosong"})
     }else if(parseInt(min_timespan) > parseInt(max_timespan)){
@@ -109,6 +120,8 @@ class ProductEdit extends React.Component{
     this.setState({errorMessage:"Imbal Hasil tidak bole minus/ kosong - Harap cek ulang"})
     }else if(parseFloat(interest)>200){
     this.setState({errorMessage:"Imbal Hasil tidak boleh lebih dari 200 - Harap cek ulang"})
+    }else if(!this.state.financing_sector){
+        this.setState({errorMessage:"Sektor Pembiayaan Kosong - Harap di isi"})
     }
     else if(parseInt(min_loan) > parseInt(max_loan)){
     this.setState({errorMessage:"Rentang Pengajuan tidak benar - Harap cek ulang"})
@@ -139,12 +152,16 @@ class ProductEdit extends React.Component{
             
             if(this.state.financing_sector){
                 var financing_sector = this.state.financing_sector.map((val)=>{
+
                     return val.value
                 })
+                if(financing_sector.includes('')){
+                    financing_sector.shift()
+                }
             }else{
-                financing_sector = []
+                financing_sector = [null]
             }
-            
+
         //======= CODING BAGIAN AGUNAN
             var collaterals =[]
             var agunan = document.querySelectorAll('.agunan:checked')
@@ -155,7 +172,7 @@ class ProductEdit extends React.Component{
                 for ( i = 0; i < agunan.length; i++) {
                     collaterals.push(agunan[i].value)   
                 }
-                if (otheragunan){
+                if (otheragunan !== "null"){
                     collaterals.push(otheragunan)
                 }
             }
@@ -285,17 +302,17 @@ class ProductEdit extends React.Component{
     {
     return (
         <div className="form-check form-check-inline">
-        <input defaultChecked className="form-check-input otheragunan" type="checkbox" value="lainnya"/>
+        <input checked={this.state.checkAgunan} className="form-check-input otheragunan" onChange={this.handleCheckAgunan} type="checkbox" value="lainnya"/>
         <label className="form-check-label">Lainnya</label>
-        <input type="text" ref="lainnya" style={{width:"200px"}} defaultValue={this.state.collaterals[i]} className="form-control ml-2"/>
+        <input type="text" ref="lainnya" style={{width:"200px"}} defaultValue={this.state.collaterals[i]} onChange={this.handleTextAgunan} className="form-control ml-2"/>
         </div> 
     )
     }else{
     return (
         <div className="form-check form-check-inline">
-        <input className="form-check-input otheragunan" type="checkbox" value="lainnya"/>
+        <input checked={this.state.checkAgunan}  className="form-check-input otheragunan" onChange={this.handleCheckAgunan} type="checkbox" value="lainnya"/>
         <label className="form-check-label">Lainnya</label>
-        <input type="text" ref="lainnya" style={{width:"200px"}} placeholder="Jika ada.." className="form-control ml-2"/>
+        <input type="text" ref="lainnya" style={{width:"200px"}} placeholder="Jika ada.." onChange={this.handleTextAgunan}  className="form-control ml-2"/>
         </div> 
     )
     }
@@ -310,6 +327,34 @@ class ProductEdit extends React.Component{
     this.setState({check:!this.state.check})
     }
 
+    handleCheckAsuransi = ()=>{
+        this.setState({checkAsuransi:!this.state.checkAsuransi},()=>{
+            if(!this.state.checkAsuransi){
+                this.refs.asuransi.value=''
+            }
+
+        })
+    }  
+    handleCheckAgunan = ()=>{
+        this.setState({checkAgunan:!this.state.checkAgunan},()=>{
+            console.log(this.state.checkAgunan)
+            if(!this.state.checkAgunan){
+                this.refs.lainnya.value=''
+            }
+
+        })
+    }  
+    handleTextAgunan =(e)=>{
+        e.target.value===""?
+        this.setState({checkAgunan:false}):
+            this.setState({checkAgunan:true})
+    }
+
+    handleTextAsuransi =(e)=>{
+        e.target.value ===""?
+            this.setState({checkAsuransi:false}):
+            this.setState({checkAsuransi:true})
+    }
     render(){
         if(this.state.diKlik){
             return <Redirect to='/listproduct'/>            
@@ -418,7 +463,7 @@ class ProductEdit extends React.Component{
                                 {this.renderAngunanJsx()}
                                 {this.state.collaterals.length===0?
                                 <div className="form-check form-check-inline">
-                                <input className="form-check-input otheragunan" type="checkbox" value="lainnya"/>
+                                <input className="form-check-input otheragunan" onChange={this.handleCheckAgunan} checked={this.state.checkAgunan} type="checkbox" value="lainnya"/>
                                 <label className="form-check-label">Lainnya</label>
                                 <input type="text" ref="lainnya" style={{width:"200px"}} placeholder="Jika ada.." className="form-control ml-2"/>
                                 </div> 
@@ -448,10 +493,10 @@ class ProductEdit extends React.Component{
                                     <label >Asuransi</label>
                                 </td>
                                 <td>
-                                {this.state.rows.assurance ?<div className="form-check-inline" style={{marginLeft:"125px"}}>
-                                            <input className="form-check-input asuransi" type="checkbox" defaultChecked/>
+                                {this.state.rows.assurance !== "null" ?<div className="form-check-inline" style={{marginLeft:"125px"}}>
+                                            <input  onChange={this.handleCheckAsuransi} className="form-check-input asuransi" type="checkbox" checked={this.state.checkAsuransi}/>
                                             <label className="form-check-label">Tersedia</label>
-                                            <input type="text" className="ml-2" ref="asuransi" defaultValue={this.state.rows.assurance}></input>
+                                            <input type="text" onChange={this.handleTextAsuransi} className="ml-2" ref="asuransi"  defaultValue={this.state.rows.assurance}></input>
                                 </div>  :
                                 <div className="form-check-inline" style={{marginLeft:"125px"}}>
                                 <input className="form-check-input asuransi" type="checkbox"/>
