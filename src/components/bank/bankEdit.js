@@ -81,7 +81,7 @@ class BankEdit extends React.Component{
         const data = await getKabupatenFunction(params)
         if(data){
             if(!data.error){
-                this.setState({kabupaten:data})
+                this.setState({kabupaten:data, provinsiEdit:true})
             }else{
                 this.setState({errorMessage:data.error})
             }
