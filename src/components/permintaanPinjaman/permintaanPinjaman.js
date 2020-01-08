@@ -13,7 +13,7 @@ const columnDataUser = [
       {
         id: 'id',
         numeric: false,
-        label: 'ID Penyedia Agen',
+        label: 'ID Pinjaman',
       },
       {
         id: 'borrower_name',
@@ -23,7 +23,7 @@ const columnDataUser = [
       {
         id: 'bank_name',
         numeric: false,
-        label: 'Bank Akun',
+        label: 'Nama Bank',
       },
       {
         id: 'category',
@@ -145,7 +145,7 @@ class PermintaanPinjaman extends React.Component {
                         <div className="input-group">
                           <SearchBar 
                             onChange={this.onBtnSearch}
-                            placeholder="Search Nama Nasabah, ID Nasabah.."
+                            placeholder="Search Nama Nasabah, ID Pinjaman.."
                             value={this.state.searchRows}
                           />
                            
