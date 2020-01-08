@@ -74,7 +74,10 @@ class ProductEdit extends React.Component{
                 }),
                 check:data.dataProduct.status ==="active"? true: false,
                 checkAsuransi: data.dataProduct.assurance === "null" ?false:true,
-                checkAgunan:data.dataProduct.collaterals[0] !== ("Sertifikat Tanah")
+                checkAgunan:data.dataProduct 
+                && data.dataProduct.collaterals
+                && data.dataProduct.collaterals[0]
+                &&data.dataProduct.collaterals[0] !== ("Sertifikat Tanah")
                 && data.dataProduct.collaterals[0] !==("Sertifikat Rumah")
                 && data.dataProduct.collaterals[0] !== ("Kios/Lapak")
                 && data.dataProduct.collaterals[0] !== ("Deposito")
