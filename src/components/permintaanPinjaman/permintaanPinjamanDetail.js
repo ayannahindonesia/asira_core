@@ -39,7 +39,7 @@ class Main extends React.Component{
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td>{String(val.amount).includes("%")?
                     val.amount:
-                    parseInt(val.amount)/parseInt(this.state.rows.loan_amount)*100 +"%"
+                    parseFloat(parseInt(val.amount)/parseInt(this.state.rows.loan_amount) * 100).toFixed(2) +"%"
                 
                 }</td>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -154,7 +154,7 @@ class Main extends React.Component{
                                     <tr>
                                         <td>Imbal Hasil/ Bunga</td>
                                         <td></td>
-                                        <td>{this.state.rows.interest}%</td>
+                                        <td>{parseInt(this.state.rows.interest).toFixed(2)}%</td>
                                         <td></td>
                                         <td>{this.state.rows &&  this.state.rows.interest && this.state.rows.loan_amount?GlobalFunction.formatMoney(parseInt(this.state.rows.interest)*parseInt(this.state.rows.loan_amount)/100) :null}</td>
                                     </tr>
