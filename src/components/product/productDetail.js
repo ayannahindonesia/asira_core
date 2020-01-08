@@ -145,7 +145,7 @@ class ProductDetail extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Asuransi</label>
                             <div className="col-sm-8">
-                            : {this.state.rows.assurance}
+                            : {this.state.rows.assurance==="null"?"-":this.state.rows.assurance}
                             </div>
                         </div>
                     </form>
