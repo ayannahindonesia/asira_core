@@ -336,12 +336,12 @@ class ProductEdit extends React.Component{
     }
 
     handleCheckAsuransi = ()=>{
-        this.setState({checkAsuransi:!this.state.checkAsuransi},()=>{
-            if(!this.state.checkAsuransi){
-                this.refs.asuransi.value=''
-            }
-
-        })
+            this.setState({checkAsuransi:!this.state.checkAsuransi},()=>{
+                if(!this.state.checkAsuransi){
+                    this.refs.asuransi.value=''
+                }
+    
+            })
     }  
     handleCheckAgunan = ()=>{
         this.setState({checkAgunan:!this.state.checkAgunan},()=>{
@@ -500,17 +500,12 @@ class ProductEdit extends React.Component{
                                     <label >Asuransi</label>
                                 </td>
                                 <td>
-                                {this.state.rows.assurance !== "null" ?<div className="form-check-inline" style={{marginLeft:"125px"}}>
+                                <div className="form-check-inline" style={{marginLeft:"125px"}}>
                                             <input  onChange={this.handleCheckAsuransi} className="form-check-input asuransi" type="checkbox" checked={this.state.checkAsuransi}/>
                                             <label className="form-check-label">Tersedia</label>
-                                            <input type="text" onChange={this.handleTextAsuransi} className="ml-2" ref="asuransi"  defaultValue={this.state.rows.assurance}></input>
-                                </div>  :
-                                <div className="form-check-inline" style={{marginLeft:"125px"}}>
-                                <input className="form-check-input asuransi" type="checkbox"/>
-                                <label className="form-check-label">Tersedia</label>
-                                <input type="text" className="ml-2" ref="asuransi" placeholder="Jika ada.."></input>
-                               </div> 
-                                }
+                                            <input type="text" onChange={this.handleTextAsuransi} className="ml-2" ref="asuransi"  defaultValue={this.state.rows.assurance==="null"?"-":this.state.rows.assurance}></input>
+                               
+                                </div>
                                 </td>
                             </tr>
                             <tr>
