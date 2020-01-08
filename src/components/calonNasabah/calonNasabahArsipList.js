@@ -26,7 +26,7 @@ const columnDataUser = [
     {
         id: 'bank_name',
         numeric: false,
-        label: 'Bank Akun',
+        label: 'Nama Bank',
     },
     { id: 'created_time', numeric: false, label: 'Tanggal Registrasi'},
 ]
