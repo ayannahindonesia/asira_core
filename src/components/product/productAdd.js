@@ -77,6 +77,7 @@ class ProductAdd extends React.Component{
     
     assurance = assurance ? assurance = this.refs.asuransi.value : assurance="null"
     String(assurance)
+
     otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan =""
 
     if(name==="" || name.trim()===""){
