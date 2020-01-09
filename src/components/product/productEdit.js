@@ -62,7 +62,6 @@ class ProductEdit extends React.Component{
         const data = await detailProductFunction({id},detailServiceProductFunction)
 
         if(data){
-           console.log(data)
         if(!data.error){
             this.setState({
                 rows:data.dataProduct,
@@ -188,7 +187,6 @@ class ProductEdit extends React.Component{
             }
             
             collaterals.reverse()
-            console.log(collaterals)
     var newData = {
         name,min_timespan,max_timespan,interest,min_loan,max_loan,fees,asn_fee,service_id,collaterals,financing_sector,assurance,status
     }
@@ -310,7 +308,6 @@ class ProductEdit extends React.Component{
 
     if (!this.state.agunan.includes(this.state.collaterals[i]))
     {
-        console.log(this.state.checkAgunan)
     return (
         <div className="form-check form-check-inline">
         <input checked={this.state.checkAgunan} className="form-check-input otheragunan" onChange={this.handleCheckAgunan} type="checkbox" value="lainnya"/>
