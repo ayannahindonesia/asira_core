@@ -75,7 +75,7 @@ class ProductAdd extends React.Component{
     var assurance =  document.querySelector('.asuransi').checked;
     var otheragunan =  document.querySelector('.otheragunan').checked;
     
-    assurance = assurance ? assurance = this.refs.asuransi.value : assurance=""
+    assurance = assurance.trim() ? assurance = this.refs.asuransi.value : assurance="null"
     otheragunan = otheragunan ? otheragunan = this.refs.lainnya.value : otheragunan =""
 
     if(name==="" || name.trim()===""){
