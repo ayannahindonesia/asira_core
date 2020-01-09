@@ -16,7 +16,7 @@ export async function getAllBorrowerFunction(param, next){
             filter += `&${key}=${param[key]}`
         }
 
-        const urlNew = serverUrl+`admin/borrower?account_number=null&orderby=updated_time&sort=desc${filter}`
+        const urlNew = serverUrl+`admin/borrower?account_number=null&orderby=updated_at&sort=desc${filter}`
         
         axios.get(urlNew,config).then((res)=>{
             const listUser = res.data && res.data.data

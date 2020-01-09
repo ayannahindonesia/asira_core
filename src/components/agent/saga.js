@@ -16,7 +16,7 @@ export async function getAllAgentFunction(param, nextAgent, nextBank){
             filter += `&${key}=${param[key]}`
         }
 
-        const urlNew = serverUrl+`admin/agents?orderby=updated_time&sort=desc${filter}`
+        const urlNew = serverUrl+`admin/agents?orderby=updated_at&sort=desc${filter}`
     
         axios.get(urlNew,config).then((res)=>{
             const listAgent = res.data && res.data.data

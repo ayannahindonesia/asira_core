@@ -207,7 +207,7 @@ class CalonNasabahArsipDetail extends React.Component{
                       this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
                     ],
                     [
-                      this.state.dataUser.created_time && handleFormatDate(this.state.dataUser.created_time)
+                      this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at)
                     ],
                   ]}                 
                 />

@@ -28,7 +28,7 @@ const columnDataUser = [
         numeric: false,
         label: 'Nama Bank',
     },
-    { id: 'created_time', numeric: false, label: 'Tanggal Registrasi'},
+    { id: 'created_at', numeric: false, label: 'Tanggal Registrasi'},
 ]
 
 class CalonNasabahArsipList extends React.Component{
@@ -73,7 +73,7 @@ class CalonNasabahArsipList extends React.Component{
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {
-                        dataListUser[key].created_time = dataListUser[key].created_time && handleFormatDate(dataListUser[key].created_time)
+                        dataListUser[key].created_at = dataListUser[key].created_at && handleFormatDate(dataListUser[key].created_at)
                         dataListUser[key].category = this.isCategoryExist(dataListUser[key].category) 
                     }
                 }
