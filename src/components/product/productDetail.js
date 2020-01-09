@@ -23,6 +23,7 @@ class ProductDetail extends React.Component{
         const data  = await detailProductFunction({id},detailServiceProductFunction)
 
         if(data){
+            console.log(data)
             if(!data.error){
                 this.setState({loading:false,layanan:data.serviceProduct.name,rows:data.dataProduct,fees:data.dataProduct.fees,collaterals:data.dataProduct.collaterals,financing_sector:data.dataProduct.financing_sector})
             }else{
@@ -38,7 +39,7 @@ class ProductDetail extends React.Component{
                 <div className="form-group row" key={index}>
                             <label className="col-sm-4 col-form-label">{val.description} </label>
                             <div className="col-sm-8">
-                            : {val.amount} 
+                            : {val.amount ===" %" ?"-":val.amount} 
                             </div>
                         </div>
             )
