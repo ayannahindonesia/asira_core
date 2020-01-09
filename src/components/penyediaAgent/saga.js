@@ -37,7 +37,7 @@ export async function getPenyediaAgentListFunction(param,next) {
         for (const key in param){
             filter += `&${key}=${param[key]}`
         }
-        axios.get(serverUrl+`admin/agent_providers?orderby=updated_time&sort=desc${filter}`,config)
+        axios.get(serverUrl+`admin/agent_providers?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             param.dataListAgent = res.data
             

@@ -178,7 +178,7 @@ class profileNasabahDetail extends React.Component{
                                     <td>Pinjaman ke-</td>
                                     <td>: {this.state.rows.loan_count} </td>
                                     <td>Tanggal Register</td>
-                                    <td>: <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" /></td>
+                                    <td>: <Moment date={this.state.rows.created_at} format=" DD  MMMM  YYYY" /></td>
                                    
                                 </tr>
                                 <tr>

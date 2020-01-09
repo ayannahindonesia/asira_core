@@ -26,7 +26,7 @@ const columnDataUser = [
       label: 'Kategori',
   },
   {
-    id: 'created_time',
+    id: 'created_at',
     numeric: false,
     label: 'Tanggal Registrasi',
   },
@@ -86,7 +86,7 @@ class profileNasabah extends React.Component {
           for (const key in dataNasabah){
              dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
              dataNasabah[key].loan_status = dataNasabah[key].loan_status && dataNasabah[key].loan_status==="active"?"Aktif" :"Tidak Aktif"
-             dataNasabah[key].created_time =   <Moment date={dataNasabah[key].created_time } format=" DD  MMMM  YYYY" />
+             dataNasabah[key].created_at =   <Moment date={dataNasabah[key].created_at } format=" DD  MMMM  YYYY" />
 
           }
 

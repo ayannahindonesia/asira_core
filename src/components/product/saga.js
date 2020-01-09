@@ -31,7 +31,7 @@ export async function listProductFunction (param,next){
             filter += `&${key}=${param[key]}`
         }
 
-        axios.get(serverUrl+`admin/products?orderby=updated_time&sort=desc${filter}`,config)
+        axios.get(serverUrl+`admin/products?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             param.productList = res.data
             if(next){

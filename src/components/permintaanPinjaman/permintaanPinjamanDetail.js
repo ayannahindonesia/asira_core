@@ -185,7 +185,7 @@ class Main extends React.Component{
                                 <tr>
                                     <td>Tanggal Pengajuan</td>
                                     <td>: 
-                                    <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" />
+                                    <Moment date={this.state.rows.created_at} format=" DD  MMMM  YYYY" />
                                     </td>
                                 </tr>
                               
