@@ -38,7 +38,7 @@ class ProductAdd extends React.Component{
     _isMounted = false;
     state = {
     selectedOption: null, errorMessage:null,rentangDari:0,rentangAkhir:0,
-    bankService:[],diKlik:false,check:false,submit:false
+    bankService:[],diKlik:false,check:false,submit:false,checkAsuransi:false
     };
 
     componentDidMount(){
@@ -168,6 +168,11 @@ class ProductAdd extends React.Component{
         }
     }
       
+    handleTextAsuransi =(e)=>{
+        e.target.value.trim() ===""?
+            this.setState({checkAsuransi:false}):
+            this.setState({checkAsuransi:true})
+    }
     
     getBankService = async function () {
         const data = await getAllLayananListFunction({})
@@ -386,11 +391,12 @@ class ProductAdd extends React.Component{
                                 </td>
                                 <td>
                                    
-                                <div className="form-check-inline" style={{marginLeft:"125px"}}>
-                                            <input className="form-check-input asuransi" type="checkbox"/>
+                                 <div className="form-check-inline" style={{marginLeft:"125px"}}>
+                                            <input  onChange={this.handleCheckAsuransi} className="form-check-input asuransi" type="checkbox" checked={this.state.checkAsuransi}/>
                                             <label className="form-check-label">Tersedia</label>
-                                            <input type="text" className="ml-2" ref="asuransi" placeholder="Jika ada.."></input>
-                                </div> 
+                                            <input type="text" onChange={this.handleTextAsuransi} className="ml-2" ref="asuransi"></input>
+                               
+                                </div>
 
 
                                 </td>
