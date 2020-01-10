@@ -11,12 +11,13 @@ export async function getAllPermintaanPinjamanFunction(param,next){
             filter += `&${[key]}=${param[key]}`
         }
 
-        axios.get(serverUrl+`admin/loan?orderby=id&sort=ASC${filter}`,config)
+        axios.get(serverUrl+`admin/loan?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
+            param.pinjamanList = res.data
             if(next){
                 resolve(next(param))
             }else{
-                resolve(res)
+                resolve(param)
             }
         })
         .catch((err)=>{

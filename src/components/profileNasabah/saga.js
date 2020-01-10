@@ -11,12 +11,13 @@ export async function getProfileNasabahFunction (param,next){
             filter += `&${[key]}=${param[key]}`
         }
 
-        axios.get(serverUrl+`admin/borrower?account_number=not null&orderby=id&sort=ASC${filter}`,config)
+        axios.get(serverUrl+`admin/borrower?account_number=not null&orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             if(next){
                 resolve(next(param))
             }else{
-                resolve(res)
+                param.listNasabah = res.data;
+                resolve(param)
             }
         })
         .catch((err)=>{

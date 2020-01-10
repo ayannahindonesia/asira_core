@@ -9,7 +9,9 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
 
         
         const config = {
-            headers: {'Authorization': "Bearer " + tokenAuth}
+            headers: {
+                'Authorization': "Bearer " + tokenAuth,
+            },
         };
 
         const url = serverUrl + "client/admin_login"
@@ -17,7 +19,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
         const logindata ={key: param.key,password: param.password};
   
         axios.post(url,logindata,config).then((res)=>{
-
+            console.log(res.headers)
             setToken(res.data.token, new Date().getTime() + (res.data.expires_in*1000))
             
             param.dataToken = res.data.token;
@@ -33,6 +35,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
             }
             
         }).catch((err)=>{
+            console.log(err)
             console.log(err.toString())
             const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
             param.error = error
@@ -95,4 +98,49 @@ export async function getUserProfileFunction(param) {
         
     });
     
+}
+
+export async function sendEmailFunction (param,next){
+    return new Promise(async (resolve)=>{
+        const tokenAuth = getTokenAuth();
+        const config = {
+            headers: {'Authorization': "Bearer " + tokenAuth}
+        };
+        axios.post(serverUrl+'client/forgotpassword?system=core',param,config)
+        .then((res)=>{
+            if(next){
+                resolve(next(param))
+            }
+            resolve(res)
+        })
+        .catch((err)=>{
+            console.log(err.toString())
+            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            param.error = error
+            resolve(param);
+        })
+
+    })
+}
+
+export async function changePasswordFunction (param,next){
+    return new Promise(async(resolve)=>{
+        const tokenAuth = getTokenAuth();
+
+        const config = {
+            headers: {'Authorization': "Bearer " + tokenAuth}
+        };
+        axios.post(serverUrl+'client/resetpassword',param,config)
+        .then((res)=>{
+            if(next){
+                resolve(next(param))
+            }
+            resolve(res)
+        })
+        .catch((err)=>{
+            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            param.error = error;
+            resolve(param);
+        })
+    })
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import Moment from 'react-moment';
 import { GlobalFunction } from '../globalFunction'
-import { getDetailFunction, getDetailBorrowerFunction } from './saga';
+import { getDetailFunction } from './saga';
 import { getToken } from '../index/token';
 
 class Main extends React.Component{
@@ -11,7 +11,6 @@ class Main extends React.Component{
     componentDidMount(){
         this._isMounted=true
         this.getDataDetail()
-        this.getDataBorrower()
     }
     componentWillUnmount(){
         this._isMounted = false
@@ -24,7 +23,7 @@ class Main extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({rows:data.data,items:data.data.fees,status:data.data.status})
+                this.setState({borrowerDetail:data.data.borrower_info,rows:data.data,items:data.data.fees,status:data.data.status})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -40,7 +39,7 @@ class Main extends React.Component{
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td>{String(val.amount).includes("%")?
                     val.amount:
-                    parseInt(val.amount)/parseInt(this.state.rows.loan_amount)*100 +"%"
+                    parseFloat(parseInt(val.amount)/parseInt(this.state.rows.loan_amount) * 100).toFixed(2) +"%"
                 
                 }</td>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -53,23 +52,6 @@ class Main extends React.Component{
         return jsx
     }
     
-    getDataBorrower = async function () {
-        const param ={
-            id:this.props.match.params.idBorrower
-        }
-
-        const data = await getDetailBorrowerFunction(param)
-
-        if(data){
-            console.log(data)
-            if(!data.error){
-                this.setState({borrowerDetail:data.data})
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-        }
-        
-    }
 
 
     btnBack = ()=>{
@@ -115,7 +97,7 @@ class Main extends React.Component{
                                     </tr>
                                     <tr>
                                         <td>Nama Nasabah</td>
-                                        <td>: {this.state.rows.owner_name}</td>
+                                        <td>: {this.state.rows.borrower_name}</td>
                                         <td>Status Pinjaman</td>
                                         <td>: {
                                     this.state.status === "processing"?
@@ -172,7 +154,7 @@ class Main extends React.Component{
                                     <tr>
                                         <td>Imbal Hasil/ Bunga</td>
                                         <td></td>
-                                        <td>{this.state.rows.interest}%</td>
+                                        <td>{parseInt(this.state.rows.interest).toFixed(2)}%</td>
                                         <td></td>
                                         <td>{this.state.rows &&  this.state.rows.interest && this.state.rows.loan_amount?GlobalFunction.formatMoney(parseInt(this.state.rows.interest)*parseInt(this.state.rows.loan_amount)/100) :null}</td>
                                     </tr>
@@ -203,7 +185,7 @@ class Main extends React.Component{
                                 <tr>
                                     <td>Tanggal Pengajuan</td>
                                     <td>: 
-                                    <Moment date={this.state.rows.created_time} format=" DD  MMMM  YYYY" />
+                                    <Moment date={this.state.rows.created_at} format=" DD  MMMM  YYYY" />
                                     </td>
                                 </tr>
                               

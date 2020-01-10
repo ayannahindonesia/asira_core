@@ -5,8 +5,6 @@ import { checkPermission } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
 import { destructAgent } from './function';
-import { getAllBankList } from '../bank/saga';
-import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
 import SearchBar from '../subComponent/SearchBar';
 
 
@@ -27,7 +25,7 @@ const columnDataAgent = [
         label: 'Kategori',
     },
     {
-        id: 'agent_provider_name',
+        id: 'instansi',
         numeric: false,
         label: 'Instansi',
     },
@@ -88,12 +86,11 @@ class AgentList extends React.Component{
 
         param.search_all = this.state.search
 
-        const data = await getAllAgentFunction(param, getPenyediaAgentListFunction, getAllBankList);
+        const data = await getAllAgentFunction(param);
 
         if(data) {
-            
             if(!data.error) {
-                const dataListAgent = destructAgent(data.dataAgent || [], data.bankList.data, data.dataListAgent.data, true);
+                const dataListAgent = destructAgent(data.dataAgent, true);
                 
                 this.setState({
                     listAgent: dataListAgent,
@@ -135,7 +132,7 @@ class AgentList extends React.Component{
                         <div className="col-4">
                             <SearchBar
                                 onChange={this.changeSearch}
-                                placeholder="Search Nama Agen, Status.."
+                                placeholder="Search ID Agen, Nama Agen.."
                                 value={this.state.search}
                             />
                         </div> 

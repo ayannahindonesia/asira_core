@@ -70,7 +70,7 @@ export async function getAllBankList (param,next){
             filter += `&${key}=${param[key]}`
         }
 
-        axios.get(serverUrl+`admin/banks?orderby=id&sort=ASC${filter}`,config)
+        axios.get(serverUrl+`admin/banks?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             param.bankList = res.data
             if(next){

@@ -58,7 +58,7 @@ class TujuanEdit extends React.Component{
         const data = await TujuanEditFunction(param)
         if(data){
             if(!data.error){
-                swal("Success","Tujuan berhasil di tambah","success")
+                swal("Success","Tujuan berhasil diubah","success")
                 this.setState({errorMessage:null,diKlik:true,submit:false})
             }else{
                 this.setState({errorMessage:data.error})

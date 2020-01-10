@@ -31,7 +31,7 @@ const columnDataUser = [
     { id: 'created_at', numeric: false, label: 'Tanggal Registrasi'},
 ]
 
-class CalonNasabahList extends React.Component{
+class CalonNasabahArsipList extends React.Component{
     _isMounted = false;
 
     constructor(props) {
@@ -57,7 +57,9 @@ class CalonNasabahList extends React.Component{
     }
 
     refresh = async function(){
-        const param = {};
+        const param = {
+            status: 'rejected'
+        };
         param.search_all = this.state.search;
 
         param.rows = this.state.rowsPerPage;
@@ -129,7 +131,7 @@ class CalonNasabahList extends React.Component{
                 <div className="container">
                     <div className="row">
                         <div className="col-12">
-                            <h2 className="mt-3">Calon Nasabah - List</h2>
+                            <h2 className="mt-3">Calon Nasabah Arsip - List</h2>
                         </div>
                         <div className="col-8" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
                             {this.state.errorMessage}
@@ -155,7 +157,7 @@ class CalonNasabahList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/detailCalonNasabah/' : null}
+                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/detailCalonNasabahArsip/' : null}
                     />
 
                   
@@ -171,4 +173,4 @@ class CalonNasabahList extends React.Component{
     }
 }
 
-export default CalonNasabahList;
+export default CalonNasabahArsipList;

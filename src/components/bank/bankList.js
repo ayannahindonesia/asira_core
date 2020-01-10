@@ -1,21 +1,39 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
-import {Link} from 'react-router-dom'
 import {getAllBankList} from './saga'
 import { checkPermission } from '../global/globalFunction';
 import 'rc-pagination/assets/index.css';
-import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
-import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import { getToken } from '../index/token';
 import SearchBar from './../subComponent/SearchBar'
+import TableComponent from './../subComponent/TableComponent'
+
+
+const columnDataUser = [
+  {
+      id: 'id',
+      numeric: false,
+      label: 'Bank ID',
+  },
+  {
+      id: 'name',
+      numeric: false,
+      label: 'Nama Bank',
+  },
+  {
+      id: 'pic',
+      numeric: false,
+      label: 'PIC',
+  }
+]
 
 class BankList extends React.Component{
+  
     _isMounted=false;
     state={
         loading:true,
-        rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,
+        paging:true,
+        rows:[],total_data:10,page:1,from:1,to:3,last_page:1,dataPerhalaman:5,
         search: '',
     }
     componentDidMount(){
@@ -64,64 +82,13 @@ class BankList extends React.Component{
       })
     }
 
-    renderJSX = () => {
-        if (this.state.loading){
-            return  (
-              <tr  key="zz">
-                <td align="center" colSpan={6}>
-                      <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-              />   
-                </td>
-              </tr>
-            )
-        }else{
-            if(this.state.rows.length===0){
-                return(
-                  <tr>
-                     <td align="center" colSpan={6}>Data empty</td>
-                  </tr>
-                )
-              }else{
-                var jsx = this.state.rows.map((val,index)=>{
-                    return(
-                        <tr key={index}>
-                        <td align="center">{this.state.page >1 ? index+1 + (this.state.dataPerhalaman*(this.state.page -1)) : index+1}</td>
-                        <td align="center">{val.id}</td>
-                        <td align="center">{val.name}</td>
-                        {/* <td align="center">{val.type}</td> */}
-                        <td align="center">{val.pic}</td>
-                        <td align="center">
-                          {   checkPermission('core_bank_patch') &&
-                              <Link to={`/bankedit/${val.id}`} className="mr-2">
-                                  <i className="fas fa-edit" style={{color:"black",fontSize:"18px"}}/>
-                              </Link>
-                          }
-                          {   checkPermission('core_bank_detail') &&
-                              <Link to={`/bankdetail/${val.id}`} >
-                              <i className="fas fa-eye" style={{color:"black",fontSize:"18px"}}/>
-                            </Link>
-                          }
-                           
-                           
-                        </td>
-                </tr>  
-                    )
-                })
-                return jsx;
-              }
-        }
-      
-
-    }
 
     onChangePage = (current) => {
-      if(this.state.search)
+      
         this.setState({loading:true, page : current}, () => {
-          this.getAllBankData()
+          if(this.state.paging){
+            this.getAllBankData()
+          }
         })
     }
 
@@ -146,35 +113,23 @@ class BankList extends React.Component{
                         </div>
                     </div>
                    <hr/>
-                   <table className="table table-hover">
-                   <thead className="table-warning">
-                        <tr >
-                            <th className="text-center" scope="col">#</th>
-                            <th className="text-center" scope="col">Bank ID</th>
-                            <th className="text-center" scope="col">Bank Name</th>
-                            {/* <th className="text-center" scope="col">Bank Type</th> */}
-                            <th className="text-center" scope="col">PIC</th>
-                            <th className="text-center" scope="col">Action</th>
-                        </tr>     
-                    </thead>
-                       <tbody>
-                          {this.renderJSX()}
-                       </tbody>
-                   </table>
-                   <hr/>
-                <nav style={{float:"right",color:"black"}}> 
 
-            <Pagination 
-                className="ant-pagination"  
-                showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
-                total={this.state.total_data}
-                pageSize={this.state.dataPerhalaman}
-                onChange={this.onChangePage}
-                locale={localeInfo}
-                current={this.state.page}
-                showLessItems
-            />
-                </nav>
+                   < TableComponent
+                        id={"id"}
+                        paging={this.state.paging}
+                        loading={this.state.loading}
+                        columnData={columnDataUser}
+                        data={this.state.rows}
+                        page={this.state.page}
+                        rowsPerPage={this.state.dataPerhalaman}
+                        totalData={this.state.total_data}
+                        onChangePage={this.onChangePage}             
+                        permissionDetail={ checkPermission('core_bank_detail') ? '/bankdetail/' : null}
+                        permissionEdit={ checkPermission('core_bank_patch') ? '/bankedit/' : null}
+
+                    />
+                   
+               
                
                 </div>
             )

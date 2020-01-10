@@ -168,7 +168,6 @@ class Report extends React.Component{
     getAllLoanData = async function (params) {
         const data = await getAllLoanDataFunction(params)
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({dataReport:data.reportFee.data,errorMessage:"",errorMessageBank:'',errorMessagePencairan:'',munculinTable:true,loading:false})
             }else{
@@ -218,6 +217,12 @@ class Report extends React.Component{
         if(getToken()){
             return(
                 <div className="container mt-2">
+                     <div className="form-group row">
+                                        <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                                                {this.state.errorMessage}
+                                        </div>
+                                            
+                                </div>
                     <h2>Report</h2>
                     <hr></hr>
                     <div className="form-group row">
@@ -254,7 +259,7 @@ class Report extends React.Component{
                                         label = 'Dari Tanggal'
                                         onChange ={this.handleStartChange}
                                         value={this.state.tanggalAwal}
-                                        error={this.state.errorMessage.trim().length !== 0}
+                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0}
                                     />
                                 </div>
                                 <div className="form-inline mr-3 ml-3"><i className="fas fa-long-arrow-alt-right"></i></div>
@@ -263,7 +268,7 @@ class Report extends React.Component{
                                         label = 'Sampai Tanggal'
                                         onChange ={this.handleEndChange}
                                         value={this.state.tanggalAkhir}
-                                        error={this.state.errorMessage.trim().length !== 0}
+                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0}
                                     />
                                 </div>
                             </div>
@@ -279,7 +284,7 @@ class Report extends React.Component{
                                         label = 'Dari Tanggal'
                                         onChange ={this.handleStartPencairanChange}
                                         value={this.state.tanggalAwalPencairan}
-                                        error={this.state.errorMessagePencairan.trim().length !== 0}
+                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0}
                                     />
                                 </div>
                                 <div className="form-inline mr-3 ml-3"><i className="fas fa-long-arrow-alt-right"></i></div>
@@ -288,7 +293,7 @@ class Report extends React.Component{
                                         label = 'Sampai Tanggal'
                                         onChange ={this.handleEndPencairanChange}
                                         value={this.state.tanggalAkhirPencairan}
-                                        error={this.state.errorMessagePencairan.trim().length !== 0}
+                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0}
                                     />
                                 </div>
                             </div>

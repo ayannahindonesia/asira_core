@@ -60,7 +60,7 @@ class Example extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav navbar>
               
-            { checkPermission('core_bank_new','core_bank_list') && 
+            { checkPermission(['core_bank_new','core_bank_list']) && 
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-university"></i> Bank</label>
@@ -72,10 +72,23 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
 
-            { checkPermission('core_borrower_get_all') && <Link to="/profileNasabah" style={{marginBottom:"10px"}} ><label><i className="fas fa-user-friends"></i> Nasabah</label></Link>}
+            { checkPermission('core_borrower_get_all') && 
+              <UncontrolledDropdown  nav inNavbar>
+                <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
+                  <label><i className="fas fa-users"></i> Nasabah</label>
+                </DropdownToggle>
+                <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
+                  { checkPermission('core_borrower_get_all') && <Link to="/profileNasabah" style={{color:"inherit",textDecoration:"none"}} ><DropdownItem>Nasabah List</DropdownItem></Link>}
+                  { checkPermission('core_borrower_get_all') && <Link to="/listCalonNasabah" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Calon Nasabah List</DropdownItem></Link>}    
+                  { checkPermission('core_borrower_get_all') && <Link to="/listCalonNasabahArsip" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Calon Nasabah Arsip List</DropdownItem></Link>}           
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            }
+
+            
             { checkPermission('core_loan_get_all') && <Link to="/permintaanpinjaman"><label><i className="fas fa-hand-holding-usd"></i> Pinjaman</label></Link>}
             
-            { checkPermission('core_service_new','core_service_list') && 
+            { checkPermission(['core_service_new','core_service_list']) && 
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-concierge-bell"></i> Layanan</label>
@@ -87,7 +100,7 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
             
-            { checkPermission('core_product_new','core_product_list') &&
+            { checkPermission(['core_product_new','core_product_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                 <label><i className="fas fa-money-check-alt"></i> Product</label>
@@ -99,7 +112,7 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
 
-            { checkPermission('core_bank_type_new','core_bank_type_list') &&
+            { checkPermission(['core_bank_type_new','core_bank_type_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-sliders-h"></i> Tipe Bank</label>
@@ -111,7 +124,7 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
               
-            { checkPermission('core_loan_purpose_new','core_loan_purpose_list') &&
+            { checkPermission(['core_loan_purpose_new','core_loan_purpose_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-bullseye"></i> Tujuan</label>
@@ -123,10 +136,10 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
 
-            { checkPermission('core_role_new','core_role_list') &&
+            { checkPermission(['core_role_new','core_role_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
-                  <label><i className="fas fa-handshake"></i> Role</label>
+                  <label><i className="fas fa-user-cog"></i> Role</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
                   { checkPermission('core_role_new') && <Link to="/tambahrole" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>     }              
@@ -135,7 +148,7 @@ class Example extends React.Component {
               </UncontrolledDropdown> 
             }        
 
-            { checkPermission('core_permission_new','core_permission_list') &&
+            { checkPermission(['core_permission_new','core_permission_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-user-tag"></i> Role Permission </label>
@@ -147,7 +160,7 @@ class Example extends React.Component {
               </UncontrolledDropdown>    
             }
 
-            { checkPermission('core_user_new','core_user_list') &&
+            { checkPermission(['core_user_new','core_user_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
                   <label><i className="fas fa-user"></i> Akun </label>
@@ -159,10 +172,10 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
 
-            { checkPermission('core_agent_provider_new','core_agent_provider_list') &&
+            { checkPermission(['core_agent_provider_new','core_agent_provider_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
-                  <label> <i className="fas fa-people-carry"></i> Penyedia Agen </label>
+                  <label> <i className="fas fa-building"></i> Penyedia Agen </label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
                   { checkPermission('core_agent_provider_new') && <Link to="/penyediaAdd" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
@@ -171,10 +184,10 @@ class Example extends React.Component {
               </UncontrolledDropdown>
             }
 
-            { checkPermission('core_agent_new','core_agent_list') &&
+            { checkPermission(['core_agent_new','core_agent_list']) &&
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
-                  <label><i className="fas fa-users"></i> Agen </label>
+                  <label><i className="fas fa-user-secret"></i> Agen </label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
                   { checkPermission('core_agent_new') && <Link to="/tambahAgent" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   
@@ -182,8 +195,6 @@ class Example extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
             }
-
-            { checkPermission('core_borrower_get_all') && <Link to="/listCalonNasabah" style={{marginBottom:"10px"}}><label><i className="fas fa-user-plus"></i> Calon Nasabah </label></Link>}
             
             
             { checkPermission('convenience_fee_report') && <Link to="/report" style={{marginBottom:"10px"}}><label><i className="far fa-newspaper"></i> Report</label></Link>}

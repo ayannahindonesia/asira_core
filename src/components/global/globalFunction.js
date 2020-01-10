@@ -1,4 +1,5 @@
 import { getProfileUser } from '../index/token';
+var crypto = require("crypto");
 
 export function validateEmail(email) {
     let flag = false;
@@ -21,23 +22,34 @@ export function  validatePhone(phone) {
     return flag;
 }
 
-export function checkPermission(stringPermission, stringPermissionSecond) {
+export function checkPermission(stringPermission) {
   let flag = false;
   
   const listPermission = getProfileUser() ? JSON.parse(getProfileUser()) : [];
 
 
   for(const key in listPermission) {
-    if(stringPermission && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
-      flag = true;
-      break;
-    } else if(stringPermissionSecond && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermissionSecond.toString().toLowerCase()) {
-      flag = true;
-      break;
-    } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
-      flag = true;
-      break;
+    
+    if(typeof(stringPermission) !== 'object') {
+      if(stringPermission && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
+        flag = true;
+        break;
+      } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
+        flag = true;
+        break;
+      }
+    } else {
+      for(const keyPermission in stringPermission) {
+        if(stringPermission[keyPermission] && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission[keyPermission].toString().toLowerCase()) {
+          flag = true;
+          break;
+        } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
+          flag = true;
+          break;
+        }
+      }
     }
+
   }
   
   return flag;
@@ -123,4 +135,19 @@ export function getMonthNow(bulanNow) {
 
 
   return bulan
+}
+
+export function decryptImage(text){
+  let keyStr = "BpLnfgDsc3WD9F3qap394rjd239smsdk"
+  const algorithm = 'aes-256-cfb';
+
+  const contents = Buffer.from(text, 'base64');
+  const iv = contents.slice(0, 16);
+  const textBytes = contents.slice(16);
+  const decipher = crypto.createDecipheriv(algorithm, keyStr, iv);
+  let res = decipher.update(textBytes, '', 'utf8');
+
+  res += decipher.final('utf8');
+  
+  return res
 }

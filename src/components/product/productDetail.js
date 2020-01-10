@@ -6,7 +6,7 @@ import { getToken } from '../index/token';
 import Loader from 'react-loader-spinner'
 
 class ProductDetail extends React.Component{
-    state = {rows:[],fees:[],collaterals:[],financing_sector:[],layanan:"",loading:true}
+    state = {rows:[],fees:[],collaterals:[],financing_sector:[],layanan:"",loading:true,errorMessage:null}
     _isMounted = false
     componentDidMount(){
         this.getDetailProduct()
@@ -15,15 +15,19 @@ class ProductDetail extends React.Component{
     componentWillUnmount(){
         this._isMounted = false
     }
+    componentWillReceiveProps(newProps){
+        this.setState({errorMessage:newProps.error})
+    }
     getDetailProduct = async function () {
         var id = this.props.match.params.id
         const data  = await detailProductFunction({id},detailServiceProductFunction)
 
         if(data){
+            console.log(data)
             if(!data.error){
                 this.setState({loading:false,layanan:data.serviceProduct.name,rows:data.dataProduct,fees:data.dataProduct.fees,collaterals:data.dataProduct.collaterals,financing_sector:data.dataProduct.financing_sector})
             }else{
-                console.log(data.error)
+                this.setState({errorMessage:data.error})
             }
         }
     }
@@ -35,7 +39,7 @@ class ProductDetail extends React.Component{
                 <div className="form-group row" key={index}>
                             <label className="col-sm-4 col-form-label">{val.description} </label>
                             <div className="col-sm-8">
-                            : {val.amount} 
+                            : {val.amount ===" %" ?"-":val.amount} 
                             </div>
                         </div>
             )
@@ -60,6 +64,12 @@ class ProductDetail extends React.Component{
         if(getToken()){
             return(
                 <div className="container">
+                     <div className="form-group row">
+                                        <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                                                {this.state.errorMessage}
+                                        </div>
+                                            
+                    </div>
                    <h2>Produk - Detail</h2>
                     <hr></hr>
                     <form>
@@ -136,7 +146,7 @@ class ProductDetail extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Asuransi</label>
                             <div className="col-sm-8">
-                            : {this.state.rows.assurance}
+                            : {this.state.rows.assurance==="null"?"-":this.state.rows.assurance}
                             </div>
                         </div>
                     </form>

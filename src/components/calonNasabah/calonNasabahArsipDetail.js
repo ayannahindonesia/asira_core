@@ -6,11 +6,11 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getBorrowerFunction } from './saga'
+import { getBorrowerFunction, getImageFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
-import DialogComponent from './../subComponent/DialogComponent'
+import DialogComponent from '../subComponent/DialogComponent'
 
 const styles = (theme) => ({
     container: {
@@ -18,7 +18,7 @@ const styles = (theme) => ({
     },
   });
 
-class CalonNasabahDetail extends React.Component{
+class CalonNasabahArsipDetail extends React.Component{
     _isMounted = false;
 
     state = {
@@ -69,14 +69,14 @@ class CalonNasabahDetail extends React.Component{
           if(!data.error) {
             const dataUser = data.dataUser || {};
             let flag = false;
+
+            if(dataUser && dataUser.status && dataUser.status !== 'rejected') {
+              flag = true;
+            }
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
             dataUser.idcard_image = decryptImage(dataUser.idcard_image);
             dataUser.taxid_image = decryptImage(dataUser.taxid_image)
-
-            if(dataUser && dataUser.status && dataUser.status === 'rejected') {
-              flag = true
-            }
 
             if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
               flag = true
@@ -108,54 +108,49 @@ class CalonNasabahDetail extends React.Component{
     handleDialog = (e) => {
       let label = e.target.value
       let title = '';
-      let message='';
 
       if(label.toLowerCase().includes('ktp')) {
         title = 'KTP'
-        message = this.state.dataUser && this.state.dataUser.idcard_image
-
       } else if(label.toLowerCase().includes('npwp')) {
         title = 'NPWP'
-        message = this.state.dataUser && this.state.dataUser.taxid_image
-
       }
 
       this.setState({
-        dialog: true,
-        message,
         title,
+      }, () => {
+        this.getImage(this.state.title)
       })
     }
 
-    // getImage = async function(title) {
-    //   let data = {
-    //     idImage: 0,
-    //   };
+    getImage = async function(title) {
+      let data = {
+        idImage: 0,
+      };
 
-    //   if(title.toLowerCase().includes('ktp')) {
-    //     data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image) || 0
-    //   } else if(title.toLowerCase().includes('npwp')) {
-    //     data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image) || 0
-    //   }
+      if(title.toLowerCase().includes('ktp')) {
+        data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image ) || 0
+      } else if(title.toLowerCase().includes('npwp')) {
+        data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image ) || 0
+      }
 
-    //   data = await getImageFunction(data)
+      data = await getImageFunction(data)
 
-    //   if(data) {
-    //     if(!data.error) {
-    //       let message = data.image && data.image.image_string;
+      if(data) {
+        if(!data.error) {
+          let message = data.image && data.image.image_string;
 
-    //       this.setState({
-    //         dialog:true,
-    //         message,
-    //       })
-    //     } else {
-    //       this.setState({
-    //         errorMessage: data.error,
-    //         loading: false,
-    //       })
-    //     }      
-    //   }
-    // }
+          this.setState({
+            dialog:true,
+            message,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            loading: false,
+          })
+        }      
+      }
+    }
 
 
     handleClose = () => {
@@ -164,7 +159,7 @@ class CalonNasabahDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listCalonNasabah'/>            
+            return <Redirect to='/listCalonNasabahArsip'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -181,7 +176,7 @@ class CalonNasabahDetail extends React.Component{
         } else if(getToken()){
             return(
               <div className="container mt-4">
-                <h3>Calon Nasabah - Detail</h3>
+                <h3> Calon Nasabah Arsip  - Detail</h3>
                 
                 <hr/>
                  
@@ -245,7 +240,7 @@ class CalonNasabahDetail extends React.Component{
                       this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_name : '-',
                       this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
                       this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_lasteducation : '-',
-                      this.state.dataUser.dependants >5 ?"Lebih dari 5": this.state.dataUser.dependants
+                      this.state.dataUser.dependants
                     ],
                   ]}                 
                 />
@@ -382,4 +377,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(CalonNasabahDetail);
+  )(CalonNasabahArsipDetail);

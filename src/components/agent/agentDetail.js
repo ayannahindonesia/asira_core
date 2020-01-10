@@ -8,9 +8,8 @@ import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
 import { getAgentFunction } from './saga'
 import { getToken } from '../index/token';
-import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
-import { getAllBankList } from '../bank/saga';
 import { destructAgent, isRoleAccountExecutive } from './function';
+import BrokenLink from './../../support/img/default.png'
 
 const styles = (theme) => ({
     container: {
@@ -34,8 +33,10 @@ class AgentDetail extends React.Component{
       agentName: '',
       agent_provider_name: '',
       username: '',
+      instansi:'',
       phone:'',
       email:'',
+      image:''
     };
 
     componentDidMount(){
@@ -57,12 +58,11 @@ class AgentDetail extends React.Component{
       const param = {
         agentId: this.state.agentId
       };
-      const data = await getAgentFunction(param, getPenyediaAgentListFunction, getAllBankList) ;
+      const data = await getAgentFunction(param) ;
 
       if(data) {
-        
         if(!data.error) {
-          const dataAgent = destructAgent(data.dataAgent, data.bankList.data, data.dataListAgent.data);
+          const dataAgent = destructAgent(data.dataAgent);
 
           this.setState({
             status: dataAgent.status,
@@ -75,6 +75,8 @@ class AgentDetail extends React.Component{
             kategori_name: dataAgent.category_name,
             agent_provider_name: dataAgent.agent_provider_name,
             bank_name: dataAgent.banks_name,
+            instansi: dataAgent.instansi,
+            image:dataAgent.image,
             loading: false,
           })
         } else {
@@ -206,7 +208,7 @@ class AgentDetail extends React.Component{
                     :
                   </label>
                   <div className="col-sm-4 col-form-label" style={{height:3.5}}>
-                    { this.state.agent_provider_name }
+                    { this.state.instansi }
                   </div>                 
                 </div>
                 
@@ -236,6 +238,20 @@ class AgentDetail extends React.Component{
                   <div className="col-sm-4 col-form-label" style={{height:3.5}}>
                     { this.state.status ? 'Aktif' : 'Tidak Aktif'}
                   </div>   
+                </div>
+
+                <div className="form-group row">                
+                  <label className="col-sm-2 col-form-label" style={{height:3.5}}>
+                    Gambar Agen
+                  </label>
+                  <label className="col-sm-1 col-form-label" style={{height:3.5}}>
+                    :
+                  </label>
+                  <div className="col-sm-4 col-form-label" style={{height:3.5}}>
+                <img src={`${this.state.image}`} width="100px" height="100px" alt="Foto agen" onError={(e)=>{
+                e.target.attributes.getNamedItem("src").value = BrokenLink
+                }} ></img>
+                </div>             
                 </div>
                 
                 <div className="form-group row">

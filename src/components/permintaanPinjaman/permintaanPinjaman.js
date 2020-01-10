@@ -1,17 +1,56 @@
 import React from 'react';
 import {connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-import {Link} from 'react-router-dom'
-import Loader from 'react-loader-spinner'
 import Moment from 'react-moment'
-import Pagination from 'rc-pagination';
 import './../../support/css/pagination.css'
-import localeInfo from 'rc-pagination/lib/locale/id_ID'
 import { getToken } from '../index/token';
 import { getAllPermintaanPinjamanFunction } from './saga';
 import { checkPermission } from '../global/globalFunction';
 import SearchBar from './../subComponent/SearchBar'
+import TableComponent from './../subComponent/TableComponent'
 
+const columnDataUser = [
+      {
+        id: 'id',
+        numeric: false,
+        label: 'ID Pinjaman',
+      },
+      {
+        id: 'borrower_name',
+        numeric: false,
+        label: 'Nama Nasabah',
+      },
+      {
+        id: 'bank_name',
+        numeric: false,
+        label: 'Nama Bank',
+      },
+      {
+        id: 'category',
+        numeric: false,
+        label: 'Kategori',
+      },
+      {
+        id: 'service',
+        numeric: false,
+        label: 'Layanan',
+      },
+      {
+        id: 'product',
+        numeric: false,
+        label: 'Produk',
+      },
+      {
+        id: 'created_at',
+        numeric: false,
+        label: 'Tanggal Pengajuan',
+      },
+      {
+        id: 'status',
+        numeric: false,
+        label: 'Status',
+    },
+]
 class PermintaanPinjaman extends React.Component {
   state = {
     rows: [],detailNasabah:{}, searchRows:'',
@@ -20,11 +59,11 @@ class PermintaanPinjaman extends React.Component {
     isEdit: false,
     editIndex:Number,
     udahdiklik : false,
-    totalData:0,
+    total_data:0,
     last_page:1,
     loading:true,
     BankName:'',serviceName:'',productName:'',
-    errorMessage:''
+    errorMessage:'',paging:true
   };
 
   //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
@@ -50,15 +89,23 @@ class PermintaanPinjaman extends React.Component {
     }
 
     const data = await getAllPermintaanPinjamanFunction(param)
+    const pinjamanList = data.pinjamanList && data.pinjamanList.data
+
+    for (const key in pinjamanList){
+      pinjamanList[key].category = pinjamanList[key].category==="account_executive"?"Account Executive" :pinjamanList[key].category === "agent"?"Agent":"Personal"
+      pinjamanList[key].status = pinjamanList[key].status ==="approved"?"Diterima": pinjamanList[key].status==="rejected"?"Ditolak":"Dalam Proses"
+      pinjamanList[key].service =  pinjamanList[key].service.toString()
+      pinjamanList[key].product =  pinjamanList[key].product.toString()
+      pinjamanList[key].created_at =<Moment date={pinjamanList[key].created_at } format=" DD  MMMM  YYYY" />
+    }
     if(data){
-      console.log(data)
       if(!data.error){
         this.setState({loading:false,
-          rows:data.data.data, 
-          rowsPerPage:data.data.rows,
-          totalData:data.data.total_data,
-          last_page:data.data.last_page,
-          page:data.data.current_page})
+          rows:data.pinjamanList.data, 
+          rowsPerPage:data.pinjamanList.rows,
+          total_data:data.pinjamanList.total_data,
+          last_page:data.pinjamanList.last_page,
+          page:data.pinjamanList.current_page})
       }else{
         this.setState({errorMessage:data.error})
       }
@@ -69,73 +116,23 @@ class PermintaanPinjaman extends React.Component {
 
   onBtnSearch = (e)=>{
       this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
-      this.getAllData()
+        if(this.state.paging){
+          this.getAllData()
+
+        }
     })
   }
 
 
   onChangePage = (current, pageSize) => {
     this.setState({loading:true,page:current},()=>{
-      this.getAllData()
+      if(this.state.paging){
+        this.getAllData()
+
+      }
     })
   }
 
-
-  renderJSX = ()=>{
-    if (this.state.loading){
-      return  (
-        <tr>
-          <td align="center" colSpan={10}>
-                <Loader 
-            type="Circles"
-            color="#00BFFF"
-            height="40"	
-            width="40"
-        />   
-          </td>
-        </tr>
-      )
-  }else{
-    if(this.state.rows.length===0){
-      return(
-        <tr>
-           <td align="center" colSpan={10}>Data empty</td>
-        </tr>
-      )
-    }else{
-      var jsx = this.state.rows.map((val,index)=>{
-        return (
-            <tr key={index}>
-              <td align="center">{this.state.page >0 ? index+1 + (this.state.rowsPerPage*(this.state.page -1)) : index+1}</td>
-              <td align="center">{val.id}</td>
-              <td align="center">{val.owner_name}</td>
-              <td align="center"> {val.bank_name} </td>
-              <td align="center"> {val.category ==="account_executive"?"Account Executive" :val.category === "agent"?"Agent":"Personal"} </td>
-              <td align="center"> {val.service.toString()} </td>
-              <td align="center"> {val.product.toString()} </td>
-              <td align="center"><Moment date={val.created_time} format=" DD  MMMM  YYYY" /></td>
-              <td align="center" style={val.status==="approved"?{color:"green"}:val.status==="rejected"?{color:"red"}:{color:"blue"}}>
-                {val.status ==="approved"?"Diterima":val.status==="rejected"?"Ditolak":"Dalam Proses"}</td>
-              <td align="center">
-            
-                {   checkPermission('core_loan_get_details') &&
-                      <Link style={{textDecoration:"none"}} to={`/permintaanpinjamanDetail/${val.id}/${val.owner.Int64}`}>
-                      <i className="fas fa-eye" style={{color:"black",fontSize:"28px",marginRight:"10px"}}/>
-                      </Link>
-                }
-                         
-              </td>
-            </tr>
-        )
-    })
-     return jsx;
-    }
-  }
-   
-  }
-
-  
-    
   render() {
    if(getToken()){
     return (
@@ -146,9 +143,9 @@ class PermintaanPinjaman extends React.Component {
                         </div>
                         <div className="col-4 mt-3 ml-5">
                         <div className="input-group">
-                        <SearchBar 
+                          <SearchBar 
                             onChange={this.onBtnSearch}
-                            placeholder="Search Nama Nasabah, ID Nasabah.."
+                            placeholder="Search Nama Nasabah, ID Pinjaman.."
                             value={this.state.searchRows}
                           />
                            
@@ -156,42 +153,20 @@ class PermintaanPinjaman extends React.Component {
                         </div>
                     </div>
         <hr></hr>
-          <table className="table table-hover">
-          <thead className="table-warning" style={{fontWeight:'bold'}}>
+                     < TableComponent
+                        id={"id"}
+                        paging={this.state.paging}
+                        loading={this.state.loading}
+                        columnData={columnDataUser}
+                        data={this.state.rows}
+                        page={this.state.page}
+                        rowsPerPage={this.state.rowsPerPage}
+                        totalData={this.state.total_data}
+                        onChangePage={this.onChangePage}             
+                        permissionDetail={ checkPermission('core_loan_get_details') ? '/permintaanpinjamanDetail/' : null}
 
-              <tr>
-                  <th className="text-center" scope="col">#</th>
-                  <th className="text-center" scope="col">Id Pinjaman</th>
-                  <th className="text-center" scope="col">Nama Nasabah</th>
-                  <th className="text-center" scope="col">Bank Akun</th>
-                  <th className="text-center" scope="col">Kategori</th>
-                  <th className="text-center" scope="col">Layanan</th>
-                  <th className="text-center" scope="col">Produk</th>
-                  <th className="text-center" scope="col">Tanggal Pengajuan</th>
-                  <th className="text-center" scope="col">Status Pinjaman</th>
-                  <th className="text-center" scope="col">Action</th>
-              </tr>     
-          </thead>
-            <tbody>
-  
-            {this.renderJSX()}
-  
-            </tbody>
-            
-          </table>
-          <hr></hr>
-          <nav className="navbar" style={{float:"right"}}> 
-
-          <Pagination className="ant-pagination"  
-                showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
-                total={this.state.totalData}
-                pageSize={this.state.rowsPerPage}
-                onChange={this.onChangePage}
-                locale={localeInfo}
-                showLessItems
-                current={this.state.page}
-                />     
-          </nav>
+                    /> 
+        
         </div>
       
 
