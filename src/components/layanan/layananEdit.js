@@ -1,7 +1,7 @@
 import React from 'react'
 import swal from 'sweetalert'
 import Loader from 'react-loader-spinner'
-import { editLayananFunction, getDetailLayananFunction, getImageFunction } from './saga'
+import { editLayananFunction, getDetailLayananFunction } from './saga'
 import { Redirect } from 'react-router-dom'
 import './../../support/css/layananAdd.css'
 import { getToken } from '../index/token';
@@ -35,11 +35,11 @@ class LayananEdit extends React.Component{
 
     getLayananEdit = async function(){
         const id = this.props.match.params.id
-        const data = await getDetailLayananFunction({id},getImageFunction)
+        const data = await getDetailLayananFunction({id})
 
         if(data){
             if(!data.error){
-                this.setState({rows:data.data,imageVal:data.imageData.image_string,loading:false, check: data.data && data.data.status && data.data.status ==='active' ? true : false})
+                this.setState({rows:data.data,imageVal:data.data.image,loading:false, check: data.data && data.data.status && data.data.status ==='active' ? true : false})
             }else{
                 this.setState({errorMessage:data.error,loading:false})
             }
@@ -51,7 +51,6 @@ class LayananEdit extends React.Component{
         this.setState({selectedFile:event.target.files[0]})
     }
     valueHandler = ()=>{
-        console.log(this.state.selectedFile)
         return  this.state.selectedFile ? this.state.selectedFile.name :"Browse Image"
         
     }
@@ -62,7 +61,8 @@ class LayananEdit extends React.Component{
             callback(reader.result.replace("data:image/jpeg;base64,",""))
         };
         reader.onerror = function (error) {
-          console.log('Error: ', error);
+          this.setState({errorMessage:"Gambar gagal tersimpan"})
+
         };
      }
 
@@ -92,7 +92,8 @@ class LayananEdit extends React.Component{
                         this.editLayananBtn(param)
                     };
                     reader.onerror = function (error) {
-                      console.log('Error: ', error);
+                        this.setState({errorMessage:"Gambar gagal tersimpan"})
+
                     };
                 }
              
@@ -152,7 +153,6 @@ class LayananEdit extends React.Component{
 
         }
         if(getToken()){
-            console.log(this.state.check)
             return(
                 <div className="container">
                    <h2 className="mt-3">Layanan - Ubah</h2>
@@ -174,7 +174,7 @@ class LayananEdit extends React.Component{
                             <div className="col-sm-9">
                             <input className="AddStyleButton btn btn-primary" type="button" onClick={()=>this.refs.input.click()} value={this.valueHandler()}></input>
                             <input ref="input" style={{display:"none"}} type="file" accept="image/*" onChange={this.onChangeHandler}></input>
-                            <img alt={this.state.rows.name} style={{marginLeft:"20px",width:"100px"}} src={`data:image/jpeg;png;base64,${this.state.imageVal}`}></img>
+                            <img alt={this.state.rows.name} style={{marginLeft:"20px",width:"100px"}} src={this.state.imageVal}></img>
                             </div>
                     </div>
                     <div className="form-group row">

@@ -28,7 +28,7 @@ class ProductList extends React.Component{
     _isMounted = false;
     state={
         loading:true,paging:true,
-        rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,
+        rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:10,dataPerhalaman:5,errorMessage:null
     }
     componentWillUnmount() {
         this._isMounted = false;
@@ -61,11 +61,13 @@ class ProductList extends React.Component{
                     rowsPerPage:data.productList.rows,
                 })
             }else{
-                console.log(data.error)
+                this.setState({errorMessage:data.error})
             }
         }
     }
-
+    componentWillReceiveProps(newProps){
+        this.setState({errorMessage:newProps.error})
+    }
     onChangePage = (current) => {
         this.setState({loading:true, page : current}, () => {
             if(this.state.paging){
@@ -132,6 +134,12 @@ class ProductList extends React.Component{
             return(
                 <div className="container">
                     <h2>Product - List</h2>
+                    <div className="form-group row">
+                                        <div style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                                                {this.state.errorMessage}
+                                        </div>
+                                            
+                                </div>
                     <hr></hr>
                     < TableComponent
                         id={"id"}

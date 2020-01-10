@@ -15,7 +15,7 @@ export async function getAllLayananListFunction(param,next) {
         }
 
 
-        axios.get(serverUrl+`admin/services?orderby=updated_time&sort=asc${filter}`,config)
+        axios.get(serverUrl+`admin/services?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             param.listLayanan = res.data
             if(next){

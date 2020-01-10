@@ -9,7 +9,7 @@ import { compose } from 'redux';
 import { getBorrowerFunction, getImageFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
-import { formatNumber, handleFormatDate } from '../global/globalFunction';
+import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from '../subComponent/DialogComponent'
 
 const styles = (theme) => ({
@@ -75,6 +75,8 @@ class CalonNasabahArsipDetail extends React.Component{
             }
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
+            dataUser.idcard_image = decryptImage(dataUser.idcard_image);
+            dataUser.taxid_image = decryptImage(dataUser.taxid_image)
 
             if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
               flag = true
@@ -126,9 +128,9 @@ class CalonNasabahArsipDetail extends React.Component{
       };
 
       if(title.toLowerCase().includes('ktp')) {
-        data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image && this.state.dataUser.idcard_image.Int64) || 0
+        data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image ) || 0
       } else if(title.toLowerCase().includes('npwp')) {
-        data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image && this.state.dataUser.idcard_image.Int64) || 0
+        data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image ) || 0
       }
 
       data = await getImageFunction(data)
@@ -205,7 +207,7 @@ class CalonNasabahArsipDetail extends React.Component{
                       this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
                     ],
                     [
-                      this.state.dataUser.created_time && handleFormatDate(this.state.dataUser.created_time)
+                      this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at)
                     ],
                   ]}                 
                 />
@@ -324,7 +326,6 @@ class CalonNasabahArsipDetail extends React.Component{
                     openDialog={this.state.dialog}
                     message={this.state.message}
                     type='image'
-                    base64Boolean
                     onClose={this.handleClose}
                   />
                 </div>

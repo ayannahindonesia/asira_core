@@ -6,10 +6,10 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getBorrowerFunction, getImageFunction } from './saga'
+import { getBorrowerFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
-import { formatNumber, handleFormatDate } from '../global/globalFunction';
+import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from './../subComponent/DialogComponent'
 
 const styles = (theme) => ({
@@ -71,6 +71,8 @@ class CalonNasabahDetail extends React.Component{
             let flag = false;
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
+            dataUser.idcard_image = decryptImage(dataUser.idcard_image);
+            dataUser.taxid_image = decryptImage(dataUser.taxid_image)
 
             if(dataUser && dataUser.status && dataUser.status === 'rejected') {
               flag = true
@@ -106,49 +108,54 @@ class CalonNasabahDetail extends React.Component{
     handleDialog = (e) => {
       let label = e.target.value
       let title = '';
+      let message='';
 
       if(label.toLowerCase().includes('ktp')) {
         title = 'KTP'
+        message = this.state.dataUser && this.state.dataUser.idcard_image
+
       } else if(label.toLowerCase().includes('npwp')) {
         title = 'NPWP'
+        message = this.state.dataUser && this.state.dataUser.taxid_image
+
       }
 
       this.setState({
+        dialog: true,
+        message,
         title,
-      }, () => {
-        this.getImage(this.state.title)
       })
     }
 
-    getImage = async function(title) {
-      let data = {
-        idImage: 0,
-      };
+    // getImage = async function(title) {
+    //   let data = {
+    //     idImage: 0,
+    //   };
 
-      if(title.toLowerCase().includes('ktp')) {
-        data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image && this.state.dataUser.idcard_image.Int64) || 0
-      } else if(title.toLowerCase().includes('npwp')) {
-        data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image && this.state.dataUser.idcard_image.Int64) || 0
-      }
+    //   if(title.toLowerCase().includes('ktp')) {
+    //     data.idImage = (this.state.dataUser && this.state.dataUser.idcard_image) || 0
+    //   } else if(title.toLowerCase().includes('npwp')) {
+    //     data.idImage = (this.state.dataUser && this.state.dataUser.taxid_image) || 0
+    //   }
 
-      data = await getImageFunction(data)
+    //   data = await getImageFunction(data)
 
-      if(data) {
-        if(!data.error) {
-          let message = data.image && data.image.image_string;
+    //   if(data) {
+    //     if(!data.error) {
+    //       let message = data.image && data.image.image_string;
 
-          this.setState({
-            dialog:true,
-            message,
-          })
-        } else {
-          this.setState({
-            errorMessage: data.error,
-            loading: false,
-          })
-        }      
-      }
-    }
+    //       this.setState({
+    //         dialog:true,
+    //         message,
+    //       })
+    //     } else {
+    //       this.setState({
+    //         errorMessage: data.error,
+    //         loading: false,
+    //       })
+    //     }      
+    //   }
+    // }
 
 
     handleClose = () => {
@@ -205,7 +212,7 @@ class CalonNasabahDetail extends React.Component{
                       this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
                     ],
                     [
-                      this.state.dataUser.created_time && handleFormatDate(this.state.dataUser.created_time)
+                      this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at)
                     ],
                   ]}                 
                 />
@@ -238,7 +245,7 @@ class CalonNasabahDetail extends React.Component{
                       this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_name : '-',
                       this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
                       this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_lasteducation : '-',
-                      this.state.dataUser.dependants
+                      this.state.dataUser.dependants >5 ?"Lebih dari 5": this.state.dataUser.dependants
                     ],
                   ]}                 
                 />
@@ -324,7 +331,6 @@ class CalonNasabahDetail extends React.Component{
                     openDialog={this.state.dialog}
                     message={this.state.message}
                     type='image'
-                    base64Boolean
                     onClose={this.handleClose}
                   />
                 </div>

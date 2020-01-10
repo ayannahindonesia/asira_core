@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import { getDetailLayananFunction, getImageFunction } from './saga'
+import { getDetailLayananFunction } from './saga'
 import { getToken } from '../index/token';
 
 
@@ -20,11 +20,11 @@ class LayananDetail extends React.Component{
 
     getDetailLayanan = async function(){
         const id = this.props.match.params.id
-        const data = await getDetailLayananFunction({id},getImageFunction)
+        const data = await getDetailLayananFunction({id})
 
         if(data){
             if(!data.error){
-                this.setState({rows:data.data,imageData:data.imageData.image_string,loading:false})
+                this.setState({rows:data.data,imageData:data.data.image,loading:false})
             }else{
                 this.setState({errorMessage:data.error,loading:false})
             }
@@ -61,7 +61,7 @@ class LayananDetail extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Gambar</label>
                             <div className="col-sm-8">
-                            : <img style={{width:"100px"}}src={`data:image/jpeg;png;base64,${this.state.imageData}`} alt={this.state.rows.name} />
+                            : <img style={{width:"100px"}}src={this.state.imageData} alt={this.state.rows.name} />
                             </div>
                         </div>
                     </form>

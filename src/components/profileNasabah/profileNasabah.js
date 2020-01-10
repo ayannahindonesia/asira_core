@@ -26,7 +26,7 @@ const columnDataUser = [
       label: 'Kategori',
   },
   {
-    id: 'created_time',
+    id: 'created_at',
     numeric: false,
     label: 'Tanggal Registrasi',
   },
@@ -62,7 +62,9 @@ class profileNasabah extends React.Component {
   componentWillUnmount(){
     this._isMounted = false
   }
-
+  componentWillReceiveProps(newProps){
+    this.setState({errorMessage:newProps.error})
+}
   //Ambil data pertama kali
   getAllData = async function(){
       const param ={
@@ -75,18 +77,16 @@ class profileNasabah extends React.Component {
       }
 
       const data = await getProfileNasabahFunction(param)
-      console.log(data.listNasabah.data)
       
       if(data){
 
         if(!data.error){
           const dataNasabah = data.listNasabah.data;
-          console.log(dataNasabah)
 
           for (const key in dataNasabah){
              dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
              dataNasabah[key].loan_status = dataNasabah[key].loan_status && dataNasabah[key].loan_status==="active"?"Aktif" :"Tidak Aktif"
-             dataNasabah[key].created_time =   <Moment date={dataNasabah[key].created_time } format=" DD  MMMM  YYYY" />
+             dataNasabah[key].created_at =   <Moment date={dataNasabah[key].created_at } format=" DD  MMMM  YYYY" />
 
           }
 
@@ -121,13 +121,19 @@ class profileNasabah extends React.Component {
 if(getToken()){
     return (
         <div className="container">
-         <div className="row">
-                        <div className="col-6">
+          <div className="row">
+          <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
+                                    {this.state.errorMessage}
+          </div> 
+          </div>
+          <div className="row">
+          
+                        <div className="col-7">
                              <h2 className="mt-3">Nasabah - List</h2>
                         </div>
-                        <div className="col-5 mt-3 ml-5">
+                        <div className="col-4 mt-3 ml-5">
                         <div className="input-group">
-                        <SearchBar 
+                          <SearchBar 
                             onChange={this.onBtnSearch}
                             placeholder="Search Nama Nasabah, ID Nasabah.."
                             value={this.state.searchRows}
@@ -135,7 +141,8 @@ if(getToken()){
                            
                         </div>
                         </div>
-          </div>
+            </div>
+
         <hr></hr>
                      < TableComponent
                         id={"id"}

@@ -13,17 +13,17 @@ const columnDataUser = [
       {
         id: 'id',
         numeric: false,
-        label: 'ID Penyedia Agen',
+        label: 'ID Pinjaman',
       },
       {
-        id: 'owner_name',
+        id: 'borrower_name',
         numeric: false,
         label: 'Nama Nasabah',
       },
       {
         id: 'bank_name',
         numeric: false,
-        label: 'Bank Akun',
+        label: 'Nama Bank',
       },
       {
         id: 'category',
@@ -41,7 +41,7 @@ const columnDataUser = [
         label: 'Produk',
       },
       {
-        id: 'created_time',
+        id: 'created_at',
         numeric: false,
         label: 'Tanggal Pengajuan',
       },
@@ -96,7 +96,7 @@ class PermintaanPinjaman extends React.Component {
       pinjamanList[key].status = pinjamanList[key].status ==="approved"?"Diterima": pinjamanList[key].status==="rejected"?"Ditolak":"Dalam Proses"
       pinjamanList[key].service =  pinjamanList[key].service.toString()
       pinjamanList[key].product =  pinjamanList[key].product.toString()
-      pinjamanList[key].created_time =<Moment date={pinjamanList[key].created_time } format=" DD  MMMM  YYYY" />
+      pinjamanList[key].created_at =<Moment date={pinjamanList[key].created_at } format=" DD  MMMM  YYYY" />
     }
     if(data){
       if(!data.error){
@@ -145,7 +145,7 @@ class PermintaanPinjaman extends React.Component {
                         <div className="input-group">
                           <SearchBar 
                             onChange={this.onBtnSearch}
-                            placeholder="Search Nama Nasabah, ID Nasabah.."
+                            placeholder="Search Nama Nasabah, ID Pinjaman.."
                             value={this.state.searchRows}
                           />
                            

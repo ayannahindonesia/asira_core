@@ -7,6 +7,7 @@ import {DetailTipeBankFunction} from './../tipebank/saga'
 import { listProductFunction } from '../product/saga';
 import { getAllLayananListFunction } from '../layanan/saga';
 import { getToken } from '../index/token';
+import BrokenLink from './../../support/img/default.png'
 
 class BankDetail extends React.Component{
     state = {rows:[],layanan:[],produk:[],tipe:0,namaTipeBank:'',serviceName:null,productName:null,diKlik:false,loading:true}
@@ -25,7 +26,6 @@ class BankDetail extends React.Component{
         const data = await getBankDetailFunction(param)
 
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({rows:data,layanan:data.services,tipe:data.type,produk:data.products})
                 if (this.state.rows){
@@ -46,7 +46,6 @@ class BankDetail extends React.Component{
         const data = await getAllLayananListFunction(param)
 
         if(data){
-            console.log(data)
             if(!data.error){
                 var serviceName = data.listLayanan.data.map((val)=>{
                     return val.name
@@ -197,6 +196,15 @@ class BankDetail extends React.Component{
                             <label className="col-sm-4 col-form-label">Tanggal Bergabung</label>
                             <div className="col-sm-8">
                             :  <Moment date={this.state.rows.join_date} format=" DD  MMMM  YYYY" />                         
+
+                            </div>
+                        </div>
+                        <div className="form-group row">
+                            <label className="col-sm-4 col-form-label">Logo Bank</label>
+                            <div className="col-sm-8">
+                            <img src={`${this.state.rows.image}`} width="100px" height="100px" alt="Foto agen" onError={(e)=>{
+                            e.target.attributes.getNamedItem("src").value = BrokenLink
+                            }} ></img>                    
 
                             </div>
                         </div>
