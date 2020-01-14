@@ -9,7 +9,7 @@ import {
 } from '@material-ui/pickers';
 
 export default function MaterialUIPickers(props) {
-// type ada 3 - tanggalOnly , timeOnly dan dateTimeJoin
+// type ada 3 - dateOnly , timeOnly dan dateTimeJoin
   if(props.type==='dateTimeJoin'){
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -29,7 +29,7 @@ export default function MaterialUIPickers(props) {
         </Grid>
       </MuiPickersUtilsProvider>
     );
-  }else if(props.type==='tanggalOnly'){
+  }else if(props.type==='dateOnly'){
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Grid container justify="space-around">
