@@ -255,7 +255,7 @@ class Report extends React.Component{
                                         label = 'Dari Tanggal'
                                         onChange ={this.handleStartChange}
                                         value={this.state.tanggalAwal}
-                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0}
+                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0 && true}
                                     />
                                 </div>
                                 <div className="form-inline mr-3 ml-3"><i className="fas fa-long-arrow-alt-right"></i></div>
@@ -264,7 +264,7 @@ class Report extends React.Component{
                                         label = 'Sampai Tanggal'
                                         onChange ={this.handleEndChange}
                                         value={this.state.tanggalAkhir}
-                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0}
+                                        error={this.state.errorMessage && this.state.errorMessage.trim().length !== 0 && true}
                                     />
                                 </div>
                             </div>
@@ -280,7 +280,7 @@ class Report extends React.Component{
                                         label = 'Dari Tanggal'
                                         onChange ={this.handleStartPencairanChange}
                                         value={this.state.tanggalAwalPencairan}
-                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0}
+                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0 && true}
                                     />
                                 </div>
                                 <div className="form-inline mr-3 ml-3"><i className="fas fa-long-arrow-alt-right"></i></div>
@@ -289,7 +289,7 @@ class Report extends React.Component{
                                         label = 'Sampai Tanggal'
                                         onChange ={this.handleEndPencairanChange}
                                         value={this.state.tanggalAkhirPencairan}
-                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0}
+                                        error={this.state.errorMessagePencairan && this.state.errorMessagePencairan.trim().length !== 0 && true}
                                     />
                                 </div>
                             </div>
@@ -301,21 +301,21 @@ class Report extends React.Component{
                     :null}
 
                     {this.state.munculinTable ?
-                      <div>
-                      <hr/>
-                             <table className="table table-hover">
-                             <thead className="table-warning">
-                                     <tr >
-                                         <th className="text-center" scope="col">#</th>
-                                         <th className="text-center" scope="col">Nama Bank</th>
-                                         <th className="text-center" scope="col">Layanan</th>
-                                         <th className="text-center" scope="col">Produk</th>
-                                         <th className="text-center" scope="col">Loan Id</th>  
-                                         <th className="text-center" scope="col">Plafond</th>  
-                                         <th className="text-center" scope="col">Convinience Fee Amount</th> 
-                                     </tr>     
-                                 </thead>
-                                 <tbody>
+                        <div>
+                            <hr/>
+                            <table className="table table-hover">
+                                <thead className="table-warning">
+                                    <tr >
+                                        <th className="text-center" scope="col">#</th>
+                                        <th className="text-center" scope="col">Nama Bank</th>
+                                        <th className="text-center" scope="col">Layanan</th>
+                                        <th className="text-center" scope="col">Produk</th>
+                                        <th className="text-center" scope="col">Loan Id</th>  
+                                        <th className="text-center" scope="col">Plafond</th>  
+                                        <th className="text-center" scope="col">Convinience Fee Amount</th> 
+                                    </tr>     
+                                </thead>
+                                <tbody>
 
                                     {this.state.dataReport.length===0?
                                     <tr align="center">
@@ -329,9 +329,9 @@ class Report extends React.Component{
                                         <p style={{marginRight:"50px"}}>{this.getTotalHarga()}</p>
                                         </th>
                                     </tr>
-                                 </tbody>
-                             </table>
-                 </div>    
+                                </tbody>
+                            </table>
+                        </div>    
                     :null}
                 </div>
             )

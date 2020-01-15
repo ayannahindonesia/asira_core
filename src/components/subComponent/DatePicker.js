@@ -13,7 +13,7 @@ const styles = (theme) => ({
   }
 });
 
-class DropDown extends React.Component {
+class DatePicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,7 +60,7 @@ class DropDown extends React.Component {
   }
 }
 
-DropDown.propTypes = {
+DatePicker.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string,
   classes: PropTypes.object,
@@ -72,4 +72,4 @@ DropDown.propTypes = {
   errorText:PropTypes.string,
 };
 
-export default withStyles(styles)(DropDown);
+export default withStyles(styles)(DatePicker);
