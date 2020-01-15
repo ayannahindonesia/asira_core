@@ -14,7 +14,7 @@ export async function getAllBankListFunction (param,next){
         for(const key in param) {
             filter += `&${key}=${param[key]}`
         }
-        console.log(filter)
+        
         axios.get(serverUrl+`admin/banks?orderby=id&sort=ASC${filter}`,config)
         .then((res)=>{
           
@@ -44,6 +44,7 @@ export async function getAllLoanDataFunction (param,next){
         }
 
         var newLink =`admin/reports/convenience_fee?${filter}`
+
         axios.get(serverUrl+newLink,config)
         .then((res)=>{
             
