@@ -68,8 +68,6 @@ DatePicker.propTypes = {
   onChecked: PropTypes.func,
   disabled: PropTypes.bool,
   vertical: PropTypes.bool,
-  error: PropTypes.bool,
-  errorText:PropTypes.string,
 };
 
 export default withStyles(styles)(DatePicker);
