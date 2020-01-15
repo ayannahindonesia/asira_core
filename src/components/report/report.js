@@ -152,8 +152,8 @@ class Report extends React.Component{
 
                 const param ={
                     bank_name:namaBank,
-                    start_date:newTanggalAwal,
-                    end_date:newTanggalBack,
+                    start_approval_date:newTanggalAwal,
+                    end_approval_date:newTanggalBack,
                 }
                 
                 if(tanggalAwalPencairan) {
@@ -162,6 +162,7 @@ class Report extends React.Component{
                 if(tanggalAkhirPencairan){
                     param.end_disburse_date = newTanggalPencairanAkhir
                 }
+                
                 this.getAllLoanData(param)
             }
     }
@@ -222,15 +223,15 @@ class Report extends React.Component{
                     <hr></hr>
                     <div className="form-group row">
                             <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
-                                    {this.state.errorMessage}{this.state.errorMessageBank}{this.state.errorMessagePencairan}
+                                {this.state.errorMessage}{this.state.errorMessageBank}{this.state.errorMessagePencairan}
                             </div>      
                      </div>
                     <div className="form-group row">
                         <label className="col-sm-2 col-form-label">Nama Report</label>
                         <div className="col-sm-10">
                         <select ref="convfee" onChange={this.handleChangeFee} id="report" className="form-control">
-                                <option value={0}>======== Pilih Report ========</option>
-                                <option value="1">Convenience Fee Report</option>                                
+                            <option value={0}>======== Pilih Report ========</option>
+                            <option value="1">Convenience Fee Report</option>                                
                         </select>
                         </div>
                     </div>
