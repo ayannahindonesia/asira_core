@@ -73,7 +73,7 @@ import AgentDetail from './components/agent/agentDetail'
 import AgentEdit from './components/agent/agentEdit'
 
 import axios from 'axios'
-import { getToken, setTokenAuth, getProfileUser } from './components/index/token';
+import { getToken, setTokenAuth, getProfileUser, getTokenAuth } from './components/index/token';
 import CalonNasabahList from './components/calonNasabah/calonNasabahList';
 import calonNasabahDetail from './components/calonNasabah/calonNasabahDetail';
 import CalonNasabahArsipList from './components/calonNasabah/calonNasabahArsipList';
@@ -97,11 +97,10 @@ class App extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.location.pathname === '/login' && this.props.location.pathname === '/') {
+  componentDidUpdate () {
+    if(!getTokenAuth()) {
       this.getAuth()
     }
-    
   }
 
   getAuth = ()=>{
