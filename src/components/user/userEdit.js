@@ -58,7 +58,9 @@ class userEdit extends React.Component{
     }
 
     refresh = async function(){
-      const param = {};
+      const param = {
+        status: 'active',
+      };
       
       const paramUser = {
         userId: this.state.userId,
