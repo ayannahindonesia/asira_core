@@ -79,6 +79,7 @@ class userAdd extends React.Component{
     getBankList = async function() {
       console.log(this.state.role)
       const roleBank = this.isRoleBank(this.state.role); 
+      console.log(roleBank)
       if(roleBank) {
         const data = await getAllBankList({}) ;
 
@@ -110,15 +111,19 @@ class userAdd extends React.Component{
       let flag = false;
       const dataRole = this.state.listRole;
 
+      console.log(dataRole)
+
       if(role && role !== 0) {
         for(const key in dataRole) {
           if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            console.log('hit')
             flag = true;
             break;
           }
         }
         
       } 
+      console.log(flag)
 
       return flag;
     }
@@ -200,7 +205,8 @@ class userAdd extends React.Component{
 
     onChangeDropDown = (e) => {
       const labelName = e.target.name.toString().toLowerCase();
-
+      console.log(labelName)
+      console.log(e.target.value)
       this.setState({[labelName]: e.target.value},(labelName) => { 
         if(labelName === 'role') {
           this.getBankList();
