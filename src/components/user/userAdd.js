@@ -79,8 +79,10 @@ class userAdd extends React.Component{
     getBankList = async function() {
       console.log(this.state.role)
       const roleBank = this.isRoleBank(this.state.role); 
-      console.log(roleBank)
+      console.log('roleBank',roleBank)
+      console.log('WWWW')
       if(roleBank) {
+        console.log('wewewew')
         const data = await getAllBankList({}) ;
 
         if(data) {
@@ -132,7 +134,7 @@ class userAdd extends React.Component{
       this.setState({diKlik:true})
     }
 
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
 

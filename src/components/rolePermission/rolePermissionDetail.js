@@ -76,7 +76,7 @@ class rolePermissionDetail extends React.Component{
     btnCancel = ()=>{
       this.setState({diKlik:true})
     }
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
 

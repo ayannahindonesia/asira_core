@@ -22,7 +22,7 @@ class LayananAdd extends React.Component{
         this._isMounted=false
     }
 
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
     

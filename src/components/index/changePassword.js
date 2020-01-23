@@ -11,7 +11,7 @@ class changePassword extends React.Component{
         errorMessage:'',
         diKlik:false
     }
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
     btnChangePassword = ()=>{   

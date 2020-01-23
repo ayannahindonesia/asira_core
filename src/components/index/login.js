@@ -35,7 +35,7 @@ class Login extends React.Component{
     componentWillUnmount() {
         this._isMounted = false;     
     }
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({error:newProps.error})
     }
       

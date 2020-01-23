@@ -22,7 +22,7 @@ class DatePicker extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.errorText !== this.props.errorText) {
       this.setState({    
         errorText: nextProps.errorText,

@@ -45,7 +45,7 @@ class ProductAdd extends React.Component{
         this._isMounted=true;
         this.getBankService()
     }
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
 

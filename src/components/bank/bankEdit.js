@@ -41,7 +41,7 @@ class BankEdit extends React.Component{
         provinsi:[],kabupaten:[],idProvinsi:null,dataBank:[],phone:'',provinsiEdit:null,namaTipeBank:'',adminFeeRadioValue:'',convinienceFeeRadioValue:'',
         serviceName:[],productName:[],submit:false
     };
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
 

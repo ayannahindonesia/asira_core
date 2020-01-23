@@ -22,7 +22,7 @@ class LayananEdit extends React.Component{
     }
     _isMounted = false;
 
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
     componentDidMount(){
