@@ -61,6 +61,7 @@ class userAdd extends React.Component{
       const data = await getAllRoleFunction(param);
       
       if(data) {
+        console.log(data)
         if(!data.error) {
           this.setState({
             listRole: data.dataRole,
@@ -81,6 +82,7 @@ class userAdd extends React.Component{
         const data = await getAllBankList({}) ;
 
         if(data) {
+          console.log(data)
           if(!data.error) {
             this.setState({
               listBank: data.bankList.data,
