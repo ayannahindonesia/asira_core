@@ -50,7 +50,7 @@ class DropDown extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.error !== this.props.error) {
       this.setState({
         error: nextProps.error,

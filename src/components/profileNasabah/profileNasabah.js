@@ -62,7 +62,7 @@ class profileNasabah extends React.Component {
   componentWillUnmount(){
     this._isMounted = false
   }
-  componentWillReceiveProps(newProps){
+  UNSAFE_componentWillReceiveProps(newProps){
     this.setState({errorMessage:newProps.error})
 }
   //Ambil data pertama kali

@@ -259,7 +259,7 @@ class SubTable extends React.Component {
 
   // isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.data !== nextProps.data) {
       let newData = nextProps.data;
       const sortBy = nextProps.sortBy;

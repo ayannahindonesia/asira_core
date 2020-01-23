@@ -249,7 +249,7 @@ class ProductEdit extends React.Component{
     return jsx;
     }
 
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
     this.setState({errorMessage:newProps.error})
     }
 

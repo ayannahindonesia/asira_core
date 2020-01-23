@@ -65,7 +65,7 @@ class ProductList extends React.Component{
             }
         }
     }
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
     onChangePage = (current) => {

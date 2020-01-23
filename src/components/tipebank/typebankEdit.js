@@ -9,7 +9,7 @@ class TypeBankEdit extends React.Component{
     state={diKlik:false,errorMessage:'',rows:[],submit:false}
     _isMounted = false
     
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error,rows:[]})
     }
     componentDidMount(){

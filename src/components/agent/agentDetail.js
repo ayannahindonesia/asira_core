@@ -92,7 +92,7 @@ class AgentDetail extends React.Component{
       this.setState({diKlik:true})
     }
 
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
       this.setState({errorMessage:newProps.error})
     }
 

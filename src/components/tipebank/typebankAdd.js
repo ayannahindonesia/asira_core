@@ -8,7 +8,7 @@ class TypeBank extends React.Component{
     _isMounted = false;
     state={diKlik:false,errorMessage:'',submit:false}
     
-    componentWillReceiveProps(newProps){
+    UNSAFE_componentWillReceiveProps(newProps){
         this.setState({errorMessage:newProps.error})
     }
     componentDidMount(){
