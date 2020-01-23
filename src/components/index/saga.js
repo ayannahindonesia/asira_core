@@ -35,7 +35,6 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
             }
             
         }).catch((err)=>{
-            console.log(err.response.data);
             const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);

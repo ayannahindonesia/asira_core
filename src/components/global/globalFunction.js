@@ -161,13 +161,21 @@ export function destructErrorMessage(objError) {
 
     for(const key in errDetail) {
 
-      errorMessage += `${key} ${errDetail[key]}`;
-
       if(integerError !== 0) {
         errorMessage += ', ';
+      } else {
+        errorMessage += 'Error : '
       }
 
+      errorMessage += `${key} ${errDetail[key]}`;
+
+      
+
       integerError += 1
+    }
+
+    if(integerError < 1) {
+      errorMessage = `Error : ${objError.message}`
     }
 
   } else if (objError && !objError.details && objError.message) {

@@ -76,7 +76,6 @@ class RoleEdit extends React.Component{
         this.setState({check:!this.state.check})
     }
     render(){
-        console.log(this.state.dataRole)
         if(this.state.diKlik){
             return <Redirect to='/listrole'/>            
         }

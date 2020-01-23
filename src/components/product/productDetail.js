@@ -23,7 +23,6 @@ class ProductDetail extends React.Component{
         const data  = await detailProductFunction({id},detailServiceProductFunction)
 
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({loading:false,layanan:data.serviceProduct.name,rows:data.dataProduct,fees:data.dataProduct.fees,collaterals:data.dataProduct.collaterals,financing_sector:data.dataProduct.financing_sector})
             }else{
