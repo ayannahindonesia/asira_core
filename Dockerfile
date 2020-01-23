@@ -2,20 +2,26 @@
 FROM node
 
 # set working directory
-RUN mkdir /usr/src/app
+WORKDIR /opt/app-root/src
+#RUN mkdir /usr/src/app
+RUN chmod 777 /opt/app-root/src
 #copy all files from current directory to docker
-COPY . /usr/src/app
+COPY . /opt/app-root/src
 
-WORKDIR /usr/src/app
+
 
 # add `/usr/src/app/node_modules/.bin` to $PATH
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV PATH /opt/app-root/src/node_modules/.bin:$PATH
+
+CMD npm install core-js
+RUN chown -R 1001:0 /opt/app-root/src/ &&  chmod -R ug+rwx /opt/app-root/src/
+
+USER 1001
 
 # install and cache app dependencies
-RUN yarn
+#RUN yarn
 
 # start app
-CMD npm install\
-&& npm start
+CMD npm start
 
-EXPOSE 3001
+EXPOSE 3000
