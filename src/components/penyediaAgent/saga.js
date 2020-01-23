@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {serverUrl} from '../url'
 import { getToken } from '../index/token'
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function addPenyediaAgentFunction (param,next){
     return new Promise (async(resolve)=>{
@@ -18,7 +19,7 @@ export async function addPenyediaAgentFunction (param,next){
             }
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -48,7 +49,7 @@ export async function getPenyediaAgentListFunction(param,next) {
             }
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -73,7 +74,7 @@ export async function getPenyediaAgentDetailFunction(param,next) {
             }
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -96,7 +97,7 @@ export async function editPenyediaAgentFunction (param,next){
             }
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
