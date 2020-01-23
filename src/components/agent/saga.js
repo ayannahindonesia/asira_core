@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { serverUrl } from '../url';
 import { getToken } from '../index/token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function getAllAgentFunction(param, nextAgent, nextBank){
     return new Promise(async (resolve) => {
@@ -29,7 +30,7 @@ export async function getAllAgentFunction(param, nextAgent, nextBank){
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -56,7 +57,7 @@ export async function getAgentFunction(param, nextAgent, nextBank) {
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -73,7 +74,7 @@ export async function patchAgentAddFunction(param) {
         axios.patch(serverUrl+`admin/agents/${param.agentId}`,param.dataAgent,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -92,7 +93,7 @@ export async function postAgentAddFunction(param) {
         axios.post(serverUrl+'admin/agents',param.dataAgent,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
         })

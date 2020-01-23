@@ -2,6 +2,7 @@
 import {serverUrl} from './../url'
 import axios from 'axios'
 import { getToken } from '../index/token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function getAllBankListFunction (param,next){
     return new Promise(async (resolve)=>{
@@ -27,7 +28,7 @@ export async function getAllBankListFunction (param,next){
         })
         .catch((err)=>{
             
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString() 
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString() 
             param.error = error;
             resolve(param);
         })
@@ -58,7 +59,7 @@ export async function getAllLoanDataFunction (param,next){
           
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })

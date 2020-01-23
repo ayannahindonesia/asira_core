@@ -1,6 +1,7 @@
 import { getToken } from "../index/token";
 import { serverUrl } from '../url';
 import axios from 'axios'
+import { destructErrorMessage } from "../global/globalFunction";
 
 export async function getAllPermintaanPinjamanFunction(param,next){
     return new Promise (async (resolve)=>{
@@ -21,7 +22,7 @@ export async function getAllPermintaanPinjamanFunction(param,next){
             }
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -43,7 +44,7 @@ export async function getDetailFunction(param,next){
             }
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -64,7 +65,7 @@ export async function getDetailBorrowerFunction(param,next){
             }
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { serverUrl, serverUrlGeo } from '../url';
 import jsonWebToken from 'jsonwebtoken';
 import { setToken, setTokenGeo, getTokenAuth } from './token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
     return new Promise(async (resolve) => { 
@@ -19,7 +20,6 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
         const logindata ={key: param.key,password: param.password};
   
         axios.post(url,logindata,config).then((res)=>{
-            console.log(res.headers)
             setToken(res.data.token, new Date().getTime() + (res.data.expires_in*1000))
             
             param.dataToken = res.data.token;
@@ -35,9 +35,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
             }
             
         }).catch((err)=>{
-            console.log(err)
-            console.log(err.toString())
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
         })
@@ -73,8 +71,7 @@ export async function getTokenGeoFunction(param, next) {
             }
             
         }).catch((err)=>{
-            console.log(err.toString())
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
         })
@@ -90,7 +87,7 @@ export async function getUserProfileFunction(param) {
             param.dataPermission = token.permissions;
             resolve(param)
         } catch (err) {
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
         }
@@ -114,8 +111,7 @@ export async function sendEmailFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            console.log(err.toString())
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
         })
@@ -138,7 +134,7 @@ export async function changePasswordFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
