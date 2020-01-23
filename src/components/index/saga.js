@@ -35,6 +35,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
             }
             
         }).catch((err)=>{
+            console.log(err.response.data);
             const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
@@ -111,7 +112,6 @@ export async function sendEmailFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            console.log(err.toString())
             const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
