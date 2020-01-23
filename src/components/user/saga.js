@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { serverUrl } from '../url';
 import { getToken } from '../index/token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function getAllUserFunction(param, next){
     return new Promise(async (resolve) => {
@@ -29,7 +30,7 @@ export async function getAllUserFunction(param, next){
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -56,7 +57,7 @@ export async function getUserFunction(param, next) {
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -73,7 +74,7 @@ export async function patchUserAddFunction(param) {
         axios.patch(serverUrl+`admin/users/${param.id}`,param.dataUser,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -92,7 +93,7 @@ export async function postUserAddFunction(param) {
         axios.post(serverUrl+'admin/users',param.dataUser,config).then((res)=>{
             resolve(res)
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error
             resolve(param);
         })

@@ -1,4 +1,5 @@
 import { listAllRolePermission } from "../global/globalConstant";
+import { destructErrorMessage } from "../global/globalFunction";
 
 export function destructRolePermission(permission){
 
@@ -20,7 +21,7 @@ export function destructRolePermission(permission){
 
         return(lastPermission)
     } catch (err) {
-        const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString();
+        const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString();
         return({error});
     }
 
@@ -40,7 +41,7 @@ export function constructRolePermission(rolePermission) {
         }
         return newPermission;
     } catch (err) {
-        const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString();
+        const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString();
         return({error});
     }
     

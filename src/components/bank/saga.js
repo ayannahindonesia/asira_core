@@ -1,6 +1,7 @@
 import {serverUrl, serverUrlGeo} from '../url'
 import axios from 'axios'
 import { getToken, getTokenGeo } from '../index/token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function addBankFunction (param,next){
     return new Promise(async (resolve)=>{
@@ -15,7 +16,7 @@ export async function addBankFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -34,7 +35,7 @@ export async function getProvinsiFunction(param) {
             })
         
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -51,7 +52,7 @@ export async function getKabupatenFunction (param){
                 resolve(res.data.data)
             })
             .catch((err)=>{
-                const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+                const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
                 param.error = error;
                 resolve(param);
             })
@@ -80,7 +81,7 @@ export async function getAllBankList (param,next){
             }
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -103,7 +104,7 @@ export async function getBankDetailFunction (param,next){
                 }
             })
             .catch((err)=>{
-                const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+                const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
                 param.error = error;
                 resolve(param);
             })
@@ -125,7 +126,7 @@ export async function getBankTypesFunction (param,next){
            }
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -146,7 +147,7 @@ export async function editBankFunction (param,next){
             resolve(res)
         })
         .catch((err)=>{
-            const error =( err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })

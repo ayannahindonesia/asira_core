@@ -151,3 +151,28 @@ export function decryptImage(text){
   
   return res
 }
+
+export function destructErrorMessage(objError) {
+  let errorMessage = '';
+  let integerError = 0;
+
+  if(objError && objError.details) {
+    const errDetail = objError.details
+
+    for(const key in errDetail) {
+
+      errorMessage += `${key} ${errDetail[key]}`;
+
+      if(integerError !== 0) {
+        errorMessage += ', ';
+      }
+
+      integerError += 1
+    }
+
+  } else if (objError && !objError.details && objError.message) {
+    errorMessage = `Error : ${objError.message}`
+  }
+
+  return errorMessage
+}
