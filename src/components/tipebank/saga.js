@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { serverUrl } from '../url';
 import { getToken } from '../index/token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function AddTipeBankFunction (param){
     return new Promise (async (resolve)=>{
@@ -12,7 +13,7 @@ export async function AddTipeBankFunction (param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -40,7 +41,7 @@ export async function ListTipeBankFunction (param,next){
             
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })
@@ -63,7 +64,7 @@ export async function DetailTipeBankFunction(params,next) {
                 }
             })
             .catch((err)=>{
-                const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+                const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
                 params.error = error;
                 resolve(params);
             })
@@ -81,7 +82,7 @@ export async function EditTipeBankFunction(params) {
             resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             params.error = error;
             resolve(params);
         })

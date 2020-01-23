@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { serverUrl } from '../url';
 import { getToken } from '../index/token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function getAllBorrowerFunction(param, next){
     return new Promise(async (resolve) => {
@@ -29,7 +30,7 @@ export async function getAllBorrowerFunction(param, next){
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -56,7 +57,7 @@ export async function getBorrowerFunction(param, next) {
                 resolve(param);
             }
         }).catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`) || err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error;
             resolve(param);
         })
@@ -79,7 +80,7 @@ export async function getImageFunction (param,next){
               }
           })
           .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
         })

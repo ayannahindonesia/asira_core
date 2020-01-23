@@ -19,7 +19,7 @@ export const keepLogin = ()=>{
               )
           }
       })
-      .catch((err)=>console.log(err))
+      .catch((err)=>{throw(err)})
   }
 }
 

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {serverUrl} from '../url'
 import { getToken } from '../index/token'
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function addProductFunction(param){
     return new Promise(async (resolve)=>{
@@ -12,7 +13,7 @@ export async function addProductFunction(param){
             resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
 
             param.error = error;
             resolve(param);
@@ -41,7 +42,7 @@ export async function listProductFunction (param,next){
             }
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
 
             param.error = error;
             resolve(param);
@@ -64,7 +65,7 @@ export async function detailProductFunction(param,next) {
             resolve(res.data)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
 
             param.error = error;
             resolve(param);
@@ -88,7 +89,7 @@ export async function detailServiceProductFunction(param,next) {
             resolve(param)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
 
             param.error = error;
             resolve(param);
@@ -106,7 +107,7 @@ export async function editProductFunction (param) {
           resolve(res)
         })
         .catch((err)=>{
-            const error = (err.response && err.response.data && err.response.data.message && `Error : ${err.response.data.message.toString().toUpperCase()}`)|| err.toString()
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
 
             param.error = error;
             resolve(param);
