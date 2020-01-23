@@ -11,5 +11,5 @@ export const serverUrlBorrower=window.location.origin.includes('staging') ?
 "https://cors-anywhere.herokuapp.com/https://staging.ayannah.co.id/api-borrower/";
 
 export const serverUrlGeo=window.location.origin.includes('staging') ? 
-"https://staging.ayannah.com/api-geomapping/" :
+"https://staging.ayannah.co.id/api-geomapping/" :
 "https://cors-anywhere.herokuapp.com/https://staging.ayannah.co.id/api-geomapping/"
