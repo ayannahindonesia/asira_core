@@ -61,7 +61,6 @@ class userAdd extends React.Component{
       const data = await getAllRoleFunction(param);
       
       if(data) {
-        console.log(data)
         if(!data.error) {
           this.setState({
             listRole: data.dataRole,
@@ -78,30 +77,21 @@ class userAdd extends React.Component{
 
     getBankList = async function() {
       const roleBank = this.isRoleBank(this.state.role); 
-      if(roleBank) {
-        const data = await getAllBankList({}) ;
+      const data = await getAllBankList({}) ;
 
-        if(data) {
-          console.log(data)
-          if(!data.error) {
-            this.setState({
-              listBank: data.bankList.data,
-              bank: (data.bankList && data.bankList.data && data.bankList.data[0] && data.bankList.data[0].id) || 0,
-              loading: false,
-            })
-          } else {
-            this.setState({
-              errorMessage: data.error,
-              loading: false,
-            })
-          }      
-        }
-      } else {
-        this.setState({
-          listBank: [],
-          bank: 0,
-          loading: false,
-        })
+      if(data) {
+        if(!data.error) {
+          this.setState({
+            listBank: data.bankList.data,
+            bank: (roleBank && data.bankList && data.bankList.data && data.bankList.data[0] && data.bankList.data[0].id) || 0,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            loading: false,
+          })
+        }      
       }
       
     }
@@ -201,10 +191,16 @@ class userAdd extends React.Component{
     onChangeDropDown = (e) => {
       const labelName = e.target.name.toString().toLowerCase();
 
-      this.setState({[labelName]: e.target.value},(labelName) => { 
-        if(labelName === 'role') {
-          this.getBankList();
-        } 
+      const roleBank = this.isRoleBank(e.target.value); 
+      
+      if(labelName === 'role') {
+        this.setState({
+          bank: (roleBank && this.state.listBank && this.state.listBank[0] && this.state.listBank[0].id) || 0,
+        })
+      }
+
+      this.setState({
+        [labelName]: e.target.value,
       })
     }
 
