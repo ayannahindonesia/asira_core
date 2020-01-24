@@ -73,7 +73,6 @@ export async function getAllBankList (param,next){
 
         axios.get(serverUrl+`admin/banks?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
-            console.log(res.data)
             param.bankList = res.data
             if(next){
                 resolve(next(param))
@@ -127,7 +126,6 @@ export async function getBankTypesFunction (param,next){
            }
         })
         .catch((err)=>{
-            console.log(err.response.data)
             const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
             param.error = error;
             resolve(param);
