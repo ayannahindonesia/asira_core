@@ -153,7 +153,7 @@ export function decryptImage(text){
 }
 
 export function destructErrorMessage(objError) {
-  let errorMessage = '';
+  let errorMessage = 'Error';
   let integerError = 0;
 
   if(objError && objError.details) {
@@ -163,23 +163,19 @@ export function destructErrorMessage(objError) {
 
       if(integerError !== 0) {
         errorMessage += ', ';
-      } else {
-        errorMessage += 'Error : '
-      }
+      } 
 
       errorMessage += `${key} ${errDetail[key]}`;
-
-      
 
       integerError += 1
     }
 
     if(integerError < 1) {
-      errorMessage = `Error : ${objError.message}`
+      errorMessage += ` ${objError.message}`
     }
 
   } else if (objError && !objError.details && objError.message) {
-    errorMessage = `Error : ${objError.message}`
+    errorMessage += ` ${objError.message}`
   }
 
   return errorMessage
