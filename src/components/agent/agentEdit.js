@@ -177,25 +177,31 @@ class AgentEdit extends React.Component{
 
     onChangeDropDownMultiple = (e) => {
       const dataBank = this.state.listBank;
-      const bank = e.target.value;
-      const newBank = [];
-      
-      for(const key in dataBank) {
+      const lastBank = this.state.bank;
+      const newBank = e.target.value[e.target.value.length - 1];
+      const newListBank = [];
+      let flag = true;
 
-        for(const keyBank in bank) {
-          if(
-            dataBank[key].id.toString().toLowerCase() === bank[keyBank].toString().toLowerCase() || 
-            (bank[keyBank].id && dataBank[key].id.toString().toLowerCase() === bank[keyBank].id.toString().toLowerCase())
-          ) {
-            newBank.push(dataBank[key])
-            break;
-          }
+      for(const key in lastBank) {
+        if(lastBank[key].id.toString().toLowerCase() !== newBank.toString().toLowerCase()) {
+          newListBank.push(lastBank[key])
+        } else {
+          flag = false;
         }
-        
       }
 
-      this.setState({bank : newBank})
+      if(flag) {
+        for(const key in dataBank) {
+          if(
+            dataBank[key].id.toString().toLowerCase() === newBank.toString().toLowerCase() 
+          ) {
+            newListBank.push(dataBank[key])
+            break;
+          } 
+        }
+      }
 
+      this.setState({bank : newListBank})
     }
 
     patchAgent = async function(param) {
@@ -425,7 +431,6 @@ class AgentEdit extends React.Component{
                           label="Bank"
                           data={this.state.listBank}
                           id="id"
-                          onDelete={this.handleDelete}
                           labelName="name"
                           onChange={this.onChangeDropDownMultiple}
                           fullWidth

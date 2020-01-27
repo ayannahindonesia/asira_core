@@ -58,6 +58,19 @@ class DropDown extends React.Component {
     }
   }
 
+  getColor = (id, dataValue) => {
+    let flag = false;
+
+    for(const key in dataValue) {
+      if(dataValue[key][this.props.id].toString().toLowerCase() === id.toString().toLowerCase() ) {
+        flag = true;
+        break;
+      }
+    }
+    
+    return flag ? '#d3d3d3' : 'white';
+  }
+
 
   render() {
     const {
@@ -69,7 +82,6 @@ class DropDown extends React.Component {
       labelName,
       value,
       onChange,
-      onDelete,
       disabled,
       multiple,
     } = this.props;
@@ -91,7 +103,6 @@ class DropDown extends React.Component {
                     key={dataChip[id]} 
                     label={dataChip[labelName]} 
                     className={classes.chip} 
-                    onDelete={(e) => onDelete(e, dataChip[id])}
                     style={{marginRight: '10px', marginBottom: '5px'}}
                   />
                 ))}
@@ -100,7 +111,7 @@ class DropDown extends React.Component {
             MenuProps={MenuProps}
           >
             {data.map(data => (
-              <MenuItem key={data[id]} value={data[id]} >
+              <MenuItem key={data[id]} value={data[id]} style={{backgroundColor: this.getColor(data[id], value)}}>
                 {data[labelName]}
               </MenuItem>
             ))}
@@ -163,7 +174,6 @@ DropDown.propTypes = {
   id: PropTypes.string.isRequired,
   labelName: PropTypes.string.isRequired,
   onChange: PropTypes.func,
-  onDelete: PropTypes.func,
   disabled: PropTypes.bool,
   error: PropTypes.string,
 };

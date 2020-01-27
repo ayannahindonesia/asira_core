@@ -197,25 +197,31 @@ class agentAdd extends React.Component{
 
     onChangeDropDownMultiple = (e) => {
       const dataBank = this.state.listBank;
-      const bank = e.target.value;
-      const newBank = [];
-      
-      for(const key in dataBank) {
+      const lastBank = this.state.bank;
+      const newBank = e.target.value[e.target.value.length - 1];
+      const newListBank = [];
+      let flag = true;
 
-        for(const keyBank in bank) {
-          if(
-            dataBank[key].id.toString().toLowerCase() === bank[keyBank].toString().toLowerCase() || 
-            (bank[keyBank].id && dataBank[key].id.toString().toLowerCase() === bank[keyBank].id.toString().toLowerCase())
-          ) {
-            newBank.push(dataBank[key])
-            break;
-          }
+      for(const key in lastBank) {
+        if(lastBank[key].id.toString().toLowerCase() !== newBank.toString().toLowerCase()) {
+          newListBank.push(lastBank[key])
+        } else {
+          flag = false;
         }
-        
       }
 
-      this.setState({bank : newBank})
+      if(flag) {
+        for(const key in dataBank) {
+          if(
+            dataBank[key].id.toString().toLowerCase() === newBank.toString().toLowerCase() 
+          ) {
+            newListBank.push(dataBank[key])
+            break;
+          } 
+        }
+      }
 
+      this.setState({bank : newListBank})
     }
 
     postAgent = async function(param) {
@@ -237,19 +243,6 @@ class agentAdd extends React.Component{
       }
     }
 
-    handleDelete = (e, value) => {
-      const bank = this.state.bank;
-      const newBank = [];
-
-      for(const key in bank) {
-        if(bank[key].id.toString().toLowerCase() !== value.toString().toLowerCase()) {
-          newBank.push(bank[key])
-        }
-      }
-
-      this.setState({bank : newBank})
-    }
-
     validate = () => {
       let flag = true;
       let errorMessage = '';
@@ -257,12 +250,7 @@ class agentAdd extends React.Component{
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
         errorMessage = 'Mohon input username dengan benar'
-      }
-      // else if(!this.state.selectedFile && this.state.selectedFile===null){
-      //   flag = false;
-      //   errorMessage = 'Mohon input gambar dengan benar'
-      // } 
-      else if (!this.state.agentName || this.state.agentName.trim().length === 0) {
+      } else if (!this.state.agentName || this.state.agentName.trim().length === 0) {
         flag = false;
         errorMessage = 'Mohon input nama agen dengan benar'
       } else if (!this.state.email || this.state.email.length === 0 || !validateEmail(this.state.email) ) {
@@ -462,7 +450,6 @@ class agentAdd extends React.Component{
                           label="Bank"
                           data={this.state.listBank}
                           id="id"
-                          onDelete={this.handleDelete}
                           labelName="name"
                           onChange={this.onChangeDropDownMultiple}
                           fullWidth
