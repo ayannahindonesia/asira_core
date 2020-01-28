@@ -15,13 +15,12 @@ import { getUserFunction, patchUserAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import DropDown from '../subComponent/DropDown';
 import { getToken } from '../index/token';
-import { getAllBankList } from '../bank/saga';
 
-const styles = (theme) => ({
-    container: {
-      flexGrow: 1,
-    },
-  });
+const styles = () => ({
+  container: {
+    flexGrow: 1,
+  },
+});
 
 
 class userEdit extends React.Component{
@@ -30,7 +29,6 @@ class userEdit extends React.Component{
     state = {
       diKlik:false,
       errorMessage:'',
-      listBank: [],
       listRole : {},
       username: '',
       password: '',
@@ -95,7 +93,8 @@ class userEdit extends React.Component{
               email: dataUser.dataUser.email,
               phone: dataUser.dataUser.phone && dataUser.dataUser.phone.substring(2,dataUser.dataUser.phone.length),
               status: dataUser.dataUser.status,
-            }, () => { this.getBankList() })
+              loading: false,
+            })
           } else {
             this.setState({
               errorMessage: data.error || dataUser.error,
@@ -192,40 +191,12 @@ class userEdit extends React.Component{
     onChangeDropDown = (e) => {
       const labelName = e.target.name.toString().toLowerCase();
 
-      const roleBank = this.isRoleBank(e.target.value); 
-      
-      if(labelName === 'role') {
-        this.setState({
-          bank: (roleBank && this.state.listBank && this.state.listBank[0] && this.state.listBank[0].id) || 0,
-        })
-      }
-
       this.setState({
         [labelName]: e.target.value,
-
       })
     }
 
-    getBankList = async function() {
-      const roleBank = this.isRoleBank(this.state.role); 
-      const data = await getAllBankList({}) ;
 
-      if(data) {
-        if(!data.error) {
-          this.setState({
-            listBank: data.bankList.data,
-            bank: (roleBank && data.bankList && data.bankList.data && data.bankList.data[0] && data.bankList.data[0].id) || 0,
-            loading: false,
-          })
-        } else {
-          this.setState({
-            errorMessage: data.error,
-            loading: false,
-          })
-        }      
-      }
-      
-    }
 
     isRoleBank = (role, listRole) => {
       let flag = false;
@@ -247,7 +218,9 @@ class userEdit extends React.Component{
     validate = () => {
       let flag = true;
       let errorMessage = '';
-
+      console.log(this.state.bank)
+      console.log(this.state.listRole)
+      console.log(this.state.role)
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
         errorMessage = 'Mohon input username dengan benar'
