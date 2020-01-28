@@ -120,7 +120,22 @@ class App extends React.Component {
     })
   }
 
+  checkUbahPasswordLink= (path, token) => {
+    let flag = false;
+
+    if(path && token) {
+      if(
+        path.split('/')[1] && path.split('/')[1] === 'ubahpassword' &&
+        token.split('token=')[1] && token.split('token=')[1].length !== 0
+      ) {
+        flag = true;
+      }
+    }
+    return flag
+  }
+
   render() {  
+    
     if(this.state.loading){
       return(
         <p> loading ....</p>
@@ -133,7 +148,7 @@ class App extends React.Component {
         <ScrollTop>
           <div className="row">
           {
-            getToken() && getProfileUser() ? 
+            getToken() && getProfileUser() && !this.checkUbahPasswordLink(this.props.location && this.props.location.pathname, this.props.location && this.props.location.search) ? 
             <div className="col-2 col-md-3">
               <Header />
             </div>
