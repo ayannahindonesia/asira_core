@@ -81,6 +81,8 @@ import CalonNasabahArsipDetail from './components/calonNasabah/calonNasabahArsip
 
 import ChangePassword from './components/index/changePassword'
 
+import ActivityLog from './components/logs/activitylog'
+
 class App extends React.Component {
   _isMounted = false;
 
@@ -226,6 +228,7 @@ class App extends React.Component {
                   { checkPermission('core_borrower_get_all') && <Route path='/listCalonNasabahArsip' component={CalonNasabahArsipList}></Route>}
                   { checkPermission('core_borrower_get_details') && <Route path='/detailCalonNasabahArsip/:id' component={CalonNasabahArsipDetail}></Route>}
 
+                  <Route path='/activitylog' component={ActivityLog}></Route>
                   {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
                   <Route path='/ubahpassword' component={ChangePassword} />
                   <Route path='*' component={PageNotFound} />
