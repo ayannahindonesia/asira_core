@@ -69,11 +69,16 @@ class LayananEdit extends React.Component{
     btnEditLayanan = ()=>{
         
         var name = this.refs.namaLayanan.value ? this.refs.namaLayanan.value : this.refs.namaLayanan.placeholder
+        var description = this.refs.deskripsi.value ? this.refs.deskripsi.value : this.refs.deskripsi.placeholder
+
         var status = this.state.check ? "active": "inactive"
         this.setState({submit:true})
         if(name.trim()===""||name===""){
             this.setState({errorMessage:"Nama Layanan Kosong - Harap Cek Ulang",submit:false})
-        }else{
+        }else if(description.length >250){
+            this.setState({errorMessage:"Deskripsi terlalu panjang, maksimal 250 karakter - Harap Cek Ulang",submit:false})
+        }
+        else{
             if (this.state.selectedFile){
                 if (this.state.selectedFile.size >1000000){
                     this.setState({errorMessage:"Gambar tidak bole lebih dari 1 MB - Harap cek ulang",submit:false})
@@ -84,7 +89,7 @@ class LayananEdit extends React.Component{
                     reader.onload =  () => {           
                         var arr = reader.result.split(",")   
                         var image = arr[1].toString()
-                        var newData = {name,image,status}
+                        var newData = {name,image,status,description}
                         const param ={
                             id:this.props.match.params.id,
                             newData
@@ -98,7 +103,7 @@ class LayananEdit extends React.Component{
                 }
              
             }else{
-                var newData = {name,status}
+                var newData = {name,status,description}
                 const param ={
                     id:this.props.match.params.id,
                     newData
@@ -167,6 +172,12 @@ class LayananEdit extends React.Component{
                             <label className="col-sm-3 col-form-label">Nama Layanan</label>
                             <div className="col-sm-9">
                             <input disabled type="text" placeholder={this.state.rows.name} style={{width:"50%",marginLeft:"13%"}} className="form-control" ref="namaLayanan"></input>                            
+                            </div>
+                    </div>
+                    <div className="form-group row">
+                            <label className="col-sm-3 col-form-label">Deskripsi Layanan</label>
+                            <div className="col-sm-9">
+                            <textarea rows="5" ref="deskripsi" className="form-control"  style={{width:"50%",marginLeft:"13%"}} placeholder={this.state.rows.description} required autoFocus/>
                             </div>
                     </div>
                     <div className="form-group row">

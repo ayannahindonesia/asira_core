@@ -38,6 +38,7 @@ class LayananAdd extends React.Component{
 
     btnSimpanLayanan = ()=>{
         var name =this.refs.namaLayanan.value
+        var description = this.refs.deskripsi.value
         this.setState({submit:true})
         if(name==="" || this.state.selectedFile===null){
             this.setState({errorMessage:"Nama Layanan atau Gambar kosong",submit:false})
@@ -45,6 +46,8 @@ class LayananAdd extends React.Component{
             this.setState({errorMessage:"Nama Layanan kosong - Harap Cek ulang",submit:false})
         }else if(this.state.selectedFile.size > 1000000){
             this.setState({errorMessage:"Gambar tidak boleh lebih dari 1 MB - Harap Cek ulang",submit:false})
+        }else if(description.length >250){
+            this.setState({errorMessage:"Deskripsi layanan terlalu panjang maksimal 250 karakter - Harap Cek ulang",submit:false})
         }
         else{
             var pic = this.state.selectedFile
@@ -54,7 +57,7 @@ class LayananAdd extends React.Component{
                 var arr = reader.result.split(",")   
                 var image = arr[1].toString()
                 var status = this.state.check ? "active": "inactive"
-                var newData = {name,status,image}
+                var newData = {name,status,image,description}
 
                 this.addLayananBtn(newData)
             };
@@ -113,6 +116,12 @@ class LayananAdd extends React.Component{
                             <label className="col-sm-3 col-form-label">Nama Layanan</label>
                             <div className="col-sm-9">
                             <input type="text" placeholder="Masukan Nama Layanan" style={{width:"50%",marginLeft:"13%"}} className="form-control" ref="namaLayanan"></input>                            
+                            </div>
+                    </div>
+                    <div className="form-group row">
+                            <label className="col-sm-3 col-form-label">Deskripsi Layanan</label>
+                            <div className="col-sm-9">
+                            <textarea rows="5" ref="deskripsi" className="form-control"  style={{width:"50%",marginLeft:"13%"}} placeholder="Description" required autoFocus/>
                             </div>
                     </div>
                     <div className="form-group row">
