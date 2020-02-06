@@ -75,7 +75,10 @@ class LayananEdit extends React.Component{
         this.setState({submit:true})
         if(name.trim()===""||name===""){
             this.setState({errorMessage:"Nama Layanan Kosong - Harap Cek Ulang",submit:false})
-        }else{
+        }else if(description.length >250){
+            this.setState({errorMessage:"Deskripsi terlalu panjang, maksimal 250 karakter - Harap Cek Ulang",submit:false})
+        }
+        else{
             if (this.state.selectedFile){
                 if (this.state.selectedFile.size >1000000){
                     this.setState({errorMessage:"Gambar tidak bole lebih dari 1 MB - Harap cek ulang",submit:false})
@@ -100,7 +103,7 @@ class LayananEdit extends React.Component{
                 }
              
             }else{
-                var newData = {name,status}
+                var newData = {name,status,description}
                 const param ={
                     id:this.props.match.params.id,
                     newData

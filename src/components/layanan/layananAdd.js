@@ -46,6 +46,8 @@ class LayananAdd extends React.Component{
             this.setState({errorMessage:"Nama Layanan kosong - Harap Cek ulang",submit:false})
         }else if(this.state.selectedFile.size > 1000000){
             this.setState({errorMessage:"Gambar tidak boleh lebih dari 1 MB - Harap Cek ulang",submit:false})
+        }else if(description.length >250){
+            this.setState({errorMessage:"Deskripsi layanan terlalu panjang maksimal 250 karakter - Harap Cek ulang",submit:false})
         }
         else{
             var pic = this.state.selectedFile

@@ -61,7 +61,7 @@ class LayananDetail extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Deskripsi Layanan</label>
                             <div className="col-sm-8">
-                            : {this.state.rows.description}
+                            :{this.state.rows.description}
                             </div>
                         </div>
                     </form>
@@ -81,6 +81,7 @@ class LayananDetail extends React.Component{
                             </div>
                         </div>
                     </form>
+
                     <div className="form-group row">
                             <label className="col-sm-4 col-form-label">
                                 <input type="button" className="btn btn btn-secondary" value="Kembali" onClick={()=>  window.history.back()}/>
