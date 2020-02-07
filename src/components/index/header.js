@@ -199,7 +199,15 @@ class Example extends React.Component {
             
             { checkPermission('convenience_fee_report') && <Link to="/report" style={{marginBottom:"10px"}}><label><i className="far fa-newspaper"></i> Report</label></Link>}
            
-        
+            <UncontrolledDropdown  nav inNavbar>
+                <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
+                <label> <i className="fas fa-diagnoses"></i> Logs </label>
+                </DropdownToggle>
+                <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
+                  <Link to="/activitylog" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Activity Log</DropdownItem></Link>                 
+                  <Link to="/audittrail" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Audit Trail </DropdownItem></Link>              
+                </DropdownMenu>
+              </UncontrolledDropdown>
             <p style={{ cursor:"pointer"}} onClick={this.logOutBtn}><label><i className="fas fa-sign-out-alt"></i> Log Out</label></p>
             </Nav>
           </Collapse>

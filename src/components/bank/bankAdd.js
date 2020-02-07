@@ -86,7 +86,7 @@ class Main extends React.Component{
     }
   
     getAllProvinsi = async function(){
-        const data = await getProvinsiFunction()
+        const data = await getProvinsiFunction({})
         
         if(data){
             if(!data.error){
