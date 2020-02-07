@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { serverLog } from './../url'
 import { getToken } from '../index/token';
+import { destructErrorMessage } from '../global/globalFunction';
 
 export async function getAllActivityLog (param,next) {
 
@@ -15,8 +16,8 @@ export async function getAllActivityLog (param,next) {
             filter += `&${[key]}=${param[key]}`
         }
 
-
-        axios.get(serverLog+`?orderby=updated_at&sort=desc${filter}`,config)
+        axios.post('http://virtserver.swaggerhub.com/Ayannah/Northstar/1.0.0/ns/log')
+        // axios.get(serverLog+`ns/log?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             param.activityLog = res.data
             if(next){

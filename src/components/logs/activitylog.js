@@ -3,6 +3,7 @@ import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
 import SearchBar from './../subComponent/SearchBar'
 import DatePickers from './../subComponent/DatePicker'
+import { getAllActivityLog } from './saga'
 
 class ActivityLog extends React.Component{
     _isMounted = false
@@ -12,7 +13,9 @@ class ActivityLog extends React.Component{
         tanggalAwal:null,
         tanggalAkhir:null,
         search:'',
-        dropDownApp:'blank'
+        dropDownApp:'blank',
+        message:[]
+      
     }
     componentWillUnmount(){
         this._isMounted=false
@@ -20,10 +23,21 @@ class ActivityLog extends React.Component{
     
     componentDidMount(){
         this._isMounted=true
+        this.getAllLog()
     }
 
-    
+    getAllLog = async function () {
+        
+        const param ={}
+        const data = await getAllActivityLog(param)
 
+        if(data){
+            console.log(data)
+            
+            this.setState({message:data.activityLog.data[0].messages})
+        }
+    }
+    
     handleDropDownLog = (e)=>{
         this.setState({dropDownApp:e.target.value})
 
@@ -75,7 +89,7 @@ class ActivityLog extends React.Component{
                 <div className="container">
                      <div className="row">
                         <div className="col col-md col-xs">
-                             <h2 className="mt-3">Activity Log</h2>
+                             <h2 className="mt-3">Activity Log {this.state.message}</h2>
                              <hr></hr>
                         </div>
                         
@@ -126,6 +140,7 @@ class ActivityLog extends React.Component{
                     </div>
 
                     <div>
+                        
                         <table className="table table-hover">
                                 <thead className="table-warning">
                                 <tr >
