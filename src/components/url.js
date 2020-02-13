@@ -15,5 +15,5 @@ export const serverUrlGeo=window.location.origin.includes('asira') ?
 "https://cors-anywhere.herokuapp.com/http://asira.ayannah.com/api-geomapping/"
 
 export const serverLog=window.location.origin.includes('asira') ? 
-"http://asira.ayannah.com/api-northstar" :
-"https://cors-anywhere.herokuapp.com/http://asira.ayannah.com/api-northstar/"
+"http://asira.ayannah.com/northstar/" :
+"https://cors-anywhere.herokuapp.com/http://asira.ayannah.com/northstar/"
