@@ -159,13 +159,10 @@ export async function getTokenLogFunction (param) {
             }
         }
   
-        axios.get(url,logData,config).then((res)=>{
-            // axios.get(url,{},logData).then((res)=>{
-                console.log(res)
-                console.log(btoa("lenderkey:lendersecret"))
+        axios.get(url,logData,config)
+        .then((res)=>{
+           // console.log(res)
             setTokenLog(res.data.token);
-
-            
         }).catch((err)=>{
             const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
             param.error = error

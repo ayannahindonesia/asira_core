@@ -138,11 +138,7 @@ class Login extends React.Component{
     }
 
     postLog = async function () {
-        const data = await getTokenLogFunction ()
-
-        if(data){
-            console.log(data)
-        }
+        await getTokenLogFunction ({})
         
     }
 
