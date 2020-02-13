@@ -165,10 +165,10 @@ class ActivityLog extends React.Component{
         let dateAkhir = new Date(tanggalAkhir).getTime()
 
         if(dateAwal > dateAkhir){
-            this.setState({errorMessage:true,errorMessageTanggal:"Range Tanggal Salah"})
+            this.setState({errorMessage:true,errorMessageTanggal:"Range Tanggal Salah - Harap Check ulang"})
             
         }else if(isNaN(search)){
-            this.setState({errorMessageId:"ID Harus Angka"})
+            this.setState({errorMessageId:"ID harus angka - Harap Check ulang"})
         }
         else{
             if(dropDownLevel !=='blank'){
