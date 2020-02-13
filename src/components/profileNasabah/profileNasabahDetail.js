@@ -48,8 +48,8 @@ class profileNasabahDetail extends React.Component{
         if(data){
             if(!data.error){
                 this.setState({rows:data.data,
-                    ktp:data.data && data.data.idcard_image && decryptImage(dataUser.idcard_image)
-                    ,npwp:data.data && data.data.taxid_image && decryptImage(dataUser.taxid_image) , 
+                    ktp:data.data && data.data.idcard_image && decryptImage(data.data.taxid_image.idcard_image)
+                    ,npwp:data.data && data.data.taxid_image && decryptImage(data.data.taxid_image.taxid_image) , 
                     bankID:data.data.bank.Int64},
                     ()=>{
                     //KTP WAJIB KALO NPWP OPTIONAL
