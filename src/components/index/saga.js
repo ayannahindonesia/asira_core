@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { serverUrl, serverUrlGeo } from '../url';
+import { serverUrl, serverUrlGeo, serverLog } from '../url';
 import jsonWebToken from 'jsonwebtoken';
-import { setToken, setTokenGeo, getTokenAuth } from './token';
+import { setToken, setTokenGeo, getTokenAuth, setTokenLog } from './token';
 import { destructErrorMessage } from '../global/globalFunction';
 
-export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
+export async function postAdminLoginFunction(param, nextGeo, nextProfile, nextLog) {
     return new Promise(async (resolve) => { 
         const tokenAuth = getTokenAuth();
 
@@ -27,7 +27,7 @@ export async function postAdminLoginFunction(param, nextGeo, nextProfile) {
 
             delete param.password;
 
-            if(nextGeo && nextProfile) {
+            if( nextGeo && nextProfile) {
                 nextGeo(param)
                 resolve(nextProfile(param))
             } else {
@@ -139,4 +139,38 @@ export async function changePasswordFunction (param,next){
             resolve(param);
         })
     })
+}
+
+export async function getTokenLogFunction (param) {
+    return new Promise(async (resolve) => {    
+        
+        const config = {
+//            headers: {'Authorization': "Basic Yf983jf9we8f9jf9832jf3="}
+            headers: {'Authorization': "Basic "+btoa("lenderkey:lendersecret")}
+
+        };
+
+        const url = serverLog + "login"
+
+        const logData = {
+            auth:{
+                username : `lenderkey`,
+                password : `lendersecret`
+            }
+        }
+  
+        axios.get(url,logData,config).then((res)=>{
+            // axios.get(url,{},logData).then((res)=>{
+                console.log(res)
+                console.log(btoa("lenderkey:lendersecret"))
+            setTokenLog(res.data.token);
+
+            
+        }).catch((err)=>{
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
+            param.error = error
+            resolve(param);
+        })
+    });
+    
 }

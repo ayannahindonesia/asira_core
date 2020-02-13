@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { serverLog } from './../url'
-import { getToken } from '../index/token';
+import { getTokenLog } from '../index/token';
 import { destructErrorMessage } from '../global/globalFunction';
 
 export async function getAllActivityLog (param,next) {
 
     return new Promise(async (resolve)=>{
         const config = {
-            headers: {'Authorization': "Bearer " + getToken()}
+            headers: {'Authorization': "Bearer " + getTokenLog()}
           };
 
         let filter =''
@@ -15,9 +15,9 @@ export async function getAllActivityLog (param,next) {
         for (const key in param){
             filter += `&${[key]}=${param[key]}`
         }
-
-        axios.post('http://virtserver.swaggerhub.com/Ayannah/Northstar/1.0.0/ns/log')
-        // axios.get(serverLog+`ns/log?orderby=updated_at&sort=desc${filter}`,config)
+        // console.log(filter)
+        // axios.post('http://virtserver.swaggerhub.com/Ayannah/Northstar/1.0.0/ns/log')
+        axios.get(serverLog+`ns/log?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             param.activityLog = res.data
             if(next){
@@ -31,5 +31,23 @@ export async function getAllActivityLog (param,next) {
             param.error = error;
             resolve(param);
         })
+    })
+}
+
+export async function getAllClientsFunction (param){
+    return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + getTokenLog()}
+            };
+        axios.get(serverLog+`ns/client`,config)
+            .then((res)=>{
+                param.clientList = res.data
+                resolve(param)
+            })
+            .catch((err)=>{
+                const error =( err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
+                param.error = error;
+                resolve(param);
+            })
     })
 }

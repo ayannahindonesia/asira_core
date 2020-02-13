@@ -4,7 +4,7 @@ import './../../support/css/login.css'
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert'
 import {Redirect} from 'react-router-dom'
-import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction,sendEmailFunction} from './saga'
+import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction,sendEmailFunction, getTokenLogFunction} from './saga'
 import { setProfileUser } from './token'
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -52,8 +52,9 @@ class Login extends React.Component{
 
         } else {            
             const logindata ={key,password};
-
+            
             this.postLoginAdmin(logindata)
+            this.postLog()
         }
       
     } 
@@ -134,6 +135,15 @@ class Login extends React.Component{
             }
         }
     
+    }
+
+    postLog = async function () {
+        const data = await getTokenLogFunction ()
+
+        if(data){
+            console.log(data)
+        }
+        
     }
 
     renderBtnOrLoading =()=>{
