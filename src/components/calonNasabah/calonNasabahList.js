@@ -4,8 +4,6 @@ import {getAllBorrowerFunction} from './saga'
 import { checkPermission, handleFormatDate } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
-import SearchBar from '../subComponent/SearchBar';
-
 
 const columnDataUser = [
     {
