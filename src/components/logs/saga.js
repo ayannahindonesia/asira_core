@@ -15,7 +15,7 @@ export async function getAllActivityLog (param,next) {
         for (const key in param){
             filter += `&${[key]}=${param[key]}`
         }
-        // console.log(filter)
+        //console.log(filter)
         // axios.post('http://virtserver.swaggerhub.com/Ayannah/Northstar/1.0.0/ns/log')
         axios.get(serverLog+`ns/log?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{

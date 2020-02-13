@@ -71,8 +71,8 @@ class CalonNasabahDetail extends React.Component{
             let flag = false;
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
-            dataUser.idcard_image = decryptImage(dataUser.idcard_image);
-            dataUser.taxid_image = decryptImage(dataUser.taxid_image)
+            dataUser.idcard_image = dataUser.idcard_image && decryptImage(dataUser.idcard_image);
+            dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image)
 
             if(dataUser && dataUser.status && dataUser.status === 'rejected') {
               flag = true

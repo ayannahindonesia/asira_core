@@ -14,7 +14,7 @@ import {decryptImage} from './../global/globalFunction'
 
 
 class profileNasabahDetail extends React.Component{
-    state={rows:[],modalKTP:false,modalNPWP:false,npwp:0,ktp:0,gambarKTP:null,gambarNPWP:null,
+    state={rows:[],modalKTP:false,modalNPWP:false,npwp:'',ktp:'',gambarKTP:null,gambarNPWP:null,
         bankID:0,bankName:'',diKlik:false,progress:true,errorMessage:''}
     
     _isMounted = false
@@ -47,7 +47,10 @@ class profileNasabahDetail extends React.Component{
         const data = await getProfileNasabahDetailFunction(param)
         if(data){
             if(!data.error){
-                this.setState({rows:data.data,ktp:data.data.idcard_image,npwp:data.data.taxid_image, bankID:data.data.bank.Int64},
+                this.setState({rows:data.data,
+                    ktp:data.data && data.data.idcard_image && decryptImage(dataUser.idcard_image)
+                    ,npwp:data.data && data.data.taxid_image && decryptImage(dataUser.taxid_image) , 
+                    bankID:data.data.bank.Int64},
                     ()=>{
                     //KTP WAJIB KALO NPWP OPTIONAL
                     this.getBankName() 
@@ -124,7 +127,7 @@ class profileNasabahDetail extends React.Component{
               {this.state.ktp && this.state.ktp.length === 0 ?"Gambar KTP Tidak ada":
              <img width="100%" height="300px" alt="KTP" onError={(e)=>{
                 e.target.attributes.getNamedItem("src").value = BrokenLink
-             }} src={`${decryptImage(this.state.ktp)}`}></img>
+             }} src={`${this.state.ktp}`}></img>
             }
           </ModalBody>
           <ModalFooter>
@@ -141,7 +144,7 @@ class profileNasabahDetail extends React.Component{
             {this.state.npwp && this.state.npwp.length===0 ?"Gambar NPWP Tidak ada":
                 <img width="100%" height="300px" alt="NPWP" onError={(e)=>{
                     e.target.attributes.getNamedItem("src").value = BrokenLink
-                 }} src={`${decryptImage(this.state.npwp)}`}></img>}
+                 }} src={`${this.state.npwp}`}></img>}
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.btnModalCancelNPWP}>Close</Button>
