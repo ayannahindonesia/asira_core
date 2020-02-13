@@ -177,7 +177,7 @@ class ActivityLog extends React.Component{
             if(dropDownApp !== 'blank'){
                 param.client = dropDownApp
             }if(searchMessage.trim().length>0){
-                param.message = searchMessage
+                param.messages = searchMessage
             }
             if(dateAwal<dateAkhir){
                 param.start_date = tanggalAwal
