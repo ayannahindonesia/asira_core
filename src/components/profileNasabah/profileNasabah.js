@@ -1,13 +1,12 @@
 import React from 'react';
-import Moment from 'react-moment';
 import {connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import './../../support/css/pagination.css'
-import { getProfileNasabahFunction } from './saga';
-import { getToken } from '../index/token';
-import { checkPermission } from '../global/globalFunction';
-import SearchBar from './../subComponent/SearchBar'
+import {getProfileNasabahFunction} from './saga'
+import 'moment/locale/id';
+import { getToken, getTokenAuth } from '../index/token'
 import TableComponent from './../subComponent/TableComponent'
+import { checkPermission } from '../global/globalFunction';
 
 const columnDataUser = [
   {
@@ -28,6 +27,7 @@ const columnDataUser = [
   {
     id: 'created_at',
     numeric: false,
+    type: 'datetime',
     label: 'Tanggal Registrasi',
   },
   {
@@ -38,142 +38,119 @@ const columnDataUser = [
 ]
 
 class profileNasabah extends React.Component {
-  state = {
-    rows: [], searchRows:'',
-    page: 1,
-    rowsPerPage: 5,
-    isEdit: false,
-    editIndex:Number,
-    totalData:0,
-    last_page:1,
-    loading:true,
-    bankID:0,bankName:'',
-    paging:true
-  
-  };
-
-  //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
   
   _isMounted = false
+  state = {
+    rows: [], 
+    searchRows:'',
+    paging:true,
+    page: 1,
+    rowsPerPage: 10,
+    isEdit: false,
+    total_data:0,
+    last_page:1,
+    loading:true,
+  };
+  //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
   componentDidMount(){
-    this.getAllData()
-    this._isMounted = true
+    this._isMounted=true
+    this._isMounted && this.getProfileNasabah()
   }
   componentWillUnmount(){
-    this._isMounted = false
+    this._isMounted=false
   }
-  UNSAFE_componentWillReceiveProps(newProps){
-    this.setState({errorMessage:newProps.error})
-}
+
+  
   //Ambil data pertama kali
-  getAllData = async function(){
-      const param ={
-        rows:10,
-        page:this.state.page
+  getProfileNasabah = async function(){
+    const param ={
+      rows:this.state.rowsPerPage,
+      page:this.state.page
+    }
+    let hasil = this.state.searchRows
+
+    if(hasil){
+      param.search_all = hasil
+    }
+    const data = await getProfileNasabahFunction(param)
+    console.log(data)
+    const dataNasabah = data.listNasabah.data;
+    
+    for (const key in dataNasabah){
+      dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
+      dataNasabah[key].loan_status = dataNasabah[key].loan_status && dataNasabah[key].loan_status==="active"?"Aktif" :"Tidak Aktif"
+   }
+    if(data){
+      if(!data.error){
+        this._isMounted && this.setState({loading:false,
+          rows:dataNasabah,
+          rowsPerPage:data.listNasabah.rows,
+          total_data:data.listNasabah.total_data,
+          last_page:data.listNasabah.last_page,
+          page:data.listNasabah.current_page})
+      }else{
+        this._isMounted && this.setState({errorMessage:data.error})
       }
-      let hasil = this.state.searchRows
-      if (hasil){
-        param.search_all = hasil
-      }
-
-      const data = await getProfileNasabahFunction(param)
-      
-      if(data){
-
-        if(!data.error){
-          const dataNasabah = data.listNasabah.data;
-
-          for (const key in dataNasabah){
-             dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
-             dataNasabah[key].loan_status = dataNasabah[key].loan_status && dataNasabah[key].loan_status==="active"?"Aktif" :"Tidak Aktif"
-             dataNasabah[key].created_at =   <Moment date={dataNasabah[key].created_at } format=" DD  MMMM  YYYY" />
-
-          }
-
-          this.setState({loading:false,rows:dataNasabah,rowsPerPage:data.listNasabah.rows,total_data:data.listNasabah.total_data,last_page:data.listNasabah.last_page,page:data.listNasabah.current_page})
-        }else{
-          this.setState({errorMessage:data.error})
-        }
-      } 
+    }
   }
 
   onBtnSearch = (e)=>{
-    var searching = e.target.value
-    this.setState({loading:true,searchRows:searching,page:1},()=>{
-      if (this.state.paging){
-        this.getAllData()
+    this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
+      if(this.state.paging){
+      this.getProfileNasabah()
+    }
+    })
+  }
+  
+  onChangePage = (current) => {
+    
+    this.setState({loading:true,page:current},()=>{
+
+      if(this.state.paging){
+        this.getProfileNasabah()
       }
     })
-  
   }
-
- onChangePage = (current) => {
-  this.setState({loading:true,page:current},()=>{
-    if (this.state.paging){
-      this.getAllData()
-    }
-  })
-}
   
-
   render() {
-   
-if(getToken()){
-    return (
-        <div className="container">
-          <div className="row">
-          <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
-                                    {this.state.errorMessage}
-          </div> 
-          </div>
-          <div className="row">
-          
-                        <div className="col-7">
-                             <h2 className="mt-3">Nasabah - List</h2>
-                        </div>
-                        <div className="col-4 mt-3 ml-5">
-                        <div className="input-group">
-                          <SearchBar 
-                            onChange={this.onBtnSearch}
-                            placeholder="Search Nama Nasabah, ID Nasabah.."
-                            value={this.state.searchRows}
-                          />
-                           
-                        </div>
-                        </div>
-            </div>
+    if(getToken()&&getTokenAuth()){
+      return (
+        <div style={{padding:0}}>
 
-        <hr></hr>
-                     < TableComponent
-                        id={"id"}
-                        paging={this.state.paging}
-                        loading={this.state.loading}
-                        columnData={columnDataUser}
-                        data={this.state.rows}
-                        page={this.state.page}
-                        rowsPerPage={this.state.rowsPerPage}
-                        totalData={this.state.total_data}
-                        onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/profileNasabahDetail/' : null}
-
-                    /> 
-         
+          < TableComponent
+            id={"id"}
+            title={'Nasabah - List'}
+            search={
+              {
+                value: this.state.searchRows,
+                label: 'Search ID Nasabah, Nama Nasabah',
+                function: this.onBtnSearch,
+              }
+            }
+            errorMessage={this.state.errorMessage}
+            paging={this.state.paging}
+            loading={this.state.loading}
+            columnData={columnDataUser}
+            data={this.state.rows}
+            page={this.state.page}
+            rowsPerPage={this.state.rowsPerPage}
+            totalData={this.state.total_data}
+            onChangePage={this.onChangePage}             
+            permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/profileNasabahDetail/' : null}
+          /> 
+        
         </div>
-    );
-
-}
-    else if(!getToken()){
+      );
+    }
+    else if(getTokenAuth()){
       return  <Redirect to='/login' />
     }
-    
   }
 }
-
 
 const mapStateToProp = (state)=>{
   return{     
       id: state.user.id
   }
-  
 }
 export default connect (mapStateToProp)(profileNasabah) ;
