@@ -151,17 +151,9 @@ export async function getTokenLogFunction (param) {
         };
 
         const url = serverLog + "login"
-
-        const logData = {
-            auth:{
-                username : `lenderkey`,
-                password : `lendersecret`
-            }
-        }
   
         axios.get(url,config)
         .then((res)=>{
-            console.log(res)
             setTokenLog(res.data.token);
         }).catch((err)=>{
             const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
