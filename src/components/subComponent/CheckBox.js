@@ -25,7 +25,7 @@ class CheckBoxClass extends React.Component {
     this.state = {
       errorText: '',
       dataJudul: [
-        'List and Detail',
+        'List',
         'Add',
         'Edit',
         'Approval',
@@ -88,64 +88,80 @@ class CheckBoxClass extends React.Component {
     return pjgGrid;
   }
 
-  renderData = (object, data, classes) => {
+  renderData = (data, classes) => {
+    const judul = this.state.dataJudul;
     let tester = '';
-    let dataRow = {}
-    let index = 0;
     
     if(data && data.length !== 0) {
-      tester = this.state.dataJudul.map((dataTable) => {
-        index += 1;
-        const judul = dataTable;
-        let flag = false;
+      tester = data.map((dataPerMenu) => {
 
-        for(const key in data) {
-          if(data[key][this.props.modules] === object && judul === data[key][this.props.labelName]) {
-            flag = true;
-            dataRow = data[key];
-            break;
+        let dataDesignPerMenu = '';
+        const dataAction = dataPerMenu.action || {};
+
+        dataDesignPerMenu = judul.map((perJudul, index) => {
+          let flag = false;
+          let dataTable = {};
+
+          for(const keyAction in dataAction) {
+            if(perJudul.toLowerCase().includes(keyAction)) {
+              dataTable = `${dataPerMenu.label}-${dataAction[keyAction]}`;
+              flag = true;
+              break;
+            }
           }
-        }
 
-        if(flag) {
-          return(
-            <Grid item sm={this.lengthGrid() } xs={this.lengthGrid() } key={dataRow[this.props.id]} style={{textAlign: 'center'}}>
-              <FormControlLabel
-                className={(this.props.vertical)?classes.formItem : null}
-                key={dataRow[this.props.id]}
-                labelPlacement={this.props.labelPlacement}
-                control={                      
-                  <CheckBox
-                    checked={this.props.onChecked(dataRow[this.props.id])}
-                    onChange={this.props.onChange}
-                    value={dataRow[this.props.id].toString().trim()}
-                    color="default"
-                  />                     
-                }
-                disabled={this.props.disabled}
-              />
+          if(flag) {
+            
+            return(
+              <Grid item sm={this.lengthGrid() } xs={this.lengthGrid() } key={dataTable} style={{textAlign: 'center'}}>
+                <FormControlLabel
+                  className={(this.props.vertical)?classes.formItem : null}
+                  key={dataTable}
+                  labelPlacement={this.props.labelPlacement}
+                  control={                      
+                    <CheckBox
+                      checked={this.props.onChecked(dataTable)}
+                      onChange={this.props.onChange}
+                      value={dataTable.toString().trim()}
+                      color="default"
+                    />                     
+                  }
+                  disabled={this.props.disabled}
+                />
+              </Grid>
+            ) 
+          } else {
+            return(
+              <Grid item sm={this.lengthGrid() } xs={this.lengthGrid() } key={index} style={{textAlign: 'center'}}>
+                <FormControlLabel
+                  className={(this.props.vertical)?classes.formItem : null}
+                  key={index}
+                  labelPlacement={this.props.labelPlacement}
+                  control={                      
+                    <CheckBox
+                      checked={false}
+                      value={index.toString().trim()}
+                      color="default"
+                      indeterminate
+                    />                     
+                  }
+                  disabled
+                />
+              </Grid>
+            ) 
+          }
+          
+        }, this)
+        
+
+        return (
+          <Grid container key={dataPerMenu.label}> 
+            <Grid item sm={this.lengthJudul()} style={{paddingTop:'10px'}}>
+              <h6>{dataPerMenu.label}</h6> 
             </Grid>
-          ) 
-        } else {
-          return(
-            <Grid item sm={this.lengthGrid() } xs={this.lengthGrid() } key={index} style={{textAlign: 'center'}}>
-              <FormControlLabel
-                className={(this.props.vertical)?classes.formItem : null}
-                key={index}
-                labelPlacement={this.props.labelPlacement}
-                control={                      
-                  <CheckBox
-                    checked={false}
-                    value={index.toString().trim()}
-                    color="default"
-                    indeterminate
-                  />                     
-                }
-                disabled
-              />
-            </Grid>
-          ) 
-        }
+            {dataDesignPerMenu}
+          </Grid>
+        );
       }, this)
       
     }
@@ -185,19 +201,8 @@ class CheckBoxClass extends React.Component {
         }
 
         {
-          data && data.length !== 0 && this.state.dataModul && this.state.dataModul.length !== 0 && this.state.dataModul.map((object) => {
-            
-            return(
-              <Grid container key={object}> 
-                <Grid item sm={this.lengthJudul()} style={{paddingTop:'10px'}}>
-                  <h6>{object}</h6> 
-                </Grid>
-                {
-                  this.renderData(object, data, classes)             
-                }
-              </Grid>
-            )
-          }, this)
+          data && data.length !== 0 && 
+          this.renderData(data, classes)
         }
 
 

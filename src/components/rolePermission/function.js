@@ -1,4 +1,4 @@
-import { listAllRolePermission } from "../global/globalConstant";
+import { listAllRolePermission, dataMenu } from "../global/globalConstant";
 import { destructErrorMessage } from "../global/globalFunction";
 
 export function destructRolePermission(permission){
@@ -48,15 +48,26 @@ export function constructRolePermission(rolePermission) {
 };
 
 export function checkingSystem (role, listRole){
-    let listPermission = listAllRolePermission;
+    let listPermission = dataMenu;
 
     let newListAllRolePermission = [];
     
     for(const keyRole in listRole) {
       if(listRole[keyRole].id && listRole[keyRole].id.toString().toLowerCase() === role.toString().toLowerCase()) {
         for(const key in listPermission) {
-          if(listPermission[key].menu.split('(')[1].toLowerCase().includes(listRole[keyRole].system.toString().toLowerCase())) {
-            newListAllRolePermission.push(listPermission[key])
+          if(
+            listPermission[key].system.toLowerCase().includes(listRole[keyRole].system.toString().toLowerCase()) 
+          ) {
+            if(listPermission[key].child) {
+              const menuChild = listPermission[key].child;
+
+              for(const keyChild in menuChild) {
+                newListAllRolePermission.push(menuChild[keyChild])
+              }
+            } else {
+              newListAllRolePermission.push(listPermission[key])
+            }
+            
           }
         }
         break;
