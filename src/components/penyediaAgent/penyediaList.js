@@ -5,7 +5,6 @@ import './../../support/css/pagination.css'
 import { getToken } from '../index/token';
 import { checkPermission } from '../global/globalFunction';
 import { getPenyediaAgentListFunction } from './saga';
-import SearchBar from './../subComponent/SearchBar'
 import TableComponent from './../subComponent/TableComponent'
 
 const columnDataUser = [

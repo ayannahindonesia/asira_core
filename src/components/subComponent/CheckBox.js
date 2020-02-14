@@ -162,7 +162,7 @@ class CheckBoxClass extends React.Component {
     
     return (
       <FormControl className={classes.FormControl} error={!!this.state.error}>
-        <FormLabel component="legend" style={{color: 'black'}}><h4>{ this.state.label }</h4></FormLabel>  
+        <FormLabel component="legend" style={{color: 'black'}}><h3>{ this.state.label }</h3></FormLabel>  
 
         { data && data.length !== 0 &&
           <FormGroup row >
