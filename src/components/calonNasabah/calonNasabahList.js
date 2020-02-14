@@ -24,9 +24,12 @@ const columnDataUser = [
     {
         id: 'bank_name',
         numeric: false,
-        label: 'Nama Bank',
+        label: 'Nama Mitra',
     },
-    { id: 'created_at', numeric: false, label: 'Tanggal Registrasi'},
+    { 
+        id: 'created_at', 
+        numeric: false, 
+        label: 'Tanggal Registrasi'},
 ]
 
 class CalonNasabahList extends React.Component{

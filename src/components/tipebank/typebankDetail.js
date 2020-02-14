@@ -36,19 +36,19 @@ class TypeBankDetail extends React.Component{
         if(getToken()){
             return(
                 <div className="container">
-                   <h2>Tipe Bank - Detail</h2>
+                   <h2>Tipe Mitra - Detail</h2>
                    <hr/>
                    
                    <form>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">ID Tipe Bank</label>
+                            <label className="col-sm-4 col-form-label">ID Tipe Mitra</label>
                             <div className="col-sm-8">
                             : {this.state.rows.id}
 
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Nama Tipe Bank</label>
+                            <label className="col-sm-4 col-form-label">Nama Tipe Mitra</label>
                             <div className="col-sm-8">
                             : {this.state.rows.name}
                             

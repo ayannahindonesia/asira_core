@@ -330,7 +330,7 @@ class CalonNasabahDetail extends React.Component{
                       <Grid item xs={12} sm={12}>  
                         <Button disableElevation
                             variant='contained'
-                            style={{padding: '2px', width:'100px',backgroundColor:'#2076B8', color:'white'}}
+                            style={{padding: '2px', width:'100px',backgroundColor:'#2D85E9', color:'white'}}
                             onClick={this.btnCancel}
                         >
                             <b>Kembali</b>

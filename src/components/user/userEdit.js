@@ -218,9 +218,6 @@ class userEdit extends React.Component{
     validate = () => {
       let flag = true;
       let errorMessage = '';
-      console.log(this.state.bank)
-      console.log(this.state.listRole)
-      console.log(this.state.role)
       if (!this.state.username || this.state.username.length === 0) {
         flag = false;
         errorMessage = 'Mohon input username dengan benar'
@@ -237,7 +234,7 @@ class userEdit extends React.Component{
         errorMessage = 'Mohon input kontak pic dengan benar'
       } else if ( this.isRoleBank(this.state.role, this.state.listRole) && (!this.state.bank || this.state.bank === 0)) {
         flag = false;
-        errorMessage = 'Mohon input bank dengan benar'
+        errorMessage = 'Mohon input Mitra dengan benar'
       } else {
         errorMessage = ''
       }
@@ -338,7 +335,7 @@ class userEdit extends React.Component{
                     { this.isRoleBank(this.state.role, this.state.listRole) && 
                       <div className="form-group row" style={{marginBottom:20}}>                   
                         <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                          Bank
+                          Mitra
                         </label>
                         <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                           :

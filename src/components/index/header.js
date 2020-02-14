@@ -63,7 +63,7 @@ class Example extends React.Component {
             { checkPermission(['core_bank_new','core_bank_list']) && 
               <UncontrolledDropdown  nav inNavbar>
                 <DropdownToggle nav caret style={{ color:"inherit",textDecoration:"none"}}>
-                  <label><i className="fas fa-university"></i> Bank</label>
+                  <label><i className="fas fa-university"></i> Mitra</label>
                 </DropdownToggle>
                 <DropdownMenu className="menuDropDown" style={{border:"1px solid black",marginBottom:"20px"}}>
                   { checkPermission('core_bank_new') && <Link to="/tambahbank" style={{color:"inherit",textDecoration:"none"}}><DropdownItem>Tambah</DropdownItem></Link>}                   

@@ -26,7 +26,7 @@ const columnDataUser = [
     {
         id: 'bank_name',
         numeric: false,
-        label: 'Bank',
+        label: 'Mitra',
     },
     { id: 'status', numeric: false, disablePadding: true, label: 'Status' },
 ]

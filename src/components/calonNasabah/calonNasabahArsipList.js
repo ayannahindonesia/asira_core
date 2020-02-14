@@ -4,8 +4,6 @@ import {getAllBorrowerFunction} from './saga'
 import { checkPermission, handleFormatDate } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
-import SearchBar from '../subComponent/SearchBar';
-
 
 const columnDataUser = [
     {
@@ -26,7 +24,7 @@ const columnDataUser = [
     {
         id: 'bank_name',
         numeric: false,
-        label: 'Nama Bank',
+        label: 'Nama Mitra',
     },
     { id: 'created_at', numeric: false, label: 'Tanggal Registrasi'},
 ]
@@ -128,27 +126,19 @@ class CalonNasabahArsipList extends React.Component{
 
         if(getToken()){
             return(
-                <div className="container">
-                    <div className="row">
-                        <div className="col-12">
-                            <h2 className="mt-3">Calon Nasabah Arsip - List</h2>
-                        </div>
-                        <div className="col-8" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                            {this.state.errorMessage}
-                        </div>  
-                        <div className="col-4">
-                            <SearchBar
-                                id="search"
-                                value={this.state.search}
-                                placeholder="Search ID Nasabah, Nama Nasabah"
-                                onChange={this.changeSearch} 
-                            />
-                        </div>  
-                    </div>
-                   <hr/>
-
-                   < TableComponent
+                <div style={{padding:0}}>
+                    
+                    < TableComponent
                         id={"id"}
+                        errorMessage={this.state.errorMessage}
+                        title={'Calon Nasabah Arsip - List'}
+                        search={
+                            {
+                              value: this.state.search,
+                              label: 'Search ID, Nama Nasabah',
+                              function: this.changeSearch,
+                            }
+                          }
                         paging={this.state.paging}
                         loading={this.state.loading}
                         columnData={columnDataUser}
@@ -157,7 +147,7 @@ class CalonNasabahArsipList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('core_borrower_get_details') ? '/detailCalonNasabahArsip/' : null}
+                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/detailCalonNasabah/' : null}
                     />
 
                   

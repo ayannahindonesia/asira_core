@@ -136,7 +136,7 @@ class GridDetails extends React.Component {
         }
       >
 
-        <Grid item sm={12} xs={12} style={{color:"#2076B8", marginBottom: !this.props.noTitleLine && title ?'10px' :'0px'}}>
+        <Grid item sm={12} xs={12} style={{color:"#2D85E9", marginBottom: !this.props.noTitleLine && title ?'10px' :'0px'}}>
               { !this.props.noTitleLine && title &&
                 <h4>
                 

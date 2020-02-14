@@ -129,7 +129,7 @@ class ActivityLog extends React.Component{
                                         <option value="blank">--- App Filter ---</option>
                                         <option value="all">All</option>
                                         <option value="m">Mobile App</option>
-                                        <option value="bd">Bank Dashboard</option>
+                                        <option value="bd">Mitra Dashboard</option>
                                         <option value="c">Core</option>
                                     </select>
 

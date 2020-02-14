@@ -8,7 +8,7 @@ import BrokenLink from './../../support/img/default.png'
 import Loader from 'react-loader-spinner'
 import {getProfileNasabahDetailFunction} from './saga'
 import { getToken } from '../index/token';
-import { getBankDetailFunction } from '../bank/saga';
+import { getBankDetailFunction } from '../mitra/saga';
 import {decryptImage} from './../global/globalFunction'
 
 
@@ -173,7 +173,7 @@ class profileNasabahDetail extends React.Component{
                                    
                                 </tr>
                                 <tr>
-                                    <td>Bank Nasabah</td>
+                                    <td>Mitra Nasabah</td>
                                     <td>: {this.state.bankName}</td>
                                     <td>Pinjaman ke-</td>
                                     <td>: {this.state.rows.loan_count} </td>

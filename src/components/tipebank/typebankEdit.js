@@ -52,7 +52,7 @@ class TypeBankEdit extends React.Component{
         const data = await EditTipeBankFunction(params)
         if(data){
             if(!data.error){
-                swal("Success","Bank Type berhasil di ubah","success")              
+                swal("Success","Tipe Mitra berhasil di ubah","success")              
                 this.setState({diKlik:true,errorMessage:'',submit:false})
             }else{
                 this.setState({submit:false,errorMessage:data.error})
@@ -73,7 +73,7 @@ class TypeBankEdit extends React.Component{
         {
             return(
                 <div className="container mt-3">
-                  <h2>Tipe Bank -  Ubah</h2>
+                  <h2>Tipe Mitra -  Ubah</h2>
                 <hr></hr>
                 <div className="form-group row">
                  <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
@@ -81,13 +81,13 @@ class TypeBankEdit extends React.Component{
                   </div>
                 </div>
                      <div className="form-group row">
-                                                <label className="col-sm-3 col-form-label">ID Tipe Bank</label>
+                                                <label className="col-sm-3 col-form-label">ID Tipe Mitra</label>
                                                 <div className="col-sm-9 btn-group">
                                                 <input disabled type="text" className="form-control" ref="typebank" defaultValue={this.state.rows.id} required autoFocus/>
                                                 </div>
                      </div>
                      <div className="form-group row">
-                                                <label className="col-sm-3 col-form-label">Nama Tipe Bank</label>
+                                                <label className="col-sm-3 col-form-label">Nama Tipe Mitra</label>
                                                 <div className="col-sm-9 btn-group">
                                                 <input disabled type="text" className="form-control" ref="typebank" defaultValue={this.state.rows.name} required autoFocus/>
                                                 </div>

@@ -7,10 +7,11 @@ import Loader from 'react-loader-spinner';
 import { formatNumber, handleFormatDate } from '../global/globalFunction';
 import CheckBox from '@material-ui/core/Checkbox';
 import './../../support/css/table.css'
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button, Fab } from '@material-ui/core';
 import TitleBar from './TitleBar';
 import SearchBar from './SearchBar';
 import DatePicker from "react-date-picker";
+import AddIcon from '@material-ui/icons/Add';
 import "react-datepicker/dist/react-datepicker.css";
 
 class TableComponent extends React.Component {
@@ -96,7 +97,7 @@ class TableComponent extends React.Component {
       <Grid item sm={12} xs={12}>
 
         <table className="table table-hover">
-          <thead className="theadCustom">
+          <thead >
             <tr >
               {
                 this.props.checkBoxAction &&
@@ -109,7 +110,7 @@ class TableComponent extends React.Component {
                   />
                 </th>
               }
-              <th className="text-center" scope="col" key={'#'}>#</th>
+              
               {
                 this.props.columnData.map((data,index) => {
                   return (
@@ -159,7 +160,6 @@ class TableComponent extends React.Component {
                         </td>
                       }
                     
-                      <td align="center">{this.props.paging ? (index+1 + this.props.rowsPerPage*(this.props.page-1)) : index+1}</td>
                       {
                         this.props.columnData.map((dataRow, indexRow) => {                         
                           return(
@@ -171,7 +171,7 @@ class TableComponent extends React.Component {
                                 dataRow.type && dataRow.type === 'button'  && this.checkConditionButton(dataTable, dataRow.conditions) &&
                                 <Button disableElevation
                                   variant='contained'
-                                  style={{backgroundColor: '#2076B8', color:'white'}}
+                                  style={{backgroundColor: '#2D85E9', color:'white'}}
                                   onClick={(e) => {dataRow.function(e, dataTable[this.props.id])}}
                                   value={dataTable[this.props.id]}
                                   disabled={!dataRow.permission}
@@ -200,12 +200,12 @@ class TableComponent extends React.Component {
                       <td align="center">
                         { this.props.permissionEdit &&
                           <Link to={`${this.props.permissionEdit}${dataTable[this.props.id]}`} className="mr-2">
-                            <i className="fas fa-edit" style={{color:"#2076B8",fontSize:"18px"}}/>
+                            <i className="fas fa-edit" style={{color:"#2D85E9",fontSize:"18px"}}/>
                           </Link>
                         }
                         { this.props.permissionDetail &&
                           <Link to={`${this.props.permissionDetail}${dataTable[this.props.id]}`} >
-                            <img src={require('./../../support/icons/mata.svg')} alt={<i className="fas fa-eye" style={{color:"#2076B8",fontSize:"18px"}}/>} style={{maxWidth:'30%'}}/>
+                            <img src={require('./../../support/icons/mata.svg')} alt={<i className="fas fa-eye" style={{color:"#2D85E9",fontSize:"18px"}}/>} style={{maxWidth:'30%'}}/>
                             
                           </Link>
                         }
@@ -228,7 +228,7 @@ class TableComponent extends React.Component {
               <Button disableElevation
                 key={indexButton}
                 variant='outlined'
-                style={{border:`2px solid ${buttonChild.color || '#2076B8'}`,color:buttonChild.color || '#2076B8'}}
+                style={{border:`2px solid ${buttonChild.color || '#2D85E9'}`,color:buttonChild.color || '#2D85E9'}}
                 onClick={buttonChild.function}
               >
                 <b>{buttonChild.label}</b>
@@ -257,6 +257,7 @@ class TableComponent extends React.Component {
   render() {
     return (
       <Grid container >
+        
         <Grid item sm={12} xs={12}>
           <TitleBar
             title={this.props.title}
@@ -270,6 +271,7 @@ class TableComponent extends React.Component {
         >
           
           <Grid container>
+
             <Grid item sm={12} xs={12} style={{color:"red",fontSize:"15px",textAlign:'left'}}>
               {this.props.errorMessage}
             </Grid>
@@ -279,7 +281,7 @@ class TableComponent extends React.Component {
               this.props.searchDate &&
               <Grid item sm={12} xs={12} style={{marginBottom:'10px'}}>
                 <Grid container>
-                  <Grid item sm={2} xs={12} style={{color:'#2076B8', fontSize:'16px'}}>
+                  <Grid item sm={2} xs={12} style={{color:'#2D85E9', fontSize:'16px'}}>
                     <b> {this.props.searchDate.label} </b>
                   </Grid>
 
@@ -332,7 +334,7 @@ class TableComponent extends React.Component {
                               <Grid key={index} item sm={parseInt(12 /(this.props.searchDate.button.length))} xs={parseInt(12 /(this.props.searchDate.button.length))} style={{maxWidth:'100px'}}>
                                 <Button disableElevation
                                   variant='contained'
-                                  style={{padding: '2px', minWidth:'80px',backgroundColor: buttonChild.color || '#2076B8', color:'white'}}
+                                  style={{padding: '2px', minWidth:'80px',backgroundColor: buttonChild.color || '#2D85E9', color:'white'}}
                                   onClick={buttonChild.function}
                                 >
                                   <b>{buttonChild.label}</b>
@@ -359,10 +361,22 @@ class TableComponent extends React.Component {
                   value={this.props.search.value}
                   placeholder={this.props.search.label || 'Cari...'}
                   onChange={this.props.search.function || null} 
-                  float={'right'}
+                  float={'left'}
                 />
               }
-              
+
+              {
+                this.props.permissionAdd && 
+                <Fab 
+                  size="small" 
+                  aria-label="add" 
+                  style={{color:'white', outline:'none', float:'right', backgroundColor:'#2D85E9'}}
+                  href={`${this.props.permissionAdd}`}
+                >
+                  <AddIcon />
+                </Fab>
+              }
+
             </Grid>
 
             {

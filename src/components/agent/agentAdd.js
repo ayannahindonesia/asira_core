@@ -14,7 +14,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { postAgentAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
-import { getAllBankList } from '../bank/saga';
+import { getAllMitraList } from '../mitra/saga';
 import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
 import { isRoleAccountExecutive, constructAgent } from './function';
 
@@ -78,7 +78,7 @@ class agentAdd extends React.Component{
 
     refresh = async function() {
       const param = {};
-      const data = await getPenyediaAgentListFunction(param, getAllBankList) ;
+      const data = await getPenyediaAgentListFunction(param, getAllMitraList) ;
 
       if(data) {
         if(!data.error) {
@@ -264,7 +264,7 @@ class agentAdd extends React.Component{
         errorMessage = 'Mohon input instansi dengan benar'
       }else if (!isRoleAccountExecutive(this.state.kategori) && (!this.state.bank || this.state.bank.length === 0)) {
         flag = false;
-        errorMessage = 'Mohon input bank dengan benar'
+        errorMessage = 'Mohon input mitra dengan benar'
       } else {
         errorMessage = ''
       }
@@ -438,7 +438,7 @@ class agentAdd extends React.Component{
                     !isRoleAccountExecutive(this.state.kategori) &&
                     <div className="form-group row" style={{marginBottom:15}}>                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Bank Pelayanan
+                        Mitra Pelayanan
                       </label>
                       <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                         :

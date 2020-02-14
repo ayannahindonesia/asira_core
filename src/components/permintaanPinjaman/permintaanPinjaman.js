@@ -23,7 +23,7 @@ const columnDataUser = [
       {
         id: 'bank_name',
         numeric: false,
-        label: 'Nama Bank',
+        label: 'Nama Mitra',
       },
       {
         id: 'category',

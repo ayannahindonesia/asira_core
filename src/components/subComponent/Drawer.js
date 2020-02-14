@@ -22,10 +22,10 @@ import  globalConstant  from './../global/globalConstant';
 
 import { getToken, getProfileUser } from './../index/token';
 import PageNotFound from './../404'
-import TambahBank from './../bank/bankAdd'
-import ListBank from './../bank/bankList'
-import EditBank from './../bank/bankEdit'
-import DetailBank from './../bank/bankDetail'
+import TambahBank from '../mitra/mitraAdd'
+import ListBank from '../mitra/mitraList'
+import EditBank from '../mitra/mitraEdit'
+import DetailBank from '../mitra/mitraDetail'
 import LayananEdit from './../layanan/layananEdit'
 import LayananAdd from './../layanan/layananAdd'
 import LayananList from './../layanan/layananList'
@@ -85,7 +85,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   drawer: {
-    backgroundColor: '#2076B8',
+    backgroundColor: '#2D85E9',
     fontSize:'12px',
     color: 'white',
     [theme.breakpoints.up('sm')]: {
@@ -110,7 +110,7 @@ const useStyles = makeStyles(theme => ({
   },
   toolbar: theme.mixins.toolbar,
   drawerPaper: {
-    backgroundColor: '#2076B8',
+    backgroundColor: '#2D85E9',
     fontSize:'12px',
     color: 'white',
     width: drawerWidth,
@@ -118,6 +118,9 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    [theme.breakpoints.up('xs')]: {
+      minWidth:`calc(100vw - ${drawerWidth}px)`,
+    },
   },
   textColorHeader: {
     '&:hover': {
@@ -279,7 +282,7 @@ function ResponsiveDrawer(props) {
             onClick={handleDrawerToggle}
             className={classes.menuButton}
           >
-            <MenuIcon style={{backgroundColor:'#2076B8', borderRadius:'3px'}} />
+            <MenuIcon style={{backgroundColor:'#2D85E9', borderRadius:'3px'}} />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -332,10 +335,10 @@ function ResponsiveDrawer(props) {
             { checkPermission('core_loan_get_all') && <Route path="/permintaanpinjaman" component={PermintaanPinjaman}></Route>}
             { checkPermission('core_loan_get_details') && <Route path="/permintaanpinjamanDetail/:idLoan" component={PermintaanPinjamanDetail}></Route>}
 
-            { checkPermission('core_bank_new') && <Route path='/tambahbank' component={TambahBank}></Route>}
-            { checkPermission('core_bank_list') && <Route path='/listbank' component={ListBank}></Route>}
-            { checkPermission('core_bank_patch') && <Route path='/bankedit/:id' component={EditBank}></Route>}
-            { checkPermission('core_bank_detail') && <Route path='/bankdetail/:id' component={DetailBank}></Route>}
+            { checkPermission('core_bank_new') && <Route path='/mitraAdd' component={TambahBank}></Route>}
+            { checkPermission('core_bank_list') && <Route path='/mitraList' component={ListBank}></Route>}
+            { checkPermission('core_bank_patch') && <Route path='/mitraEdit/:id' component={EditBank}></Route>}
+            { checkPermission('core_bank_detail') && <Route path='/mitraDetail/:id' component={DetailBank}></Route>}
 
             { checkPermission('core_product_new') && <Route path='/tambahproduct' component={ProductAdd}></Route>}
             { checkPermission('core_product_list') && <Route path='/listproduct' component={ProductList}></Route>}

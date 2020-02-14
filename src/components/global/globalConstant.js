@@ -276,7 +276,7 @@ exports.dataMenu = [
             {
                 label: 'Mitra',
                 logo: '',
-                link:'/listbank',
+                link:'/mitraList',
                 action: {
                     list:'core_bank_list core_bank_detail',
                     add:'core_bank_new',
