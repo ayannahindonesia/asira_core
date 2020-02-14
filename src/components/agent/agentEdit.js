@@ -81,10 +81,10 @@ class AgentEdit extends React.Component{
 
       if(data) {
         if(!data.error) {
-          const dataAgent = destructAgent(data.dataAgent, false, data.bankList.data);
+          const dataAgent = destructAgent(data.dataAgent, false, data.mitraList.data);
 
           this.setState({
-            listBank: data.bankList.data,
+            listBank: data.mitraList.data,
             status: dataAgent.status,
             agentId: dataAgent.id,
             agentName: dataAgent.name,
@@ -271,7 +271,7 @@ class AgentEdit extends React.Component{
 
     render(){
         if(this.state.diKlik){
-          return <Redirect to='/listAgent'/>            
+          return <Redirect to='/agenList'/>            
         } else if (this.state.loading){
           return  (
             <div key="zz">

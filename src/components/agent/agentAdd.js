@@ -92,7 +92,7 @@ class agentAdd extends React.Component{
           }
 
           this.setState({
-            listBank: data.bankList.data,
+            listBank: data.mitraList.data,
             listPenyediaAgent,
             instansi,
             bank: [],
@@ -278,7 +278,7 @@ class agentAdd extends React.Component{
 
     render(){
         if(this.state.diKlik){
-          return <Redirect to='/listAgent'/>            
+          return <Redirect to='/agenList'/>            
         } else if (this.state.loading){
           return  (
             <div key="zz">

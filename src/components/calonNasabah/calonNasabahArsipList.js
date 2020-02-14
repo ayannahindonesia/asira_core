@@ -147,7 +147,7 @@ class CalonNasabahArsipList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/detailCalonNasabah/' : null}
+                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/calonNasabahArsipDetail/' : null}
                     />
 
                   

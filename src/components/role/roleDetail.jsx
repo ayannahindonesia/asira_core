@@ -35,7 +35,7 @@ class RoleDetail extends React.Component{
     }
     render(){
         if(this.state.diklik){
-            return <Redirect to="/listrole"></Redirect>
+            return <Redirect to="/roleList"></Redirect>
         }
         if(getToken()){
             return(

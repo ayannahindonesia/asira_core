@@ -98,7 +98,7 @@ class AgentDetail extends React.Component{
 
     render(){
       if(this.state.diKlik){
-        return <Redirect to='/listAgent'/>            
+        return <Redirect to='/agenList'/>            
       } else if (this.state.loading){
         return  (
           <div key="zz">

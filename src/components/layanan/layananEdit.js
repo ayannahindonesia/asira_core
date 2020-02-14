@@ -153,7 +153,7 @@ class LayananEdit extends React.Component{
             )
         }else{
         if(this.state.diKlik){
-            return <Redirect to='/listlayanan'/>            
+            return <Redirect to='/layananList'/>            
 
         }
         if(getToken()){

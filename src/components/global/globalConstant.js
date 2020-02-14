@@ -286,7 +286,7 @@ exports.dataMenu = [
             {
                 label: 'Layanan',
                 logo: '',
-                link:'/listlayanan',
+                link:'/layananList',
                 action: {
                     list:'core_service_list core_service_detail',
                     add:'core_service_new',
@@ -296,7 +296,7 @@ exports.dataMenu = [
             {
                 label: 'Produk',
                 logo: '',
-                link:'/listproduct',
+                link:'/produkList',
                 action: {
                     list:'core_product_list core_product_detail',
                     add:'core_product_new',
@@ -306,7 +306,7 @@ exports.dataMenu = [
             {
                 label: 'Tipe Mitra',
                 logo: '',
-                link:'/listtipe',
+                link:'/tipeList',
                 action: {
                     list:'core_bank_type_list core_bank_type_detail',
                     add:'core_bank_type_new',
@@ -324,14 +324,14 @@ exports.dataMenu = [
             {
                 label: 'Nasabah',
                 logo: 'nasabah.svg',
-                link:'/profileNasabah',
+                link:'/nasabahList',
                 action: {
                     list:'core_borrower_get_all core_borrower_get_details',
                 }
             },
             {
                 label: 'Calon Nasabah',
-                link:'/listCalonNasabah',
+                link:'/calonNasabahList',
                 logo: 'calonNasabah.svg',
                 action: {
                     list:'core_borrower_get_all core_borrower_get_details',
@@ -339,7 +339,7 @@ exports.dataMenu = [
             },
             {
                 label: 'Calon Nasabah Arsip',
-                link:'/listCalonNasabahArsip',
+                link:'/calonNasabahArsipList',
                 logo: 'calonNasabah.svg',
                 action: {
                     list:'core_borrower_get_all core_borrower_get_details',
@@ -384,7 +384,7 @@ exports.dataMenu = [
             {
                 label: 'Pinjaman',
                 logo: 'pinjaman.svg',
-                link:'/permintaanpinjaman',
+                link:'/pinjamanList',
                 action: {
                     list:'core_loan_get_all core_loan_get_details',
                 },
@@ -392,7 +392,7 @@ exports.dataMenu = [
             {
                 label: 'Tujuan',
                 logo: '',
-                link:'/listtujuan',
+                link:'/tujuanList',
                 action: {
                     list:'core_loan_purpose_list core_loan_purpose_detail',
                     add:'core_loan_purpose_new',
@@ -422,7 +422,7 @@ exports.dataMenu = [
             {
                 label: 'User',
                 logo: '',
-                link:'/listUser',
+                link:'/akunList',
                 action: {
                     list:'core_user_list core_user_details',
                     add:'core_user_new',
@@ -432,7 +432,7 @@ exports.dataMenu = [
             {
                 label: 'Role',
                 logo: '',
-                link:'/listrole',
+                link:'/roleList',
                 action: {
                     list:'core_loan_purpose_list core_loan_purpose_detail',
                     add:'core_loan_purpose_new',
@@ -442,7 +442,7 @@ exports.dataMenu = [
             {
                 label: 'Permission',
                 logo: '',
-                link:'/listRolePermission',
+                link:'/permissionList',
                 action: {
                     list:'core_permission_list core_permission_detail core_role_list core_role_details',
                     add:'core_permission_new core_role_patch',
@@ -470,7 +470,7 @@ exports.dataMenu = [
             {
                 label: 'Agen',
                 logo: '',
-                link:'/listAgent',
+                link:'/agenList',
                 action: {
                     list:'core_agent_list core_agent_details',
                     add:'core_agent_new',

@@ -70,7 +70,7 @@ class Report extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({dataBank:data.BankList})
+                this.setState({dataBank:data.mitraList})
             }else{
                 this.setState({errorMessage:data.error})
             }

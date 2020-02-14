@@ -4,7 +4,7 @@ import swal from 'sweetalert'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { addBankFunction, getProvinsiFunction, getKabupatenFunction } from './saga';
-import { ListTipeBankFunction } from '../tipebank/saga'
+import { ListTipeBankFunction } from '../tipeMitra/saga'
 import { listProductFunction } from '../product/saga'
 import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
@@ -297,7 +297,7 @@ class Main extends React.Component{
     }
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listbank'/>            
+            return <Redirect to='/mitraList'/>            
         }
         if(getToken()){
             return(

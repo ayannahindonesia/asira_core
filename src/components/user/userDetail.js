@@ -114,7 +114,7 @@ class UserDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listUser'/>            
+            return <Redirect to='/akunDetail'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">

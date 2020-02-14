@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom'
 import Moment from 'react-moment'
 import Loader from 'react-loader-spinner'
 import { getBankDetailFunction } from './saga';
-import {DetailTipeBankFunction} from '../tipebank/saga'
+import {DetailTipeBankFunction} from '../tipeMitra/saga'
 import { listProductFunction } from '../product/saga';
 import { getAllLayananListFunction } from '../layanan/saga';
 import { getToken } from '../index/token';
@@ -91,7 +91,7 @@ class BankDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to="/listbank"/>
+            return <Redirect to="/mitraList"/>
         }
         if(this.state.loading){
             return(

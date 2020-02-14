@@ -248,7 +248,7 @@ class userEdit extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listUser'/>            
+            return <Redirect to='/akunList'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">

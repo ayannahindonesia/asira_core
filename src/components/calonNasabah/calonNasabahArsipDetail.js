@@ -159,7 +159,7 @@ class CalonNasabahArsipDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listCalonNasabahArsip'/>            
+            return <Redirect to='/calonNasabahArsipList'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">

@@ -136,7 +136,7 @@ class CalonNasabahDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listCalonNasabah'/>            
+            return <Redirect to='/calonNasabahList'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">

@@ -102,7 +102,7 @@ class MitraList extends React.Component{
                       {
                         value: this.state.search,
                         label: 'Search Nama Mitra, ID Mitra..',
-                        function: this.btn,
+                        function: this.onBtnSearch,
                       }
                     }
                     title={'Mitra - List'}

@@ -364,7 +364,7 @@ class ProductEdit extends React.Component{
     }
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listproduct'/>            
+            return <Redirect to='/produkList'/>            
 
         }
         if (this.state.loading){

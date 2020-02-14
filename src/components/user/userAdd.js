@@ -82,8 +82,8 @@ class userAdd extends React.Component{
       if(data) {
         if(!data.error) {
           this.setState({
-            listBank: data.bankList.data,
-            bank: (roleBank && data.bankList && data.bankList.data && data.bankList.data[0] && data.bankList.data[0].id) || 0,
+            listBank: data.mitraList.data,
+            bank: (roleBank && data.mitraList && data.mitraList.data && data.mitraList.data[0] && data.mitraList.data[0].id) || 0,
             loading: false,
           })
         } else {
@@ -239,7 +239,7 @@ class userAdd extends React.Component{
 
     render(){
         if(this.state.diKlik){
-          return <Redirect to='/listUser'/>            
+          return <Redirect to='/akunList'/>            
         } else if (this.state.loading){
           return  (
             <div key="zz">

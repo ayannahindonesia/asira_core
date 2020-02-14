@@ -32,10 +32,10 @@ import LayananList from './../layanan/layananList'
 import LayananDetail from './../layanan/layananDetail'
 import Login from './../index/login'
 import Home from './../index/main'
-import Nasabah from './../profileNasabah/profileNasabah'
-import profileNasabahDetail from './../profileNasabah/profileNasabahDetail'
-import PermintaanPinjaman from './../permintaanPinjaman/permintaanPinjaman'
-import PermintaanPinjamanDetail from './../permintaanPinjaman/permintaanPinjamanDetail'
+import Nasabah from './../nasabah/nasabahList'
+import profileNasabahDetail from './../nasabah/nasabahDetail'
+import PermintaanPinjaman from '../pinjaman/pinjamanList'
+import PermintaanPinjamanDetail from '../pinjaman/pinjamanDetail'
 import ProductAdd from './../product/productAdd'
 import ProductList from './../product/productList'
 import ProductDetail from './../product/productDetail'
@@ -44,10 +44,10 @@ import TujuanAdd from './../tujuan/tujuanAdd'
 import TujuanList from './../tujuan/tujuanList'
 import TujuanEdit from './../tujuan/tujuanEdit'
 import TujuanDetail from './../tujuan/tujuanDetail'
-import TypeBankAdd from './../tipebank/typebankAdd'
-import TypeBankList from './../tipebank/typebankList'
-import TypeBankEdit from './../tipebank/typebankEdit'
-import TypeBankDetail from './../tipebank/typebankDetail'
+import TypeBankAdd from '../tipeMitra/typeAdd'
+import TypeBankList from '../tipeMitra/typeList'
+import TypeBankEdit from '../tipeMitra/typeEdit'
+import TypeBankDetail from '../tipeMitra/typeDetail'
 import RoleAdd from './../role/roleAdd'
 import RoleList from './../role/roleList'
 import RoleDetail from './../role/roleDetail'
@@ -198,7 +198,7 @@ function ResponsiveDrawer(props) {
             
             if (menuParent.system && menuParent.system === 'Core') {
               
-              if(!menuParent.child && checkPermission(menuParent.action && menuParent.action.list)) {
+              if(!menuParent.child && (checkPermission(menuParent.action && menuParent.action.list) || menuParent.label === 'Keluar')) {
 
                 return (
                   <div key={`${menuParent.label}-${index}`} className={classes.textColorHeader} >
@@ -329,53 +329,53 @@ function ResponsiveDrawer(props) {
             <Route path='/' component={Home} exact></Route>
 
 
-            { checkPermission('core_borrower_get_all') && <Route path='/profileNasabah' component={Nasabah}></Route>}
-            { checkPermission('core_borrower_get_details') && <Route path="/profileNasabahDetail/:id" component={profileNasabahDetail}></Route>}
+            { checkPermission('core_borrower_get_all') && <Route path='/nasabahList' component={Nasabah}></Route>}
+            { checkPermission('core_borrower_get_details') && <Route path="/nasabahDetail/:id" component={profileNasabahDetail}></Route>}
 
-            { checkPermission('core_loan_get_all') && <Route path="/permintaanpinjaman" component={PermintaanPinjaman}></Route>}
-            { checkPermission('core_loan_get_details') && <Route path="/permintaanpinjamanDetail/:idLoan" component={PermintaanPinjamanDetail}></Route>}
+            { checkPermission('core_loan_get_all') && <Route path="/pinjamanList" component={PermintaanPinjaman}></Route>}
+            { checkPermission('core_loan_get_details') && <Route path="/pinjamanDetail/:idLoan" component={PermintaanPinjamanDetail}></Route>}
 
             { checkPermission('core_bank_new') && <Route path='/mitraAdd' component={TambahBank}></Route>}
             { checkPermission('core_bank_list') && <Route path='/mitraList' component={ListBank}></Route>}
             { checkPermission('core_bank_patch') && <Route path='/mitraEdit/:id' component={EditBank}></Route>}
             { checkPermission('core_bank_detail') && <Route path='/mitraDetail/:id' component={DetailBank}></Route>}
 
-            { checkPermission('core_product_new') && <Route path='/tambahproduct' component={ProductAdd}></Route>}
-            { checkPermission('core_product_list') && <Route path='/listproduct' component={ProductList}></Route>}
-            { checkPermission('core_product_patch') && <Route path='/productedit/:id' component={ProductEdit}></Route>}
-            { checkPermission('core_product_detail') && <Route path='/productdetail/:id' component={ProductDetail}></Route>}
+            { checkPermission('core_product_new') && <Route path='/produkAdd' component={ProductAdd}></Route>}
+            { checkPermission('core_product_list') && <Route path='/produkList' component={ProductList}></Route>}
+            { checkPermission('core_product_patch') && <Route path='/produkEdit/:id' component={ProductEdit}></Route>}
+            { checkPermission('core_product_detail') && <Route path='/produkDetail/:id' component={ProductDetail}></Route>}
           
                               
-            { checkPermission('core_service_new') && <Route path='/tambahlayanan' component={LayananAdd}></Route>}
-            { checkPermission('core_service_list') && <Route path='/listlayanan' component={LayananList}></Route>}
-            { checkPermission('core_service_patch') && <Route path='/layananedit/:id' component={LayananEdit}></Route>}
-            { checkPermission('core_service_detail') && <Route path='/layanandetail/:id' component={LayananDetail}></Route>}
+            { checkPermission('core_service_new') && <Route path='/layananAdd' component={LayananAdd}></Route>}
+            { checkPermission('core_service_list') && <Route path='/layananList' component={LayananList}></Route>}
+            { checkPermission('core_service_patch') && <Route path='/layananEdit/:id' component={LayananEdit}></Route>}
+            { checkPermission('core_service_detail') && <Route path='/layananDetail/:id' component={LayananDetail}></Route>}
 
 
-            { checkPermission('core_bank_type_new') && <Route path='/tambahtipe' component={TypeBankAdd}></Route>}
-            { checkPermission('core_bank_type_list') && <Route path='/listtipe' component={TypeBankList}></Route>}
-            { checkPermission('core_bank_type_patch') && <Route path='/banktypeedit/:id' component={TypeBankEdit}></Route>}
-            { checkPermission('core_bank_type_detail') && <Route path='/banktypedetail/:id' component={TypeBankDetail}></Route>}
+            { checkPermission('core_bank_type_new') && <Route path='/tipeAdd' component={TypeBankAdd}></Route>}
+            { checkPermission('core_bank_type_list') && <Route path='/tipeList' component={TypeBankList}></Route>}
+            { checkPermission('core_bank_type_patch') && <Route path='/tipeEdit/:id' component={TypeBankEdit}></Route>}
+            { checkPermission('core_bank_type_detail') && <Route path='/tipeDetail/:id' component={TypeBankDetail}></Route>}
             
-            { checkPermission('core_loan_purpose_new') && <Route path='/tambahtujuan' component={TujuanAdd}></Route>}
-            { checkPermission('core_loan_purpose_list') && <Route path='/listtujuan' component={TujuanList}></Route>}
-            { checkPermission('core_loan_purpose_patch') && <Route path='/tujuanedit/:id' component={TujuanEdit}></Route>}
-            { checkPermission('core_loan_purpose_detail') && <Route path='/tujuandetail/:id' component={TujuanDetail}></Route>}
+            { checkPermission('core_loan_purpose_new') && <Route path='/tujuanAdd' component={TujuanAdd}></Route>}
+            { checkPermission('core_loan_purpose_list') && <Route path='/tujuanList' component={TujuanList}></Route>}
+            { checkPermission('core_loan_purpose_patch') && <Route path='/tujuanEdit/:id' component={TujuanEdit}></Route>}
+            { checkPermission('core_loan_purpose_detail') && <Route path='/tujuanDetail/:id' component={TujuanDetail}></Route>}
             
-            { checkPermission('core_role_new') && <Route path='/tambahrole' component={RoleAdd}></Route>}
-            { checkPermission('core_role_list') && <Route path='/listrole' component={RoleList}></Route>}
-            { checkPermission('core_role_patch') && <Route path='/editrole/:id' component={RoleEdit}></Route>}
-            { checkPermission('core_role_details') && <Route path='/detailrole/:id' component={RoleDetail}></Route>}
+            { checkPermission('core_role_new') && <Route path='/roleAdd' component={RoleAdd}></Route>}
+            { checkPermission('core_role_list') && <Route path='/roleList' component={RoleList}></Route>}
+            { checkPermission('core_role_patch') && <Route path='/roleEdit/:id' component={RoleEdit}></Route>}
+            { checkPermission('core_role_details') && <Route path='/roleDetail/:id' component={RoleDetail}></Route>}
 
-            { checkPermission('core_permission_new') && <Route path='/tambahRolePermission' component={RoleAddPermission}></Route>}
-            { checkPermission('core_permission_list') && <Route path='/listRolePermission' component={RoleListPermission}></Route>}
-            { checkPermission('core_permission_patch') && <Route path='/editRolePermission/:id' component={RoleEditPermission}></Route>}
-            { checkPermission('core_permission_detail') && <Route path='/detailRolePermission/:id' component={RoleDetailPermission}></Route>}
+            { checkPermission('core_permission_new') && <Route path='/permissionAdd' component={RoleAddPermission}></Route>}
+            { checkPermission('core_permission_list') && <Route path='/permissionList' component={RoleListPermission}></Route>}
+            { checkPermission('core_permission_patch') && <Route path='/permissionEdit/:id' component={RoleEditPermission}></Route>}
+            { checkPermission('core_permission_detail') && <Route path='/permissionDetail/:id' component={RoleDetailPermission}></Route>}
 
-            { checkPermission('core_user_new') && <Route path='/tambahUser' component={UserAdd}></Route>}
-            { checkPermission('core_user_list') && <Route path='/listUser' component={UserList}></Route>}
-            { checkPermission('core_user_patch') && <Route path='/editUser/:id' component={UserEdit}></Route>}
-            { checkPermission('core_user_details') && <Route path='/detailUser/:id' component={UserDetail}></Route>}
+            { checkPermission('core_user_new') && <Route path='/akunAdd' component={UserAdd}></Route>}
+            { checkPermission('core_user_list') && <Route path='/akunList' component={UserList}></Route>}
+            { checkPermission('core_user_patch') && <Route path='/akunEdit/:id' component={UserEdit}></Route>}
+            { checkPermission('core_user_details') && <Route path='/akunDetail/:id' component={UserDetail}></Route>}
 
             { checkPermission('convenience_fee_report') && <Route path='/report' component={Report}></Route>}
 
@@ -384,16 +384,16 @@ function ResponsiveDrawer(props) {
             { checkPermission('core_agent_provider_patch') && <Route path='/penyediaEdit/:id' component={penyediaAgentEdit}></Route>}
             { checkPermission('core_agent_provider_details') && <Route path='/penyediaDetail/:id' component={penyediaAgentDetail}></Route>}
 
-            { checkPermission('core_agent_new') && <Route path='/tambahAgent' component={AgentAdd}></Route>}
-            { checkPermission('core_agent_list') && <Route path='/listAgent' component={AgentList}></Route>}
-            { checkPermission('core_agent_patch') && <Route path='/editAgent/:id' component={AgentEdit}></Route>}
-            { checkPermission('core_agent_details') && <Route path='/detailAgent/:id' component={AgentDetail}></Route>}
+            { checkPermission('core_agent_new') && <Route path='/agenAdd' component={AgentAdd}></Route>}
+            { checkPermission('core_agent_list') && <Route path='/agenList' component={AgentList}></Route>}
+            { checkPermission('core_agent_patch') && <Route path='/agenEdit/:id' component={AgentEdit}></Route>}
+            { checkPermission('core_agent_details') && <Route path='/agenDetail/:id' component={AgentDetail}></Route>}
 
-            { checkPermission('core_borrower_get_all') && <Route path='/listCalonNasabah' component={CalonNasabahList}></Route>}
-            { checkPermission('core_borrower_get_details') && <Route path='/detailCalonNasabah/:id' component={calonNasabahDetail}></Route>}
+            { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahList' component={CalonNasabahList}></Route>}
+            { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahDetail/:id' component={calonNasabahDetail}></Route>}
 
-            { checkPermission('core_borrower_get_all') && <Route path='/listCalonNasabahArsip' component={CalonNasabahArsipList}></Route>}
-            { checkPermission('core_borrower_get_details') && <Route path='/detailCalonNasabahArsip/:id' component={CalonNasabahArsipDetail}></Route>}
+            { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahArsipList' component={CalonNasabahArsipList}></Route>}
+            { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahArsipDetail/:id' component={CalonNasabahArsipDetail}></Route>}
 
             <Route path='/activitylog' component={ActivityLog}></Route>
             {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 

@@ -353,7 +353,7 @@ class TableComponent extends React.Component {
               </Grid>
             }
 
-            <Grid item sm={12} xs={12}>
+            <Grid item sm={12} xs={12} style={{marginBottom:`${this.props.search ? '0px' : '10px'}`}}>
               {
                 this.props.search &&
                 <SearchBar

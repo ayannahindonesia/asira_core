@@ -76,21 +76,21 @@ class LayananList extends React.Component{
     render(){
         if(getToken()){
             return(
-                <div className="container">
-                   <h2 className="mt-3">Layanan List</h2>
-                   <hr/>
+                <div style={{padding:0}}>
                    < TableComponent
                         id={"id"}
                         paging={this.state.paging}
+                        title={'Layanan - List'}
                         loading={this.state.loading}
                         columnData={columnDataUser}
                         data={this.state.rows}
                         page={this.state.page}
                         rowsPerPage={this.state.dataPerhalaman}
                         totalData={this.state.total_data}
-                        onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('core_service_detail') ? '/layanandetail/' : null}
-                        permissionEdit={ checkPermission('core_service_patch') ? '/layananedit/' : null}
+                        onChangePage={this.onChangePage}     
+                        permissionAdd={ checkPermission('core_service_new') ? '/layananAdd' : null }           
+                        permissionDetail={ checkPermission('core_service_detail') ? '/layananDetail/' : null}
+                        permissionEdit={ checkPermission('core_service_patch') ? '/layananEdit/' : null}
 
                     /> 
                 </div>

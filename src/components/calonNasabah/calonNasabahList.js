@@ -139,7 +139,7 @@ class CalonNasabahList extends React.Component{
                               label: 'Search ID, Nama Nasabah',
                               function: this.changeSearch,
                             }
-                          }
+                        }
                         paging={this.state.paging}
                         loading={this.state.loading}
                         columnData={columnDataUser}
@@ -148,7 +148,7 @@ class CalonNasabahList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/detailCalonNasabah/' : null}
+                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/calonNasabahDetail/' : null}
                     />
 
                   

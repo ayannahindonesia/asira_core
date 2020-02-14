@@ -98,7 +98,7 @@ class LayananAdd extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listlayanan'/>            
+            return <Redirect to='/layananList'/>            
 
         }
         if(getToken()){

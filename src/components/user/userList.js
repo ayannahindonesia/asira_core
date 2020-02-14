@@ -120,19 +120,11 @@ class UserList extends React.Component{
 
         if(getToken()){
             return(
-                <div className="container">
-                    <div className="row">
-                        <div className="col-7">
-                            <h2 className="mt-3">Akun - List</h2>
-                        </div>
-                        <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                            {this.state.errorMessage}
-                        </div>   
-                    </div>
-                   <hr/>
+                <div style={{padding:0}}>
 
                    < TableComponent
                         id={"id"}
+                        title={'Akun - List'}
                         paging={this.state.paging}
                         loading={this.state.loading}
                         columnData={columnDataUser}
@@ -141,8 +133,9 @@ class UserList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionEdit={ checkPermission('core_user_patch') ? '/editUser/' : null}
-                        permissionDetail={ checkPermission('core_user_details') ? '/detailUser/' : null}
+                        permissionAdd={ checkPermission('core_user_new') ? '/akunAdd/' : null}   
+                        permissionEdit={ checkPermission('core_user_patch') ? '/akunEdit/' : null}
+                        permissionDetail={ checkPermission('core_user_details') ? '/akunDetail/' : null}
                     />
 
                   

@@ -82,7 +82,7 @@ class rolePermissionDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listRolePermission'/>            
+            return <Redirect to='/permissionList'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -99,7 +99,7 @@ class rolePermissionDetail extends React.Component{
         } else if(getToken()){
             return(
                 <div className="container mt-4">
-                 <h3>Role Permission - Detail</h3>
+                 <h3>Permission - Detail</h3>
                  
                  <hr/>
                  

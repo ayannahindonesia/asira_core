@@ -369,7 +369,7 @@ class BankEdit extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listbank'/>            
+            return <Redirect to='/mitraList'/>            
         }
         if(getToken()){
             return(

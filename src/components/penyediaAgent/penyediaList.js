@@ -91,12 +91,6 @@ class profileNasabah extends React.Component {
   
   }
 
- 
- 
- // rpp =5
- // p = 3
- // index = 11
-
  onChangePage = (current) => {
   this.setState({loading:true,page:current},()=>{
     if(this.state.paging){
@@ -108,39 +102,32 @@ class profileNasabah extends React.Component {
 render() {   
 if(getToken()){
     return (
-        <div className="container">
-         <div className="row">
-                        <div className="col-6">
-                             <h2 className="mt-3">Penyedia Agen - List</h2>
-                        </div>
-                        <div className="col-5 mt-3 ml-5">
-                        <div className="input-group">
-                        <SearchBar 
-                            onChange={this.onBtnSearch}
-                            placeholder="Search ID atau Nama Penyedia Agen.."
-                            value={this.state.searchRows}
-                          />
-                        
-                        </div>
-                        </div>
-          </div>
-        <hr></hr>
-                     < TableComponent
-                        id={"id"}
-                        paging={this.state.paging}
-                        loading={this.state.loading}
-                        columnData={columnDataUser}
-                        data={this.state.rows}
-                        page={this.state.page}
-                        rowsPerPage={this.state.rowsPerPage}
-                        totalData={this.state.total_data}
-                        onChangePage={this.onChangePage}             
-                        permissionEdit={ checkPermission('core_agent_provider_patch') ? '/penyediaEdit/' : null}
-                        permissionDetail={ checkPermission('core_agent_provider_details') ? '/penyediaDetail/' : null}
+      <div style={{padding:0}}>
+        < TableComponent
+          id={"id"}
+          search={
+            {
+              value: this.state.searchRows,
+              label: 'Search Penyedia Agen, ID Penyedia Agen..',
+              function: this.onBtnSearch,
+            }
+          }
+          title={'Penyedia Agen - List'}
+          paging={this.state.paging}
+          loading={this.state.loading}
+          columnData={columnDataUser}
+          data={this.state.rows}
+          page={this.state.page}
+          rowsPerPage={this.state.rowsPerPage}
+          totalData={this.state.total_data}
+          onChangePage={this.onChangePage}  
+          permissionAdd={ checkPermission('core_agent_provider_new') ? '/penyediaAdd/' : null}           
+          permissionEdit={ checkPermission('core_agent_provider_patch') ? '/penyediaEdit/' : null}
+          permissionDetail={ checkPermission('core_agent_provider_details') ? '/penyediaDetail/' : null}
 
-                    /> 
+        /> 
          
-        </div>
+      </div>
     );
 
 }
