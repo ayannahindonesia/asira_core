@@ -73,14 +73,15 @@ class profileNasabah extends React.Component {
       param.search_all = hasil
     }
     const data = await getProfileNasabahFunction(param)
-    console.log(data)
-    const dataNasabah = data.listNasabah.data;
     
-    for (const key in dataNasabah){
-      dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
-      dataNasabah[key].loan_status = dataNasabah[key].loan_status && dataNasabah[key].loan_status==="active"?"Aktif" :"Tidak Aktif"
-   }
     if(data){
+      const dataNasabah = data.listNasabah.data;
+    
+      for (const key in dataNasabah){
+        dataNasabah[key].category = dataNasabah[key].category && dataNasabah[key].category==="account_executive"?"Account Executive" :dataNasabah[key].category === "agent"?"Agent":"Personal"
+        dataNasabah[key].loan_status = dataNasabah[key].loan_status && dataNasabah[key].loan_status==="active"?"Aktif" :"Tidak Aktif"
+      }
+
       if(!data.error){
         this._isMounted && this.setState({loading:false,
           rows:dataNasabah,

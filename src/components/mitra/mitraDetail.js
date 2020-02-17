@@ -26,7 +26,6 @@ class BankDetail extends React.Component{
         const data = await getBankDetailFunction(param)
 
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({rows:data,layanan:data.services,tipe:data.type,produk:data.products})
                 if (this.state.rows){
