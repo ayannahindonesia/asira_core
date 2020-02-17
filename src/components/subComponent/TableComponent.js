@@ -118,7 +118,9 @@ class TableComponent extends React.Component {
                   );
                 },this) 
               }
-              <th className="text-center" scope="col">Action</th>
+              { (this.props.permissionEdit || this.permissionDetail) &&
+                <th className="text-center" scope="col">Action</th>
+              }
             </tr>     
           </thead>
           <tbody>
@@ -161,11 +163,11 @@ class TableComponent extends React.Component {
                       }
                     
                       {
-                        this.props.columnData.map((dataRow, indexRow) => {                         
+                        this.props.columnData.map((dataRow, indexRow) => {              
                           return(
                             <td align={dataRow.numeric ? "right" : "center"} key={indexRow}>
                               {
-                                dataRow.type && dataRow.type === 'datetime' && handleFormatDate(dataTable[dataRow.id])
+                                dataRow.type && dataRow.type.includes('date') && handleFormatDate(dataTable[dataRow.id], dataRow.type.includes('time') && true)
                               }
                               {
                                 dataRow.type && dataRow.type === 'button'  && this.checkConditionButton(dataTable, dataRow.conditions) &&

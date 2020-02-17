@@ -8,50 +8,47 @@ import { getAllActivityLog, getAllClientsFunction } from './saga'
 import Pagination from 'rc-pagination';
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import Loader from 'react-loader-spinner';
+import TableComponent from '../subComponent/TableComponent'
 
-// const columnDataUser =[
-//     {
-//         id: 'level',
-//         numeric: false,
-//         label: 'Level',   
-//     },
-//     {
-//         id: 'created_at',
-//         numeric: false,
-//         label: 'Time',   
-//     },
-//     {
-//         id: 'level',
-//         numeric: false,
-//         label: 'Application',   
-//     },
-//     {
-//         id: 'id',
-//         numeric: false,
-//         label: 'User ID',   
-//     },
-//     {
-//         id: 'level',
-//         numeric: false,
-//         label: 'User Name',   
-//     },
+const columnDataUser = [
+    {
+        id: 'level',
+        numeric: false,
+        label: 'Level',
+    },
+    {
+        id: 'created_at',
+        numeric: false,
+        type: 'datetime',
+        label: 'Waktu',
+    },   
+    {
+        id: 'client',
+        numeric: false,
+        label: 'Aplikasi',
+    },
     
-//     {
-//         id: 'level',
-//         numeric: false,
-//         label: 'Full Name',   
-//     },
-//     {
-//         id: 'level',
-//         numeric: false,
-//         label: 'Activity',   
-//     },
-//     {
-//         id: 'messages',
-//         numeric: false,
-//         label: 'Message',   
-//     }
-// ]
+    {
+      id: 'uid',
+      numeric: false,
+      label: 'User ID',
+    },
+    {
+        id: 'username',
+        numeric: false,
+        label: 'Username',
+    },
+    {
+        id: 'tag',
+        numeric: false,
+        label: 'Activity',
+    },
+    {
+        id: 'messages',
+        numeric: false,
+        label: 'Message',
+    },
+]
 
 class ActivityLog extends React.Component{
     _isMounted = false
@@ -96,11 +93,6 @@ class ActivityLog extends React.Component{
         if(data){
             if(!data.error){
                 const newDataLog = data.activityLog.data || [];
-
-                for(const key in newDataLog) {
-                    newDataLog[key].created_at = newDataLog[key].created_at.replace("T"," ").slice(0,newDataLog[key].created_at.indexOf("."))
-                    // newDataLog[key].messages = JSON.parse(newDataLog[key].messages)
-                }
 
                 this.setState({
                     rows:newDataLog, 
@@ -316,6 +308,26 @@ class ActivityLog extends React.Component{
                         </div>
                      </div>
                     <div className="form-group row">
+                        < TableComponent
+                            id={"id"}
+                            title={'Activity Log - List'}
+                            search={
+                            {
+                                value: this.state.searchRows,
+                                label: 'Search ID Nasabah, Nama Nasabah',
+                                function: this.onBtnSearch,
+                            }
+                            }
+                            errorMessage={this.state.errorMessage}
+                            paging={this.state.paging}
+                            loading={this.state.loading}
+                            columnData={columnDataUser}
+                            data={this.state.rows}
+                            page={this.state.page}
+                            rowsPerPage={this.state.rowsPerPage}
+                            totalData={this.state.total_data}
+                            onChangePage={this.onChangePage}             
+                        /> 
                         
                         <div className=" col col-md col-xs form-inline">
                                     <DatePickers
