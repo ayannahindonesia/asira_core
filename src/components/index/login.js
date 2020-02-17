@@ -50,10 +50,8 @@ class Login extends React.Component{
             swal("Error","Username dan Password Kosong","error")
             this.setState({loading:false})
 
-        } else {            
-            const logindata ={key,password};
-            
-            this.postLoginAdmin(logindata)
+        } else {                
+            this.postLoginAdmin(param)
             this.postLog()
         }
       
