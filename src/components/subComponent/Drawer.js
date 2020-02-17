@@ -395,7 +395,7 @@ function ResponsiveDrawer(props) {
             { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahArsipList' component={CalonNasabahArsipList}></Route>}
             { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahArsipDetail/:id' component={CalonNasabahArsipDetail}></Route>}
 
-            <Route path='/activitylog' component={ActivityLog}></Route>
+            <Route path='/activityLog' component={ActivityLog}></Route>
             {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
             <Route path='/ubahpassword' component={ChangePassword} />
             <Route path='*' component={PageNotFound} />

@@ -1,4 +1,4 @@
-import { listAllRolePermission, dataMenu } from "../global/globalConstant";
+import { dataMenu } from "../global/globalConstant";
 import { destructErrorMessage } from "../global/globalFunction";
 
 export function destructRolePermission(permission){

@@ -479,6 +479,30 @@ exports.dataMenu = [
             },
         ]
     },
+    // Logs
+    {
+        label: 'Logs',
+        logo: '',
+        system:'Core',
+        child:[
+            {
+                label: 'Activity Logs',
+                logo: '',
+                link:'/activityLog',
+                action: {
+                    list: '_',
+                }
+            },
+            {
+                label: 'Auditrail',
+                logo: '',
+                link:'/auditrail',
+                action: {
+                    list:'_',
+                }
+            },
+        ]
+    },
     // Convenience Fee Report
     {
         label: 'Report',
