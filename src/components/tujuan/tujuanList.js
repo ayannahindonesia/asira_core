@@ -65,11 +65,10 @@ class TujuanList extends React.Component{
     render(){
         if(getToken()){
             return(
-                <div className="container">
-                   <h2 className="mt-3">Tujuan Pembiayaan - List</h2>
-                   <hr/>
+                <div style={{padding:0}}>
                    < TableComponent
                         id={"id"}
+                        title={'Tujuan Pinjaman - List'}
                         paging={this.state.paging}
                         loading={this.state.loading}
                         columnData={columnDataUser}
@@ -77,9 +76,10 @@ class TujuanList extends React.Component{
                         page={this.state.page}
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.total_data}
-                        onChangePage={this.onChangePage}             
-                        permissionEdit={ checkPermission('core_loan_purpose_patch') ? '/tujuanedit/' : null}
-                        permissionDetail={ checkPermission('core_loan_purpose_detail') ? '/tujuandetail/' : null}
+                        onChangePage={this.onChangePage}  
+                        permissionAdd={ checkPermission('core_loan_purpose_new') ? '/tujuanAdd/' : null}           
+                        permissionEdit={ checkPermission('core_loan_purpose_patch') ? '/tujuanEdit/' : null}
+                        permissionDetail={ checkPermission('core_loan_purpose_detail') ? '/tujuanDetail/' : null}
 
                     /> 
                   

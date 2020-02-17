@@ -15,7 +15,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { postUserAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
-import { getAllBankList } from '../bank/saga';
+import { getAllMitraList } from '../mitra/saga';
 
 const styles = (theme) => ({
     container: {
@@ -65,7 +65,7 @@ class userAdd extends React.Component{
           this.setState({
             listRole: data.dataRole,
             role: (data.dataRole && data.dataRole[0] && data.dataRole[0].id) || 0,
-          }, () => { this.getBankList() })
+          }, () => { this.getMitraList() })
         } else {
           this.setState({
             errorMessage: data.error,
@@ -75,15 +75,15 @@ class userAdd extends React.Component{
       }
     }
 
-    getBankList = async function() {
+    getMitraList = async function() {
       const roleBank = this.isRoleBank(this.state.role); 
-      const data = await getAllBankList({}) ;
+      const data = await getAllMitraList({}) ;
 
       if(data) {
         if(!data.error) {
           this.setState({
-            listBank: data.bankList.data,
-            bank: (roleBank && data.bankList && data.bankList.data && data.bankList.data[0] && data.bankList.data[0].id) || 0,
+            listBank: data.mitraList.data,
+            bank: (roleBank && data.mitraList && data.mitraList.data && data.mitraList.data[0] && data.mitraList.data[0].id) || 0,
             loading: false,
           })
         } else {
@@ -225,7 +225,7 @@ class userAdd extends React.Component{
         errorMessage = 'Mohon input kontak pic dengan benar'
       } else if (this.isRoleBank(this.state.role) && (!this.state.bank || this.state.bank === 0)) {
         flag = false;
-        errorMessage = 'Mohon input bank dengan benar'
+        errorMessage = 'Mohon input Mitra dengan benar'
       } else {
         errorMessage = ''
       }
@@ -239,7 +239,7 @@ class userAdd extends React.Component{
 
     render(){
         if(this.state.diKlik){
-          return <Redirect to='/listUser'/>            
+          return <Redirect to='/akunList'/>            
         } else if (this.state.loading){
           return  (
             <div key="zz">
@@ -309,7 +309,7 @@ class userAdd extends React.Component{
                   { this.isRoleBank(this.state.role) && 
                     <div className="form-group row" style={{marginBottom:20}}>                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Bank
+                        Mitra
                       </label>
                       <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                         :

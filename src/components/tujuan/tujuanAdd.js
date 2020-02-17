@@ -66,13 +66,13 @@ class TujuanAdd extends React.Component{
     }
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listtujuan'/>            
+            return <Redirect to='/tujuanList'/>            
 
         }
         if(getToken()){
             return(
                 <div className="container">
-                   <h2 className="mt-3">Tujuan Pembiayaan - Tambah</h2>
+                   <h2 className="mt-3">Tujuan Pinjaman - Tambah</h2>
                   
                    <hr/>
                    <div className="form-group row">

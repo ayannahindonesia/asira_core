@@ -2,13 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
+import './../../support/css/gridDetail.css'
 
 const styles = (theme) => ({
 
   gridDetail: {
-    fontSize: '0.85em',
+    fontSize: 'calc(10px + 0.3vw)',
     marginBottom: '5px',
+    wordWrap:'break-word',
+    flexWrap:'wrap',
   },
+
 });
 
 class GridDetails extends React.Component {
@@ -31,8 +35,8 @@ class GridDetails extends React.Component {
     
     tester = dataColumn && dataColumn.map((dataRow, index) => {
       return(
-        <Grid item sm={parseInt(12 / dataColumn.length)} xs={parseInt(12 / dataColumn.length)} key={index}>
-          <Grid container style={{marginBottom:'10px'}}> 
+        <Grid item sm={parseInt(12 / dataColumn.length)} xs={12} key={index}>
+          <Grid container style={{marginBottom:'10px', flexWrap:'wrap'}}> 
             {this.renderDataRow(dataRow, dataLabel && dataLabel[index], index)}
           </Grid>
         </Grid>
@@ -64,6 +68,17 @@ class GridDetails extends React.Component {
     return pjgValue
   }
 
+  findBold = (data) => {
+    let dataNew = data.toString();
+
+    if(dataNew.includes('<b>')) {
+      dataNew = dataNew.split('<b>')
+      return <b> {dataNew[1]} </b>;
+    }
+    
+    return dataNew;
+  }
+
   renderDataRow = (dataRow, dataPerLabel, indexColumn) => {
     let tester = '';
 
@@ -73,11 +88,23 @@ class GridDetails extends React.Component {
 
           <Grid container style={{marginBottom:'5px'}}> 
             <Grid item sm={this.lengthGridLabel(this.props.gridLabel && this.props.gridLabel[indexColumn])} xs={this.lengthGridLabel(this.props.gridLabel && this.props.gridLabel[indexColumn])}>
-              { dataPerLabel && dataPerLabel[index] }
+              <b>{ dataPerLabel && dataPerLabel[index] }</b>
             </Grid>
 
             <Grid item sm={this.lengthGridValue(this.props.gridLabel && this.props.gridLabel[indexColumn])} xs={this.lengthGridValue(this.props.gridLabel && this.props.gridLabel[indexColumn])}>
-              {dataPerRow ? `: ${dataPerRow}` : ': -'}
+              <Grid container>
+                <Grid item sm={1} xs={1} style={{maxWidth:'15px'}}>
+                  {
+                    (!this.props.noEquals) && <b> : </b>
+                  }
+                </Grid>
+
+                <Grid item sm={11} xs={11} style={{color:dataPerRow&& dataPerRow.color? dataPerRow.color:dataPerRow}} >
+                  {
+                    dataPerRow && dataPerRow.color ?  dataPerRow.value : (dataPerRow ? this.findBold(dataPerRow) : '-')
+                  }
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
 
@@ -101,20 +128,40 @@ class GridDetails extends React.Component {
         className={classes.gridDetail} 
         style={
           {
-            backgroundColor: this.props.background ? '#F7F7F7' : 'none', 
+            backgroundColor: this.props.background ? '#D8E6FF' : 'none', 
             padding: this.props.background ? '10px 0px 0px 10px' : '0px 0px 0px 10px',
             fontWeight: this.props.background ? 'bold' : 'normal',
+            borderRadius:'5px'
           }
         }
       >
-        {
-          title && 
-          <Grid item sm={12} xs={12} style={{marginBottom:'5px'}}>
-            <h6> {title} </h6>
-          </Grid>
-        }
-        
 
+        <Grid item sm={12} xs={12} style={{color:"#2D85E9", marginBottom: !this.props.noTitleLine && title ?'10px' :'0px'}}>
+              { !this.props.noTitleLine && title &&
+                <h4>
+                
+                  <span style={{backgroundColor:'white'}}> 
+                
+                    {title && title} 
+
+                  </span>
+                
+
+                
+                
+                </h4>
+              }
+
+              {
+                !this.props.noTitleLine && !title &&
+                <hr style={{borderTop: '1px solid rgba(32,118,184,1)'}}/>
+              }
+
+              { this.props.noTitleLine && title &&
+                <div style={{fontSize:'1rem'}}>{ title }</div>
+              }
+            </Grid>
+        
         {data && label && this.renderDataColumn(data, label)}
 
       </Grid>

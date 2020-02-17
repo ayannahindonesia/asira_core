@@ -184,7 +184,7 @@ class rolePermissionEdit extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listRolePermission'/>            
+            return <Redirect to='/permissionList'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -201,7 +201,7 @@ class rolePermissionEdit extends React.Component{
         } else if(getToken()){
           return(
             <div className="container mt-4">
-              <h3>Role Permission - Ubah</h3>
+              <h3>Permission - Ubah</h3>
               
               <hr/>
               

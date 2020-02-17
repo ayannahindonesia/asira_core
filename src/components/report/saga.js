@@ -19,7 +19,7 @@ export async function getAllBankListFunction (param,next){
         axios.get(serverUrl+`admin/banks?orderby=id&sort=ASC${filter}`,config)
         .then((res)=>{
           
-            param.BankList = res.data.data
+            param.mitraList = res.data.data
             if(next){
                 resolve(next(param))
             }else{

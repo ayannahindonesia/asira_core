@@ -35,7 +35,7 @@ class TujuanDetail extends React.Component{
         if(getToken()){
             return(
                 <div className="container">
-                   <h2>Tujuan Pembiayaan - Detail</h2>
+                   <h2>Tujuan Pinjaman - Detail</h2>
                    <hr/>
                    
                    <form>

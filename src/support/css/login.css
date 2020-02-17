@@ -1,11 +1,16 @@
+.loginBox{
+    padding:20;
+    box-shadow:0px -3px 25px rgba(99,167,181,0.24); 
+    border-radius:15px;                                   
+    align-content: center;
+    align-items: center;
+    text-align: center;
+    color: #2D85E9;
+}
+
 .loginContainer{
-    width: 450px;
-    height: 400px;
-    background-color: #f7f7f7;
-    position: absolute;
-    top:150px;
-    right: 15%;
-  
+    margin: 0;
+    padding-top: 15%;
 }
 .form-control{
     width: 50%;

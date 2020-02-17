@@ -5,8 +5,6 @@ import { checkPermission } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
 import { destructAgent } from './function';
-import SearchBar from '../subComponent/SearchBar';
-
 
 const columnDataAgent = [
     {
@@ -121,27 +119,18 @@ class AgentList extends React.Component{
 
         if(getToken()){
             return(
-                <div className="container">
-                    <div className="row">
-                        <div className="col-7">
-                            <h2 className="mt-3">Agen - List</h2>
-                        </div>
-                        <div className="col-8" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                            {this.state.errorMessage}
-                        </div>   
-                        <div className="col-4">
-                            <SearchBar
-                                onChange={this.changeSearch}
-                                placeholder="Search ID Agen, Nama Agen.."
-                                value={this.state.search}
-                            />
-                        </div> 
-                    </div>
-
-                    <hr/>
+                <div style={{padding:0}}>
 
                     < TableComponent
                         id={"id"}
+                        search={
+                            {
+                              value: this.state.search,
+                              label: 'Search Nama Agen, ID Agen..',
+                              function: this.changeSearch,
+                            }
+                        }
+                        title={'Agen - List'}
                         paging={this.state.paging}
                         loading={this.state.loading}
                         columnData={columnDataAgent}
@@ -149,9 +138,10 @@ class AgentList extends React.Component{
                         page={this.state.page}
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
-                        onChangePage={this.onChangePage}             
-                        permissionEdit={ checkPermission('core_agent_patch') ? '/editAgent/' : null}
-                        permissionDetail={ checkPermission('core_agent_details') ? '/detailAgent/' : null}
+                        onChangePage={this.onChangePage}       
+                        permissionAdd={ checkPermission('core_agent_new') ? '/agenAdd/' : null}      
+                        permissionEdit={ checkPermission('core_agent_patch') ? '/agenEdit/' : null}
+                        permissionDetail={ checkPermission('core_agent_details') ? '/agenDetail/' : null}
                     />
 
                 </div>

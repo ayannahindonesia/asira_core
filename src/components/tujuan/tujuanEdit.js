@@ -83,7 +83,7 @@ class TujuanEdit extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listtujuan'/>            
+            return <Redirect to='/tujuanList'/>            
 
         }
         if(getToken()){

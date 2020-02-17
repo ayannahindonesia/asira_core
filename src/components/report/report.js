@@ -63,14 +63,14 @@ class Report extends React.Component{
         this.setState({errorMessage:newProps.error,errorMessageBank:newProps.error,errorMessagePencairan:newProps.error})
     }
     
-    //----------------------- GET DATA LIST BANK ---------------------
+    //----------------------- GET DATA LIST Mitra ---------------------
     getDataBankList = async function(){
         const param={}
         const data = await getAllBankListFunction(param)
 
         if(data){
             if(!data.error){
-                this.setState({dataBank:data.BankList})
+                this.setState({dataBank:data.mitraList})
             }else{
                 this.setState({errorMessage:data.error})
             }
@@ -119,7 +119,7 @@ class Report extends React.Component{
              flag=false
          } 
          else if(namaBank === "0" || namaBank === null){
-             this.setState({errorMessageBank:"Bank Kosong - Harap cek ulang",errorMessage:'',errorMessagePencairan:''}) 
+             this.setState({errorMessageBank:"Mitra Kosong - Harap cek ulang",errorMessage:'',errorMessagePencairan:''}) 
              flag=false
          }
 
@@ -238,10 +238,10 @@ class Report extends React.Component{
                      {this.state.pilihReport?
                         <form>
                         <div className="form-group row">
-                            <label className="col-sm-2 col-form-label">Nama Bank</label>
+                            <label className="col-sm-2 col-form-label">Nama Mitra</label>
                             <div className="col-sm-10">
                             <select ref="bankName" id="bankName" onChange={this.handleBank} className="form-control">
-                                <option value={0}>======== Pilih Bank ========</option>
+                                <option value={0}>======== Pilih Mitra ========</option>
                                 {this.renderBankList()}
                             </select>
                             </div>
@@ -307,7 +307,7 @@ class Report extends React.Component{
                                 <thead className="table-warning">
                                     <tr >
                                         <th className="text-center" scope="col">#</th>
-                                        <th className="text-center" scope="col">Nama Bank</th>
+                                        <th className="text-center" scope="col">Nama Mitra</th>
                                         <th className="text-center" scope="col">Layanan</th>
                                         <th className="text-center" scope="col">Produk</th>
                                         <th className="text-center" scope="col">Loan Id</th>  

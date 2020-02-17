@@ -14,7 +14,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { getAgentFunction, patchAgentAddFunction } from './saga';
 import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
-import { getAllBankList } from '../bank/saga';
+import { getAllMitraList } from '../mitra/saga';
 import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
 import { isRoleAccountExecutive, destructAgent, constructAgent } from './function';
 import BrokenLink from './../../support/img/default.png'
@@ -77,14 +77,14 @@ class AgentEdit extends React.Component{
       const param = {
         agentId: this.state.agentId
       };
-      const data = await getAgentFunction(param, getPenyediaAgentListFunction, getAllBankList) ;
+      const data = await getAgentFunction(param, getPenyediaAgentListFunction, getAllMitraList) ;
 
       if(data) {
         if(!data.error) {
-          const dataAgent = destructAgent(data.dataAgent, false, data.bankList.data);
+          const dataAgent = destructAgent(data.dataAgent, false, data.mitraList.data);
 
           this.setState({
-            listBank: data.bankList.data,
+            listBank: data.mitraList.data,
             status: dataAgent.status,
             agentId: dataAgent.id,
             agentName: dataAgent.name,
@@ -271,7 +271,7 @@ class AgentEdit extends React.Component{
 
     render(){
         if(this.state.diKlik){
-          return <Redirect to='/listAgent'/>            
+          return <Redirect to='/agenList'/>            
         } else if (this.state.loading){
           return  (
             <div key="zz">
@@ -419,7 +419,7 @@ class AgentEdit extends React.Component{
                     !isRoleAccountExecutive(this.state.kategori) &&
                     <div className="form-group row" style={{marginBottom:15}}>                   
                       <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Bank Pelayanan
+                        Mitra Pelayanan
                       </label>
                       <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                         :

@@ -1,33 +1,31 @@
 import React from 'react'
-import Logo from './../../support/img/logo.jpeg'
 import './../../support/css/login.css'
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert'
 import {Redirect} from 'react-router-dom'
 import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction,sendEmailFunction, getTokenLogFunction} from './saga'
 import { setProfileUser } from './token'
-import TextField from '@material-ui/core/TextField';
+import { Grid, Button, TextField } from '@material-ui/core'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
 
+ 
 class Login extends React.Component{
     _isMounted = false;
 
-    state = {
-        authData:[],
-        loading:false,
-        tokenClient:'' , 
-        isLogin : false,
-        open:false,
+    state={
+        loading:false, 
+        isLogin:false,
+        username: '',
+        password: '',
+        open:false, loadMail:false,
         email:'',
-        error:'',
-        loadMail:false,
+        error:''
     }
-  
+
     componentDidMount(){
         this._isMounted = true;
     }
@@ -35,30 +33,49 @@ class Login extends React.Component{
     componentWillUnmount() {
         this._isMounted = false;     
     }
-    UNSAFE_componentWillReceiveProps(newProps){
-        this.setState({error:newProps.error})
-    }
-      
+  
     //LOGIN BUTTON
     btnLogin = ()=>{
         this.setState({loading:true})
-     
-        const key=this.refs.username.value
-        const password=this.refs.password.value
-       
-        if (key==="" || password===""){
-            swal("Error","Username and Password Empty","error")
+
+        var username=this.state.username
+        var password=this.state.password
+
+        const param = {
+            key: username,
+            password
+        }
+
+        if (username==="" || password===""){
+            swal("Error","Username dan Password Kosong","error")
             this.setState({loading:false})
 
-        } else {            
-            const logindata ={key,password};
-            
-            this.postLoginAdmin(logindata)
+        } else {                
+            this.postLoginAdmin(param)
             this.postLog()
         }
       
     } 
+    
+    postLoginAdmin = async function(param)  {
+        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction)
+        
+        if(data) {
+            if(!data.error) {
+                let flag = true;
+                let userPermission = data.dataPermission || [];  
+                
+                setProfileUser(JSON.stringify(userPermission))
 
+                this.setState({loading: false, isLogin: flag})
+            } else {
+                this.setState({loading : false})
+                swal("Warning",data.error,"info")
+            }
+        }
+    
+    }
+    
     //Forgot Password
 
     handleOpen = ()=>{
@@ -82,41 +99,56 @@ class Login extends React.Component{
             this.sendEmail(newData)
         }
     }
-
     sendEmail = async function (params){
         const data = await sendEmailFunction (params)
         if(data){
             if(!data.error){
                 swal("Email Terkirim",`Harap cek di ${this.state.email}`,"success")
-                this.setState({error:'',open:false})
+                this.setState({error:'',open:false,loadMail:false})
             }else{
                 this.setState({error:data.error,loadMail:false})
             }
         }
     }
 
+
+    handleChangeTextField = (e) => {
+        const label = e.target.id;
+
+        this.setState({
+            [label] : e.target.value,
+        })
+    }
+
+    handleEnter =(e)=> {
+        if (e.charCode === 13) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.btnLogin();
+        }
+    }
+
     renderBtnEmail =()=>{
         if(this.state.loadMail){
             return(
-                <Button color="primary">
+                <Button disableElevation color="primary">
                     <Loader 
-                    type="ThreeDots"
-                    color="#00BFFF"
-                    height="10"	
-                    width="10"
-                />   
+                        type="ThreeDots"
+                        color="#00BFFF"
+                        height="10"	
+                        width="10"
+                    />   
                 </Button>
             )
         }
         else{
             return(
-                <Button onClick={this.handleSend} color="primary">
-                    Kirim
+                <Button disableElevation onClick={this.handleSend} color="primary">
+                    <b>Kirim</b>
                 </Button>
             )
         }
     }
-    
 
     postLoginAdmin = async function(param)  {
         const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction)
@@ -178,59 +210,125 @@ class Login extends React.Component{
                 <Redirect to='/' />
             )
         }
+       
 
         return (
-            <div className="App loginContainer mr-3">
-                 <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
-    <DialogTitle id="form-dialog-title">Lupa Password? 
-    <div style={{color:"red",fontSize:"10px"}}>
-             {this.state.error}
-    </div>
-    </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Harap isi Email yang sudah terdaftar, Kami akan mengirimkan password anda disana.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
-            fullWidth
-            onChange={this.handleEmail}
-            value={this.state.email}
-            
-          />
-        </DialogContent>
-        <DialogActions>
-                <Button onClick={this.handleClose} color="primary">
-                     Cancel
-                </Button>
-                {this.renderBtnEmail()}
-        </DialogActions>
-      </Dialog>
-                <div className="row">
-                    <div className="col-6 col-md-6 mt-3">
-                        <h2>Core</h2> 
-                    </div>
-                    <div className="col-6 col-md-6 mt-3">
-                        <img src={Logo} alt="logo" width="60%"></img>
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="col-12 col-md-12">
-                        <hr/>
-                        <h3>Sign In</h3>
-                        <input type="text" placeholder="Username" ref="username" className="form-control"/>
-                        <input type="password" placeholder="Password" ref="password" className="form-control"/>
-                        {this.renderBtnOrLoading()}
-                        <p style={{marginTop:"20px",cursor:"pointer"}} onClick={this.handleOpen}>Forgot your password?</p>
+            <Grid container>
+                <Grid item xs={12} sm={4}>
                     
-                    </div>
-                </div>
-            </div>
+                </Grid>
+
+                <Grid item xs={12} sm={4}>
+                    <Grid container className='loginContainer'>
+                        <Grid item xs={12} sm={12} style={{textAlign:'center'}}>
+                            <img src={require('./../../support/icons/LogoAsira.png')} alt='' style={{width:'60%'}} />
+                        </Grid>
+                        <Grid item xs={12} sm={12}  className='loginBox'>
+                            <Grid container>
+                                <Grid item xs={12} sm={12} style={{marginTop:20}}>
+                                    <h5>Asira Core</h5> 
+                                </Grid>
+                                <Grid item xs={12} sm={12} style={{marginTop:20}}>
+                                    <TextField
+                                        id={'username'}
+                                        size="small"
+                                        margin="dense"
+                                        variant='outlined'
+                                        style={{width:"70%"}}
+                                        label={'Username'}
+                                        value={this.state.username}
+                                        onChange={this.handleChangeTextField}
+                                    /> 
+                                </Grid>
+                                <Grid item xs={12} sm={12} style={{marginTop:10}}>
+                                    <TextField
+                                        id={'password'}
+                                        type='password'
+                                        size="small"
+                                        margin="dense"
+                                        variant='outlined'
+                                        style={{width:"70%"}}
+                                        label={'Password'}
+                                        onKeyPress={this.handleEnter}
+                                        value={this.state.password}
+                                        onChange={this.handleChangeTextField}
+                                    />  
+                                    
+                                </Grid>
+
+                                <Grid item xs={12} sm={12} style={{fontSize:'12px' ,paddingRight:'15%', marginTop:5, textAlign:'right'}}>
+                                    <label style={{cursor:'pointer'}} onClick={this.handleOpen}> Lupa Password ? </label> 
+                                </Grid>
+
+                                <Grid item xs={12} sm={12} style={{marginTop:20}}>
+                                    {
+                                        this.state.loading && 
+                                        <Loader 
+                                            type="Circles"
+                                            color="#00BFFF"
+                                            height="50"	
+                                            width="50"
+                                        />   
+                                        
+                                    }
+                                    {
+                                        !this.state.loading && 
+                                        <Button disableElevation
+                                            variant='contained'
+                                            style={{backgroundColor: '#20B889', width:'70%', color:'white'}}
+                                            onClick={this.btnLogin}
+                                        >
+                                            <b>Masuk</b>
+                                        </Button>
+                                    }
+                                    
+                                </Grid>
+                                <Grid item xs={12} sm={12} style={{marginTop:20, marginBottom:20}}>
+                                    <img src={require('./../../support/icons/powered.svg')} alt='' style={{width:'30%'}} />
+                                </Grid>
+                            </Grid>
+                            
+                        </Grid>
+                    </Grid>
+                    
+                </Grid>
+                
+                <Grid item xs={12} sm={4}>
+                    
+                </Grid>
+
+                <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title"> 
+                        Lupa Password? 
+                        <div style={{color:"red",fontSize:"10px"}}>
+                            {this.state.error}
+                        </div>
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Harap isi Email yang sudah terdaftar, Kami akan mengirimkan password anda disana.
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Alamat Email"
+                            type="email"
+                            fullWidth
+                            onChange={this.handleEmail}
+                            value={this.state.email}
+                            
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button disableElevation onClick={this.handleClose} color="primary">
+                            <b>BATAL</b>
+                        </Button>
+                        {this.renderBtnEmail()}
+                    </DialogActions>
+                </Dialog>
+            </Grid>
+            
         )
 
     }

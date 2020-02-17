@@ -96,29 +96,22 @@ class RolePermissionList extends React.Component{
         
         if(getToken()){
             return(
-                <div className="container">
-                    <div className="row">
-                        <div className="col-7">
-                             <h2 className="mt-3">Role Permission - List</h2>
-                        </div>
-                        <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                            {this.state.errorMessage}
-                        </div>   
-                    </div>
-                   <hr/>
+                <div style={{padding:0}}>
 
                    < TableComponent
                         id={"id"}
                         paging={this.state.paging}
+                        title={'Permission - List'}
                         loading={this.state.loading}
                         columnData={columnDataRole}
                         data={this.state.listRole}
                         page={this.state.page}
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
-                        onChangePage={this.onChangePage}             
-                        permissionEdit={ checkPermission('core_permission_patch') ? '/editRolePermission/' : null}
-                        permissionDetail={ checkPermission('core_permission_detail') ? '/detailRolePermission/' : null}
+                        onChangePage={this.onChangePage}    
+                        permissionAdd={ checkPermission('core_permission_new') ? '/permissionAdd/' : null}         
+                        permissionEdit={ checkPermission('core_permission_patch') ? '/permissionEdit/' : null}
+                        permissionDetail={ checkPermission('core_permission_detail') ? '/permissionDetail/' : null}
                     />
 
                 </div>

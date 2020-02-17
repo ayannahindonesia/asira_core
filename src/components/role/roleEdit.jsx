@@ -77,7 +77,7 @@ class RoleEdit extends React.Component{
     }
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listrole'/>            
+            return <Redirect to='/roleList'/>            
         }
         if(getToken()){
             return(

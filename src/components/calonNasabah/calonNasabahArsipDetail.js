@@ -159,7 +159,7 @@ class CalonNasabahArsipDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listCalonNasabahArsip'/>            
+            return <Redirect to='/calonNasabahArsipList'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -193,7 +193,7 @@ class CalonNasabahArsipDetail extends React.Component{
                   gridLabel={[4,3,5]}
                   background
                   label={[
-                    ['Id Nasabah','Bank Nasabah'],
+                    ['Id Nasabah','Mitra Nasabah'],
                     ['Kategori','Agen / AE'],
                     ['Tanggal Register'],
                   ]}

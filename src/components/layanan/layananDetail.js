@@ -47,7 +47,7 @@ class LayananDetail extends React.Component{
         if(getToken()){
             return(
                 <div className="container">
-                   <h2>Layanan Detail</h2>
+                   <h2>Layanan - Detail</h2>
                    <hr/>
                     <form>
                         <div className="form-group row">

@@ -8,10 +8,15 @@ import SearchIcon from '@material-ui/icons/Search';
 
 const styles = (theme) => ({
   root: {
+    fontSize:'12px',
     padding: '4px 10px',
     display: 'flex',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
+    height:"70%",
+    boxShadow: 'none',
+    border:"1px solid rgba(0,0,0,0.25)",
+    maxWidth:'300px',
   },
   input: {
     marginLeft: theme.spacing * 1,
@@ -50,7 +55,7 @@ class SearchBar extends React.Component  {
     } = this.props;
 
     return (
-        <Paper className={classes.root}>
+        <Paper className={classes.root} style={{float:this.props.float || 'left'}}>
           <InputBase
             className={classes.input}
             placeholder={placeholder}

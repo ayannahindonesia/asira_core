@@ -114,7 +114,7 @@ class UserDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/listUser'/>            
+            return <Redirect to='/akunDetail'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -194,7 +194,7 @@ class UserDetail extends React.Component{
                       this.isRoleBank(this.state.dataUser && this.state.dataUser.roles && this.state.dataUser.roles[0]) && 
                       <div className="form-group row">                   
                         <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                          Bank
+                          Mitra
                         </label>
                         <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
                           :
