@@ -3,7 +3,7 @@ import './../../support/css/login.css'
 import Loader from 'react-loader-spinner'
 import swal from 'sweetalert'
 import {Redirect} from 'react-router-dom'
-import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction ,sendEmailFunction} from './saga'
+import { postAdminLoginFunction, getTokenGeoFunction, getUserProfileFunction,sendEmailFunction, getTokenLogFunction} from './saga'
 import { setProfileUser } from './token'
 import { Grid, Button, TextField } from '@material-ui/core'
 import Dialog from '@material-ui/core/Dialog';
@@ -50,8 +50,11 @@ class Login extends React.Component{
             swal("Error","Username dan Password Kosong","error")
             this.setState({loading:false})
 
-        }else{
-            this.postLoginAdmin(param)
+        } else {            
+            const logindata ={key,password};
+            
+            this.postLoginAdmin(logindata)
+            this.postLog()
         }
       
     } 
@@ -149,6 +152,60 @@ class Login extends React.Component{
         }
     }
 
+    postLoginAdmin = async function(param)  {
+        const data = await postAdminLoginFunction(param, getTokenGeoFunction, getUserProfileFunction)
+        
+        if(data) {
+            if(!data.error) {
+                let flag = true;
+                let userPermission = data.dataPermission || [];  
+                
+                setProfileUser(JSON.stringify(userPermission))
+
+                this.setState({loading: false, isLogin: flag})
+            } else {
+                this.setState({loading : false})
+                swal("Warning",data.error,"info")
+            }
+        }
+    
+    }
+
+    postLog = async function () {
+        await getTokenLogFunction ({})
+        
+    }
+
+    renderBtnOrLoading =()=>{
+        if (this.state.loading){
+            return ( 
+            <Loader 
+                type="Circles"
+                color="#00BFFF"
+                height="30"	
+                width="30"
+            />);
+           
+        }
+        else{
+            return(
+                <input type="button" className="loginBtn" onClick={this.btnLogin} style={{marginTop:"20px"}}  value="Sign in"/> 
+            )
+        }
+    }
+
+    renderBtnOrLoadingEmail =()=>{
+        if (this.state.sendMail){
+            return ( 
+                <input type="button" className="btn btn-primary" disabled={true} style={{cursor:"progress"}} value="Kirim Email"/> 
+            );
+        }
+        else{
+            return(
+                <input type="button" className="btn btn-primary" onClick={this.handleSend} value="Kirim Email"/> 
+            )
+        }
+    }
     render(){
         if(this.state.isLogin){
             return(

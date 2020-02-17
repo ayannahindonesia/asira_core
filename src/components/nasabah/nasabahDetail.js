@@ -14,7 +14,7 @@ import {decryptImage} from '../global/globalFunction'
 
 
 class profileNasabahDetail extends React.Component{
-    state={rows:[],modalKTP:false,modalNPWP:false,npwp:0,ktp:0,gambarKTP:null,gambarNPWP:null,
+    state={rows:[],modalKTP:false,modalNPWP:false,npwp:'',ktp:'',gambarKTP:null,gambarNPWP:null,
         bankID:0,bankName:'',diKlik:false,progress:true,errorMessage:''}
     
     _isMounted = false
@@ -36,8 +36,8 @@ class profileNasabahDetail extends React.Component{
         if(data){
             if(!data.error){
                 this.setState({rows:data.data,
-                    ktp:data.data.idcard_image && decryptImage(data.data.idcard_image),
-                    npwp:data.data.taxid_image && decryptImage(data.data.taxid_image), 
+                    ktp:data.data && data.data.idcard_image && decryptImage(data.data.idcard_image)
+                    ,npwp:data.data && data.data.taxid_image && decryptImage(data.data.taxid_image) , 
                     bankID:data.data.bank.Int64},
                     ()=>{
                     //KTP WAJIB KALO NPWP OPTIONAL

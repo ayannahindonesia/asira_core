@@ -16,6 +16,10 @@ export function setTokenGeo(tokenGeo) {
     newLs.set(md5('tokenGeo'), tokenGeo);
 }
 
+export function setTokenLog(tokenLog) {
+    newLs.set(md5('tokenLog'), tokenLog);
+}
+
 export function setProfileUser(profileUser) {
     newLs.set(md5('profileUser'), profileUser);
 }
@@ -58,4 +62,16 @@ export function getProfileUser() {
     }
 
     return newLs.get(md5('profileUser'));
+}
+
+export function getTokenLog() {
+    const newDateToken = new Date().getTime();
+    const timeExpires = newLs.get(md5('tokenTime')) ? parseInt(newLs.get(md5('tokenTime'))) : new Date().getTime();
+    
+    if(newDateToken > timeExpires) {
+        localStorage.clear();
+        return null
+    }
+
+    return newLs.get(md5('tokenLog'));
 }

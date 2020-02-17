@@ -47,7 +47,7 @@ class DatePicker extends React.Component {
       <TextField
         label={label}
         type="date"
-        defaultValue={value}
+        value={value}
         onChange={this.props.onChange}
         className={classes.textField}
         error={this.state.error}
