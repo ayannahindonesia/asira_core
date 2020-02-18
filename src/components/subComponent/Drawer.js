@@ -75,6 +75,7 @@ import CalonNasabahArsipList from './../calonNasabah/calonNasabahArsipList';
 import CalonNasabahArsipDetail from './../calonNasabah/calonNasabahArsipDetail';
 import ChangePassword from './../index/changePassword'
 import ActivityLog from './../logs/activitylog'
+import FAQ from './../FAQ/faqList'
 
 
 
@@ -396,6 +397,8 @@ function ResponsiveDrawer(props) {
             { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahArsipDetail/:id' component={CalonNasabahArsipDetail}></Route>}
 
             <Route path='/activityLog' component={ActivityLog}></Route>
+            <Route path='/FAQ' component={FAQ}></Route>
+
             {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
             <Route path='/ubahpassword' component={ChangePassword} />
             <Route path='*' component={PageNotFound} />
