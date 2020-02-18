@@ -97,7 +97,7 @@ class TableComponent extends React.Component {
       <Grid item sm={12} xs={12}>
 
         <table className="table table-hover">
-          <thead >
+          <thead style={{border:'none'}}>
             <tr >
               {
                 this.props.checkBoxAction &&
@@ -118,7 +118,7 @@ class TableComponent extends React.Component {
                   );
                 },this) 
               }
-              { (this.props.permissionEdit || this.permissionDetail) &&
+              { (this.props.permissionEdit || this.props.permissionDetail) &&
                 <th className="text-center" scope="col">Action</th>
               }
             </tr>     
@@ -165,9 +165,20 @@ class TableComponent extends React.Component {
                       {
                         this.props.columnData.map((dataRow, indexRow) => {              
                           return(
-                            <td align={dataRow.numeric ? "right" : "center"} key={indexRow}>
+                            <td align={dataRow.align ? dataRow.align : (dataRow.numeric ? "right" : "center")} key={indexRow} width={dataRow.width ? dataRow.width:'auto'}>
                               {
                                 dataRow.type && dataRow.type.includes('date') && handleFormatDate(dataTable[dataRow.id], dataRow.type.includes('time') && true)
+                              }
+                              {
+                                dataRow.type && dataRow.type.includes('textColor') &&
+                                <div style={{
+                                  color:`${dataTable[dataRow.id].color ? dataTable[dataRow.id].color : 'black'}`,
+                                  border:`2px solid ${dataTable[dataRow.id].color ? dataTable[dataRow.id].color : 'black'}`,
+                                  borderRadius:'5px',
+                                  padding:'5px'
+                                }}>
+                                  {dataTable[dataRow.id].value ? dataTable[dataRow.id].value : dataTable[dataRow.id]}
+                                </div>                               
                               }
                               {
                                 dataRow.type && dataRow.type === 'button'  && this.checkConditionButton(dataTable, dataRow.conditions) &&

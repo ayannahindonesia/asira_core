@@ -14,6 +14,7 @@ const columnDataUser = [
     {
         id: 'level',
         numeric: false,
+        type:'textColor',
         label: 'Level',
     },
     {
@@ -46,6 +47,7 @@ const columnDataUser = [
     {
         id: 'messages',
         numeric: false,
+        align:'justify',
         label: 'Message',
     },
 ]
@@ -93,6 +95,19 @@ class ActivityLog extends React.Component{
         if(data){
             if(!data.error){
                 const newDataLog = data.activityLog.data || [];
+
+                for(const key in newDataLog) {
+                    newDataLog[key].level = {
+                        value: newDataLog[key].level && `${newDataLog[key].level.substring(0,1).toString().toUpperCase()}${newDataLog[key].level.substring(1,newDataLog[key].level.length)}`,
+                        color: 
+                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'trace' ? 'aqua' :
+                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'debug' ? '#19B5FE' :
+                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'fatal' ? 'red' :
+                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'error' ? '#b7472a' :
+                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'warning' ? '#fce38a' : 
+                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'info' ? 'green' : 'black',
+                    }
+                }
 
                 this.setState({
                     rows:newDataLog, 
@@ -326,7 +341,8 @@ class ActivityLog extends React.Component{
                             page={this.state.page}
                             rowsPerPage={this.state.rowsPerPage}
                             totalData={this.state.total_data}
-                            onChangePage={this.onChangePage}             
+                            onChangePage={this.onChangePage}    
+                            permissionDetail={'/activityDetail'}         
                         /> 
                         
                         <div className=" col col-md col-xs form-inline">
