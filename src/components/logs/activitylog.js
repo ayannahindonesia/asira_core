@@ -194,8 +194,6 @@ class ActivityLog extends React.Component{
         }else if(isNaN(searchUserId)){
             this.setState({errorMessage:"ID harus angka - Harap Check ulang"})
         } else{
-            console.log(dateAwal)
-            console.log(dateAkhir)
             param = {};
 
             if(searchLevel.trim().length > 0){

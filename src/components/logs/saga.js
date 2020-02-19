@@ -51,3 +51,27 @@ export async function getAllClientsFunction (param){
             })
     })
 }
+
+export async function getAllActivityLogDetailFunction (param,next) {
+
+    return new Promise(async (resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + getTokenLog()}
+          };
+
+        axios.get(serverLog+`ns/log/${param.id}`,config)
+        .then((res)=>{
+            param.activityLogDetail = res.data
+            if(next){
+                resolve(next(param))
+            }else{
+                resolve(param)
+            }
+        })
+        .catch((err)=>{
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
+            param.error = error;
+            resolve(param);
+        })
+    })
+}
