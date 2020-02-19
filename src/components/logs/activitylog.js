@@ -1,13 +1,7 @@
 import React from 'react'
 import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
-import SearchBar from './../subComponent/SearchBar'
-import DatePickers from './../subComponent/DatePicker'
 import { getAllActivityLog, getAllClientsFunction } from './saga'
-// import TableComponent from '../subComponent/TableComponent'
-import Pagination from 'rc-pagination';
-import localeInfo from 'rc-pagination/lib/locale/id_ID';
-import Loader from 'react-loader-spinner';
 import TableComponent from '../subComponent/TableComponent'
 
 const columnDataUser = [
@@ -62,7 +56,7 @@ class ActivityLog extends React.Component{
         errorMessageId:'',
         tanggalAwal:'',
         tanggalAkhir:'',
-        search:'',
+        searchUserId:'',
         searchActivity:'',
         searchNote:'',
         searchMessage:'',
@@ -150,6 +144,12 @@ class ActivityLog extends React.Component{
     }
 
     //SEARCH
+    onChangeSearch = (e, label) => {
+        if(label) {
+            this.setState({[label]:e.target.value})
+        }
+    }
+
     fieldSearch = (e) =>{
         this.setState({search:e.target.value})
     }
@@ -165,7 +165,7 @@ class ActivityLog extends React.Component{
 
     // HANDLE UNTUK BUTTON FILTER SEARCH LOG
     searchLog = ()=>{
-        const {search,tanggalAkhir,tanggalAwal,dropDownApp,dropDownLevel,searchActivity,searchNote,searchMessage} = this.state
+        const {searchUserId,tanggalAkhir,tanggalAwal,dropDownApp,dropDownLevel,searchActivity,searchNote,searchMessage} = this.state
         let param ={}
 
         let dateAwal = new Date(tanggalAwal).getTime()
@@ -174,7 +174,7 @@ class ActivityLog extends React.Component{
         if(dateAwal > dateAkhir){
             this.setState({errorMessage:true,errorMessageTanggal:"Range Tanggal Salah - Harap Check ulang",errorMessageId:''})
             
-        }else if(isNaN(search)){
+        }else if(isNaN(searchUserId)){
             this.setState({errorMessageId:"ID harus angka - Harap Check ulang",errorMessageTanggal:''})
         }
         else{
@@ -196,8 +196,8 @@ class ActivityLog extends React.Component{
             if(searchNote.trim().length>0){
                 param.note = searchNote
             }
-            if (!isNaN(search) && search.trim().length>0){
-                param.uid = search;
+            if (!isNaN(searchUserId) && searchUserId.trim().length>0){
+                param.uid = searchUserId;
             }
             this.setState({errorMessage:false,errorMessageTanggal:"",errorMessageId:''})
 
@@ -227,7 +227,7 @@ class ActivityLog extends React.Component{
         dropDownLevel:'blank',
         tanggalAwal:'',
         tanggalAkhir:'',
-        search:'',
+        searchUserId:'',
         searchActivity:'',
         searchNote:'',
         searchMessage:'',
@@ -274,185 +274,81 @@ class ActivityLog extends React.Component{
     render(){   
         if(getToken()){
             return(
-                <div className="container-fluid">
-                     <div className="row">
-                        <div className="col col-md col-xs">
-                             <h2 className="mt-3">Activity Log {this.state.message}</h2>
-                             <hr></hr>
-                        </div>
-                        
-                    </div>
-                    <div className="form-group row">
-                            <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
-                                {this.state.errorMessageTanggal}
-                                {this.state.errorMessageId}
-                            </div>      
-                     </div>
-                    <div className="form-group row">
-                    <div className="col-3 col-md-3 col-xs-3">
-                        <SearchBar 
-                            onChange={this.fieldSearch}
-                            placeholder="Input User ID"
-                            value={this.state.search}
-                            id="searchField"
-                        />
-                        </div>
-                        <div className="col-3 col-md-3 col-xs-3">
-                        <SearchBar 
-                            onChange={this.fieldSearchNoted}
-                            placeholder="Input Note"
-                            value={this.state.searchNote}
-                            id="searchFieldNoted"
-                        />
-                        </div>
-                        <div className="col-3 col-md-3 col-xs-3">
-                        <SearchBar 
-                            onChange={this.fieldSearchMessage}
-                            placeholder="Input Message"
-                            value={this.state.searchMessage}
-                            id="searchFieldMessage"
-                        />
-                        </div>
-                        <div className="col-3 col-md-3 col-xs-3">
-                        <SearchBar 
-                            onChange={this.fieldSearchActivity}
-                            placeholder="Input Activity"
-                            value={this.state.searchActivity}
-                            id="searchFieldActivity"
-                        />
-                        </div>
-                     </div>
-                    <div className="form-group row">
-                        < TableComponent
-                            id={"id"}
-                            title={'Activity Log - List'}
-                            search={
+                <div style={{padding:0}}>
+                    < TableComponent
+                        id={"id"}
+                        title={'Activity Log - List'}
+                        advancedSearch={[
                             {
-                                value: this.state.searchRows,
-                                label: 'Search ID Nasabah, Nama Nasabah',
-                                function: this.onBtnSearch,
+                                id:'searchUserId',
+                                value: this.state.searchUserId,
+                                label: 'User ID',
+                                function: this.onChangeSearch,
+                            },
+                            {
+                                id:'searchNote',
+                                value: this.state.searchNote,
+                                label: 'Note',
+                                function: this.onChangeSearch,
+                            },
+                            {
+                                id:'searchMessage',
+                                value: this.state.searchMessage,
+                                label: 'Message',
+                                function: this.onChangeSearch,
+                            },
+                            {
+                                id:'searchActivity',
+                                value: this.state.searchActivity,
+                                label: 'Activity',
+                                function: this.onChangeSearch,
+                            },
+                            {
+                                id:'searchApplication',
+                                value: this.state.searchApplication,
+                                label: 'Application',
+                                function: this.onChangeSearch,
+                            },
+                            {
+                                id:'searchLevel',
+                                value: this.state.searchLevel,
+                                label: 'Level',
+                                function: this.onChangeSearch,
                             }
+
+                        ]}
+                        searchDate={
+                            {
+                              value:[this.state.tanggalAwal, this.state.tanggalAkhir],
+                              label: 'Waktu Transaksi',
+                              function: [this.handleStartChange, this.handleEndChange],
+                              button: [
+                                {
+                                  label:'Filter',
+                                  color:'#20B889',
+                                  function:this.searching
+                                },
+                                {
+                                  label:'Reset',
+                                  color:'#EE6969',
+                                  function:this.resetLog
+                                },
+                              ]
                             }
-                            errorMessage={this.state.errorMessage}
-                            paging={this.state.paging}
-                            loading={this.state.loading}
-                            columnData={columnDataUser}
-                            data={this.state.rows}
-                            page={this.state.page}
-                            rowsPerPage={this.state.rowsPerPage}
-                            totalData={this.state.total_data}
-                            onChangePage={this.onChangePage}    
-                            permissionDetail={'/activityDetail'}         
-                        /> 
+                        }
+                        errorMessage={this.state.errorMessage}
+                        paging={this.state.paging}
+                        loading={this.state.loading}
+                        columnData={columnDataUser}
+                        data={this.state.rows}
+                        page={this.state.page}
+                        rowsPerPage={this.state.rowsPerPage}
+                        totalData={this.state.total_data}
+                        onChangePage={this.onChangePage}    
+                        permissionDetail={'/activityDetail'}         
+                    /> 
                         
-                        <div className=" col col-md col-xs form-inline">
-                                    <DatePickers
-                                        id="tanggalAwal"
-                                        label = 'Dari Tanggal'
-                                        onChange ={this.handleStartChange}
-                                        value= {this.state.tanggalAwal}
-                                        error={this.state.errorMessage  && true}
-                                        helperText={this.state.errorMessageTanggal && this.state.errorMessageTanggal.trim().length !== 0}
-                                    />
-                                    <i className="fas fa-arrow-right mr-3 ml-3"></i>
-                                    <DatePickers
-                                        id="tanggalAkhir"
-                                        label = 'Sampai Tanggal'
-                                        onChange ={this.handleEndChange}
-                                        value= {this.state.tanggalAkhir}
-                                        error={this.state.errorMessage && true}
-                                        helperText={this.state.errorMessageTanggal && this.state.errorMessageTanggal.trim().length !== 0}
-
-                                    />
-
-                                    <select id="dropDown" onChange={this.handleDropDownLog} className="form-control" style={{border:"1px solid black",marginLeft:"20px",width:"150px"}}>
-                                        <option value="blank">--- App Filter ---</option>
-                                        {this.state.clientList && this.state.clientList.map((val,index)=>{
-                                            return (
-                                                <option key={index} value={val}>{val}</option>
-                                            )
-                                        },this)}
-                                    
-                                    </select>
-                                    <select id="dropDownLevel" onChange={this.handleDropDownLevelLog} className="form-control" style={{border:"1px solid black",marginLeft:"20px",width:"150px"}}>
-                                        <option value="blank">--- Level Filter ---</option>
-                                        <option value="trace">Trace</option>
-                                        <option value="info">Info</option>
-                                        <option value="debug">Debug</option>
-                                        <option value="warning">Warning</option>
-                                        <option value="error">Error</option>
-                                        <option value="fatal">Fatal</option>
-                                    </select>
-                                    <input type="button" style={{marginLeft:"5px",marginTop:"5px"}} onClick={this.searching} className="form-control btn btn-success" value="Filter"></input>
-                                    <input type="button" style={{marginLeft:"5px",marginTop:"5px"}} onClick={this.resetLog} className="form-control btn btn-danger" value="Reset"></input>
-                        </div>
-                    </div>
-
-                    <div>
                         
-                        <table className="table table-hover">
-                                <thead className="table-warning">
-                                <tr>
-                                        <th className="text-center" scope="col">Level</th>
-                                        <th className="text-center" scope="col">Time</th>
-                                        <th className="text-center" scope="col">Application</th>
-                                        <th className="text-center" scope="col">User ID</th>
-                                        <th className="text-center" scope="col">User Name</th>  
-                                        <th className="text-center" scope="col">Activity</th> 
-                                        <th className="text-center" scope="col">Message</th> 
-                                </tr>   
-                               
-                        </thead>
-                                <tbody>
-                                {this.state.loading?
-                                        <tr align="center">
-                                        <th colSpan={7}>
-                                        <Loader 
-                                            type="Circles"
-                                            color="#00BFFF"
-                                            height="40"	
-                                            width="40"
-                                        />  
-                                        </th>
-                                    </tr>
-                                :this.state.rows.length===0?
-                                    <tr align="center">
-                                        <th colSpan={7}>
-                                        <p style={{marginRight:"50px"}}>DATA KOSONG</p>
-                                        </th>
-                                    </tr>
-                                    :this.renderJSX()} 
-                                
-                                </tbody>
-                        
-                        </table>
-                        <div className="float-right">
-                        <Pagination className="ant-pagination"  
-                            current={this.state.page}
-                            showTotal={(total, range) => `${range[0]} - ${range[1]} of ${total} items`}
-                            total={this.state.total_data}
-                            showLessItems
-                            pageSize={this.state.rowsPerPage}
-                            onChange={this.onChangePage}
-                            locale={localeInfo}
-                        />  
-                        </div>
-
-
-                        {/* <TableComponent
-                               id={"id"}
-                               paging={this.state.paging}
-                               loading={this.state.loading}
-                               columnData={columnDataUser}
-                               data={this.state.rows}
-                               page={this.state.page}
-                               rowsPerPage={this.state.rowsPerPage}
-                               totalData={this.state.total_data}
-                               onChangePage={this.onChangePage}             
-                        /> */}
-
-
-                        </div>
                 </div>
             )
         }

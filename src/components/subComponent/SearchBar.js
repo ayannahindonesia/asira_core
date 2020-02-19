@@ -9,7 +9,7 @@ import SearchIcon from '@material-ui/icons/Search';
 const styles = (theme) => ({
   root: {
     fontSize:'12px',
-    padding: '4px 10px',
+    padding: '4px 0px 4px 10px',
     display: 'flex',
     alignItems: 'center',
     width: '100%',
@@ -23,6 +23,7 @@ const styles = (theme) => ({
     flex: 1,
   },
   iconButton: {
+    float:'right',
     padding: 10,
   },
   divider: {
@@ -57,13 +58,14 @@ class SearchBar extends React.Component  {
     return (
         <Paper className={classes.root} style={{float:this.props.float || 'left'}}>
           <InputBase
+            id={this.props.id || 'search'}
             className={classes.input}
             placeholder={placeholder}
             onChange={this.props.onChange}
             value={this.props.value}
             inputProps={{ 'aria-label': 'search google maps' }}
           />
-          <IconButton className={classes.iconButton} aria-label="search" disabled>
+          <IconButton className={classes.iconButton} aria-label="search" disabled >
             <SearchIcon disabled/>
           </IconButton>
         </Paper>

@@ -289,6 +289,28 @@ class TableComponent extends React.Component {
               {this.props.errorMessage}
             </Grid>
 
+            {
+              this.props.advancedSearch &&
+              <Grid item sm={12} xs={12} style={{marginBottom:`${this.props.advancedSearch ? '0px' : '10px'}`}}>
+                <Grid container>
+                {
+                  this.props.advancedSearch.map((searchPerBar, index) => {
+                    return(
+                      <Grid item key={index} sm={parseInt(12 / this.props.advancedSearch.length)} xs={parseInt(12 / this.props.advancedSearch.length)} style={{paddingRight:'6px'}}>
+                        <SearchBar
+                          id={searchPerBar.id}
+                          value={searchPerBar.value}
+                          placeholder={searchPerBar.label || 'Cari...'}
+                          onChange={(e) => {searchPerBar.function(e, searchPerBar.id)} }
+                          float={'left'}
+                        />
+                      </Grid>
+                    )
+                  },this)
+                }
+                </Grid>
+              </Grid>
+            }
 
             {
               this.props.searchDate &&
