@@ -1,7 +1,7 @@
 import React from 'react'
 import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
-import { getAllActivityLog, getAllClientsFunction } from './saga'
+import { getAllActivityLog } from './saga'
 import TableComponent from '../subComponent/TableComponent'
 
 const columnDataUser = [
@@ -52,16 +52,16 @@ class ActivityLog extends React.Component{
     state={
         loading:true,
         errorMessageTanggal:'',
-        errorMessage:false,
+        errorMessage:'',
         errorMessageId:'',
-        tanggalAwal:'',
-        tanggalAkhir:'',
+        tanggalAwal:new Date(),
+        tanggalAkhir:new Date(),
         searchUserId:'',
         searchActivity:'',
         searchNote:'',
         searchMessage:'',
-        dropDownApp:'blank',
-        dropDownLevel:'blank',
+        searchApplication:'',
+        searchLevel:'',
         paging:true,
         rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:5,
         clientList:[]
@@ -75,7 +75,7 @@ class ActivityLog extends React.Component{
     componentDidMount(){
         this._isMounted=true
         this.getAllLog({})
-        this.getAllClient()
+        // this.getAllClient()
     }
 
     getAllLog = async function (param) {
@@ -115,32 +115,40 @@ class ActivityLog extends React.Component{
               }
         }
     }
-    getAllClient = async function () {      
-        const data = await getAllClientsFunction({})
-        if(data){
-            if(!data.error){
-                this.setState({clientList:data.clientList})
-              }else{
-                  this.setState({errorMessage:data.error})
-              }
-        }
-    }
+
+    // getAllClient = async function () {      
+    //     const data = await getAllClientsFunction({})
+    //     if(data){
+    //         if(!data.error){
+    //             this.setState({clientList:data.clientList})
+    //           }else{
+    //               this.setState({errorMessage:data.error})
+    //           }
+    //     }
+    // }
    
+    formatSearchingDate = (dateData, endSearch) => {
+        const startDate = dateData || new Date();
     
-    handleDropDownLog = (e)=>{
-        this.setState({dropDownApp:e.target.value})
-
-    }
-    handleDropDownLevelLog = (e)=>{
-        this.setState({dropDownLevel:e.target.value})
-    }
-
+        let startMonth =''+ (startDate.getMonth()+1),
+        startDay = '' + startDate.getDate(),
+        startYear = startDate.getFullYear();
+    
+        if (startMonth.length < 2) startMonth = '0' + startMonth;
+        if (startDay.length < 2) startDay = '0' + startDay;
+    
+        let newFormatStartDate = startYear+"-"+startMonth+"-"+startDay;
+        newFormatStartDate += endSearch ? "T23:59:59.999Z" : "T00:00:00.000Z"
+    
+        return newFormatStartDate;
+      }
+    
     // HANDLE TANGGAL UNTUK SEARCH
-    handleStartChange = (e)=>{
-        this.setState({tanggalAwal:e.target.value.toString().trim().length !== 0 ? e.target.value : '',errorMessage:false})
+    handleStartChange = (date)=>{
+        this.setState({tanggalAwal:date})
     }
-    handleEndChange = (e)=>{
-        this.setState({tanggalAkhir:e.target.value.toString().trim().length !== 0 ? e.target.value : '',errorMessage:false})
+    handleEndChange = (date)=>{
+        this.setState({tanggalAkhir:date})
     }
 
     //SEARCH
@@ -165,30 +173,42 @@ class ActivityLog extends React.Component{
 
     // HANDLE UNTUK BUTTON FILTER SEARCH LOG
     searchLog = ()=>{
-        const {searchUserId,tanggalAkhir,tanggalAwal,dropDownApp,dropDownLevel,searchActivity,searchNote,searchMessage} = this.state
-        let param ={}
+        const {
+            searchUserId,
+            tanggalAkhir,
+            tanggalAwal,
+            searchActivity,
+            searchNote,
+            searchMessage,
+            searchApplication,
+            searchLevel,
+        } = this.state
 
-        let dateAwal = new Date(tanggalAwal).getTime()
-        let dateAkhir = new Date(tanggalAkhir).getTime()
+        let param = false
 
-        if(dateAwal > dateAkhir){
-            this.setState({errorMessage:true,errorMessageTanggal:"Range Tanggal Salah - Harap Check ulang",errorMessageId:''})
-            
+        let dateAwal = (tanggalAwal.toString().length !== 0 && new Date(tanggalAwal).getTime())
+        let dateAkhir = (tanggalAkhir.toString().length !== 0 && new Date(tanggalAkhir).getTime())
+        
+        if(dateAwal && dateAkhir && (dateAwal > dateAkhir)){
+            this.setState({errorMessage:"Range Tanggal Salah - Harap Check ulang"})
         }else if(isNaN(searchUserId)){
-            this.setState({errorMessageId:"ID harus angka - Harap Check ulang",errorMessageTanggal:''})
-        }
-        else{
-            if(dropDownLevel !=='blank'){
-                param.level = dropDownLevel
+            this.setState({errorMessage:"ID harus angka - Harap Check ulang"})
+        } else{
+            console.log(dateAwal)
+            console.log(dateAkhir)
+            param = {};
+
+            if(searchLevel.trim().length > 0){
+                param.level = searchLevel
             }
-            if(dropDownApp !== 'blank'){
-                param.client = dropDownApp
-            }if(searchMessage.trim().length>0){
+            if(searchApplication.trim().length > 0){
+                param.client = searchApplication
+            }if(searchMessage.trim().length > 0){
                 param.messages = searchMessage
             }
-            if(dateAwal<dateAkhir){
-                param.start_date = tanggalAwal
-                param.end_date = tanggalAkhir
+            if(dateAwal<=dateAkhir){
+                param.start_date = this.formatSearchingDate(tanggalAwal)
+                param.end_date = this.formatSearchingDate(tanggalAkhir, true)
             }
             if(searchActivity.trim().length>0){
                 param.tag = searchActivity
@@ -200,18 +220,17 @@ class ActivityLog extends React.Component{
                 param.uid = searchUserId;
             }
             this.setState({errorMessage:false,errorMessageTanggal:"",errorMessageId:''})
-
-            return param
-
         }
         
-         
+         return param
     }
 
     searching = ()=>{
-        if(this.searchLog()){
+        if(this.searchLog()) {
             this.setState({page:1},()=>{
-                this.getAllLog(this.searchLog())
+                const param = this.searchLog() || {};
+
+                this.getAllLog(param)
             })
         }
        
@@ -220,23 +239,21 @@ class ActivityLog extends React.Component{
     // HANDLE UNTUK RESET FILTER SEARCH LOG
     resetLog = ()=>{
         this.setState({
-        errorMessage:false,
-        errorMessageTanggal:"",
-        page:1,
-        dropDownApp:'blank',
-        dropDownLevel:'blank',
-        tanggalAwal:'',
-        tanggalAkhir:'',
-        searchUserId:'',
-        searchActivity:'',
-        searchNote:'',
-        searchMessage:'',
-        errorMessageId:''
-    },()=>{
+            errorMessage:false,
+            errorMessageTanggal:"",
+            page:1,
+            tanggalAwal:'',
+            tanggalAkhir:'',
+            searchUserId:'',
+            searchActivity:'',
+            searchLevel:'',
+            searchApplication:'',
+            searchNote:'',
+            searchMessage:'',
+            errorMessageId:''
+        },()=>{
             this.getAllLog({})
         })
-        document.getElementById("dropDown").value = "blank"
-        document.getElementById('dropDownLevel').value = 'blank'
     }
 
     onChangePage = (current) => {
@@ -345,7 +362,7 @@ class ActivityLog extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.total_data}
                         onChangePage={this.onChangePage}    
-                        permissionDetail={'/activityDetail'}         
+                        permissionDetail={'/activityLogDetail/'}         
                     /> 
                         
                         

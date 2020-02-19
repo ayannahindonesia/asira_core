@@ -285,7 +285,7 @@ class TableComponent extends React.Component {
           
           <Grid container>
 
-            <Grid item sm={12} xs={12} style={{color:"red",fontSize:"15px",textAlign:'left'}}>
+            <Grid item sm={12} xs={12} style={{color:"red",fontSize:"15px",textAlign:'left',marginBottom:'5px'}}>
               {this.props.errorMessage}
             </Grid>
 
