@@ -76,6 +76,9 @@ import CalonNasabahArsipDetail from './../calonNasabah/calonNasabahArsipDetail';
 import ChangePassword from './../index/changePassword'
 import ActivityLog from './../logs/activitylog'
 import ActivityLogDetail from './../logs/activitylogDetail'
+import AuditTrail from '../logs/auditTrail';
+import AuditTrailDetail from '../logs/auditTrailDetail';
+
 
 
 
@@ -398,6 +401,9 @@ function ResponsiveDrawer(props) {
 
             <Route path='/activityLog' component={ActivityLog}></Route>
             <Route path="/activityLogDetail/:id" component={ActivityLogDetail}></Route>
+            <Route path="/auditTrail" component={AuditTrail}></Route>
+            <Route path="/auditTrailDetail/:id" component={AuditTrailDetail}></Route>
+
             {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
             <Route path='/ubahpassword' component={ChangePassword} />
             <Route path='*' component={PageNotFound} />
