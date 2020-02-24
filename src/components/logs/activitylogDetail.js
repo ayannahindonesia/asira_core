@@ -17,7 +17,7 @@ class ActivityLogDetail extends React.Component{
     
     componentDidMount(){
         this._isMounted=true
-        this.getAllLogDetail()
+        //this.getAllLogDetail()
    
     }
 
@@ -25,8 +25,11 @@ class ActivityLogDetail extends React.Component{
         const param = {}
         param.id = this.props.match.params.id
         console.log(this.props.match.params.id)
-        //const data = await getAllActivityLogDetailFunction(param)
+        const data = await getAllActivityLogDetailFunction(param)
 
+        if(data){
+            console.log(data)
+        }
     }
 
 
@@ -36,10 +39,10 @@ class ActivityLogDetail extends React.Component{
         if(getToken()){
             return(
                 <div style={{padding:0}}>
-                    <h2>Activity Log - Detail</h2>
+                    <h2>Activity Log - Detail [{this.props.match.params.id}]</h2>
                     <hr></hr>
                     <div>
-                        <input type="button" className="btn btn-outline-primary" value="Kembali"/>
+                        <input type="button" className="btn btn-outline-primary" value="Kembali" onClick={()=>window.history.back()}/>
                     </div>
                         
                 </div>
