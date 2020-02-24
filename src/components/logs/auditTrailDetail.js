@@ -10,6 +10,7 @@ class AuditTrailDetail extends React.Component{
 
     state={
         newData:[],
+        originalDataFee:[],
         originalData:[],
         rows:{},
         loading:true
@@ -30,23 +31,23 @@ class AuditTrailDetail extends React.Component{
         const param = {}
         param.id = this.props.match.params.id
         const data = await getAuditTrailDetailFunction(param)
-
+        console.log(data)
        if(data){
            if(!data.error){
               const newDataLog = data.auditTrailDetail 
               newDataLog.original = JSON.parse(newDataLog.original)
-              newDataLog.original.created_at = newDataLog.original.created_at.replace("T"," -- ")
-              newDataLog.original.updated_at = newDataLog.original.updated_at.replace("T"," -- ")
+              newDataLog.original.created_at = newDataLog.original.created_at.replace("T"," - ")
+              newDataLog.original.updated_at = newDataLog.original.updated_at.replace("T"," - ")
+              
               if(newDataLog.original.deleted_at !==null){
-                newDataLog.original.deleted_at = newDataLog.original.deleted_at.replace("T"," -- ")
+                newDataLog.original.deleted_at = newDataLog.original.deleted_at.replace("T"," - ")
               }
-
-
+           
               newDataLog.new = JSON.parse(newDataLog.new)
-              newDataLog.new.created_at = newDataLog.new.created_at.replace("T"," -- ")
-              newDataLog.new.updated_at = newDataLog.new.updated_at.replace("T"," -- ")
+              newDataLog.new.created_at = newDataLog.new.created_at.replace("T"," - ")
+              newDataLog.new.updated_at = newDataLog.new.updated_at.replace("T"," - ")
               if(newDataLog.new.deleted_at !==null){
-                newDataLog.new.deleted_at = newDataLog.new.deleted_at.replace("T"," -- ")
+                newDataLog.new.deleted_at = newDataLog.new.deleted_at.replace("T"," - ")
               }
 
               this.setState({
@@ -65,14 +66,54 @@ class AuditTrailDetail extends React.Component{
    
     renderJsx= (param)=>{
         var jsx = Object.keys(param).map((val,index)=>{
-            return(
-                <ul key={index}>
-                    <li>{`${val} : ${param[val]}`}</li>
-                </ul>
-            )
+            if(typeof(param[val]) === 'object' && param[val] !== null) {
+
+                const childParam = param[val];
+                
+                let newDesign = Object.keys(childParam).map((paramIndex) => {
+                    if(typeof(childParam[paramIndex]) === 'object' && childParam[paramIndex] !== null  ) {
+                        const anotherChild = childParam[paramIndex]
+                        
+                        //  this.renderJsx(anotherChild)
+
+                        let insideAnotherChild = Object.keys(anotherChild).map((valueAnotherChild)=>{
+                            return (
+                                <div key={valueAnotherChild}>
+                                
+                                    <ul key={valueAnotherChild}>
+                                        <li>{`${val} : ${anotherChild[valueAnotherChild]}`}</li>
+                                    </ul>
+                                </div>
+                           
+                            )
+                        })
+                        return insideAnotherChild
+
+                    }
+
+                    return(
+                        <ul key={paramIndex}>
+                            <li>{`${paramIndex.length>1?paramIndex:val} : ${childParam[paramIndex]}`}</li>
+                        </ul>
+                    )
+                    
+                })
+
+                return newDesign;
+            } else {
+                return(
+                    <ul key={index}>
+                        <li>{`${val} : ${param[val]}`}</li>
+                    </ul>
+                )
+            }
+                
+            
+          
         })
         return jsx
     }
+   
     
     render(){   
         if(this.state.loading){
