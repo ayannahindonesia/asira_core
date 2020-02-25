@@ -1,16 +1,11 @@
 import React from 'react'
 import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
-import { getAllActivityLog } from './saga'
+import { getAllAuditTrailFunction } from './saga'
 import TableComponent from '../subComponent/TableComponent'
 
 const columnDataUser = [
-    {
-        id: 'level',
-        numeric: false,
-        type:'textColor',
-        label: 'Level',
-    },
+  
     {
         id: 'created_at',
         numeric: false,
@@ -20,13 +15,18 @@ const columnDataUser = [
     {
         id: 'client',
         numeric: false,
-        label: 'Aplikasi',
+        label: 'Client',
     },
     
     {
-      id: 'uid',
+      id: 'user_id',
       numeric: false,
       label: 'User ID',
+    },
+    {
+        id: 'roles',
+        numeric: false,
+        label: 'Role',
     },
     {
         id: 'username',
@@ -34,19 +34,19 @@ const columnDataUser = [
         label: 'Username',
     },
     {
-        id: 'tag',
+        id: 'entity',
         numeric: false,
-        label: 'Activity',
-    },
+        label: 'Entity',
+    }
+    ,
     {
-        id: 'messages',
+        id: 'action',
         numeric: false,
-        align:'justify',
-        label: 'Message',
-    },
+        label: 'Action',
+    }
 ]
 
-class ActivityLog extends React.Component{
+class AuditTrail extends React.Component{
     _isMounted = false
 
     state={
@@ -57,14 +57,13 @@ class ActivityLog extends React.Component{
         tanggalAwal:new Date(),
         tanggalAkhir:new Date(),
         searchUserId:'',
-        searchActivity:'',
-        searchNote:'',
-        searchMessage:'',
-        searchApplication:'',
-        searchLevel:'',
+        searchEntityId:'',
+        searchAction:'',
+        searchUsername:'',
+        searchEntity:'',
+        searchClient:'',
         paging:true,
         rows:[],total_data:10,page:1,from:1,to:3,last_page:1,rowsPerPage:5,
-        clientList:[]
     }
 
     
@@ -74,41 +73,27 @@ class ActivityLog extends React.Component{
     
     componentDidMount(){
         this._isMounted=true
-        this.getAllLog({})
-        // this.getAllClient()
+        this.getAuditTrail({})
     }
 
-    getAllLog = async function (param) {
+    getAuditTrail = async function (param) {
         this.setState({loading:true})
       
         param.page= this.state.page
         param.rows= 10
         
-        const data = await getAllActivityLog(param)
+        const data = await getAllAuditTrailFunction(param)
 
         if(data){
             if(!data.error){
-                const newDataLog = data.activityLog.data || [];
-                for(const key in newDataLog) {
-                    newDataLog[key].level = {
-                        value: newDataLog[key].level && `${newDataLog[key].level.substring(0,1).toString().toUpperCase()}${newDataLog[key].level.substring(1,newDataLog[key].level.length)}`,
-                        color: 
-                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'trace' ? 'aqua' :
-                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'debug' ? '#19B5FE' :
-                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'fatal' ? 'red' :
-                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'error' ? '#b7472a' :
-                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'warning' ? '#fce38a' : 
-                        newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'info' ? 'green' : 'black',
-                    }
-                    newDataLog[key].messages = newDataLog[key].messages.slice(0,50)
-                }   
-
+                const newDataLog = data.auditTrail.data || [];
+                
                 this.setState({
                     rows:newDataLog, 
-                    rowsPerPage:data.activityLog.rows,
-                    total_data:data.activityLog.total_data,
-                    last_page:data.activityLog.last_page,
-                    page:data.activityLog.current_page,
+                    rowsPerPage:data.auditTrail.rows,
+                    total_data:data.auditTrail.total_data,
+                    last_page:data.auditTrail.last_page,
+                    page:data.auditTrail.current_page,
                     loading:false})
               }else{
                   this.setState({errorMessage:data.error})
@@ -116,16 +101,7 @@ class ActivityLog extends React.Component{
         }
     }
 
-    // getAllClient = async function () {      
-    //     const data = await getAllClientsFunction({})
-    //     if(data){
-    //         if(!data.error){
-    //             this.setState({clientList:data.clientList})
-    //           }else{
-    //               this.setState({errorMessage:data.error})
-    //           }
-    //     }
-    // }
+   
    
     formatSearchingDate = (dateData, endSearch) => {
         const startDate = dateData || new Date();
@@ -158,30 +134,17 @@ class ActivityLog extends React.Component{
         }
     }
 
-    fieldSearch = (e) =>{
-        this.setState({search:e.target.value})
-    }
-    fieldSearchNoted = (e) =>{
-        this.setState({searchNote:e.target.value})
-    }
-    fieldSearchMessage = (e) =>{
-        this.setState({searchMessage:e.target.value})
-    }
-    fieldSearchActivity = (e) =>{
-        this.setState({searchActivity:e.target.value})
-    }
-
     // HANDLE UNTUK BUTTON FILTER SEARCH LOG
     searchLog = ()=>{
         const {
             searchUserId,
             tanggalAkhir,
             tanggalAwal,
-            searchActivity,
-            searchNote,
-            searchMessage,
-            searchApplication,
-            searchLevel,
+            searchEntity,
+            searchEntityId,
+            searchAction,
+            searchUsername,
+            searchClient
         } = this.state
 
         let param = false
@@ -192,27 +155,31 @@ class ActivityLog extends React.Component{
         if(dateAwal && dateAkhir && (dateAwal > dateAkhir)){
             this.setState({errorMessage:"Range Tanggal Salah - Harap Check ulang"})
         }else if(isNaN(searchUserId)){
-            this.setState({errorMessage:"ID harus angka - Harap Check ulang"})
-        } else{
+            this.setState({errorMessage:"User ID harus angka - Harap Check ulang"})
+        }else if(isNaN(searchEntityId)) {
+            this.setState({errorMessage:"Entity ID harus angka - Harap Check ulang"})
+        }
+        else{
             param = {};
 
-            if(searchLevel.trim().length > 0){
-                param.level = searchLevel
-            }
-            if(searchApplication.trim().length > 0){
-                param.client = searchApplication
-            }if(searchMessage.trim().length > 0){
-                param.messages = searchMessage
+            if(searchAction.trim().length > 0){
+                param.action = searchAction
             }
             if(dateAwal<=dateAkhir){
                 param.start_date = this.formatSearchingDate(tanggalAwal)
                 param.end_date = this.formatSearchingDate(tanggalAkhir, true)
             }
-            if(searchActivity.trim().length>0){
-                param.tag = searchActivity
+            if(searchEntity.trim().length>0){
+                param.entity = searchEntity
             }
-            if(searchNote.trim().length>0){
-                param.note = searchNote
+            if(searchClient.trim().length>0){
+                param.client = searchClient
+            }
+            if(searchUsername.trim().length>0){
+                param.username = searchUsername
+            }
+            if (!isNaN(searchEntityId) && searchEntityId.trim().length>0){
+                param.entity_id = searchEntityId
             }
             if (!isNaN(searchUserId) && searchUserId.trim().length>0){
                 param.uid = searchUserId;
@@ -227,8 +194,7 @@ class ActivityLog extends React.Component{
         if(this.searchLog()) {
             this.setState({page:1},()=>{
                 const param = this.searchLog() || {};
-
-                this.getAllLog(param)
+                this.getAuditTrail(param)
             })
         }
        
@@ -243,56 +209,34 @@ class ActivityLog extends React.Component{
             tanggalAwal:'',
             tanggalAkhir:'',
             searchUserId:'',
-            searchActivity:'',
-            searchLevel:'',
-            searchApplication:'',
-            searchNote:'',
-            searchMessage:'',
+            searchEntityId:'',
+            searchAction:'',
+            searchEntity:'',
+            searchClient:'',
+            searchUsername:'',
             errorMessageId:''
         },()=>{
-            this.getAllLog({})
+            this.getAuditTrail({})
         })
     }
+
+   
 
     onChangePage = (current) => {
         this.setState({page:current},()=>{
           if(this.state.paging){
-            this.getAllLog(this.searchLog())
+            this.getAuditTrail(this.searchLog())
           }
         })
     }
 
-    renderJSX = ()=>{
-        var jsx  = this.state.rows.map((val,index)=>{
-            return(
-                <tr key={index}>
-                       <td align="center">
-                        {val.level ==="trace" ? <input type="button" className="btn btn-outline-secondary" value="Trace"/>:
-                            val.level ==='debug' ?<input type="button" className="btn btn-outline-success" value="Debug"/>:
-                            val.level ==='fatal' ?<input type="button" className="btn btn-danger" value="Fatal"/>:
-                            val.level ==='error' ?<input type="button" className="btn btn-outline-danger" value="Error"/>:
-                            val.level ==='warning' ?<input type="button" className="btn btn-outline-warning" value="Warning"/>:
-                                            <input type="button" className="btn btn-outline-info" value="Info"/>
-                       }</td>
-                       <td align="left">{val.created_at}</td>
-                        <td align="center">{val.client}</td>
-                        <td align="center">{val.uid}</td>
-                        <td align="center">{val.username}</td>
-                        <td align="center">{val.tag}</td>          
-                        <td align="left">{val.messages}</td>
-                </tr>
-            )
-        })
-        return jsx
-    }
-    
     render(){   
         if(getToken()){
             return(
                 <div style={{padding:0}}>
                     < TableComponent
                         id={"id"}
-                        title={'Activity Log - List'}
+                        title={'Audit Trail - List'}
                         advancedSearch={[
                             {
                                 id:'searchUserId',
@@ -301,33 +245,33 @@ class ActivityLog extends React.Component{
                                 function: this.onChangeSearch,
                             },
                             {
-                                id:'searchNote',
-                                value: this.state.searchNote,
-                                label: 'Note',
+                                id:'searchEntityId',
+                                value: this.state.searchEntityId,
+                                label: 'Entity ID',
                                 function: this.onChangeSearch,
                             },
                             {
-                                id:'searchMessage',
-                                value: this.state.searchMessage,
-                                label: 'Message',
+                                id:'searchEntity',
+                                value: this.state.searchEntity,
+                                label: 'Entity',
                                 function: this.onChangeSearch,
                             },
                             {
-                                id:'searchActivity',
-                                value: this.state.searchActivity,
-                                label: 'Activity',
+                                id:'searchAction',
+                                value: this.state.searchAction,
+                                label: 'Action',
                                 function: this.onChangeSearch,
                             },
                             {
-                                id:'searchApplication',
-                                value: this.state.searchApplication,
-                                label: 'Application',
+                                id:'searchUsername',
+                                value: this.state.searchUsername,
+                                label: 'Username',
                                 function: this.onChangeSearch,
                             },
                             {
-                                id:'searchLevel',
-                                value: this.state.searchLevel,
-                                label: 'Level',
+                                id:'searchClient',
+                                value: this.state.searchClient,
+                                label: 'Client',
                                 function: this.onChangeSearch,
                             }
 
@@ -360,9 +304,8 @@ class ActivityLog extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.total_data}
                         onChangePage={this.onChangePage}    
-                        permissionDetail={'/activityLogDetail/'}         
+                        permissionDetail={'/auditTrailDetail/'}         
                     /> 
-                        
                         
                 </div>
             )
@@ -377,4 +320,4 @@ class ActivityLog extends React.Component{
     
 }
 
-export default ActivityLog
+export default AuditTrail

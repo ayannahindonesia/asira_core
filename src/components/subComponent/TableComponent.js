@@ -97,7 +97,7 @@ class TableComponent extends React.Component {
       <Grid item sm={12} xs={12}>
 
         <table className="table table-hover">
-          <thead >
+          <thead style={{border:'none'}}>
             <tr >
               {
                 this.props.checkBoxAction &&
@@ -118,7 +118,9 @@ class TableComponent extends React.Component {
                   );
                 },this) 
               }
-              <th className="text-center" scope="col">Action</th>
+              { (this.props.permissionEdit || this.props.permissionDetail) &&
+                <th className="text-center" scope="col">Action</th>
+              }
             </tr>     
           </thead>
           <tbody>
@@ -161,11 +163,22 @@ class TableComponent extends React.Component {
                       }
                     
                       {
-                        this.props.columnData.map((dataRow, indexRow) => {                         
+                        this.props.columnData.map((dataRow, indexRow) => {              
                           return(
-                            <td align={dataRow.numeric ? "right" : "center"} key={indexRow}>
+                            <td align={dataRow.align ? dataRow.align : (dataRow.numeric ? "right" : "center")} key={indexRow} width={dataRow.width ? dataRow.width:'auto'}>
                               {
-                                dataRow.type && dataRow.type === 'datetime' && handleFormatDate(dataTable[dataRow.id])
+                                dataRow.type && dataRow.type.includes('date') && handleFormatDate(dataTable[dataRow.id], dataRow.type.includes('time') && true)
+                              }
+                              {
+                                dataRow.type && dataRow.type.includes('textColor') &&
+                                <div style={{
+                                  color:`${dataTable[dataRow.id].color ? dataTable[dataRow.id].color : 'black'}`,
+                                  border:`2px solid ${dataTable[dataRow.id].color ? dataTable[dataRow.id].color : 'black'}`,
+                                  borderRadius:'5px',
+                                  padding:'5px'
+                                }}>
+                                  {dataTable[dataRow.id].value ? dataTable[dataRow.id].value : dataTable[dataRow.id]}
+                                </div>                               
                               }
                               {
                                 dataRow.type && dataRow.type === 'button'  && this.checkConditionButton(dataTable, dataRow.conditions) &&
@@ -272,10 +285,32 @@ class TableComponent extends React.Component {
           
           <Grid container>
 
-            <Grid item sm={12} xs={12} style={{color:"red",fontSize:"15px",textAlign:'left'}}>
+            <Grid item sm={12} xs={12} style={{color:"red",fontSize:"15px",textAlign:'left',marginBottom:'5px'}}>
               {this.props.errorMessage}
             </Grid>
 
+            {
+              this.props.advancedSearch &&
+              <Grid item sm={12} xs={12} style={{marginBottom:`${this.props.advancedSearch ? '0px' : '10px'}`}}>
+                <Grid container>
+                {
+                  this.props.advancedSearch.map((searchPerBar, index) => {
+                    return(
+                      <Grid item key={index} sm={parseInt(12 / this.props.advancedSearch.length)} xs={parseInt(12 / this.props.advancedSearch.length)} style={{paddingRight:'6px'}}>
+                        <SearchBar
+                          id={searchPerBar.id}
+                          value={searchPerBar.value}
+                          placeholder={searchPerBar.label || 'Cari...'}
+                          onChange={(e) => {searchPerBar.function(e, searchPerBar.id)} }
+                          float={'left'}
+                        />
+                      </Grid>
+                    )
+                  },this)
+                }
+                </Grid>
+              </Grid>
+            }
 
             {
               this.props.searchDate &&

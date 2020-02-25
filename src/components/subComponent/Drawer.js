@@ -75,7 +75,14 @@ import CalonNasabahArsipList from './../calonNasabah/calonNasabahArsipList';
 import CalonNasabahArsipDetail from './../calonNasabah/calonNasabahArsipDetail';
 import ChangePassword from './../index/changePassword'
 import ActivityLog from './../logs/activitylog'
+import ActivityLogDetail from './../logs/activitylogDetail'
+import AuditTrail from '../logs/auditTrail';
+import AuditTrailDetail from '../logs/auditTrailDetail';
 import FAQ from './../FAQ/faqList'
+import FAQDetail from './../FAQ/faqDetail'
+import FAQEdit from './../FAQ/faqEdit'
+import FAQAdd from './../FAQ/faqAdd'
+
 
 
 
@@ -397,7 +404,14 @@ function ResponsiveDrawer(props) {
             { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahArsipDetail/:id' component={CalonNasabahArsipDetail}></Route>}
 
             <Route path='/activityLog' component={ActivityLog}></Route>
+            <Route path="/activityLogDetail/:id" component={ActivityLogDetail}></Route>
+            <Route path="/auditTrail" component={AuditTrail}></Route>
+            <Route path="/auditTrailDetail/:id" component={AuditTrailDetail}></Route>
+
             <Route path='/FAQ' component={FAQ}></Route>
+            <Route path='/FAQAdd' component={FAQAdd}></Route>
+            <Route path='/FAQEdit/:id' component={FAQEdit}></Route>
+            <Route path='/FAQDetail/:id' component={FAQDetail}></Route>
 
             {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
             <Route path='/ubahpassword' component={ChangePassword} />

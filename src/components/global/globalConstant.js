@@ -496,7 +496,7 @@ exports.dataMenu = [
             {
                 label: 'Auditrail',
                 logo: '',
-                link:'/auditrail',
+                link:'/auditTrail',
                 action: {
                     list:'_',
                 }
