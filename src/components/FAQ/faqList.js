@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { checkPermission } from '../global/globalFunction';
-import { getAllLayananListFunction } from './saga';
+import { getAllFAQListFunction } from './saga';
 import { getToken } from '../index/token';
 import TableComponent from './../subComponent/TableComponent'
 
@@ -9,17 +9,17 @@ const columnDataUser = [
     {
         id: 'id',
         numeric: false,
-        label: 'ID Layanan',
+        label: 'ID FAQ',
     },
     {
-        id: 'name',
+        id: 'title',
         numeric: false,
-        label: 'Nama Layanan',
+        label: 'Judul',
     },
     {
-        id: 'status',
+        id: 'description',
         numeric: false,
-        label: 'Status Layanan',
+        label: 'Deskripsi',
     }
   ]
   
@@ -43,22 +43,18 @@ class FAQ extends React.Component{
             page: this.state.page,
             rows:10
         }
-        const data = await getAllLayananListFunction(param)
-        const listLayanan = data.listLayanan &&data.listLayanan.data
-
-        for (const key in listLayanan){
-            listLayanan[key].status =  listLayanan[key].status&&  listLayanan[key].status === 'active'?"Aktif":"Tidak Aktif"
-        }
+        const data = await getAllFAQListFunction(param)
+        
 
         if(data){
             if(!data.error){
-                this.setState({loading:false,rows:data.listLayanan.data,
-                    total_data:data.listLayanan.total_data,
-                    page:data.listLayanan.current_page,
-                    from:data.listLayanan.from,
-                    to:data.listLayanan.to,
-                    last_page:data.listLayanan.last_page,
-                    dataPerhalaman:data.listLayanan.rows,
+                this.setState({loading:false,rows:data.listFaq.data,
+                    total_data:data.listFaq.total_data,
+                    page:data.listFaq.current_page,
+                    from:data.listFaq.from,
+                    to:data.listFaq.to,
+                    last_page:data.listFaq.last_page,
+                    dataPerhalaman:data.listFaq.rows,
                 })
             }else{
                 this.setState({errorMessage:data.error,loading:false})
@@ -89,9 +85,9 @@ class FAQ extends React.Component{
                         rowsPerPage={this.state.dataPerhalaman}
                         totalData={this.state.total_data}
                         onChangePage={this.onChangePage}     
-                        permissionAdd={ checkPermission('core_service_new') ? '/layananAdd' : null }           
-                        permissionDetail={ checkPermission('core_service_detail') ? '/layananDetail/' : null}
-                        permissionEdit={ checkPermission('core_service_patch') ? '/layananEdit/' : null}
+                        permissionAdd={ checkPermission('_') ? '/FAQAdd' : null }           
+                        permissionDetail={ checkPermission('_') ? '/FAQDetail/' : null}
+                        permissionEdit={ checkPermission('_') ? '/FAQEdit/' : null}
 
                     /> 
                 </div>
