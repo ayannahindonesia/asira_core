@@ -104,29 +104,33 @@ class AuditTrailDetail extends React.Component{
                     </ul>
                 )
             }
-                
-            
           
         })
         return jsx
     }
    
-    // isEqual = (oldData,newData) =>{
-    //     const obj1Keys = Object.key(oldData)
-    //     const obj2Keys = Object.key(newData)
-       
-    //     if(obj1Keys !== obj2Keys){
-    //         return false
-    //     }
-    //     for (const key in obj1Keys){
-    //         if(obj1Keys[key] !== obj2Keys[key]){
-    //             return false
-    //         }
-    //     }
+     extractJSON = (obj, indent) => {
+         let finalObj =''
 
-    //     return true
+         if(obj !== null) {
+            finalObj = Object.keys(obj).map((i,index) => {
+                if (Array.isArray(obj[i]) || typeof obj[i] === 'object') {
+                    return this.extractJSON(obj[i], ' --- '+ indent + '  ' + i + ' > ');
+                  } else {
+                    return (
+                        <ul key={index}>
+                            <li>{indent + i + ': ' + obj[i] }</li>
+                        </ul>
+                    )
+                  }
+             }, this)
+         } else {
+            finalObj = (<ul><li>Null</li></ul>)
+         }
+         
 
-    // }
+        return(finalObj) 
+      }
    
     getValueandPropertyDifferences =(oldData,newData)=>{
         let objectCombine = {}
@@ -174,16 +178,15 @@ class AuditTrailDetail extends React.Component{
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td className="text-left"> 
-                                      {this.renderJsx(this.state.originalData)}
+                                    <td className="text-left w-25"> 
+                                      {this.extractJSON(this.state.originalData,"  ")}
                                     </td>
-                                    <td className="text-left"> 
-                                      {this.renderJsx(this.state.newData)}
+                                    <td className="text-left w-25"> 
+                                      {this.extractJSON(this.state.newData,"  ")}
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
-                            {this.getValueandPropertyDifferences(this.state.originalData,this.state.newData)}
 
                         </div>
                     </div>
