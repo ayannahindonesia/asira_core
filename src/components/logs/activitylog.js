@@ -89,7 +89,6 @@ class ActivityLog extends React.Component{
         if(data){
             if(!data.error){
                 const newDataLog = data.activityLog.data || [];
-
                 for(const key in newDataLog) {
                     newDataLog[key].level = {
                         value: newDataLog[key].level && `${newDataLog[key].level.substring(0,1).toString().toUpperCase()}${newDataLog[key].level.substring(1,newDataLog[key].level.length)}`,
@@ -101,7 +100,8 @@ class ActivityLog extends React.Component{
                         newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'warning' ? '#fce38a' : 
                         newDataLog[key].level && newDataLog[key].level.toString().toLowerCase() === 'info' ? 'green' : 'black',
                     }
-                }
+                    newDataLog[key].messages = newDataLog[key].messages.slice(0,50)
+                }   
 
                 this.setState({
                     rows:newDataLog, 
