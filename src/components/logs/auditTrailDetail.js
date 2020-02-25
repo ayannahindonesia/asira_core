@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom'
 import { getAuditTrailDetailFunction } from './saga'
 import Loader from 'react-loader-spinner'
 
+var _ = require('lodash');
 
 class AuditTrailDetail extends React.Component{
     _isMounted = false
@@ -13,6 +14,7 @@ class AuditTrailDetail extends React.Component{
         originalDataFee:[],
         originalData:[],
         rows:{},
+        objC:{},
         loading:true
     }
 
@@ -31,8 +33,8 @@ class AuditTrailDetail extends React.Component{
         const param = {}
         param.id = this.props.match.params.id
         const data = await getAuditTrailDetailFunction(param)
-        console.log(data)
        if(data){
+           console.log(data)
            if(!data.error){
               const newDataLog = data.auditTrailDetail 
               newDataLog.original = JSON.parse(newDataLog.original)
@@ -71,34 +73,29 @@ class AuditTrailDetail extends React.Component{
                 const childParam = param[val];
                 
                 let newDesign = Object.keys(childParam).map((paramIndex) => {
-                    if(typeof(childParam[paramIndex]) === 'object' && childParam[paramIndex] !== null  ) {
-                        const anotherChild = childParam[paramIndex]
-                        
-                        //  this.renderJsx(anotherChild)
+                        if(typeof(childParam[paramIndex]) === 'object' && childParam[paramIndex] !== null  ) {
+                            const anotherChild = childParam[paramIndex]
+                            
+                            //  this.renderJsx(anotherChild)
 
-                        let insideAnotherChild = Object.keys(anotherChild).map((valueAnotherChild)=>{
-                            return (
-                                <div key={valueAnotherChild}>
-                                
-                                    <ul key={valueAnotherChild}>
-                                        <li>{`${val} : ${anotherChild[valueAnotherChild]}`}</li>
-                                    </ul>
-                                </div>
-                           
-                            )
-                        })
-                        return insideAnotherChild
+                            let insideAnotherChild = Object.keys(anotherChild).map((valueAnotherChild,indexOther)=>{
+                                return (
+                                        <ul  key={indexOther}>
+                                            <li>{`${val} : ${anotherChild[valueAnotherChild]}`}</li>
+                                        </ul>
+                                )
+                            })
+                            return insideAnotherChild
+                        }
 
-                    }
-
-                    return(
-                        <ul key={paramIndex}>
-                            <li>{`${paramIndex.length>1?paramIndex:val} : ${childParam[paramIndex]}`}</li>
-                        </ul>
-                    )
+                        return(
+                            <ul key={paramIndex}>
+                                <li>{`${paramIndex.length>1?paramIndex:val} : ${childParam[paramIndex]}`}</li>
+                            </ul>
+                        )
+                    })
                     
-                })
-
+                    
                 return newDesign;
             } else {
                 return(
@@ -107,13 +104,52 @@ class AuditTrailDetail extends React.Component{
                     </ul>
                 )
             }
-                
-            
           
         })
         return jsx
     }
    
+     extractJSON = (obj, indent) => {
+         let finalObj =''
+
+         if(obj !== null) {
+            finalObj = Object.keys(obj).map((i,index) => {
+                if (Array.isArray(obj[i]) || typeof obj[i] === 'object') {
+                    return this.extractJSON(obj[i], ' --- '+ indent + '  ' + i + ' > ');
+                  } else {
+                    return (
+                        <ul key={index}>
+                            <li>{indent + i + ': ' + obj[i] }</li>
+                        </ul>
+                    )
+                  }
+             }, this)
+         } else {
+            finalObj = (<ul><li>Null</li></ul>)
+         }
+         
+
+        return(finalObj) 
+      }
+   
+    getValueandPropertyDifferences =(oldData,newData)=>{
+        let objectCombine = {}
+
+        for (const key in oldData){
+           objectCombine[key] =  oldData[key]
+           for (const key2 in newData){
+               if(newData === oldData){
+
+               }    
+           }
+        }
+        // for (const key2 in newData){
+        //     objectCombine[key2] = newData[key2]
+        // }
+
+        console.log(objectCombine)
+      
+    }
     
     render(){   
         if(this.state.loading){
@@ -142,17 +178,19 @@ class AuditTrailDetail extends React.Component{
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td className="text-left"> 
-                                      {this.renderJsx(this.state.originalData)}
+                                    <td className="text-left w-25"> 
+                                      {this.extractJSON(this.state.originalData,"  ")}
                                     </td>
-                                    <td className="text-left"> 
-                                      {this.renderJsx(this.state.newData)}
+                                    <td className="text-left w-25"> 
+                                      {this.extractJSON(this.state.newData,"  ")}
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
+
                         </div>
                     </div>
+
                     <div>
                         <input type="button" className="btn btn-outline-primary" value="Kembali" onClick={()=> window.history.back()}/>
                     </div>
