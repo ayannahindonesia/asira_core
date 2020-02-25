@@ -10,9 +10,8 @@ import './../../support/css/table.css'
 import { Grid, Button, Fab } from '@material-ui/core';
 import TitleBar from './TitleBar';
 import SearchBar from './SearchBar';
-import DatePicker from "react-date-picker";
+import DatePicker from "./../subComponent/DatePicker";
 import AddIcon from '@material-ui/icons/Add';
-import "react-datepicker/dist/react-datepicker.css";
 
 class TableComponent extends React.Component {
   constructor(props) {
@@ -316,19 +315,17 @@ class TableComponent extends React.Component {
               this.props.searchDate &&
               <Grid item sm={12} xs={12} style={{marginBottom:'10px'}}>
                 <Grid container>
-                  <Grid item sm={2} xs={12} style={{color:'#2D85E9', fontSize:'16px'}}>
+                  <Grid item sm={1} xs={12} style={{color:'#2D85E9', fontSize:'16px'}}>
                     <b> {this.props.searchDate.label} </b>
                   </Grid>
 
-                  <Grid item sm={5} xs={12} style={{maxWidth:'330px'}}>
+                  <Grid item sm={6} xs={12} style={{maxWidth:'400px'}}>
                     {
                       this.props.searchDate.value && 
                       <Grid container>
 
-                        <Grid item sm={5} xs={5} style={{maxWidth:'130px'}}>
+                        <Grid item sm={5} xs={5}>
                           <DatePicker
-                            format="yyyy-MM-dd"
-                            style={{width:'100%'}}
                             value={
                               (typeof(this.props.searchDate.value) === 'object' ? this.props.searchDate.value[0] : this.props.searchDate.value) || new Date()
                             }
@@ -346,7 +343,6 @@ class TableComponent extends React.Component {
                         { typeof(this.props.searchDate.value) === 'object' &&
                           <Grid item sm={5} xs={5} style={{maxWidth:'130px'}}>
                             <DatePicker
-                              format="yyyy-MM-dd"
                               value={this.props.searchDate.value[1] || new Date()}
                               onChange={(this.props.searchDate.function && this.props.searchDate.function[1]) || null}
                               clearIcon={null}
@@ -359,7 +355,7 @@ class TableComponent extends React.Component {
                     }
                   </Grid>
 
-                  <Grid item sm={5} xs={12}>
+                  <Grid item sm={2} xs={12}>
                     {
                       this.props.searchDate.button &&
                       <Grid container>
