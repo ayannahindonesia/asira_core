@@ -503,6 +503,16 @@ exports.dataMenu = [
             },
         ]
     },
+    // FAQ
+    {
+        label: 'FAQ',
+        logo: '',
+        system:'Core',
+        link:'/FAQ',
+        action: {
+            list:'convenience_fee_report',
+        }
+    },
     // Convenience Fee Report
     {
         label: 'Report',
