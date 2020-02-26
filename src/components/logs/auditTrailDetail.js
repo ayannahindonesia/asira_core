@@ -84,7 +84,7 @@ class AuditTrailDetail extends React.Component{
                 if(obj[i]===null){
                     return(
                         <ul key={index}>
-                            <li>{indent + i + ': ' +"null" }</li>
+                            <li>{indent + i + ': -' }</li>
                         </ul>
                     )
                 }
@@ -98,8 +98,7 @@ class AuditTrailDetail extends React.Component{
                     )
                   }
              }, this)
-         } 
-         
+         }
 
         return(finalObj) 
       }
