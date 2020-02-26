@@ -4,8 +4,6 @@ import { Redirect } from 'react-router-dom'
 import { getAuditTrailDetailFunction } from './saga'
 import Loader from 'react-loader-spinner'
 
-var _ = require('lodash');
-
 class AuditTrailDetail extends React.Component{
     _isMounted = false
 
@@ -63,59 +61,35 @@ class AuditTrailDetail extends React.Component{
                this.setState({errorMessage:data.error})
            }
        }
-    }
+    }   
 
-   
-    renderJsx= (param)=>{
-        var jsx = Object.keys(param).map((val,index)=>{
-            if(typeof(param[val]) === 'object' && param[val] !== null) {
+    // combineTwoObject =(oldData,newData)=>{
+    //     let result = {}
+    //     for (const key in newData){
+    //         result[key]={}
+    //         result[key].ori = oldData[key]
+    //         result[key].latest = newData[key]
+    //         result[key].verified = newData[key] === oldData[key]
+    //     }
+    //     this.setState({objC:result})
 
-                const childParam = param[val];
-                
-                let newDesign = Object.keys(childParam).map((paramIndex) => {
-                        if(typeof(childParam[paramIndex]) === 'object' && childParam[paramIndex] !== null  ) {
-                            const anotherChild = childParam[paramIndex]
-                            
-                            //  this.renderJsx(anotherChild)
+    //     return result
+    // }
 
-                            let insideAnotherChild = Object.keys(anotherChild).map((valueAnotherChild,indexOther)=>{
-                                return (
-                                        <ul  key={indexOther}>
-                                            <li>{`${val} : ${anotherChild[valueAnotherChild]}`}</li>
-                                        </ul>
-                                )
-                            })
-                            return insideAnotherChild
-                        }
-
-                        return(
-                            <ul key={paramIndex}>
-                                <li>{`${paramIndex.length>1?paramIndex:val} : ${childParam[paramIndex]}`}</li>
-                            </ul>
-                        )
-                    })
-                    
-                    
-                return newDesign;
-            } else {
-                return(
-                    <ul key={index}>
-                        <li>{`${val} : ${param[val]}`}</li>
-                    </ul>
-                )
-            }
-          
-        })
-        return jsx
-    }
-   
      extractJSON = (obj, indent) => {
          let finalObj =''
 
          if(obj !== null) {
             finalObj = Object.keys(obj).map((i,index) => {
+                if(obj[i]===null){
+                    return(
+                        <ul key={index}>
+                            <li>{indent + i + ': ' +"null" }</li>
+                        </ul>
+                    )
+                }
                 if (Array.isArray(obj[i]) || typeof obj[i] === 'object') {
-                    return this.extractJSON(obj[i], ' --- '+ indent + ' || ' + i + ' > ');
+                    return this.extractJSON(obj[i],` --- `+ indent + '  ' + i + ' > ');
                   } else {
                     return (
                         <ul key={index} style={{wordWrap:"break-word",width:"400px"}}>
@@ -124,15 +98,11 @@ class AuditTrailDetail extends React.Component{
                     )
                   }
              }, this)
-         } else {
-            finalObj = (<ul key="m"><li>Null</li></ul>)
-         }
+         } 
          
 
         return(finalObj) 
       }
-   
-
     
     render(){   
         if(this.state.loading){
@@ -161,10 +131,10 @@ class AuditTrailDetail extends React.Component{
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td className="text-left w-25"> 
+                                    <td className="text-left"> 
                                       {this.extractJSON(this.state.originalData,"  ")}
                                     </td>
-                                    <td className="text-left w-25"> 
+                                    <td className="text-left"> 
                                       {this.extractJSON(this.state.newData,"  ")}
                                     </td>
                                 </tr>
