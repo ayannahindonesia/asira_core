@@ -115,41 +115,24 @@ class AuditTrailDetail extends React.Component{
          if(obj !== null) {
             finalObj = Object.keys(obj).map((i,index) => {
                 if (Array.isArray(obj[i]) || typeof obj[i] === 'object') {
-                    return this.extractJSON(obj[i], ' --- '+ indent + '  ' + i + ' > ');
+                    return this.extractJSON(obj[i], ' --- '+ indent + ' || ' + i + ' > ');
                   } else {
                     return (
-                        <ul key={index}>
+                        <ul key={index} style={{wordWrap:"break-word",width:"400px"}}>
                             <li>{indent + i + ': ' + obj[i] }</li>
                         </ul>
                     )
                   }
              }, this)
          } else {
-            finalObj = (<ul><li>Null</li></ul>)
+            finalObj = (<ul key="m"><li>Null</li></ul>)
          }
          
 
         return(finalObj) 
       }
    
-    getValueandPropertyDifferences =(oldData,newData)=>{
-        let objectCombine = {}
 
-        for (const key in oldData){
-           objectCombine[key] =  oldData[key]
-           for (const key2 in newData){
-               if(newData === oldData){
-
-               }    
-           }
-        }
-        // for (const key2 in newData){
-        //     objectCombine[key2] = newData[key2]
-        // }
-
-        console.log(objectCombine)
-      
-    }
     
     render(){   
         if(this.state.loading){
