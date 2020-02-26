@@ -3,7 +3,7 @@ import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
 import { getAuditTrailDetailFunction } from './saga'
 import Loader from 'react-loader-spinner'
-
+var _ = require('lodash');
 class AuditTrailDetail extends React.Component{
     _isMounted = false
 
@@ -29,10 +29,10 @@ class AuditTrailDetail extends React.Component{
 
     getAuditDetail = async function () {
         const param = {}
+        const result={}
         param.id = this.props.match.params.id
         const data = await getAuditTrailDetailFunction(param)
        if(data){
-           console.log(data)
            if(!data.error){
               const newDataLog = data.auditTrailDetail 
               newDataLog.original = JSON.parse(newDataLog.original)
@@ -49,10 +49,17 @@ class AuditTrailDetail extends React.Component{
               if(newDataLog.new.deleted_at !==null){
                 newDataLog.new.deleted_at = newDataLog.new.deleted_at.replace("T"," - ")
               }
+              for(const key in newDataLog.new){
+                    result[key]={}
+                    result[key].ori = newDataLog.original[key] || ''
+                    result[key].latest = newDataLog.new[key] || ''
+                    result[key].verified = _.isEqual(result[key].ori,result[key].latest)
+              }
 
               this.setState({
                 originalData:  newDataLog.original,
                 newData:  newDataLog.new,
+                objC:result,
                 rows:newDataLog,
                 loading:false
               })
@@ -62,19 +69,24 @@ class AuditTrailDetail extends React.Component{
            }
        }
     }   
+    fieldModified = (obj) => {
+        let result =''
 
-    // combineTwoObject =(oldData,newData)=>{
-    //     let result = {}
-    //     for (const key in newData){
-    //         result[key]={}
-    //         result[key].ori = oldData[key]
-    //         result[key].latest = newData[key]
-    //         result[key].verified = newData[key] === oldData[key]
-    //     }
-    //     this.setState({objC:result})
+        if(obj !== null) {
+            result = Object.keys(obj).map((i,index) => {
+               if ( obj[i].verified===false && (Array.isArray(obj[i]) || typeof obj[i] === 'object')) {
+                   return ( 
+                        <ul key={index}>
+                          <li>{ i }</li>
+                        </ul>
+                        )
+               } 
+               return null;
+            }, this)
+        }
 
-    //     return result
-    // }
+        return result
+     }
 
      extractJSON = (obj, indent) => {
          let finalObj =''
@@ -119,8 +131,25 @@ class AuditTrailDetail extends React.Component{
                 <div style={{padding:0}}>
                     <h2>Audit Trail - Detail {this.state.rows.id}</h2>
                     <hr></hr>
+                    <div>
+                    </div>
                     <div className="row">
                         <div className="col col-xs col-md">
+                            <table className="table table-bordered">
+                             <thead className="table-warning">
+                                <tr>
+                                    <th className="text-center" scope="col">Field data yang berubah</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td className="text-left"> 
+                                    {this.fieldModified(this.state.objC)}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
                             <table className="table table-bordered">
                              <thead className="table-warning">
                                 <tr>
