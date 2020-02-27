@@ -5,10 +5,8 @@ import swal from 'sweetalert'
 import { addProductFunction} from './saga';
 import { getToken } from '../index/token';
 import { getAllLayananListFunction } from '../layanan/saga';
-import TextField from '@material-ui/core/TextField';
-import { Grid, InputAdornment, FormControlLabel, Checkbox, Button } from '@material-ui/core';
+import { Grid, InputAdornment, FormControlLabel, Checkbox, Button, TextField, IconButton } from '@material-ui/core';
 import DropDown from '../subComponent/DropDown';
-import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TitleBar from '../subComponent/TitleBar';
@@ -23,6 +21,7 @@ class ProductAdd extends React.Component{
         bankService:[],
         diKlik:false,
         check:true,
+        checkAuto:true,
         asuransi: '',
         rentangFrom:'',
         rentangTo:'',
@@ -30,6 +29,7 @@ class ProductAdd extends React.Component{
         timeTo: '',
         layanan:0,
         interest:'',
+        tipeBunga:'fixed',
         agunan:[
             {
                 label: '',
@@ -58,6 +58,17 @@ class ProductAdd extends React.Component{
                 value: '',
             }
         ],
+        listRequired:[
+            {
+                id:'required',
+                label:'Required'
+            },
+            {
+                id:'optional',
+                label:'Optional'
+            },
+            
+        ],
         listType:[
             {
                 id:'textfield',
@@ -67,7 +78,14 @@ class ProductAdd extends React.Component{
                 id:'dropdown',
                 label:'Drop Down'
             },
-            
+            {
+                id:'checkbox',
+                label:'Checkbox'
+            },    
+            {
+                id:'image',
+                label:'Image'
+            },      
         ],
         listTypeFee:[
             {
@@ -79,6 +97,24 @@ class ProductAdd extends React.Component{
                 label:'Rupiah (IDR)'
             },
             
+        ],
+        listBunga:[
+            {
+                id: 'fixed',
+                name: 'Fixed Anually'
+            },
+            {
+                id: 'flat',
+                name: 'Flat'
+            },
+            {
+                id: 'onetimepay',
+                name: 'One Time Loan'
+            },
+            {
+                id: 'effective_down',
+                name: 'Efektif Menurun'
+            },
         ]
     };
 
@@ -105,6 +141,8 @@ class ProductAdd extends React.Component{
                 interest: this.state.interest,
                 min_loan: this.state.rentangFrom,
                 max_loan: this.state.rentangTo,
+                interest_type: this.state.tipeBunga,
+                auto_paid: this.state.checkAuto,
                 status: this.state.check ? 'active':'nonactive',
             }
 
@@ -203,45 +241,51 @@ class ProductAdd extends React.Component{
         this.setState({diKlik:true})
     }
 
-    handleChecked = ()=>{
-        this.setState({check:!this.state.check})
+    handleChecked = (e, labelData)=>{
+        this.setState({[labelData]:!this.state[labelData]})
     }
 
     changeFlexibleData = (e, stringLabel, index, labelData, numeric) => {
-        const arrayMandatory = this.state[labelData];
+        const arrayData = this.state[labelData];
 
         if(numeric && isNaN(e.target.value)) {           
                       
         } else {
-            arrayMandatory[index][stringLabel] = e.target.value;
+            arrayData[index][stringLabel] = e.target.value;
         }
 
-        this.setState({[labelData]: arrayMandatory})
+        this.setState({[labelData]: arrayData})
     }
 
     btnTambahFlexibleData = (e, labelData) => {
-        const arrayMandatory = this.state[labelData];
+        const arrayData = this.state[labelData];
 
-        arrayMandatory.push(
-            {
-                label: '',
-                type: labelData === 'mandatory' ? 'textfield' : labelData === 'fee' ? 'percent' : '',
-                value: '',
-            }
-        )
+        const dataNew = {
+            label: '',
+            type: labelData === 'mandatory' ? 'textfield' : labelData === 'fee' ? 'percent' : '',
+            value: '',
+        }
 
-        this.setState({[labelData]:arrayMandatory});
+        if(labelData === 'mandatory') {
+            dataNew.status='required';
+        }
+
+        arrayData.push(dataNew)
+
+        
+
+        this.setState({[labelData]:arrayData});
     }
 
     deleteFlexibleData = (e, index, labelData) => {
         
-        const arrayMandatory = this.state[labelData];
+        const arrayData = this.state[labelData];
         const newArray = [];
 
-        for(const key in arrayMandatory) {
+        for(const key in arrayData) {
             
-            if(key.toString() !== index.toString() || (key.toString() === '0' && arrayMandatory.length === 1)) {
-                newArray.push(arrayMandatory[key])
+            if(key.toString() !== index.toString() || (key.toString() === '0' && arrayData.length === 1)) {
+                newArray.push(arrayData[key])
             }
 
         }
@@ -329,10 +373,10 @@ class ProductAdd extends React.Component{
                             {/* Bunga */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'15px'}}>
                                 <Grid container>
-                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'30px'}}>
                                         Bunga
                                     </Grid>
-                                    <Grid item xs={1} sm={1} >
+                                    <Grid item xs={1} sm={1} style={{paddingTop:'12px', marginRight:'20px'}}>
                                         <TextField
                                             id="interest"
                                             value={this.state.interest}
@@ -343,6 +387,18 @@ class ProductAdd extends React.Component{
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end">%</InputAdornment>,
                                             }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} >
+                                        <DropDown
+                                            value={this.state.tipeBunga}
+                                            label="name"
+                                            data={this.state.listBunga}
+                                            id="id"
+                                            labelName={"name"}
+                                            onChange={(e) => this.changeDropDown(e,'tipeBunga')}
+                                            fullWidth
+
                                         />
                                     </Grid>
                                 </Grid>
@@ -434,7 +490,7 @@ class ProductAdd extends React.Component{
                                 </Grid>
                             </Grid>   
                             {/* Status */}
-                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'25px'}}>
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'20px'}}>
                                 <Grid container>
                                     <Grid item xs={4} sm={4} style={{paddingTop:'10px'}}>
                                         Status
@@ -444,22 +500,45 @@ class ProductAdd extends React.Component{
                                             control={
                                                 <Checkbox
                                                     checked={this.state.check}
-                                                    onChange={this.handleChecked}
-                                                    color="default"
+                                                    onChange={(e) => this.handleChecked(e, 'check')}
+                                                    color={this.state.check ? "primary":"default"}
                                                     value="default"
                                                     inputProps={{ 'aria-label': 'checkbox with default color' }}
                                                 />
                                             }
-                                            label={this.state.check ? 'Aktif' : 'Tidak Aktif'}
+                                            label={'Aktif'}
                                         />
                                         
                                     </Grid>
                                 </Grid>
-                            </Grid>    
+                            </Grid>   
+                            {/* Auto Paid */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'20px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'10px'}}>
+                                        Auto Paid
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} >
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={this.state.checkAuto}
+                                                    onChange={(e) => this.handleChecked(e, 'checkAuto')}
+                                                    color={this.state.checkAuto ? "primary":"default"}
+                                                    value="default"
+                                                    inputProps={{ 'aria-label': 'checkbox with default color' }}
+                                                />
+                                            }
+                                            label={'Auto Paid'}
+                                        />
+                                        
+                                    </Grid>
+                                </Grid>
+                            </Grid>      
                             {/* Sektor Pembiayaan */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
                                 <Grid container>
-                                    <Grid item xs={2} sm={2} >
+                                    <Grid item xs={3} sm={3} >
                                         Sektor Pembiayaan
                                         <IconButton aria-label="delete" onClick={(e) => this.btnTambahFlexibleData(e, 'sektor')} style={{marginLeft:'5px',outline:'none'}}>
                                             <AddIcon />
@@ -570,7 +649,7 @@ class ProductAdd extends React.Component{
                                                             <Grid item xs={3} sm={3} style={{marginRight:'20px',paddingTop:'12px'}}>
                                                                 <TextField 
                                                                     fullWidth
-                                                                    onChange={(e) => this.changeFlexibleData(e,'label', index, 'fee')}
+                                                                    onChange={(e) => this.changeFlexibleData(e,'label', index, 'fee', true)}
                                                                     placeholder={'Nama Fee'}
                                                                     value={feePerData.label}
                                                                     margin="dense"
@@ -578,7 +657,7 @@ class ProductAdd extends React.Component{
                                                                 />
                                                             </Grid> 
                                                             
-                                                            <Grid item xs={3} sm={3} style={{marginRight:'20px'}}>
+                                                            <Grid item xs={2} sm={2} style={{marginRight:'20px'}}>
                                                                 <DropDown
                                                                     value={feePerData.type}
                                                                     label="label"
@@ -647,7 +726,7 @@ class ProductAdd extends React.Component{
                                                                 />
                                                             </Grid> 
                                                             
-                                                            <Grid item xs={3} sm={3} style={{marginRight:'20px'}}>
+                                                            <Grid item xs={2} sm={2} style={{marginRight:'20px'}}>
                                                                 <DropDown
                                                                     value={mandatoryPerData.type}
                                                                     label="label"
@@ -657,10 +736,22 @@ class ProductAdd extends React.Component{
                                                                     onChange={(e) => this.changeFlexibleData(e,'type', index, 'mandatory')}
                                                                     fullWidth
                                                                 />
+                                                            </Grid> 
+
+                                                            <Grid item xs={2} sm={2} style={{marginRight:'20px'}}>
+                                                                <DropDown
+                                                                    value={mandatoryPerData.status}
+                                                                    label="label"
+                                                                    data={this.state.listRequired}
+                                                                    id="id"
+                                                                    labelName={"label"}
+                                                                    onChange={(e) => this.changeFlexibleData(e,'status', index, 'mandatory')}
+                                                                    fullWidth
+                                                                />
                                                             </Grid>                                      
                                                         
                                                             {
-                                                                mandatoryPerData.type === 'dropdown' &&
+                                                                (mandatoryPerData.type === 'dropdown' || mandatoryPerData.type === 'checkbox')  &&
                                                                 <Grid item xs={3} sm={3} style={{marginRight:'10px',paddingTop:'12px'}}>
                                                                     <TextField 
                                                                         fullWidth

@@ -34,17 +34,17 @@ export function constructCollaterals (dataCollaterals) {
 }
 
 export function constructSector (dataSector) {
-    let collaterals = [];
+    let sector = [];
 
     for(const key in dataSector) {
         if(
             dataSector[key].label && dataSector[key].label.toString().trim().length > 0
         ) {
-            collaterals.push(dataSector[key].label)
+            sector.push(dataSector[key].label)
         }
     }
 
-    return collaterals.length > 0 ? collaterals : false;
+    return sector.length > 0 ? sector : false;
 }
 
 export function constructMandatory (dataMandatory) {
@@ -53,12 +53,114 @@ export function constructMandatory (dataMandatory) {
     for(const key in dataMandatory) {
         if(
             dataMandatory[key].label && dataMandatory[key].label.toString().trim().length > 0 &&
-            dataMandatory[key].type && dataMandatory[key].type.toString().trim().length > 0 &&
-            dataMandatory[key].value && dataMandatory[key].value.toString().trim().length > 0
+            dataMandatory[key].type && dataMandatory[key].type.toString().trim().length > 0 
         ) {  
-            mandatory.push(dataMandatory[key])   
+            const dataNew = dataMandatory[key];
+
+            if(
+                ((dataNew.type === 'dropdown' || dataNew.type === 'checkbox' ) && dataMandatory[key].value && dataMandatory[key].value.toString().trim().length > 0) ||
+                (dataNew.type !== 'dropdown' && dataNew.type !== 'checkbox')
+            ) {
+                mandatory.push(dataNew)   
+            } 
+
+            
         }
     }
 
     return mandatory.length > 0 ? mandatory : false;
+}
+
+export function destructFees (dataFees) {
+    let fees = [];
+
+    if(dataFees && dataFees.length && dataFees.length > 0) {
+        for(const key in dataFees) {
+            fees.push({
+                label:dataFees[key].description && dataFees[key].description.toString(),
+                value:dataFees[key].amount && dataFees[key].amount.toString().includes('%') ? dataFees[key].amount.toString().replace('%',''):dataFees[key].amount,
+                type:dataFees[key].amount && dataFees[key].amount.toString().includes('%') ? 'percent' : 'rupiah',
+            })
+        }
+    } else {
+        fees = [
+            {
+                label: '',
+                type:'percent',
+                value: '',
+            }
+        ]
+    }
+    
+
+    return fees;
+}
+
+export function destructSector (dataSector) {
+    let sector = [];
+
+    if(dataSector && dataSector.length && dataSector.length > 0) {
+        for(const key in dataSector) {
+            sector.push({
+                label:dataSector[key] && dataSector[key].toString(),
+                value:'',
+                type:'',
+            })
+        }
+    } else {
+        sector = [
+            {
+                label: '',
+                type:'',
+                value: '',
+            }
+        ]
+    } 
+
+    return sector;
+}
+
+export function destructCollaterals (dataCollaterals) {
+    let collaterals = [];
+
+    if(dataCollaterals && dataCollaterals.length && dataCollaterals.length > 0) {
+        for(const key in dataCollaterals) {
+            collaterals.push({
+                label:dataCollaterals[key] && dataCollaterals[key].toString(),
+                value:'',
+                type:'',
+            })
+        }
+    } else {
+        collaterals = [
+            {
+                label: '',
+                type:'',
+                value: '',
+            }
+        ]
+    } 
+
+    return collaterals;
+}
+
+export function destructMandatory(dataMandatory) {
+    let collaterals = [];
+
+    if(dataMandatory && dataMandatory.length && dataMandatory.length > 0) {
+        for(const key in dataMandatory) {
+            collaterals.push(dataMandatory[key])
+        }
+    } else {
+        collaterals = [
+            {
+                label: '',
+                type: 'textfield',
+                value: '',
+                status: 'required',
+            }
+        ]
+    } 
+
+    return collaterals;
 }
