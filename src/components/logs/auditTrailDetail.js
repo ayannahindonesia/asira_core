@@ -40,7 +40,8 @@ class AuditTrailDetail extends React.Component{
               newDataLog.original = JSON.parse(newDataLog.original)
               newDataLog.original.created_at = newDataLog.original.created_at.replace("T"," - ")
               newDataLog.original.updated_at = newDataLog.original.updated_at.replace("T"," - ")
-              newDataLog.original.approval_date = newDataLog.original.approval_date.replace("T"," - ")
+              if(newDataLog.original.approval_date)
+              {newDataLog.original.approval_date = newDataLog.original.approval_date.replace("T"," - ")}
               
               if(newDataLog.original.deleted_at !==null){
                 newDataLog.original.deleted_at = newDataLog.original.deleted_at.replace("T"," - ")
@@ -49,8 +50,8 @@ class AuditTrailDetail extends React.Component{
               newDataLog.new = JSON.parse(newDataLog.new)
               newDataLog.new.created_at = newDataLog.new.created_at.replace("T"," - ")
               newDataLog.new.updated_at = newDataLog.new.updated_at.replace("T"," - ")
-              newDataLog.new.approval_date = newDataLog.new.approval_date.replace("T"," - ")
-
+              if(newDataLog.new.approval_date)
+              {newDataLog.new.approval_date = newDataLog.new.approval_date.replace("T"," - ")}
               if(newDataLog.new.deleted_at !==null){
                 newDataLog.new.deleted_at = newDataLog.new.deleted_at.replace("T"," - ")
               }
@@ -101,12 +102,12 @@ class AuditTrailDetail extends React.Component{
                 if(obj[i]===null){
                     return(
                         <div id={`${i}`}>
-                            <tr  >
+                            <tr>
                                 <td  style={{border:"none"}}> 
-                                <ul key={index}>
-                                <li>{indent + i + ': -' }</li>
-                            </ul>
-                            </td>
+                                    <ul key={index}>
+                                        <li>{indent + i + ': -' }</li>
+                                    </ul>
+                                </td>
                             </tr>
                         </div>
                     )
