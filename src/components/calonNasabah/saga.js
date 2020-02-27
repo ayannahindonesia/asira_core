@@ -37,6 +37,39 @@ export async function getAllBorrowerFunction(param, next){
     });
 };
 
+export async function getAlluserMobileFunction(param, next){
+    return new Promise(async (resolve) => {
+
+        const token = getToken();
+        const config = {
+            headers: {'Authorization': "Bearer " + token}
+        };
+
+        let filter = '';
+
+        for(const key in param) {
+            filter += `&${key}=${param[key]}`
+        }
+
+        const urlNew = serverUrl+`admin/borrower?bank_id=null&orderby=updated_at&sort=desc${filter}`
+        
+        axios.get(urlNew,config).then((res)=>{
+            const listUser = res.data && res.data.data
+            param.dataUser = listUser;
+            param.totalData = res.data.total_data
+
+            if(next) {
+                resolve(next(param));
+            } else {
+                resolve(param);
+            }
+        }).catch((err)=>{
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString()
+            param.error = error;
+            resolve(param);
+        })
+    });
+};
 export async function getBorrowerFunction(param, next) {
     return new Promise(async (resolve) => {
 
