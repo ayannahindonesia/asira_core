@@ -83,6 +83,7 @@ import FAQDetail from './../FAQ/faqDetail'
 import FAQEdit from './../FAQ/faqEdit'
 import FAQAdd from './../FAQ/faqAdd'
 import UserMobile from './../calonNasabah/userMobileList'
+import UserMobileDetail from './../calonNasabah/userMobileDetail'
 
 
 
@@ -415,6 +416,8 @@ function ResponsiveDrawer(props) {
             <Route path='/FAQDetail/:id' component={FAQDetail}></Route>
 
             <Route path='/usermobile' component={UserMobile}></Route>
+            <Route path='/userMobileDetail/:id' component={UserMobileDetail}></Route>
+
 
 
             {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 

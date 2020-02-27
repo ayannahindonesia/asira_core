@@ -133,7 +133,7 @@ class userMobileList extends React.Component{
                     < TableComponent
                         id={"id"}
                         errorMessage={this.state.errorMessage}
-                        title={'Calon Nasabah - List'}
+                        title={'User Mobile - List'}
                         search={
                             {
                               value: this.state.search,
@@ -149,10 +149,8 @@ class userMobileList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/calonNasabahDetail/' : null}
+                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/userMobileDetail/' : null}
                     />
-
-                  
                 </div>
             )
         }
