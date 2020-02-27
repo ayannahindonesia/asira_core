@@ -98,7 +98,7 @@ export function formatNumber(number,money) {
 export function handleFormatDate (dateBefore, time){
   let dateAfter = new Date(dateBefore);
 
-  return `${dateAfter.getDate()} ${getMonthNow(dateAfter.getMonth().toString())} ${dateAfter.getFullYear()} ${time ? `${dateAfter.getHours()}:${dateAfter.getMinutes()}:${dateAfter.getSeconds()}`: null}`;
+  return `${dateAfter.getDate()} ${getMonthNow(dateAfter.getMonth().toString())} ${dateAfter.getFullYear()} ${time ? `${dateAfter.getHours()}:${dateAfter.getMinutes()}:${dateAfter.getSeconds()}`: ''}`;
 };
 
 export function getMonthNow(bulanNow) {
