@@ -345,6 +345,14 @@ exports.dataMenu = [
                     list:'core_borrower_get_all core_borrower_get_details',
                 }
             },
+            {
+                label: 'User Mobile',
+                link:'/usermobile',
+                logo: 'calonNasabah.svg',
+                action: {
+                    list:'core_borrower_get_all core_borrower_get_details',
+                }
+            },
         ],
         
     },
