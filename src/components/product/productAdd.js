@@ -5,12 +5,17 @@ import swal from 'sweetalert'
 import { addProductFunction} from './saga';
 import { getToken } from '../index/token';
 import { getAllLayananListFunction } from '../layanan/saga';
-import { Grid, InputAdornment, FormControlLabel, Checkbox, Button, TextField, IconButton } from '@material-ui/core';
+import { Grid, InputAdornment, FormControlLabel, Checkbox, TextField, IconButton, Tooltip } from '@material-ui/core';
 import DropDown from '../subComponent/DropDown';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TitleBar from '../subComponent/TitleBar';
+import EditIcon from '@material-ui/icons/Edit';
+import CancelIcon from '@material-ui/icons/Cancel';
+import SaveIcon from '@material-ui/icons/Save';
 import { constructFees, constructCollaterals, constructSector, constructMandatory } from './function';
+import DialogComponent from '../subComponent/DialogComponent';
+import { checkPermission } from '../global/globalFunction';
 
 
 class ProductAdd extends React.Component{
@@ -30,6 +35,7 @@ class ProductAdd extends React.Component{
         layanan:0,
         interest:'',
         tipeBunga:'fixed',
+        dialog: false,
         agunan:[
             {
                 label: '',
@@ -128,6 +134,14 @@ class ProductAdd extends React.Component{
 
     componentWillUnmount() {
         this._isMounted = false;
+    }
+
+    btnConfirmationDialog = (e, nextStep) => {
+        this.setState({dialog: !this.state.dialog})
+
+        if(nextStep) {
+            this.btnSaveProduct()
+        }
     }
 
     btnSaveProduct = ()=>{
@@ -330,6 +344,37 @@ class ProductAdd extends React.Component{
                         style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
                     >
                         <Grid container>
+                            {/* Dialog */}
+                            <DialogComponent 
+                                title={'Confirmation'}
+                                message={'Are you sure want to save this data ?'}
+                                type={'textfield'}
+                                openDialog={this.state.dialog}
+                                onClose={this.btnConfirmationDialog}
+                            />
+                            {/* Action Button */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                                <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
+                                    <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
+                                        
+                                        {
+                                           checkPermission('core_product_new') &&
+                                            <Tooltip title="Save" style={{outline:'none'}}>
+                                                <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
+                                                    <SaveIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        }
+
+                                        <Tooltip title="Back" style={{outline:'none'}}>
+                                            <IconButton aria-label="cancel" onClick={this.btnCancel}>
+                                                <CancelIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* Error */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
                                 {this.state.errorMessage}
                             </Grid>
@@ -779,11 +824,7 @@ class ProductAdd extends React.Component{
                                     }
                                 </Grid>
                             </Grid>
-                            
-                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
-                                <Button variant='contained' onClick={this.btnSaveProduct} style={{backgroundColor:"green",color:"white",marginRight:'20px'}}>Simpan</Button>
-                                <Button variant='contained' onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}>Batal</Button>
-                            </Grid>
+
                         </Grid>
 
                     </Grid>

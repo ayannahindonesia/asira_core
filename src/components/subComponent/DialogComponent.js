@@ -37,7 +37,7 @@ const DialogTitle = withStyles(styles)(props => {
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} style={{outline:'none'}}>
           <CloseIcon />
         </IconButton>
     </MuiDialogTitle>
@@ -120,7 +120,13 @@ class DialogComponent extends React.Component {
                     {
                         type && type !== 'image' && 
                         <DialogActions>
-                            <Button autoFocus color="primary">
+                            {
+                              type === 'textfield' && 
+                              <Button color="primary" onClick={(e) => onClose(e,true)} style={{outline:'none'}}>
+                                Yes
+                              </Button>
+                            }
+                            <Button color="primary" onClick={onClose} style={{outline:'none'}}>
                                 No
                             </Button>
                         </DialogActions>
