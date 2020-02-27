@@ -3,6 +3,7 @@ import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
 import { getAuditTrailDetailFunction } from './saga'
 import Loader from 'react-loader-spinner'
+
 var _ = require('lodash');
 class AuditTrailDetail extends React.Component{
     _isMounted = false
@@ -13,7 +14,8 @@ class AuditTrailDetail extends React.Component{
         originalData:[],
         rows:{},
         objC:{},
-        loading:true
+        loading:true,
+        diklik:false
     }
 
     
@@ -38,6 +40,7 @@ class AuditTrailDetail extends React.Component{
               newDataLog.original = JSON.parse(newDataLog.original)
               newDataLog.original.created_at = newDataLog.original.created_at.replace("T"," - ")
               newDataLog.original.updated_at = newDataLog.original.updated_at.replace("T"," - ")
+              newDataLog.original.approval_date = newDataLog.original.approval_date.replace("T"," - ")
               
               if(newDataLog.original.deleted_at !==null){
                 newDataLog.original.deleted_at = newDataLog.original.deleted_at.replace("T"," - ")
@@ -46,6 +49,8 @@ class AuditTrailDetail extends React.Component{
               newDataLog.new = JSON.parse(newDataLog.new)
               newDataLog.new.created_at = newDataLog.new.created_at.replace("T"," - ")
               newDataLog.new.updated_at = newDataLog.new.updated_at.replace("T"," - ")
+              newDataLog.new.approval_date = newDataLog.new.approval_date.replace("T"," - ")
+
               if(newDataLog.new.deleted_at !==null){
                 newDataLog.new.deleted_at = newDataLog.new.deleted_at.replace("T"," - ")
               }
@@ -77,7 +82,7 @@ class AuditTrailDetail extends React.Component{
                if ( obj[i].verified===false && (Array.isArray(obj[i]) || typeof obj[i] === 'object')) {
                    return ( 
                         <ul key={index}>
-                          <li>{ i }</li>
+                             <li><a href={`/auditTrailDetail/${this.props.match.params.id}#${i}`}>{ i }</a></li>
                         </ul>
                         )
                } 
@@ -95,18 +100,30 @@ class AuditTrailDetail extends React.Component{
             finalObj = Object.keys(obj).map((i,index) => {
                 if(obj[i]===null){
                     return(
-                        <ul key={index}>
-                            <li>{indent + i + ': -' }</li>
-                        </ul>
+                        <div id={`${i}`}>
+                            <tr  >
+                                <td  style={{border:"none"}}> 
+                                <ul key={index}>
+                                <li>{indent + i + ': -' }</li>
+                            </ul>
+                            </td>
+                            </tr>
+                        </div>
                     )
                 }
                 if (Array.isArray(obj[i]) || typeof obj[i] === 'object') {
                     return this.extractJSON(obj[i],` --- `+ indent + '  ' + i + ' > ');
                   } else {
                     return (
-                        <ul key={index} style={{wordWrap:"break-word",width:"400px"}}>
-                            <li>{indent + i + ': ' + obj[i] }</li>
-                        </ul>
+                        <div id={`${i}`} key={index} >
+                        <tr >
+                             <td style={{border:"none"}}>
+                                <ul style={{wordWrap:"break-word",width:"400px"}}>
+                                    <li>{indent + i + ': ' + obj[i] }</li>
+                                </ul>
+                             </td>
+                        </tr>
+                        </div>
                     )
                   }
              }, this)
@@ -116,6 +133,11 @@ class AuditTrailDetail extends React.Component{
       }
     
     render(){   
+        if(this.state.diklik){
+            return(
+                <Redirect to="/auditTrail"></Redirect>
+            )
+        }
         if(this.state.loading){
             return(
                 <Loader 
@@ -173,7 +195,7 @@ class AuditTrailDetail extends React.Component{
                     </div>
 
                     <div>
-                        <input type="button" className="btn btn-outline-primary" value="Kembali" onClick={()=> window.history.back()}/>
+                        <input type="button" className="btn btn-outline-primary" value="Kembali" onClick={()=> this.setState({diklik:true})}/>
                     </div>
                         
                 </div>
