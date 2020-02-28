@@ -229,17 +229,17 @@ class CalonNasabahArsipDetail extends React.Component{
                       this.state.dataUser.email
                     ],
                     [
-                      this.state.dataUser.birthday && handleFormatDate(this.state.dataUser.birthday),
+                      this.state.dataUser.birthday && new Date(this.state.dataUser.birthday).getFullYear() !== 1 ? handleFormatDate(this.state.dataUser.birthday) : '-',
                       this.state.dataUser.birthplace,
                       this.state.dataUser.last_education,
                       this.state.dataUser.mother_name,
                       this.state.dataUser.phone
                     ],
                     [
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? 'Menikah' : 'Belum Menikah',
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_name : '-',
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_lasteducation : '-',
+                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status,
+                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? this.state.dataUser.spouse_name : '-',
+                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
+                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? this.state.dataUser.spouse_lasteducation : '-',
                       this.state.dataUser.dependants
                     ],
                   ]}                 
@@ -258,7 +258,7 @@ class CalonNasabahArsipDetail extends React.Component{
                       this.state.dataUser.address, 
                       this.state.dataUser.province,
                       this.state.dataUser.city,
-                      `${this.state.dataUser.neighbour_association} / ${this.state.dataUser.hamlets} `,
+                      `${this.state.dataUser.neighbour_association ? this.state.dataUser.neighbour_association : '-'} / ${this.state.dataUser.hamlets ? this.state.dataUser.hamlets : '-'} `,
                       this.state.dataUser.home_phonenumber
                     ],
                     [
