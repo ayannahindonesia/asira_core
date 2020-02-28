@@ -10,7 +10,6 @@ import DropDown from '../subComponent/DropDown';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TitleBar from '../subComponent/TitleBar';
-import EditIcon from '@material-ui/icons/Edit';
 import CancelIcon from '@material-ui/icons/Cancel';
 import SaveIcon from '@material-ui/icons/Save';
 import { constructFees, constructCollaterals, constructSector, constructMandatory } from './function';
