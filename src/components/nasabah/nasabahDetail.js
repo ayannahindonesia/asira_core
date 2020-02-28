@@ -1,437 +1,380 @@
 import React from 'react'
-import './../../support/css/profilenasabahdetail.css'
 import { Redirect } from 'react-router-dom'
-import {connect} from 'react-redux'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import Moment from 'react-moment';
-import BrokenLink from './../../support/img/default.png'
 import Loader from 'react-loader-spinner'
-import {getProfileNasabahDetailFunction} from './saga'
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { withStyles } from '@material-ui/styles';
+import { compose } from 'redux';
+import { getProfileNasabahDetailFunction } from './saga'
 import { getToken } from '../index/token';
-import { getBankDetailFunction } from '../mitra/saga';
-import {decryptImage} from '../global/globalFunction'
+import GridDetail from '../subComponent/GridDetail';
+import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
+import DialogComponent from './../subComponent/DialogComponent'
+import TitleBar from '../subComponent/TitleBar';
+import { Grid, Button } from '@material-ui/core';
 
-
+const styles = (theme) => ({
+    container: {
+      flexGrow: 1,
+    },
+  });
 
 class profileNasabahDetail extends React.Component{
-    state={rows:[],modalKTP:false,modalNPWP:false,npwp:'',ktp:'',gambarKTP:null,gambarNPWP:null,
-        bankID:0,bankName:'',diKlik:false,progress:true,errorMessage:''}
-    
-    _isMounted = false
+    _isMounted = false;
+
+    state = {
+      diKlik:false,
+      errorMessage:'',
+      dataUser: {},
+      idUser: 0,
+      disabled: true,
+      loading: true,
+      dialog: false,
+      title: '',
+      message: '',
+    };
+
     componentDidMount(){
-        this.getDataDetail()  
-        this._isMounted = true
-       
-    }
-    
-    componentWillUnmount(){
-        this._isMounted = false
-    }
-    getDataDetail = async function () {
-        const param = {
-            id:this.props.match.params.id
-        }
+      this._isMounted = true;
 
-        const data = await getProfileNasabahDetailFunction(param)
-        if(data){
-            if(!data.error){
-                this.setState({rows:data.data,
-                    ktp:data.data && data.data.idcard_image && decryptImage(data.data.idcard_image)
-                    ,npwp:data.data && data.data.taxid_image && decryptImage(data.data.taxid_image) , 
-                    bankID:data.data.bank.Int64},
-                    ()=>{
-                    //KTP WAJIB KALO NPWP OPTIONAL
-                    this.getBankName() 
-                   
-                })
-                  
-            }else{
-                this.setState({errorMessage:data.error})
-            }
-        }
+      this.setState({
+        idUser: this.props.match.params.id,
+      },() => {
+        this.refresh();
+      })
+      
     }
-    getBankName = async function(){
-        const param = {
-            id:this.state.bankID
-        }
-        const data = await getBankDetailFunction(param)
 
-        if(data){
-            if(!data.error){
-                this.setState({bankName:data.name,progress:false})
-            }else{
-                this.setState({errorMessage:data.error,progress:false})
-            }
-        }
-        return this.state.bankName
+    componentWillUnmount() {
+      this._isMounted = false;
     }
-   
-    formatMoney=(number)=>
-    { return number.toLocaleString('in-RP', {style : 'currency', currency: 'IDR'})}
 
+    isCategoryExist = (category) => {
+      if(category && category.toString().toLowerCase() === 'agent') {
+        return 'Agen'
+      } else if(category && category.toString().toLowerCase() === 'account_executive') {
+        return 'Account Executive'
+      } 
 
-    btnModalKTP =()=>{
-        this.setState({modalKTP:true})
-        
+      return 'Personal';
     }
-    btnModalNPWP =()=>{
-        this.setState({modalNPWP:true})
-       
-    }
-    btnModalCancelKTP=()=>{
-        this.setState({modalKTP:false})
-    }
-    btnModalCancelNPWP=()=>{
-        this.setState({modalNPWP:false})
-    }  
-    render(){
-        if (this.state.progress){
-            return (
-                <div className="mt-2">
-                 <Loader 
-                    type="ThreeDots"
-                    color="#00BFFF"
-                    height="30"	
-                    width="30"
-                />  
-                </div>
-            )
-        }else{
+
+    refresh = async function(){
+      const param = {};
+      param.id = this.state.idUser;
+
+      const data = await getProfileNasabahDetailFunction(param);
+      
+
+      if(data) {
+          console.log(data)
+          if(!data.error) {
+            const dataUser = data.dataUser.data || {};
+            let flag = false;
             
-        
+            dataUser.category = this.isCategoryExist(dataUser.category) ;
+            dataUser.idcard_image = dataUser.idcard_image && decryptImage(dataUser.idcard_image);
+            dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image)
+
+           
+
+            this.setState({
+              diKlik: flag,
+              dataUser,
+              listRole: data.dataRole,
+              loading: false,
+            })
+          } else {
+            this.setState({
+              errorMessage: data.error,
+              loading: false,
+            })
+          }      
+      }
+    }
+
+    btnCancel = ()=>{
+      this.setState({diKlik:true})
+    }
+
+    UNSAFE_componentWillReceiveProps(newProps){
+      this.setState({errorMessage:newProps.error})
+    }
+
+    handleDialog = (e) => {
+      let label = e.target.value
+      let title = '';
+      let message='';
+
+      if(label.toLowerCase().includes('ktp')) {
+        title = 'KTP'
+        message = this.state.dataUser && this.state.dataUser.idcard_image
+
+      } else if(label.toLowerCase().includes('npwp')) {
+        title = 'NPWP'
+        message = this.state.dataUser && this.state.dataUser.taxid_image
+
+      }
+
+      this.setState({
+        dialog: true,
+        message,
+        title,
+      })
+    }
+
+
+    handleClose = () => {
+      this.setState({dialog: false})
+    }
+
+    render(){
         if(this.state.diKlik){
-            return(
-                <Redirect to="/nasabahList"></Redirect>
-            )
-        }
-        if(getToken()){
-            return(
-                <div className="container-fluid">
-   {/* ------------------------------------------------------FOTO KTP------------------------------------------------------ */}
+            return <Redirect to='/nasabahList'/>            
+        } else if (this.state.loading){
+          return  (
+            <div  key="zz">
+              <div align="center" colSpan={6}>
+                <Loader 
+                  type="Circles"
+                  color="#00BFFF"
+                  height="40"	
+                  width="40"
+                />   
+              </div>
+            </div>
+          )
+        } else if(getToken()){
+          return(
+            <Grid container className="containerDetail">
+              <Grid item sm={12} xs={12} style={{maxHeight:50}}>
+                <TitleBar
+                  title={'Nasabah - Detail'}
+                />
+              </Grid>
+              <Grid
+                item
+                sm={12} xs={12}
+                style={{padding:10, marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+              >
 
-   <Modal isOpen={this.state.modalKTP} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>KTP Detail</ModalHeader>
-          <ModalBody>
-              {this.state.ktp && this.state.ktp.length === 0 ?"Gambar KTP Tidak ada":
-             <img width="100%" height="300px" alt="KTP" onError={(e)=>{
-                e.target.attributes.getNamedItem("src").value = BrokenLink
-             }} src={`${this.state.ktp}`}></img>
-            }
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={this.btnModalCancelKTP}>Close</Button>
-          </ModalFooter>
-        </Modal>
-        
+                <Grid container>
 
-    {/* ------------------------------------------------------FOTO NPWP------------------------------------------------------ */}
-    
-    <Modal isOpen={this.state.modalNPWP} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>NPWP Detail</ModalHeader>
-          <ModalBody>
-            {this.state.npwp && this.state.npwp.length===0 ?"Gambar NPWP Tidak ada":
-                <img width="100%" height="300px" alt="NPWP" onError={(e)=>{
-                    e.target.attributes.getNamedItem("src").value = BrokenLink
-                 }} src={`${this.state.npwp}`}></img>}
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={this.btnModalCancelNPWP}>Close</Button>
-          </ModalFooter>
-        </Modal>
-        
-        
-                <h2>Nasabah - Detail</h2>
-                <div style={{color:'red'}}>
+                  <Grid item sm={12} xs={12} style={{color:'red'}}>
                     {this.state.errorMessage}
-                </div>
-                <hr/>
-                   <input style={{width:"120px"}} type="button" className="btn btn-primary" value="KTP Detail" onClick={this.btnModalKTP}></input>
-                   <input style={{width:"120px"}} type="button" className="ml-2 btn btn-primary" value="NPWP Detail" onClick={this.btnModalNPWP}></input>
-    
-              <hr/>
-                    {/* =========================================FIRST================================ */}
-                    <div className="row firstrow">
-                        <div className="col col-md col-xs">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>Id Nasabah</td>
-                                    <td>: {this.state.rows.id}</td>
-                                    <td>Rekening Pinjaman</td>
-                                    <td>: {this.state.rows.bank_accountnumber}</td>
-                                    <td>Status Nasabah</td>
-                                    <td>: {this.state.rows.loan_status ==="inactive"?"Tidak Aktif":"Aktif"}</td>
-                                   
-                                </tr>
-                                <tr>
-                                    <td>Mitra Nasabah</td>
-                                    <td>: {this.state.bankName}</td>
-                                    <td>Pinjaman ke-</td>
-                                    <td>: {this.state.rows.loan_count} </td>
-                                    <td>Tanggal Register</td>
-                                    <td>: <Moment date={this.state.rows.created_at} format=" DD  MMMM  YYYY" /></td>
-                                   
-                                </tr>
-                                <tr>
-                                <td>Kategori Pinjaman</td>
-                                    <td>: {this.state.rows.category ==="account_executive"?"Account Executive" :
-                                           this.state.rows.category === "agent"?"Agent":"Personal"}</td>
-                                <td>Agen/AE</td>
-                                    <td>: {this.state.rows.agent_name ===""?"-":this.state.rows.agent_name} ( {this.state.rows.agent_provider_name ===""?"-":this.state.rows.agent_provider_name} ) </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    {/* ==============================SECOND===================================== */}
-                    <h5 className="mt-4">Informasi Pribadi</h5>
-                    <div className="row">
-                        <div className="col-12 col-md-4">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>Nama</td><td>: {this.state.rows.fullname}</td>
-                                </tr>
-                                <tr>
-                                    <td>Jenis Kelamin</td><td>: {this.state.rows.gender}</td>
-                                </tr>
-                                <tr>
-                                    <td>No KTP</td><td>: {this.state.rows.idcard_number}</td>
-                                </tr>
-                                <tr>
-                                    <td>No NPWP</td><td>: {this.state.rows.taxid_number}</td>
-                                </tr>
-                                <tr>
-                                    <td>Email</td><td>: {this.state.rows.email}</td>
-                                </tr>
+                  </Grid>
 
-                                </tbody>
-                              
-                            </table>
-    
-                        </div>
-                        <div className="col-12 col-md-4">
-                        <table>
-                            <tbody>
-                            <tr>
-                                    <td>Tanggal Lahir</td><td>: {String(this.state.rows.birthday).substr(0, String(this.state.rows.birthday).indexOf('T'))}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tempat Lahir</td><td>: {this.state.rows.birthplace}</td>
-                                </tr>
-                                <tr>
-                                    <td>Pendidikan</td><td>: {this.state.rows.last_education}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nama Ibu Kandung</td><td>: {this.state.rows.mother_name}</td>
-                                </tr>
-                                <tr>
-                                    <td>No HP</td><td>: {this.state.rows.phone}</td>
-                                </tr>
-                            </tbody>
-                         
-                            </table>
-    
-                        </div>
-                        
-                        <div className="col-12 col-md-4">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Status Pernikahan</td><td>: {this.state.rows.marriage_status}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nama Pasangan</td><td>: {this.state.rows.marriage_status==="Menikah"?this.state.rows.spouse_name:"-"}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tanggal lahir Pasangan</td><td>: {this.state.rows.marriage_status==="Menikah"?String(this.state.rows.spouse_birthday).substr(0, String(this.state.rows.spouse_birthday).indexOf('T')):"-"}</td>
-                                </tr>
-                                <tr>
-                                    <td>Pendidikan Pasangan</td><td>: {this.state.rows.marriage_status==="Menikah"?this.state.rows.spouse_lasteducation:"-"}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tanggungan (Orang)</td><td>: { this.state.rows.dependants > 5?"Lebih dari 5":this.state.rows.dependants}</td>
-                                </tr>
+                  <Grid item sm={12} xs={12} style={{marginBottom:"10px"}}>
+                    <Grid container spacing={2}>
+                        <Grid item sm={2} xs={12} style={{marginBottom:'10px'}}>
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="KTP Detail" onClick={this.handleDialog}></input>                               
+                        </Grid>
+                        <Grid item sm={2} xs={12} >
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="NPWP Detail" onClick={this.handleDialog}></input>
+                        </Grid>
+                    </Grid>                        
+                  </Grid>
 
-                            </tbody>
-                             
-                            </table>
-                        </div>
-                   
-    
-                    </div>
-                    {/* ==============================THIRD===================================== */}
-                    <h5 className="mt-4">Data Tempat Tinggal</h5>
-                    <div className="row">
-                        <div className="col-12 col-md-4">
-                            <table>
-                                <tbody>
-                                 <tr>
-                                        <td>Alamat</td><td>: {this.state.rows.address}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Provinsi</td><td>: {this.state.rows.province}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kota</td><td>: {this.state.rows.city}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>RT/ RW</td><td>: {this.state.rows.neighbour_association}/{this.state.rows.hamlets} </td>
-                                    </tr>
-                                    <tr>
-                                        <td>No Telp Rumah</td><td>: {this.state.rows.home_phonenumber}</td>
-                                    </tr>
 
-                                </tbody>
-                                  
-                                </table>
-                        </div>
-                        <div className="col-12 col-md-6">
-                            <table>
-                                <tbody>
-                                <tr>
-                                        <td>Kecamatan</td><td>: {this.state.rows.subdistrict}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kelurahan</td><td>: {this.state.rows.urban_village}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Status Tempat Tinggal</td><td>: {this.state.rows.home_ownership}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Lama Menempati Rumah</td><td>: {this.state.rows.lived_for} Tahun</td>
-                                    </tr>
-                                </tbody>
-                                    
-                                 
-                                </table>
-                        </div>
-                        <div className="col-12 col-md-4">
-                            <table>
-                                   
-                                   
-                                   
-                                </table>
-                        </div>
-                    </div>
-                      {/* ==============================FOURTH===================================== */}
-                    <h5 className="mt-4">Info Pekerjaan</h5>
-                    <div className="row">
-                        <div className="col-12 col-md-4">
-                            <table>
-                                <tbody>   
-                                <tr>
-                                    <td>Jenis Pekerjaan</td><td>: {this.state.rows.occupation}</td>
-                                </tr>
-                                <tr>
-                                    <td>No Induk Pegawai</td><td>: {this.state.rows.employee_id}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nama Instansi</td><td>: {this.state.rows.employer_name}</td>
-                                </tr>
-                                <tr>
-                                    <td>Alamat Kantor</td><td>: {this.state.rows.employer_address}</td>
-                                </tr>
+                  <GridDetail
+                    gridLabel={[5,6,6]}
+                    background
+                    noTitleLine
+                    label={[
+                      ['Id Nasabah','Mitra Nasabah'],
+                      ['Kategori','Agen / AE'],
+                      ['Tanggal Register'],
+                    ]}
+                    data={this.state.dataUser && [
+                      [
+                        this.state.dataUser.id, 
+                        this.state.dataUser.bank_name
+                      ],
+                      [
+                        this.state.dataUser.category,
+                        this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
+                      ],
+                      [
+                        this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at)
+                      ],
+                    ]}                 
+                  />
 
-                                </tbody>
-                             
-                            </table>
-    
-                        </div>
-                        <div className="col-12 col-md-4">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Jabatan</td><td>: {this.state.rows.department}</td>
-                                </tr>
-                                <tr>
-                                    <td>Lama Bekerja (Tahun)</td><td>: {this.state.rows.been_workingfor}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nama Atasan</td><td>: {this.state.rows.direct_superiorname}</td>
-                                </tr>
-                                <tr>
-                                    <td>No Tlp Kantor</td><td>: {this.state.rows.employer_number}</td>
-                                </tr>
-                            </tbody>
-                              
-                            </table>
-    
-                        </div>
-                        
-                        <div className="col-12 col-md-4">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Gaji (Perbulan)</td><td>: {this.state.rows.monthly_income ? this.formatMoney(parseInt(this.state.rows.monthly_income)): 0}</td>
-                                </tr>
-                                <tr>
-                                    <td>Pendapatan Lain</td><td>: {this.state.rows.other_income?this.formatMoney(parseInt(this.state.rows.other_income)):0}</td>
-                                </tr>
-                                <tr>
-                                    <td>Sumber Lain</td><td>: {this.state.rows.other_incomesource}</td>
-                                </tr>
-                            </tbody>
-                               
-                              
-                            </table>
-                        </div>
-                   
-    
-                    </div>
-                     {/* ==============================FIFTH===================================== */}
-                     <h5 className="mt-4">Lain - Lain</h5>
-                    <div className="row">
-                        <div className="col-12 col-md-12">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>Nama Orang Tidak Serumah yang bisa di hubungi</td><td>: {this.state.rows.related_personname}</td>
-                                </tr>
-                                <tr>
-                                    <td>Hubungan</td><td>: {this.state.rows.related_relation}</td>
-                                </tr>
-                                <tr>
-                                    <td>Alamat Rumah</td><td>: {this.state.rows.related_address}</td>
-                                </tr>
-                                <tr>
-                                    <td>No Telp Rumah</td><td>: {this.state.rows.related_homenumber}</td>
-                                </tr>
-                                <tr>
-                                    <td>No HP</td><td>: {this.state.rows.related_phonenumber}</td>
+                  <GridDetail
+                    title="Informasi Pribadi"
+                    gridLabel={[5,6,6]}
+                    label={[
+                      ['Nama','Jenis Kelamin','No KTP','No NPWP','Email'],
+                      ['Tanggal Lahir','Tempat Lahir','Pendidikan','Nama Ibu Kandung','No HP'],
+                      ['Status Pernikahan','Nama Pasangan','Tanggal Lahir Pasangan','Pendidikan Pasangan','Tanggungan (orang)'],
+                    ]}
+                    data={this.state.dataUser && [
+                      [
+                        this.state.dataUser.fullname, 
+                        this.state.dataUser.gender && (this.state.dataUser.gender === 'M' ? 'Pria' : 'Perempuan'),
+                        this.state.dataUser.idcard_number,
+                        this.state.dataUser.taxid_number,
+                        this.state.dataUser.email
+                      ],
+                      [
+                        this.state.dataUser.birthday && handleFormatDate(this.state.dataUser.birthday),
+                        this.state.dataUser.birthplace,
+                        this.state.dataUser.last_education,
+                        this.state.dataUser.mother_name,
+                        this.state.dataUser.phone
+                      ],
+                      [
 
-                                </tr>
-                                
-                                </tbody>
-                                
-                            </table>
-                            <input style={{width:"120px", float:"left"}} type="button" className="mt-3 btn btn-secondary" value="Kembali" onClick={()=> this.setState({diKlik:true})}></input>
-    
-                        </div>
-                       
-                        
-                        
-                   
-    
-                    </div>
-                    
-                </div>
-            )
-                                    }
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? 'Menikah' : 'Belum Menikah',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_name : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_lasteducation : '-',
+                        this.state.dataUser.dependants > 5?"Lebih dari 5":this.state.dataUser.dependants
+                      ],
+                    ]}                 
+                  />
+
+                  <GridDetail
+                    title="Data Tempat Tinggal"
+                    gridLabel={[5,6]}
+                    label={[
+                      ['Alamat','Provinsi','Kota','RT / RW','No Telp Rumah'],
+                      ['Kecamatan','Kelurahan','Status Tempat Tinggal','Lama Menempati Rumah'],
+                      [],
+                    ]}
+                    data={this.state.dataUser && [
+                      [
+                        this.state.dataUser.address, 
+                        this.state.dataUser.province,
+                        this.state.dataUser.city,
+                        `${this.state.dataUser.neighbour_association} / ${this.state.dataUser.hamlets} `,
+                        this.state.dataUser.home_phonenumber
+                      ],
+                      [
+                        this.state.dataUser.subdistrict,
+                        this.state.dataUser.urban_village,
+                        this.state.dataUser.home_ownership,
+                        this.state.dataUser.lived_for && `${this.state.dataUser.lived_for} tahun`,
+                      ],
+                      [],
+                    ]}                 
+                  />
+
+                  <GridDetail
+                    title="Info Pekerjaan"
+                    gridLabel={[5,6,6]}
+                    label={[
+                      ['Jenis Pekerjaan','No Induk Pegawai','Nama Instansi','Alamat Kantor'],
+                      ['Jabatan','Lama Bekerja','Nama Atasan','No Tlp Kantor'],
+                      ['Gaji (perbulan)','Pendapatan Lain','Sumber Pendapatan Lain'],
+                    ]}
+                    data={this.state.dataUser && [
+                      [
+                        this.state.dataUser.field_of_work, 
+                        this.state.dataUser.employee_id,
+                        this.state.dataUser.employer_name,
+                        this.state.dataUser.employer_address
+                      ],
+                      [
+                        this.state.dataUser.occupation,
+                        this.state.dataUser.been_workingfor && `${this.state.dataUser.been_workingfor} tahun`,
+                        this.state.dataUser.direct_superiorname,
+                        this.state.dataUser.employer_number,
+                      ],
+                      [
+                        this.state.dataUser.monthly_income && `Rp ${formatNumber(this.state.dataUser.monthly_income,true)}`,
+                        this.state.dataUser.other_income && `Rp ${formatNumber(this.state.dataUser.other_income,true)}`,
+                        this.state.dataUser.other_incomesource,
+                      ],
+                    ]}                 
+                  />
+
+                  <GridDetail
+                    title="Lain lain"
+                    gridLabel={[8]}
+                    label={[
+                      ['Nama Orang Tidak Serumah Yang Bisa Dihubungi','Hubungan','Alamat Rumah','No Tlp','No HP'],
+                      []
+                    ]}
+                    data={this.state.dataUser && [
+                      [
+                        this.state.dataUser.related_personname, 
+                        this.state.dataUser.related_relation, 
+                        this.state.dataUser.related_address,
+                        this.state.dataUser.related_homenumber,
+                        this.state.dataUser.related_phonenumber
+                      ],
+                      []
+                    ]}                 
+                  />
+
+
+                  <div className="col-sm-12">
+                    <DialogComponent
+                      title={this.state.title}
+                      openDialog={this.state.dialog}
+                      message={this.state.message}
+                      type='image'
+                      onClose={this.handleClose}
+                    />
+                  </div>
+
+                      
+                  <Grid container style={{marginBottom:'10px', marginTop:'10px', paddingLeft:'10px', fontSize:'calc(10px + 0.3vw)'}}>
+                      <Grid item xs={12} sm={12}>  
+                        <Button disableElevation
+                            variant='contained'
+                            style={{padding: '2px', width:'100px',backgroundColor:'#2D85E9', color:'white'}}
+                            onClick={this.btnCancel}
+                        >
+                            <b>Kembali</b>
+                        </Button>    
+                      </Grid>
+
+                      
+                  </Grid>
+                  
+                  
+               </Grid>
+              </Grid>
+            </Grid>
+          )
+        } else if(!getToken()){
+          return (
+              <Redirect to='/login' />
+          )    
         }
-        if(!getToken()){
-            return (
-                <Redirect to='/login' />
-            )    
-        }
-        
+       
     }
 }
-const mapStateToProp = (state)=>{
-    return{
-        name:state.user.name
-        
-    }
-    
-  }
-export default connect(mapStateToProp) (profileNasabahDetail);
+
+export function mapDispatchToProps(dispatch) {
+    return {
+    //   getSourceTransaction: () => {
+    //     dispatch(sourceTransactionRequest());
+    //   },
+    //   handleRedirect: (route) => {
+    //     dispatch(push(route));
+    //   },
+    };
+}
+  
+export const mapStateToProps = createStructuredSelector({
+  // user: getUserState(),
+  // menu: getMenu(),
+  // fetching: getFetchStatus(),
+});
+
+const withConnect = connect(
+    mapStateToProps,
+    mapDispatchToProps
+);
+
+const withStyle = withStyles(styles);
+
+export default compose(
+    withConnect,
+    withStyle,
+    withRouter
+  )(profileNasabahDetail);

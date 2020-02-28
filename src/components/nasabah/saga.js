@@ -36,10 +36,11 @@ export async function getProfileNasabahDetailFunction (param,next){
         
         axios.get(serverUrl+`admin/borrower/${param.id}`,config)
         .then((res)=>{
+            param.dataUser=res
             if(next){
                 resolve(next(param))
             }else{
-                resolve(res)
+                resolve(param)
             }
         })
         .catch((err)=>{
