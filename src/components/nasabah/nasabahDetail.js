@@ -225,10 +225,13 @@ class profileNasabahDetail extends React.Component{
                       ],
                       [
 
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? 'Menikah' : 'Belum Menikah',
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_name : '-',
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_lasteducation : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? 'Menikah' : 
+                        this.state.dataUser.marriage_status.toLowerCase() === 'janda' ? "Janda":
+                        this.state.dataUser.marriage_status.toLowerCase() === 'duda' ? "Duda":
+                        'Belum Menikah',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? this.state.dataUser.spouse_name : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? this.state.dataUser.spouse_lasteducation : '-',
                         this.state.dataUser.dependants > 5?"Lebih dari 5":this.state.dataUser.dependants
                       ],
                     ]}                 
