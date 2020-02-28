@@ -68,6 +68,7 @@ class UserMobileDetail extends React.Component{
       
 
       if(data) {
+        console.log(data)
           if(!data.error) {
             const dataUser = data.dataUser || {};
             let flag = false;
@@ -223,7 +224,7 @@ class UserMobileDetail extends React.Component{
                         this.state.dataUser.email
                       ],
                       [
-                        this.state.dataUser.birthday && handleFormatDate(this.state.dataUser.birthday),
+                        this.state.dataUser.birthday === "0001-01-01T00:00:00Z"? "-":handleFormatDate(this.state.dataUser.birthday),
                         this.state.dataUser.birthplace,
                         this.state.dataUser.last_education,
                         this.state.dataUser.mother_name,
@@ -231,7 +232,7 @@ class UserMobileDetail extends React.Component{
                       ],
                       [
 
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? 'Menikah' : 'Belum Menikah',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? 'Menikah' : '-',
                         this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_name : '-',
                         this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
                         this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_lasteducation : '-',
