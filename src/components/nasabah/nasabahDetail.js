@@ -68,7 +68,6 @@ class profileNasabahDetail extends React.Component{
       
 
       if(data) {
-          console.log(data)
           if(!data.error) {
             const dataUser = data.dataUser.data || {};
             let flag = false;
