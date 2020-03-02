@@ -92,8 +92,6 @@ class ProductList extends React.Component{
                         onChangePage={this.onChangePage}         
                         permissionAdd={ checkPermission('core_product_new') ? '/produkAdd' : null }         
                         permissionDetail={ checkPermission('core_product_detail') ? '/produkDetail/' : null}
-                        permissionEdit={ checkPermission('core_product_patch') ? '/produkEdit/' : null}
-
                     /> 
 
                 </div>
