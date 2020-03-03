@@ -1,7 +1,7 @@
 import SecureLS from 'secure-ls';
 import md5 from 'md5';
 
-const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'react-secret'}); 
+const newLs = new SecureLS({encodingType: 'aes', isCompression: true, encryptionSecret:'r3a(t@yaN&Ah'}); 
 
 export function setTokenAuth(token) {
     newLs.set(md5('tokenAuth'), token);

@@ -327,8 +327,9 @@ class TableComponent extends React.Component {
                         <Grid item sm={5} xs={5}>
                           <DatePicker
                             value={
-                              (typeof(this.props.searchDate.value) === 'object' ? this.props.searchDate.value[0] : this.props.searchDate.value) || new Date()
+                              (typeof(this.props.searchDate.value) === 'object' ? this.props.searchDate.value[0] : this.props.searchDate.value) || ''
                             }
+                            label={''}
                             onChange={this.props.searchDate.function ? (this.props.searchDate.function[0] ? this.props.searchDate.function[0] : this.props.searchDate.function) : null}
                             clearIcon={null}
                           />
@@ -343,7 +344,8 @@ class TableComponent extends React.Component {
                         { typeof(this.props.searchDate.value) === 'object' &&
                           <Grid item sm={5} xs={5} style={{maxWidth:'130px'}}>
                             <DatePicker
-                              value={this.props.searchDate.value[1] || new Date()}
+                              value={this.props.searchDate.value[1] || ''}
+                              label={''}
                               onChange={(this.props.searchDate.function && this.props.searchDate.function[1]) || null}
                               clearIcon={null}
                             />

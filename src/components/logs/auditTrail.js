@@ -54,8 +54,8 @@ class AuditTrail extends React.Component{
         errorMessageTanggal:'',
         errorMessage:'',
         errorMessageId:'',
-        tanggalAwal:new Date(),
-        tanggalAkhir:new Date(),
+        tanggalAwal:'',
+        tanggalAkhir:'',
         searchUserId:'',
         searchEntityId:'',
         searchAction:'',
@@ -121,10 +121,10 @@ class AuditTrail extends React.Component{
     
     // HANDLE TANGGAL UNTUK SEARCH
     handleStartChange = (date)=>{
-        this.setState({tanggalAwal:date})
+        this.setState({tanggalAwal:date.target.value})
     }
     handleEndChange = (date)=>{
-        this.setState({tanggalAkhir:date})
+        this.setState({tanggalAkhir:date.target.value})
     }
 
     //SEARCH
