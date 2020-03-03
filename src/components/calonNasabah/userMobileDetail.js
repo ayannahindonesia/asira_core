@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getProfileNasabahDetailFunction } from './saga'
+import { getBorrowerFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
@@ -20,14 +20,14 @@ const styles = (theme) => ({
     },
   });
 
-class profileNasabahDetail extends React.Component{
+class UserMobileDetail extends React.Component{
     _isMounted = false;
 
     state = {
       diKlik:false,
       errorMessage:'',
       dataUser: {},
-      idUser: 0,
+      calonNasabahId: 0,
       disabled: true,
       loading: true,
       dialog: false,
@@ -39,7 +39,7 @@ class profileNasabahDetail extends React.Component{
       this._isMounted = true;
 
       this.setState({
-        idUser: this.props.match.params.id,
+        calonNasabahId: this.props.match.params.id,
       },() => {
         this.refresh();
       })
@@ -62,21 +62,28 @@ class profileNasabahDetail extends React.Component{
 
     refresh = async function(){
       const param = {};
-      param.id = this.state.idUser;
+      param.calonNasabahId = this.state.calonNasabahId;
 
-      const data = await getProfileNasabahDetailFunction(param);
+      const data = await getBorrowerFunction(param);
       
 
       if(data) {
+        console.log(data)
           if(!data.error) {
-            const dataUser = data.dataUser.data || {};
+            const dataUser = data.dataUser || {};
             let flag = false;
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
             dataUser.idcard_image = dataUser.idcard_image && decryptImage(dataUser.idcard_image);
             dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image)
 
-           
+            if(dataUser && dataUser.status && dataUser.status === 'rejected') {
+              flag = true
+            }
+
+            if(dataUser && dataUser.bank_accountnumber && dataUser.bank_accountnumber.trim().length !== 0) {
+              flag = true
+            }
 
             this.setState({
               diKlik: flag,
@@ -130,7 +137,7 @@ class profileNasabahDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/nasabahList'/>            
+            return <Redirect to='/usermobile'/>            
         } else if (this.state.loading){
           return  (
             <div  key="zz">
@@ -149,7 +156,7 @@ class profileNasabahDetail extends React.Component{
             <Grid container className="containerDetail">
               <Grid item sm={12} xs={12} style={{maxHeight:50}}>
                 <TitleBar
-                  title={'Nasabah - Detail'}
+                  title={'Calon Nasabah - Detail'}
                 />
               </Grid>
               <Grid
@@ -217,7 +224,7 @@ class profileNasabahDetail extends React.Component{
                         this.state.dataUser.email
                       ],
                       [
-                        this.state.dataUser.birthday && handleFormatDate(this.state.dataUser.birthday),
+                        this.state.dataUser.birthday === "0001-01-01T00:00:00Z"? "-":handleFormatDate(this.state.dataUser.birthday),
                         this.state.dataUser.birthplace,
                         this.state.dataUser.last_education,
                         this.state.dataUser.mother_name,
@@ -225,13 +232,10 @@ class profileNasabahDetail extends React.Component{
                       ],
                       [
 
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? 'Menikah' : 
-                        this.state.dataUser.marriage_status.toLowerCase() === 'janda' ? "Janda":
-                        this.state.dataUser.marriage_status.toLowerCase() === 'duda' ? "Duda":
-                        'Belum Menikah',
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? this.state.dataUser.spouse_name : '-',
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
-                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status.toLowerCase() === 'menikah' ? this.state.dataUser.spouse_lasteducation : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? 'Menikah' : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_name : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
+                        this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'married' ? this.state.dataUser.spouse_lasteducation : '-',
                         this.state.dataUser.dependants > 5?"Lebih dari 5":this.state.dataUser.dependants
                       ],
                     ]}                 
@@ -379,4 +383,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(profileNasabahDetail);
+  )(UserMobileDetail);

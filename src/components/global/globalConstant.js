@@ -345,6 +345,14 @@ exports.dataMenu = [
                     list:'core_borrower_get_all core_borrower_get_details',
                 }
             },
+            {
+                label: 'User Mobile',
+                link:'/usermobile',
+                logo: 'calonNasabah.svg',
+                action: {
+                    list:'core_borrower_get_all core_borrower_get_details',
+                }
+            },
         ],
         
     },
@@ -496,12 +504,22 @@ exports.dataMenu = [
             {
                 label: 'Auditrail',
                 logo: '',
-                link:'/auditrail',
+                link:'/auditTrail',
                 action: {
                     list:'_',
                 }
             },
         ]
+    },
+    // FAQ
+    {
+        label: 'FAQ',
+        logo: '',
+        system:'Core',
+        link:'/FAQ',
+        action: {
+            list:'convenience_fee_report',
+        }
     },
     // Convenience Fee Report
     {

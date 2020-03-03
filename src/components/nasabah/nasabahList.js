@@ -27,7 +27,7 @@ const columnDataUser = [
   {
     id: 'created_at',
     numeric: false,
-    type: 'datetime',
+    type: 'date',
     label: 'Tanggal Registrasi',
   },
   {
