@@ -41,6 +41,17 @@ class ProductDetail extends React.Component{
         checkAuto:true,
         modifyType: false,
         dialog:false,
+        feeType:'potong_plafon',
+        listTypeFee:[
+            {
+                id: 'potong_plafon',
+                name: 'Potong dari Plafon'
+            },
+            {
+                id: 'tambah_cicilan',
+                name: 'Tambah ke Cicilan'
+            },
+        ],
         agunan:[
             {
                 label: '',
@@ -98,7 +109,7 @@ class ProductDetail extends React.Component{
                 label:'Image'
             },      
         ],
-        listTypeFee:[
+        listInterestType:[
             {
                 id:'percent',
                 label:'Percent (%)'
@@ -524,7 +535,7 @@ class ProductDetail extends React.Component{
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'15px'}}>
                                 <Grid container>
                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
-                                        Jangka Waktu
+                                        Jangka Waktu (Bulan)
                                     </Grid>
                                     <Grid item xs={1} sm={1} >
                                         <TextField
@@ -559,7 +570,7 @@ class ProductDetail extends React.Component{
                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
                                         Rentang Nilai Pengajuan
                                     </Grid>
-                                    <Grid item xs={3} sm={3} >
+                                    <Grid item xs={2} sm={2} >
                                         <TextField
                                             id="rentangFrom"
                                             value={this.state.rentangFrom}
@@ -573,10 +584,10 @@ class ProductDetail extends React.Component{
                                             disabled={this.state.modifyType ? false : true}
                                         />
                                     </Grid>
-                                    <Grid item sm={2} xs={2} style={{paddingTop:'10px'}}>
+                                    <Grid item sm={1} xs={1} style={{paddingTop:'10px'}}>
                                         <hr style={{maxWidth:'10px',borderTop:'1px solid black'}}></hr>
                                     </Grid>
-                                    <Grid item xs={3} sm={3} >
+                                    <Grid item xs={2} sm={2} >
                                         <TextField
                                             id="rentangTo"
                                             value={this.state.rentangTo}
@@ -593,7 +604,7 @@ class ProductDetail extends React.Component{
                                 </Grid>
                             </Grid>
                             {/* Asuransi */}
-                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'25px'}}>
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'15px'}}>
                                 <Grid container>
                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
                                         Asuransi
@@ -611,30 +622,26 @@ class ProductDetail extends React.Component{
                                     </Grid>
                                 </Grid>
                             </Grid>   
-                            {/* Status */}
-                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'20px'}}>
+                            {/* Tipe Fee */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'25px'}}>
                                 <Grid container>
-                                    <Grid item xs={4} sm={4} style={{paddingTop:'10px'}}>
-                                        Status
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'30px'}}>
+                                        Tipe Fee
                                     </Grid>
                                     <Grid item xs={4} sm={4} >
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    checked={this.state.check}
-                                                    onChange={(e) => this.handleChecked(e, 'check')}
-                                                    color={this.state.check ? "primary":"default"}
-                                                    value="default"
-                                                    inputProps={{ 'aria-label': 'checkbox with default color' }}
-                                                />
-                                            }
-                                            label={'Aktif'}
+                                        <DropDown
+                                            value={this.state.feeType}
+                                            label="name"
+                                            data={this.state.listTypeFee}
+                                            id="id"
+                                            labelName={"name"}
+                                            onChange={(e) => this.changeDropDown(e,'feeType')}
+                                            fullWidth
                                             disabled={this.state.modifyType ? false : true}
                                         />
-                                        
                                     </Grid>
                                 </Grid>
-                            </Grid> 
+                            </Grid>
                             {/* Auto Paid */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'20px'}}>
                                 <Grid container>
@@ -659,6 +666,31 @@ class ProductDetail extends React.Component{
                                     </Grid>
                                 </Grid>
                             </Grid>       
+                            
+                            {/* Status */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'20px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'10px'}}>
+                                        Status
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} >
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={this.state.check}
+                                                    onChange={(e) => this.handleChecked(e, 'check')}
+                                                    color={this.state.check ? "primary":"default"}
+                                                    value="default"
+                                                    inputProps={{ 'aria-label': 'checkbox with default color' }}
+                                                />
+                                            }
+                                            label={'Aktif'}
+                                            disabled={this.state.modifyType ? false : true}
+                                        />
+                                        
+                                    </Grid>
+                                </Grid>
+                            </Grid> 
                             {/* Sektor Pembiayaan */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
                                 <Grid container>
@@ -788,7 +820,7 @@ class ProductDetail extends React.Component{
                                                                 <DropDown
                                                                     value={feePerData.type}
                                                                     label="label"
-                                                                    data={this.state.listTypeFee}
+                                                                    data={this.state.listInterestType}
                                                                     id="id"
                                                                     labelName={"label"}
                                                                     onChange={(e) => this.changeFlexibleData(e,'type', index, 'fee')}
@@ -798,7 +830,7 @@ class ProductDetail extends React.Component{
                                                             </Grid>                                      
                                                         
                                                             
-                                                            <Grid item xs={3} sm={3} style={{marginRight:'10px',paddingTop:'12px'}}>
+                                                            <Grid item xs={2} sm={2} style={{marginRight:'10px',paddingTop:'12px'}}>
                                                                 <TextField 
                                                                     fullWidth
                                                                     onChange={(e) => this.changeFlexibleData(e,'value', index, 'fee', true)}
@@ -869,7 +901,7 @@ class ProductDetail extends React.Component{
                                                                 />
                                                             </Grid> 
 
-                                                            <Grid item xs={2} sm={2} style={{marginRight:'20px'}}>
+                                                            <Grid item xs={2} sm={2} style={{marginRight:'10px'}}>
                                                                 <DropDown
                                                                     value={mandatoryPerData.status}
                                                                     label="label"

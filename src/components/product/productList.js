@@ -1,6 +1,6 @@
 import React from 'react'
 import { listProductFunction } from './saga';
-import {checkPermission} from './../global/globalFunction'
+import {checkPermission, formatNumber} from './../global/globalFunction'
 import { Redirect } from 'react-router-dom'
 import { getToken } from '../index/token';
 import TableComponent from './../subComponent/TableComponent'
@@ -15,6 +15,21 @@ const columnDataUser = [
         id: 'name',
         numeric: false,
         label: 'Nama Produk',
+    },
+    {
+        id: 'tenor',
+        numeric: false,
+        label: 'Tenor',
+    },
+    {
+        id: 'rentangPengajuan',
+        numeric: false,
+        label: 'Rentang Pengajuan (Rp)',
+    },
+    {
+        id: 'interest',
+        numeric: false,
+        label: 'Bunga (%)',
     },
     {
         id: 'status',
@@ -40,15 +55,18 @@ class ProductList extends React.Component{
             page:this.state.page,
             rows:10
         }
-        const data = await listProductFunction (params)
 
-        const dataProduct = data.productList && data.productList.data;
-        
-        for(const key in dataProduct) {
-            dataProduct[key].status = dataProduct[key].status && dataProduct[key].status === 'active' ? 'Aktif' : 'Tidak Aktif'
-        }
+        const data = await listProductFunction (params)
         
         if(data){
+            const dataProduct = data.productList && data.productList.data;
+        
+            for(const key in dataProduct) {
+                dataProduct[key].status = dataProduct[key].status && dataProduct[key].status === 'active' ? 'Aktif' : 'Tidak Aktif'
+                dataProduct[key].tenor = `${dataProduct[key].min_timespan || '0'} - ${dataProduct[key].max_timespan || 0} Bulan`
+                dataProduct[key].rentangPengajuan = `Rp ${(dataProduct[key].min_loan && formatNumber(dataProduct[key].min_loan)) || '0'} - Rp ${(dataProduct[key].max_loan && formatNumber(dataProduct[key].max_loan)) || '0'}`
+            }
+
             if(!data.error){
                 this.setState({loading:false,rows:data.productList.data,
                     total_data:data.productList.total_data,
