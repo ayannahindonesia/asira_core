@@ -61,8 +61,7 @@ class DatePicker extends React.Component {
 }
 
 DatePicker.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.string,
+  label: PropTypes.string,
   classes: PropTypes.object,
   onChange: PropTypes.func,
   onChecked: PropTypes.func,
