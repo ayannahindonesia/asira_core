@@ -3,17 +3,20 @@ import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
 import { getAuditTrailDetailFunction } from './saga'
 import Loader from 'react-loader-spinner'
+import { Grid, Tooltip, IconButton } from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
+import TitleBar from '../subComponent/TitleBar'
 
-var _ = require('lodash');
 class AuditTrailDetail extends React.Component{
     _isMounted = false
 
     state={
-        newData:[],
-        originalDataFee:[],
-        originalData:[],
-        rows:{},
-        objC:{},
+        username: '',
+        user_id: '',
+        client: '',
+        entity: '',
+        actionAudit: '',
+        data:[],
         loading:true,
         diklik:false
     }
@@ -29,109 +32,148 @@ class AuditTrailDetail extends React.Component{
    
     }
 
+    destructAuditrail = (original, newData) => {
+        let newObject = {};
+
+        if(original && newData) {
+            for(const key in original) {
+                if(!newObject[key]) {
+                    newObject[key] = {
+                        before: '',
+                        after: '',
+                    };
+
+                }
+                newObject[key].before = original[key]
+            }
+
+            for(const key in newData) {
+                if(!newObject[key]) {
+                    newObject[key] = {
+                        before: '',
+                        after: '',
+                    };
+
+                }
+                newObject[key].after = newData[key]
+            }
+        }
+        
+        return newObject;
+    }
+
     getAuditDetail = async function () {
         const param = {}
-        const result={}
         param.id = this.props.match.params.id
-        const data = await getAuditTrailDetailFunction(param)
-       if(data){
-           if(!data.error){
-              const newDataLog = data.auditTrailDetail 
-              newDataLog.original = JSON.parse(newDataLog.original)
-              newDataLog.original.created_at = newDataLog.original.created_at.replace("T"," - ")
-              newDataLog.original.updated_at = newDataLog.original.updated_at.replace("T"," - ")
-              if(newDataLog.original.approval_date)
-              {newDataLog.original.approval_date = newDataLog.original.approval_date.replace("T"," - ")}
-              
-              if(newDataLog.original.deleted_at !==null){
-                newDataLog.original.deleted_at = newDataLog.original.deleted_at.replace("T"," - ")
-              }
-           
-              newDataLog.new = JSON.parse(newDataLog.new)
-              newDataLog.new.created_at = newDataLog.new.created_at.replace("T"," - ")
-              newDataLog.new.updated_at = newDataLog.new.updated_at.replace("T"," - ")
-              if(newDataLog.new.approval_date)
-              {newDataLog.new.approval_date = newDataLog.new.approval_date.replace("T"," - ")}
-              if(newDataLog.new.deleted_at !==null){
-                newDataLog.new.deleted_at = newDataLog.new.deleted_at.replace("T"," - ")
-              }
-              for(const key in newDataLog.new){
-                    result[key]={}
-                    result[key].ori = newDataLog.original[key] || ''
-                    result[key].latest = newDataLog.new[key] || ''
-                    result[key].verified = _.isEqual(result[key].ori,result[key].latest)
-              }
+        const data = await getAuditTrailDetailFunction(param);
 
-              this.setState({
-                originalData:  newDataLog.original,
-                newData:  newDataLog.new,
-                objC:result,
-                rows:newDataLog,
-                loading:false
-              })
-           }
-           else{
-               this.setState({errorMessage:data.error})
-           }
+       if(data){
+            if(!data.error){
+                let newDataLog = Object.assign({}, data.auditTrailDetail);
+
+                newDataLog = this.destructAuditrail(newDataLog.original && JSON.parse(newDataLog.original), newDataLog.new && JSON.parse(newDataLog.new))
+
+                this.setState({
+                    username: data.auditTrailDetail && data.auditTrailDetail.username,
+                    user_id: data.auditTrailDetail && data.auditTrailDetail.user_id,
+                    actionAudit: data.auditTrailDetail && data.auditTrailDetail.action,
+                    client: data.auditTrailDetail && data.auditTrailDetail.client,
+                    entity: data.auditTrailDetail && data.auditTrailDetail.entity,
+                    data: newDataLog,
+                    loading:false
+                })
+            }
+            else{
+               this.setState({errorMessage:data.error, loading: false})
+            }
        }
     }   
-    fieldModified = (obj) => {
-        let result =''
 
-        if(obj !== null) {
-            result = Object.keys(obj).map((i,index) => {
-               if ( obj[i].verified===false && (Array.isArray(obj[i]) || typeof obj[i] === 'object')) {
-                   return ( 
-                        <ul key={index}>
-                             <li><a href={`/auditTrailDetail/${this.props.match.params.id}#${i}`}>{ i }</a></li>
-                        </ul>
-                        )
-               } 
-               return null;
-            }, this)
+    renderTable = (obj, index) => {
+
+        let color = this.checkDifferent(obj.before, obj.after);
+        
+        return(
+            <Grid item xs={12} sm={12} key={index} style={{borderTop:'1px solid #cfcfcf', minHeight:'45px', wordWrap:'break-word'}}>
+
+                <Grid container style={{backgroundColor: color ? 'orange': 'none', verticalAlign:'bottom'}}>
+
+                    <Grid item xs={2} sm={2} style={{fontWeight: 'bold', padding:'10px 0px 10px 10px', borderRight:'1px solid #cfcfcf', borderLeft:'1px solid #cfcfcf'}}>
+                        {index}
+                    </Grid>
+
+                    <Grid item xs={5} sm={5} style={{borderRight:'1px solid #cfcfcf'}}>
+                        <Grid container>
+                            {this.renderPerRowTable(obj.before)}
+                        </Grid>
+                        
+                    </Grid>
+
+                    <Grid item xs={5} sm={5} style={{borderRight:'1px solid #cfcfcf'}}>
+                        <Grid container>
+                            {this.renderPerRowTable(obj.after)}
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+
+            </Grid>
+        )
+    }
+
+    renderPerRowTable = (obj, index) => {
+
+        if(typeof(obj) === 'object' && obj !== null) {
+            if(obj.length) {
+                return obj.map((objArray, indexArray) => {
+                    return(
+                        <Grid container key={indexArray} >
+                            <Grid item xs={6} sm={6} style={{padding:index ? '10px 10px 10px 30px' : '10px 10px 10px 10px'}}>
+                                {indexArray.toString()}
+                            </Grid>
+                            {this.renderPerRowTable(objArray, indexArray.toString())}
+                        </Grid>
+                    )
+                }, this)
+            } else {
+                return Object.keys(obj).map((objArray) => {
+                    return(
+                        <Grid container key={objArray}>
+                            <Grid item xs={6} sm={6} style={{padding:index ? '10px 10px 10px 30px' : '10px 10px 10px 10px'}}>
+                                {objArray.toString()}
+                            </Grid>
+                            {this.renderPerRowTable(obj[objArray], objArray.toString())}
+                        </Grid>
+                    )
+                }, this)
+            }
+        }
+        
+        return <Grid item xs={6} sm={6} style={{padding:'10px 10px 10px 10px'}}> {obj ? obj.toString() : '-'} </Grid>
+    }
+
+    checkDifferent = (before, after) => {
+        let flag = false;
+        
+        if(
+            typeof(before) === typeof(after) && 
+            typeof(before) === 'object' && 
+            after !== null && before !== null
+        ) {
+            for(const key in before) {
+                flag = this.checkDifferent(before[key], after[key]);
+
+                if(flag) {
+                    break;
+                }
+            }
+        } else if(before !== after) {
+            flag = true;
         }
 
-        return result
-     }
+        return flag;
+    }
 
-     extractJSON = (obj, indent) => {
-         let finalObj =''
-
-         if(obj !== null) {
-            finalObj = Object.keys(obj).map((i,index) => {
-                if(obj[i]===null){
-                    return(
-                        <div id={`${i}`}>
-                            <tr>
-                                <td  style={{border:"none"}}> 
-                                    <ul key={index}>
-                                        <li>{indent + i + ': -' }</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </div>
-                    )
-                }
-                if (Array.isArray(obj[i]) || typeof obj[i] === 'object') {
-                    return this.extractJSON(obj[i],` --- `+ indent + '  ' + i + ' > ');
-                  } else {
-                    return (
-                        <div id={`${i}`} key={index} >
-                        <tr >
-                             <td style={{border:"none"}}>
-                                <ul style={{wordWrap:"break-word",width:"400px"}}>
-                                    <li>{indent + i + ': ' + obj[i] }</li>
-                                </ul>
-                             </td>
-                        </tr>
-                        </div>
-                    )
-                  }
-             }, this)
-         }
-
-        return(finalObj) 
-      }
     
     render(){   
         if(this.state.diklik){
@@ -150,57 +192,134 @@ class AuditTrailDetail extends React.Component{
             )
         }
         else if(getToken()){
-            return(
-                <div style={{padding:0}}>
-                    <h2>Audit Trail - Detail {this.state.rows.id}</h2>
-                    <hr></hr>
-                    <div>
-                    </div>
-                    <div className="row">
-                        <div className="col col-xs col-md">
-                            <table className="table table-bordered">
-                             <thead className="table-warning">
-                                <tr>
-                                    <th className="text-center" scope="col">Field data yang berubah</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td className="text-left"> 
-                                    {this.fieldModified(this.state.objC)}
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+            
+            return (
+                <Grid container>
 
-                            <table className="table table-bordered">
-                             <thead className="table-warning">
-                                <tr>
-                                    <th className="text-center" scope="col">Sebelum</th>
-                                    <th className="text-center" scope="col">Sesudah</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td className="text-left"> 
-                                      {this.extractJSON(this.state.originalData,"  ")}
-                                    </td>
-                                    <td className="text-left"> 
-                                      {this.extractJSON(this.state.newData,"  ")}
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                        </div>
-                    </div>
-
-                    <div>
-                        <input type="button" className="btn btn-outline-primary" value="Kembali" onClick={()=> this.setState({diklik:true})}/>
-                    </div>
+                    <Grid item sm={12} xs={12} style={{maxHeight:50}}>
                         
-                </div>
-            )
+                        <TitleBar
+                            title={'Audit Trail - Detail'}
+                        />
+
+                    </Grid>
+                    <Grid
+                        item
+                        sm={12} xs={12}
+                        style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+                    >
+                        <Grid container>
+                            {/* Action Button */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                                <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
+                                    <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
+
+                                        <Tooltip title="Back" style={{outline:'none'}}>
+                                            <IconButton aria-label="cancel" onClick={() => {this.setState({diklik:true})}}>
+                                                <CancelIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                            {/* Error */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
+                                {this.state.errorMessage}
+                            </Grid>
+
+                            <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                                <Grid container>
+
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        User
+                                    </Grid>
+
+                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
+                                        {`${this.state.username || '-'} (id : ${this.state.user_id || '-'})`}
+                                    </Grid>
+
+                                </Grid>
+
+                            </Grid>
+                            <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                                <Grid container>
+
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        Client
+                                    </Grid>
+
+                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
+                                        {this.state.client || '-'}
+                                    </Grid>
+
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                                <Grid container>
+
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        Entity
+                                    </Grid>
+
+                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
+                                        {this.state.entity || '-'}
+                                    </Grid>
+
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                                <Grid container>
+
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        Action
+                                    </Grid>
+
+                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
+                                        {this.state.actionAudit || '-'}
+                                    </Grid>
+
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid item sm={12} xs={12} style={{textAlign:'center', fontSize:'20px', marginBottom:'10px', border:'1px solid #cfcfcf'}}>
+                                <Grid container>
+
+                                    <Grid item sm={2} xs={2} style={{padding:'10px'}}>
+                                        Nama Kolom
+                                    </Grid>
+
+                                    <Grid item sm={5} xs={5} style={{padding:'10px', borderLeft:'1px solid #cfcfcf'}}>
+                                        Sebelum
+                                    </Grid>
+
+                                    <Grid item sm={5} xs={5} style={{padding:'10px', borderLeft:'1px solid #cfcfcf'}}>
+                                        Sesudah
+                                    </Grid>
+
+                                </Grid>
+
+                            </Grid>
+
+                            {
+                                this.state.data && Object.keys(this.state.data).map((index) => {
+
+                                    return(
+                                        this.renderTable(this.state.data[index], index)
+                                    )
+                                    
+                                }, this)
+                            }
+                        
+                        </Grid>
+                    </Grid>
+                </Grid>
+            );
         }
         if(!getToken()){
             return (

@@ -104,19 +104,26 @@ class AuditTrail extends React.Component{
    
    
     formatSearchingDate = (dateData, endSearch) => {
-        const startDate = dateData || new Date();
+
+        if(dateData) {
+            const startDate = dateData;
     
-        let startMonth =''+ (startDate.getMonth()+1),
-        startDay = '' + startDate.getDate(),
-        startYear = startDate.getFullYear();
-    
-        if (startMonth.length < 2) startMonth = '0' + startMonth;
-        if (startDay.length < 2) startDay = '0' + startDay;
-    
-        let newFormatStartDate = startYear+"-"+startMonth+"-"+startDay;
-        newFormatStartDate += endSearch ? "T23:59:59.999Z" : "T00:00:00.000Z"
-    
-        return newFormatStartDate;
+
+            let startMonth =''+ (startDate.getMonth()+1),
+            startDay = '' + startDate.getDate(),
+            startYear = startDate.getFullYear();
+        
+            if (startMonth.length < 2) startMonth = '0' + startMonth;
+            if (startDay.length < 2) startDay = '0' + startDay;
+        
+            let newFormatStartDate = startYear+"-"+startMonth+"-"+startDay;
+            newFormatStartDate += endSearch ? "T23:59:59.999Z" : "T00:00:00.000Z"
+        
+            return newFormatStartDate;
+        }
+
+        return dateData
+        
       }
     
     // HANDLE TANGGAL UNTUK SEARCH
@@ -165,7 +172,7 @@ class AuditTrail extends React.Component{
             if(searchAction.trim().length > 0){
                 param.action = searchAction
             }
-            if(dateAwal<=dateAkhir){
+            if(tanggalAwal && tanggalAkhir && dateAwal<=dateAkhir){
                 param.start_date = this.formatSearchingDate(tanggalAwal)
                 param.end_date = this.formatSearchingDate(tanggalAkhir, true)
             }
