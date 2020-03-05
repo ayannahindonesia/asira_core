@@ -16,6 +16,11 @@ const columnDataUser = [
         numeric: false,
         label: 'Tujuan Pembiayaan',
     },
+    {
+        id: 'status',
+        numeric: false,
+        label: 'Status',
+    },
 
 ]
 class TujuanList extends React.Component{
@@ -40,7 +45,12 @@ class TujuanList extends React.Component{
 
         if(data){
             if(!data.error){
-                this.setState({loading:false,rows:data.data.data,
+                console.log(data)
+                const newData = data.data.data
+                for(const key in newData){
+                    newData[key].status= newData[key].status ==='active'?"Aktif":"Tidak Aktif"
+                }
+                this.setState({loading:false,rows:newData,
                     total_data:data.data.total_data,
                     page:data.data.current_page,
                     from:data.data.from,
