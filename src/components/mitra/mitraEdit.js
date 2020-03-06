@@ -516,7 +516,7 @@ class BankEdit extends React.Component{
                             <div className="col-sm-10">
                           
                             <PhoneInput
-                            defaultCountry="ID"
+                            country="ID"
                             ref="telp"
                             value={ this.state.dataBank.phone }
                             onChange={ phone => this.setState({ phone }) } className="form-control" />                                                       
