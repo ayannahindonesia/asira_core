@@ -125,7 +125,10 @@ class Main extends React.Component{
     }
 
     getBankService = async function () {
-        const data = await getAllLayananListFunction({})
+        const param = {
+            status:"active"
+        }
+        const data = await getAllLayananListFunction(param)
 
         if(data){
             if(!data.error){
