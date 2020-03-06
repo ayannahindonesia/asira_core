@@ -521,6 +521,7 @@ exports.dataMenu = [
             list:'core_faq_list core_faq_detail',
             add:'core_faq_new',
             edit:'core_faq_patch',
+            delete:'core_faq_delete'
         }
     },
     // Convenience Fee Report

@@ -28,6 +28,7 @@ class CheckBoxClass extends React.Component {
         'List',
         'Add',
         'Edit',
+        'Delete',
         'Approval',
         'Disburse',
         'Download',
