@@ -12,6 +12,11 @@ import { compose } from 'redux';
 import { getAllRoleFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission, checkingSystem, checkingRole, findRoleName, findSystem } from './function'
 import { getToken } from '../index/token';
+import DialogComponent from '../subComponent/DialogComponent';
+import CancelIcon from '@material-ui/icons/Cancel';
+import SaveIcon from '@material-ui/icons/Save';
+import { IconButton, Tooltip, Grid } from '@material-ui/core';
+import TitleBar from '../subComponent/TitleBar';
 
 const styles = (theme) => ({
   container: {
@@ -205,6 +210,14 @@ class rolePermissionAdd extends React.Component{
       })
     }
 
+    btnConfirmationDialog = (e, nextStep) => {
+      this.setState({dialog: !this.state.dialog})
+
+      if(nextStep) {
+          this.btnSave()
+      }
+    }
+
     render(){
         if(this.state.diKlik){
           return <Redirect to='/permissionList'/>            
@@ -222,18 +235,66 @@ class rolePermissionAdd extends React.Component{
             </div>
           )
         } else if(getToken()){
-          return(
-              <div className="container mt-4">
-                <h3>Permission - Tambah</h3>
-                
-                <hr/>
-                
-                <form>
-                  <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Role Name
-                      </label>
-                      <div className="col-sm-4">
+          return (
+            <Grid container>
+
+              <Grid item sm={12} xs={12} style={{maxHeight:50}}>
+                  
+                <TitleBar
+                  title={'Permission - Tambah'}
+                />
+
+              </Grid>
+              
+              <Grid
+                item
+                sm={12} xs={12}
+                style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+              >
+                <Grid container>
+                  {/* Action Button */}
+                  <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                    <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
+                      <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
+
+                        <Tooltip title="Save" style={{outline:'none'}}>
+                          <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
+                            <SaveIcon style={{width:'35px',height:'35px'}}/>
+                          </IconButton>
+                        </Tooltip>
+                        
+
+                        <Tooltip title="Back" style={{outline:'none'}}>
+                          <IconButton aria-label="cancel" onClick={this.btnCancel}>
+                            <CancelIcon style={{width:'35px',height:'35px'}}/>
+                          </IconButton>
+                        </Tooltip>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  {/* Dialog */}
+                  <DialogComponent 
+                    title={'Confirmation'}
+                    message={'Are you sure want to save this data ?'}
+                    type={'textfield'}
+                    openDialog={this.state.dialog}
+                    onClose={this.btnConfirmationDialog}
+                  />
+
+                  {/* Error */}
+                  <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
+                      {this.state.errorMessage}
+                  </Grid>
+
+                  <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                    <Grid container>
+
+                      <Grid item sm={4} xs={4} style={{padding:'25px 0px 0px 10px'}}>
+                        Role
+                      </Grid>
+
+                      <Grid item sm={4} xs={4}>
                         <DropDown
                           value={this.state.role}
                           label="Role"
@@ -245,40 +306,34 @@ class rolePermissionAdd extends React.Component{
                           error={this.state.roleHelper}
                           disabled={this.state.disabled}
                         />
-                      </div>                 
-                  </div>
+                      </Grid>
 
-                  <div className="form-group row">
-                      <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                        {this.state.errorMessage}
-                      </div>     
-                      <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                        <CheckBoxClass
-                          label={`${this.state.system} - Permission Setup`}
-                          modulesName="Menu"
-                          data={this.state.listAllRolePermission}
-                          id="id"
-                          labelName="label"
-                          modules="menu"      
-                          labelPlacement= "top"                       
-                          onChange={this.onChangeCheck}
-                          onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
-                          style={{ width: '97%'}}
-                          disabled={this.state.disabled}
-                        />
-                      </div>           
-                  </div>
-                  
-                  <div className="form-group row">
-                      <div className="col-sm-12 ml-3 mt-3">
-                        <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnSave} disabled={this.state.disabled}/>
-                        <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                      </div>
-                  </div>
-                  
-                </form>
-              
-              </div>
+                    </Grid>
+
+                  </Grid>
+
+                  <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                    
+                    <CheckBoxClass
+                      label={`${this.state.system} - Permission Setup`}
+                      modulesName="Menu"
+                      data={this.state.listAllRolePermission}
+                      id="id"
+                      labelName="label"
+                      modules="menu"      
+                      labelPlacement= "top"                       
+                      onChange={this.onChangeCheck}
+                      onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
+                      style={{ width: '97%'}}
+                      disabled={!this.state.modifyType}
+                    />
+                  </Grid>
+
+
+
+                </Grid>
+              </Grid>
+            </Grid>
           )
         } else if(!getToken()){
           return (

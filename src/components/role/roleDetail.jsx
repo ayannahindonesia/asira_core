@@ -5,7 +5,7 @@ import { getToken } from '../index/token';
 
 class RoleDetail extends React.Component{
     _isMounted = false;
-    state= {diklik:false,rows:[],errorMessage:''}
+    state= {diKlik:false,rows:[],errorMessage:''}
  
     componentDidMount(){
         this._isMounted=true;
@@ -31,10 +31,10 @@ class RoleDetail extends React.Component{
         }
     }
     btnBack = ()=>{
-        this.setState({diklik:true})
+        this.setState({diKlik:true})
     }
     render(){
-        if(this.state.diklik){
+        if(this.state.diKlik){
             return <Redirect to="/roleList"></Redirect>
         }
         if(getToken()){

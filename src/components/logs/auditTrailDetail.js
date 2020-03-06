@@ -18,7 +18,7 @@ class AuditTrailDetail extends React.Component{
         actionAudit: '',
         data:[],
         loading:true,
-        diklik:false
+        diKlik:false
     }
 
     
@@ -176,7 +176,7 @@ class AuditTrailDetail extends React.Component{
 
     
     render(){   
-        if(this.state.diklik){
+        if(this.state.diKlik){
             return(
                 <Redirect to="/auditTrail"></Redirect>
             )
@@ -215,7 +215,7 @@ class AuditTrailDetail extends React.Component{
                                     <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
 
                                         <Tooltip title="Back" style={{outline:'none'}}>
-                                            <IconButton aria-label="cancel" onClick={() => {this.setState({diklik:true})}}>
+                                            <IconButton aria-label="cancel" onClick={() => {this.setState({diKlik:true})}}>
                                                 <CancelIcon style={{width:'35px',height:'35px'}}/>
                                             </IconButton>
                                         </Tooltip>
