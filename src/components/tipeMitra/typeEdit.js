@@ -40,13 +40,15 @@ class TypeBankEdit extends React.Component{
     }
     btnUpdate=()=>{
         var name= this.refs.typebank.value
-        var description = this.refs.deskripsi.value ? this.refs.deskripsi.value :this.refs.deskripsi.placeholder
+        var description = this.refs.deskripsi.value || '-'
         var id = this.props.match.params.id
+        console.log(description)
         this.setState({submit:true})
         var newData={name,description}
         const params = {id,newData}
         this.EditTypeBankBtn(params)
     }
+    
 
     EditTypeBankBtn = async function (params) {
         const data = await EditTipeBankFunction(params)
@@ -95,7 +97,7 @@ class TypeBankEdit extends React.Component{
                       <div className="form-group row">
                                                 <label className="col-sm-3 col-form-label">Deskripsi</label>
                                                 <div className="col-sm-9">
-                                                <textarea rows="5" ref="deskripsi" className="form-control" placeholder={this.state.rows.description} required autoFocus/>
+                                                <textarea rows="5" ref="deskripsi" className="form-control" defaultValue={this.state.rows.description} required autoFocus/>
                                                 </div>
                      </div>
                     <div className="form-group row">

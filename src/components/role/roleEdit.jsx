@@ -42,7 +42,7 @@ class RoleEdit extends React.Component{
     }
     btnEdit = ()=>{
         var id = this.props.match.params.id
-        var description = this.refs.deskripsi.value ?  this.refs.deskripsi.value :  this.refs.deskripsi.placeholder
+        var description = this.refs.deskripsi.value || "-"
         var status =  this.state.check
         status ? status= "active": status= "inactive"
         var newData = {description,status}
@@ -112,7 +112,7 @@ class RoleEdit extends React.Component{
                             <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Deskripsi</label>
                             <div className="col-sm-10">
-                                <textarea  rows= {6} ref="deskripsi" className="form-control"  placeholder={this.state.dataRole.description} required autoFocus/>
+                                <textarea  rows= {6} ref="deskripsi" className="form-control"  defaultValue={this.state.dataRole.description} required autoFocus/>
                             </div>
                             </div>
 
