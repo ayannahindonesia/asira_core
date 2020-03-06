@@ -39,14 +39,15 @@ class TujuanEdit extends React.Component{
         }
     }
     btnUpdateLayanan = ()=>{
-        this.setState({submit:true})
-        var name =this.refs.tujuan.value ? this.refs.tujuan.value : this.refs.tujuan.placeholder
+        var name =this.refs.tujuan.value 
         var status = this.state.check?"active":"inactive"
         var id = this.props.match.params.id
             
         if(name==="" || name.trim()===""){
             this.setState({errorMessage:"Tujuan field Kosong -  Harap cek ulang"})
         }else{
+                this.setState({submit:true})
+
                 var newData={name,status}
                 const param = {
                     id, newData
@@ -100,7 +101,7 @@ class TujuanEdit extends React.Component{
                    <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Tujuan Pembiayaan</label>
                             <div className="col-sm-9">
-                            <input type="text" placeholder={this.state.rows.name} style={{width:"50%",marginLeft:"100px",height:"35px",borderRadius:"3px"}} ref="tujuan"></input>                            
+                            <input type="text" defaultValue={this.state.rows.name} style={{width:"50%",marginLeft:"100px",height:"35px",borderRadius:"3px"}} ref="tujuan"></input>                            
                             </div>
                     </div>
                   
