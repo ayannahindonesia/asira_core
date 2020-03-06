@@ -197,7 +197,7 @@ class RolePermissionDetail extends React.Component{
 
     btnEditPermission = () => {
       this.setState({modifyType: true})
-  }
+    }
 
     render(){
         if(this.state.diKlik){
@@ -257,7 +257,7 @@ class RolePermissionDetail extends React.Component{
                         }
 
                         <Tooltip title="Back" style={{outline:'none'}}>
-                          <IconButton aria-label="cancel" onClick={() => {this.setState({diklik:true})}}>
+                          <IconButton aria-label="cancel" onClick={this.btnCancel}>
                             <CancelIcon style={{width:'35px',height:'35px'}}/>
                           </IconButton>
                         </Tooltip>
