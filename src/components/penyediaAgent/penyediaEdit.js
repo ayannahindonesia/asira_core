@@ -67,13 +67,16 @@ class PenyediaEdit extends React.Component{
         let status = this.state.check ? "active": "inactive"
         let address = this.refs.alamat.value ? this.refs.alamat.value : this.refs.alamat.placeholder
         let pic = this.refs.pic.value ? this.refs.pic.value :this.refs.pic.placeholder
-        let phone = this.state.phone ? String(this.state.phone):String(this.state.rows.phone)
+        let phone = this.state.phone? String(this.state.phone):String(this.state.rows.phone)
 
         if(pic.trim().length ===0){
             this.setState({errorMessage:"Nama PIC Kosong - Harap cek kembali"})
         }else if(address.trim().length ===0){
             this.setState({errorMessage:"Alamat Kosong - Harap cek kembali"})
-        }else{
+        }else if(phone.trim().length <6){
+            this.setState({errorMessage:"No Telp terlalu pendek - Harap cek kembali"})
+        }
+        else{
             this.setState({submit:true})
             const param ={
                 id :this.props.match.params.id,
@@ -122,7 +125,6 @@ class PenyediaEdit extends React.Component{
             return(
                 <div className="container mt-2">
                      <h3>Penyedia Agen - Edit</h3>
-                        {this.state.errorMessage}
                      <hr/>
                      <div className="form-group row">
                             <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'center'}}>
@@ -145,7 +147,7 @@ class PenyediaEdit extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">PIC</label>
                             <div className="col-sm-9">
-                            <input type="text" className="form-control" ref="pic" placeholder={this.state.rows.pic} />                            
+                            <input type="text" className="form-control" ref="pic" defaultValue={this.state.rows.pic} />                            
                             </div>
                         </div>
                         <div className="form-group row">
@@ -153,16 +155,15 @@ class PenyediaEdit extends React.Component{
                             <div className="col-sm-9">
                             <PhoneInput
                             country="ID"
-                            placeholder={this.state.rows.phone}
-                            value={ this.state.phone }
-                            onChange={ phone => this.setState({ phone }) } className="form-control" />                                                  
+                            value={ this.state.rows.phone }
+                            onChange={ phone => this.setState({ phone }) } 
+                            className="form-control" />                                                  
                             </div>
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Alamat</label>
                             <div className="col-sm-9">
-                            <textarea rows="5" ref="alamat" className="form-control"  placeholder={this.state.rows.address} required autoFocus/>
-                            
+                            <textarea rows="5" ref="alamat" className="form-control"  defaultValue={this.state.rows.address} required autoFocus/>
                             </div>
                         </div>
                       

@@ -47,8 +47,8 @@ import { getToken } from '../index/token';
 class Report extends React.Component{
     _isMounted = false
     state ={munculinTable:false,pilihReport:false, 
-        tanggalAwal:null,tanggalAkhir:null,
-        tanggalAwalPencairan:null,tanggalAkhirPencairan:null,
+        tanggalAwal:'',tanggalAkhir:'',
+        tanggalAwalPencairan:'',tanggalAkhirPencairan:'',
         errorMessagePencairan:'',errorMessage:'',errorMessageBank:'',dataBank:[],namaBank:null,loading:false}
     componentDidMount(){
         this.getDataBankList()
@@ -106,7 +106,7 @@ class Report extends React.Component{
         let tglPencairanAkhir = new Date(tanggalAkhirPencairan).getTime()
  
  
-         if(tanggalAwal === null || tanggalAkhir ===null){
+         if(tanggalAwal === '' || tanggalAkhir ===''){
              this.setState({errorMessage:"Tanggal Kosong - Harap cek ulang",errorMessagePencairan:'',errorMessageBank:''})
              flag=false
          }
@@ -163,7 +163,7 @@ class Report extends React.Component{
                     param.end_disburse_date = newTanggalPencairanAkhir
                 }
                 
-                this.getAllLoanData(param)
+               // this.getAllLoanData(param)
             }
     }
     getAllLoanData = async function (params) {
