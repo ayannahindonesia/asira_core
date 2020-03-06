@@ -2,14 +2,23 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import CheckBoxClass from '../subComponent/CheckBox';
 import Loader from 'react-loader-spinner'
+import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getRoleFunction } from './saga'
+import { getRoleFunction, patchRolePermissionFunction } from './saga'
+import { constructRolePermission, checkingRole, checkingSystem } from './function'
 import { getToken } from '../index/token';
-import { destructRolePermission, checkingSystem, checkingRole, findSystem } from './function';
+import { destructRolePermission } from './function';
+import { Tooltip, Grid, IconButton } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import CancelIcon from '@material-ui/icons/Cancel';
+import SaveIcon from '@material-ui/icons/Save';
+import DialogComponent from '../subComponent/DialogComponent';
+import { checkPermission } from '../global/globalFunction';
+import TitleBar from '../subComponent/TitleBar';
 
 const styles = (theme) => ({
     container: {
@@ -17,19 +26,23 @@ const styles = (theme) => ({
     },
   });
 
-class rolePermissionDetail extends React.Component{
+
+class RolePermissionDetail extends React.Component{
     _isMounted = false;
-    
+
     state = {
       diKlik:false,
       errorMessage:'',
-      listAllRolePermission : [],
+      listAllRolePermission: [],
       listRolePermission: [],
-      listRole: {},
+      listRole : {},
       roleId: 0,
-      disabled: true,
-      loading: true,
+      nameRole: '',
+      dialog: false,
+      modifyType:false,
       system: '',
+      loading: true,
+      disabled:true,
     };
 
     componentDidMount(){
@@ -39,9 +52,8 @@ class rolePermissionDetail extends React.Component{
       },() => {
         this.refresh();
       })
-      
     }
-
+    
     componentWillUnmount() {
       this._isMounted = false;
     }
@@ -53,14 +65,16 @@ class rolePermissionDetail extends React.Component{
       const data = await getRoleFunction(param);
 
       if(data) {
-          const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [])
+          const newListAllRolePermission = checkingSystem(this.state.roleId, [data.dataRole]);
+          const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [], newListAllRolePermission)
 
           if(!data.error) {
             this.setState({
               listRole: data.dataRole,
-              listAllRolePermission: checkingSystem(this.state.roleId, [data.dataRole]),
-              system: findSystem(this.state.roleId, [data.dataRole]),
+              nameRole: data.dataRole.name,
+              system: data.dataRole.system,
               listRolePermission,
+              listAllRolePermission: newListAllRolePermission,
               loading: false,
             })
           } else {
@@ -80,6 +94,111 @@ class rolePermissionDetail extends React.Component{
       this.setState({errorMessage:newProps.error})
     }
 
+    btnSave = () =>{ 
+      this.setState({loading: true})
+
+      const listRolePermission = this.state.listRolePermission;
+      const dataRolePermission = {};
+      
+      dataRolePermission.id = parseInt(this.state.listRole.id);
+      dataRolePermission.name = this.state.nameRole;
+      dataRolePermission.system = this.state.system
+      dataRolePermission.permissions = constructRolePermission(listRolePermission);
+
+      const param = {
+        roleId: parseInt(this.state.listRole.id),
+        dataRolePermission,
+      };
+      
+      this.patchRolePermission(param)
+        
+    }
+
+    patchRolePermission = async function(param) {
+      const data = await patchRolePermissionFunction(param)
+
+      if(data) {
+        if(!data.error) {
+          swal("Success","Role Permission berhasil di ubah","success")
+          this.setState({
+            diKlik: true,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
+      }
+    }
+
+    isRoleBank = (role) => {
+      let flag = false;
+      const dataRole = this.state.listRole;
+
+      if(role && role !== 0) {
+        for(const key in dataRole) {
+          if(dataRole[key].id.toString() === role.toString() && dataRole[key].system.toString().toLowerCase().includes('dashboard')) {
+            flag = true;
+            break;
+          }
+        }
+        
+      } 
+
+      return flag;
+    }
+
+    onChangeCheck = (e) => {
+      const profileUser = Object.assign({}, this.state.listRolePermission);
+      let profileUserNew = [];
+
+      let modules = e.target.value;
+      let flag = true;
+      
+      if(modules) {
+        for(const key in profileUser) {
+          if(
+            e.target.value.toString() !== profileUser[key].id.toString()
+          ) {
+            profileUserNew.push(profileUser[key])
+          } else {
+            flag = false;
+          }
+        }
+      }
+
+      if(flag && modules) {
+        let newModules = modules.split('-')[1];
+        newModules = newModules.split(' ');
+
+        for(const key in newModules) {
+          profileUserNew.push({
+            id: e.target.value,
+            modules: newModules[key],
+          });
+        }
+      }
+      
+      this.setState({
+        listRolePermission: profileUserNew,
+      });
+    };
+
+    btnConfirmationDialog = (e, nextStep) => {
+      this.setState({dialog: !this.state.dialog})
+
+      if(nextStep) {
+          this.btnSave()
+      }
+    }
+
+    btnEditPermission = () => {
+      this.setState({modifyType: true})
+  }
+
     render(){
         if(this.state.diKlik){
             return <Redirect to='/permissionList'/>            
@@ -97,55 +216,110 @@ class rolePermissionDetail extends React.Component{
             </div>
           )
         } else if(getToken()){
-            return(
-                <div className="container mt-4">
-                 <h3>Permission - Detail</h3>
-                 
-                 <hr/>
-                 
-                 <form>
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Role Name
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.listRole && this.state.listRole.name}
-                      </label>               
-                    </div>
+          return (
+            <Grid container>
 
-                    <div className="form-group row">
-                        <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                            {this.state.errorMessage}
-                        </div>     
-                        <div className="col-12" style={{color:"black",fontSize:"15px",textAlign:'left'}}>
-                          <CheckBoxClass
-                            label={`${this.state.system} - Permission Setup`}
-                            modulesName="Menu"
-                            data={this.state.listAllRolePermission}
-                            id="id"
-                            labelName="label"
-                            modules="menu"      
-                            labelPlacement= "top"            
-                            onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
-                            style={{ width: '97%'}}
-                            disabled={this.state.disabled}
-                          />
-                        </div>           
-                    </div>
+              <Grid item sm={12} xs={12} style={{maxHeight:50}}>
+                  
+                <TitleBar
+                  title={this.state.modifyType ? 'Permission - Ubah':'Permission - Detail'}
+                />
+
+              </Grid>
+              
+              <Grid
+                item
+                sm={12} xs={12}
+                style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+              >
+                <Grid container>
+                  {/* Action Button */}
+                  <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                    <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
+                      <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
+
+                        {
+                          checkPermission('core_permission_patch') && this.state.modifyType &&
+                          <Tooltip title="Save" style={{outline:'none'}}>
+                            <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
+                              <SaveIcon style={{width:'35px',height:'35px'}}/>
+                            </IconButton>
+                          </Tooltip>
+                        }
+
+                        {
+                          checkPermission('core_permission_patch') && !this.state.modifyType &&
+                          <Tooltip title="Edit" style={{outline:'none'}}>
+                            <IconButton aria-label="edit" onClick={this.btnEditPermission}>
+                              <EditIcon style={{width:'35px',height:'35px'}}/>
+                            </IconButton>
+                          </Tooltip>
+                        }
+
+                        <Tooltip title="Back" style={{outline:'none'}}>
+                          <IconButton aria-label="cancel" onClick={() => {this.setState({diklik:true})}}>
+                            <CancelIcon style={{width:'35px',height:'35px'}}/>
+                          </IconButton>
+                        </Tooltip>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  {/* Dialog */}
+                  <DialogComponent 
+                    title={'Confirmation'}
+                    message={'Are you sure want to save this data ?'}
+                    type={'textfield'}
+                    openDialog={this.state.dialog}
+                    onClose={this.btnConfirmationDialog}
+                  />
+
+                  {/* Error */}
+                  <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
+                      {this.state.errorMessage}
+                  </Grid>
+
+                  <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                    <Grid container>
+
+                      <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                        Role Name
+                      </Grid>
+
+                      <Grid item sm={8} xs={8} style={{padding:'10px'}}>
+                          {this.state.listRole && this.state.listRole.name}
+                      </Grid>
+
+                    </Grid>
+
+                  </Grid>
+
+                  <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
                     
-                    <div className="form-group row">
-                        <div className="col-sm-12 mt-3">
-                          <input type="button" value="Kembali" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                        </div>
-                    </div>
-                    
-                 </form>
-                
-                </div>
-            )
+                    <CheckBoxClass
+                      label={`${this.state.system} - Permission Setup`}
+                      modulesName="Menu"
+                      data={this.state.listAllRolePermission}
+                      id="id"
+                      labelName="label"
+                      modules="menu"      
+                      labelPlacement= "top"                       
+                      onChange={this.onChangeCheck}
+                      onChecked={(id) => checkingRole(this.state.listRolePermission, id)}
+                      style={{ width: '97%'}}
+                      disabled={!this.state.modifyType}
+                    />
+                  </Grid>
+
+
+
+                </Grid>
+              </Grid>
+            </Grid>
+          )
         } else if(!getToken()){
           return (
-              <Redirect to='/login' />
+            <Redirect to='/login' />
           )    
         }
        
@@ -156,7 +330,6 @@ export function mapDispatchToProps(dispatch) {
     return {
     //   getSourceTransaction: () => {
     //     dispatch(sourceTransactionRequest());
-    //   },
     //   handleRedirect: (route) => {
     //     dispatch(push(route));
     //   },
@@ -166,7 +339,6 @@ export function mapDispatchToProps(dispatch) {
 export const mapStateToProps = createStructuredSelector({
   // user: getUserState(),
   // menu: getMenu(),
-  // fetching: getFetchStatus(),
 });
 
 const withConnect = connect(
@@ -180,4 +352,4 @@ export default compose(
     withConnect,
     withStyle,
     withRouter
-  )(rolePermissionDetail);
+  )(RolePermissionDetail);

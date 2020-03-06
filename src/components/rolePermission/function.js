@@ -1,29 +1,38 @@
 import { dataMenu } from "../global/globalConstant";
 import { destructErrorMessage } from "../global/globalFunction";
 
-export function destructRolePermission(permission){
+export function destructRolePermission(permission, allPermission){
 
-    try {
-        let lastPermission = [] ;
-        let id = '';
+  try {
+      let lastPermission = [] ;
 
-        for(const key in permission) {
-            
-            if(!permission[key].toString().toLowerCase().includes('detail')) {
-                id = permission[key]
+      if(allPermission && permission) {
+        for(const keyPermission in permission) {
+          const permissionRow = permission[keyPermission]
+
+          for(const key in allPermission) {
+            const actionPermission = allPermission[key].action;
+
+            if(actionPermission) {
+              for(const keyAction in actionPermission) {
+                if(actionPermission[keyAction].toString().includes(permissionRow.toString())) {
+                  lastPermission.push({
+                    id: `${allPermission[key].label}-${actionPermission[keyAction].toString()}`,
+                    modules: permissionRow,
+                  })
+                  break;
+                }
+              }
             }
-            
-            lastPermission.push({
-                id,
-                modules: permission[key],
-            })
+          }
         }
+      }
 
-        return(lastPermission)
-    } catch (err) {
-        const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString();
-        return({error});
-    }
+      return(lastPermission)
+  } catch (err) {
+      const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString();
+      return({error});
+  }
 
 };
 

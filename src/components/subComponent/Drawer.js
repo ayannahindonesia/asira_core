@@ -39,7 +39,6 @@ import PermintaanPinjamanDetail from '../pinjaman/pinjamanDetail'
 import ProductAdd from './../product/productAdd'
 import ProductList from './../product/productList'
 import ProductDetail from './../product/productDetail'
-import ProductEdit from './../product/productEdit'
 import TujuanAdd from './../tujuan/tujuanAdd'
 import TujuanList from './../tujuan/tujuanList'
 import TujuanEdit from './../tujuan/tujuanEdit'
@@ -55,7 +54,6 @@ import RoleEdit from './../role/roleEdit'
 import RoleAddPermission from './../rolePermission/rolePermissionAdd'
 import RoleListPermission from './../rolePermission/rolePermissionList'
 import RoleDetailPermission from './../rolePermission/rolePermissionDetail'
-import RoleEditPermission from './../rolePermission/rolePermissionEdit'
 import Report from './../report/report'
 import UserAdd from './../user/userAdd'
 import UserList from './../user/userList'
@@ -352,7 +350,6 @@ function ResponsiveDrawer(props) {
 
             { checkPermission('core_product_new') && <Route path='/produkAdd' component={ProductAdd}></Route>}
             { checkPermission('core_product_list') && <Route path='/produkList' component={ProductList}></Route>}
-            { checkPermission('core_product_patch') && <Route path='/produkEdit/:id' component={ProductEdit}></Route>}
             { checkPermission('core_product_detail') && <Route path='/produkDetail/:id' component={ProductDetail}></Route>}
           
                               
@@ -379,7 +376,6 @@ function ResponsiveDrawer(props) {
 
             { checkPermission('core_permission_new') && <Route path='/permissionAdd' component={RoleAddPermission}></Route>}
             { checkPermission('core_permission_list') && <Route path='/permissionList' component={RoleListPermission}></Route>}
-            { checkPermission('core_permission_patch') && <Route path='/permissionEdit/:id' component={RoleEditPermission}></Route>}
             { checkPermission('core_permission_detail') && <Route path='/permissionDetail/:id' component={RoleDetailPermission}></Route>}
 
             { checkPermission('core_user_new') && <Route path='/akunAdd' component={UserAdd}></Route>}

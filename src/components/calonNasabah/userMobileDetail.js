@@ -68,7 +68,6 @@ class UserMobileDetail extends React.Component{
       
 
       if(data) {
-        console.log(data)
           if(!data.error) {
             const dataUser = data.dataUser || {};
             let flag = false;

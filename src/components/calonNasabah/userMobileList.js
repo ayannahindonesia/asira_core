@@ -67,7 +67,6 @@ class userMobileList extends React.Component{
         const data = await getAlluserMobileFunction(param);
 
         if(data) {
-            console.log(data)
             if(!data.error) {
                 const dataListUser = data.dataUser || [];
 

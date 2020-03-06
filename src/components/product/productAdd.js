@@ -128,7 +128,7 @@ class ProductAdd extends React.Component{
                 name: 'One Time Loan'
             },
             {
-                id: 'effective_down',
+                id: 'efektif_menurun',
                 name: 'Efektif Menurun'
             },
         ]
@@ -160,11 +160,11 @@ class ProductAdd extends React.Component{
             let newData = {
                 name: this.state.namaProduct,
                 service_id: this.state.layanan,
-                min_timespan: this.state.timeFrom,
-                max_timespan: this.state.timeTo,
-                interest: this.state.interest,
-                min_loan: this.state.rentangFrom,
-                max_loan: this.state.rentangTo,
+                min_timespan: parseInt(this.state.timeFrom),
+                max_timespan: parseInt(this.state.timeTo),
+                interest: parseFloat(this.state.interest),
+                min_loan: parseFloat(this.state.rentangFrom),
+                max_loan: parseFloat(this.state.rentangTo),
                 interest_type: this.state.tipeBunga,
                 auto_paid: this.state.checkAuto,
                 status: this.state.check ? 'active':'nonactive',
@@ -371,14 +371,14 @@ class ProductAdd extends React.Component{
                                            checkPermission('core_product_new') &&
                                             <Tooltip title="Save" style={{outline:'none'}}>
                                                 <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
-                                                    <SaveIcon />
+                                                    <SaveIcon style={{width:'35px',height:'35px'}} />
                                                 </IconButton>
                                             </Tooltip>
                                         }
 
                                         <Tooltip title="Back" style={{outline:'none'}}>
                                             <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                                                <CancelIcon />
+                                                <CancelIcon style={{width:'35px',height:'35px'}} />
                                             </IconButton>
                                         </Tooltip>
                                     </Grid>
@@ -723,7 +723,7 @@ class ProductAdd extends React.Component{
                                                             <Grid item xs={3} sm={3} style={{marginRight:'20px',paddingTop:'12px'}}>
                                                                 <TextField 
                                                                     fullWidth
-                                                                    onChange={(e) => this.changeFlexibleData(e,'label', index, 'fee', true)}
+                                                                    onChange={(e) => this.changeFlexibleData(e,'label', index, 'fee')}
                                                                     placeholder={'Nama Fee'}
                                                                     value={feePerData.label}
                                                                     margin="dense"

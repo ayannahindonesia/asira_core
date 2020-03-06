@@ -88,7 +88,7 @@ export async function getAllAuditTrailFunction (param,next) {
         for (const key in param){
             filter += `&${[key]}=${param[key]}`
         }
-        // console.log(filter)
+        
         //axios.get('https://virtserver.swaggerhub.com/Ayannah/Northstar/1.0.0/ns/audittrail')
         axios.get(serverLog+`ns/audittrail?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{

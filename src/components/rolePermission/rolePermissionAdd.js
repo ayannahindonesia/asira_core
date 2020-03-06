@@ -161,39 +161,34 @@ class rolePermissionAdd extends React.Component{
     }
 
     onChangeCheck = (e) => {
-      const profileUserAll = Object.assign({}, this.state.listAllRolePermission);
       const profileUser = Object.assign({}, this.state.listRolePermission);
-      const profileUserNew = [];
+      let profileUserNew = [];
 
-      let flag = false;
-      let modules = '';
-  
-      for (const key in profileUserAll) {
-        if (
-          profileUserAll[key].id.toString().trim() ===
-          e.target.value.toString().trim()
-        ) {
-          modules = profileUserAll[key].modules;
-
-          for(const keyRole in profileUser) {
-            if(profileUser[keyRole].id.toString().trim() !== e.target.value.toString().trim()) {
-              profileUserNew.push(profileUser[keyRole])
-            } else {
-              flag = true;
-            }
+      let modules = e.target.value;
+      let flag = true;
+      
+      if(modules) {
+        for(const key in profileUser) {
+          if(
+            e.target.value.toString() !== profileUser[key].id.toString()
+          ) {
+            profileUserNew.push(profileUser[key])
+          } else {
+            flag = false;
           }
-        } 
+        }
       }
-  
-      if (!flag) {
-        const modulesSplit = modules.split(' ');
 
-        for(const key in modulesSplit) {
+      if(flag && modules) {
+        let newModules = modules.split('-')[1];
+        newModules = newModules.split(' ');
+
+        for(const key in newModules) {
           profileUserNew.push({
             id: e.target.value,
-            modules: modulesSplit[key],
+            modules: newModules[key],
           });
-        } 
+        }
       }
       
       this.setState({
