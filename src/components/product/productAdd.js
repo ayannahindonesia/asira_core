@@ -15,6 +15,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { constructFees, constructCollaterals, constructSector, constructMandatory } from './function';
 import DialogComponent from '../subComponent/DialogComponent';
 import { checkPermission } from '../global/globalFunction';
+import NumberFormatCustom from '../subComponent/NumberFormatCustom';
 
 
 class ProductAdd extends React.Component{
@@ -35,14 +36,14 @@ class ProductAdd extends React.Component{
         interest:'',
         tipeBunga:'fixed',
         dialog: false,
-        feeType:'potong_plafon',
+        feeType:'deduct_loan',
         listTypeFee:[
             {
-                id: 'potong_plafon',
+                id: 'deduct_loan',
                 name: 'Potong dari Plafon'
             },
             {
-                id: 'tambah_cicilan',
+                id: 'charge_loan',
                 name: 'Tambah ke Cicilan'
             },
         ],
@@ -159,7 +160,7 @@ class ProductAdd extends React.Component{
         if(this.validate()) {
             let newData = {
                 name: this.state.namaProduct,
-                service_id: this.state.layanan,
+                service_id: parseInt(this.state.layanan),
                 min_timespan: parseInt(this.state.timeFrom),
                 max_timespan: parseInt(this.state.timeTo),
                 interest: parseFloat(this.state.interest),
@@ -170,7 +171,7 @@ class ProductAdd extends React.Component{
                 status: this.state.check ? 'active':'nonactive',
             }
 
-            let fees = constructFees(this.state.fee || []);
+            let fees = constructFees(this.state.fee || [], this.state.feeType);
             let agunan = constructCollaterals(this.state.agunan || []);
             let sektor = constructSector(this.state.sektor || []);
             let mandatory = constructMandatory(this.state.mandatory || []);
@@ -192,8 +193,10 @@ class ProductAdd extends React.Component{
             }
 
             if(mandatory) {
-                newData.mandatory = mandatory;
+                newData.form = mandatory;
             }
+
+            this.setState({loading: true})
 
             this.productAddBtn(newData)
         }
@@ -236,9 +239,9 @@ class ProductAdd extends React.Component{
         if(data){
             if(!data.error){
                 swal("Berhasil","Produk berhasil bertambah","success")
-                this.setState({errorMessage:null,diKlik:true})
+                this.setState({errorMessage:null,diKlik:true, loading: false})
             }else{
-                this.setState({errorMessage:data.error})
+                this.setState({errorMessage:data.error, loading: false})
             }
         }
     }
@@ -440,6 +443,7 @@ class ProductAdd extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             InputProps={{
+                                                inputComponent: NumberFormatCustom,
                                                 endAdornment: <InputAdornment position="end">%</InputAdornment>,
                                             }}
                                         />
@@ -472,6 +476,9 @@ class ProductAdd extends React.Component{
                                             margin="dense"
                                             variant="outlined"
                                             fullWidth
+                                            InputProps={{
+                                                inputComponent: NumberFormatCustom,
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item sm={1} xs={1} style={{paddingTop:'10px'}}>
@@ -485,6 +492,9 @@ class ProductAdd extends React.Component{
                                             margin="dense"
                                             variant="outlined"
                                             fullWidth
+                                            InputProps={{
+                                                inputComponent: NumberFormatCustom,
+                                            }}
                                         />
                                     </Grid>
                                 </Grid>
@@ -504,6 +514,7 @@ class ProductAdd extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             InputProps={{
+                                                inputComponent: NumberFormatCustom,
                                                 startAdornment: <InputAdornment position="start"> Rp </InputAdornment>,
                                             }}
                                         />
@@ -520,6 +531,7 @@ class ProductAdd extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             InputProps={{
+                                                inputComponent: NumberFormatCustom,
                                                 startAdornment: <InputAdornment position="start"> Rp </InputAdornment>,
                                             }}
                                         />
@@ -752,6 +764,9 @@ class ProductAdd extends React.Component{
                                                                     value={feePerData.value}
                                                                     margin="dense"
                                                                     variant="outlined"
+                                                                    InputProps={{
+                                                                        inputComponent: NumberFormatCustom,
+                                                                    }}
                                                                 />
                                                             </Grid> 
                                                             

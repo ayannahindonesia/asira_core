@@ -17,6 +17,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { constructFees, constructCollaterals, constructSector, constructMandatory, destructFees, destructSector, destructCollaterals, destructMandatory } from './function';
 import { checkPermission } from '../global/globalFunction';
 import DialogComponent from '../subComponent/DialogComponent';
+import NumberFormatCustom from '../subComponent/NumberFormatCustom';
 
 
 class ProductDetail extends React.Component{
@@ -41,14 +42,14 @@ class ProductDetail extends React.Component{
         checkAuto:true,
         modifyType: false,
         dialog:false,
-        feeType:'potong_plafon',
+        feeType:'deduct_loan',
         listTypeFee:[
             {
-                id: 'potong_plafon',
+                id: 'deduct_loan',
                 name: 'Potong dari Plafon'
             },
             {
-                id: 'tambah_cicilan',
+                id: 'charge_loan',
                 name: 'Tambah ke Cicilan'
             },
         ],
@@ -164,9 +165,10 @@ class ProductDetail extends React.Component{
                 const dataProduct = data.dataProduct || [];
 
                 const fees = destructFees(dataProduct.fees);
+                const feeType = dataProduct.fees && dataProduct.fees[0] && dataProduct.fees[0].fee_method;
                 const sektor = destructSector(dataProduct.financing_sector);
                 const collaterals = destructCollaterals(dataProduct.collaterals)
-                const mandatory = destructMandatory(dataProduct.mandatory)
+                const mandatory = destructMandatory(dataProduct.form)
 
                 this.setState({
                     id: dataProduct.id,
@@ -180,6 +182,7 @@ class ProductDetail extends React.Component{
                     timeFrom: dataProduct.min_timespan,
                     timeTo: dataProduct.max_timespan,
                     asuransi: dataProduct.assurance,
+                    feeType,
                     mandatory,
                     sektor,
                     fee: fees,
@@ -230,9 +233,9 @@ class ProductDetail extends React.Component{
         if(data){
             if(!data.error){
                 swal("Berhasil","Produk berhasil bertambah","success")
-                this.setState({errorMessage:null,diKlik:true})
+                this.setState({errorMessage:null,diKlik:true, loading:false})
             }else{
-                this.setState({errorMessage:data.error})
+                this.setState({errorMessage:data.error, loading: false})
             }
         }
     }
@@ -262,18 +265,18 @@ class ProductDetail extends React.Component{
             let newData = {
                 id: this.state.id,
                 name: this.state.namaProduct,
-                service_id: this.state.layanan,
-                min_timespan: this.state.timeFrom,
-                max_timespan: this.state.timeTo,
-                interest: this.state.interest,
-                min_loan: this.state.rentangFrom,
-                max_loan: this.state.rentangTo,
+                service_id: parseInt(this.state.layanan),
+                min_timespan: parseInt(this.state.timeFrom),
+                max_timespan: parseInt(this.state.timeTo),
+                interest: parseFloat(this.state.interest),
+                min_loan: parseFloat(this.state.rentangFrom),
+                max_loan: parseFloat(this.state.rentangTo),
                 interest_type: this.state.tipeBunga,
                 auto_paid: this.state.checkAuto,
                 status: this.state.check ? 'active':'nonactive',
             }
 
-            let fees = constructFees(this.state.fee || []);
+            let fees = constructFees(this.state.fee || [], this.state.feeType);
             let agunan = constructCollaterals(this.state.agunan || []);
             let sektor = constructSector(this.state.sektor || []);
             let mandatory = constructMandatory(this.state.mandatory || []);
@@ -295,8 +298,10 @@ class ProductDetail extends React.Component{
             }
 
             if(mandatory) {
-                newData.mandatory = mandatory;
+                newData.form = mandatory;
             }
+
+            this.setState({loading: true})
 
             this.productEditBtn(newData)
         }
@@ -512,6 +517,7 @@ class ProductDetail extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             InputProps={{
+                                                inputComponent: NumberFormatCustom,
                                                 endAdornment: <InputAdornment position="end">%</InputAdornment>,
                                             }}
                                             disabled={this.state.modifyType ? false : true}
@@ -546,6 +552,9 @@ class ProductDetail extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             disabled={this.state.modifyType ? false : true}
+                                            InputProps={{
+                                                inputComponent: NumberFormatCustom,
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item sm={1} xs={1} style={{paddingTop:'10px'}}>
@@ -560,6 +569,9 @@ class ProductDetail extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             disabled={this.state.modifyType ? false : true}
+                                            InputProps={{
+                                                inputComponent: NumberFormatCustom,
+                                            }}
                                         />
                                     </Grid>
                                 </Grid>
@@ -579,6 +591,7 @@ class ProductDetail extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             InputProps={{
+                                                inputComponent: NumberFormatCustom,
                                                 startAdornment: <InputAdornment position="start"> Rp </InputAdornment>,
                                             }}
                                             disabled={this.state.modifyType ? false : true}
@@ -596,6 +609,7 @@ class ProductDetail extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             InputProps={{
+                                                inputComponent: NumberFormatCustom,
                                                 startAdornment: <InputAdornment position="start"> Rp </InputAdornment>,
                                             }}
                                             disabled={this.state.modifyType ? false : true}
@@ -839,6 +853,9 @@ class ProductDetail extends React.Component{
                                                                     margin="dense"
                                                                     variant="outlined"
                                                                     disabled={this.state.modifyType ? false : true}
+                                                                    InputProps={{
+                                                                        inputComponent: NumberFormatCustom,
+                                                                    }}
                                                                 />
                                                             </Grid> 
                                                             
