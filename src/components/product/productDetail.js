@@ -452,7 +452,7 @@ class ProductDetail extends React.Component{
 
                                         <Tooltip title="Back" style={{outline:'none'}}>
                                             <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                                                <CancelIcon />
+                                                <CancelIcon style={{width:'35px',height:'35px'}} />
                                             </IconButton>
                                         </Tooltip>
                                     </Grid>
