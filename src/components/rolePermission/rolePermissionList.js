@@ -109,8 +109,7 @@ class RolePermissionList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}    
-                        permissionAdd={ checkPermission('core_permission_new') ? '/permissionAdd/' : null}         
-                        permissionEdit={ checkPermission('core_permission_patch') ? '/permissionEdit/' : null}
+                        permissionAdd={ checkPermission('core_permission_new') ? '/permissionAdd/' : null}     
                         permissionDetail={ checkPermission('core_permission_detail') ? '/permissionDetail/' : null}
                     />
 

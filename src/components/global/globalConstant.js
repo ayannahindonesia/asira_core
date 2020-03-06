@@ -518,7 +518,9 @@ exports.dataMenu = [
         system:'Core',
         link:'/FAQ',
         action: {
-            list:'convenience_fee_report',
+            list:'core_faq_list core_faq_detail',
+            add:'core_faq_new',
+            edit:'core_faq_patch',
         }
     },
     // Convenience Fee Report

@@ -177,7 +177,7 @@ class CheckBoxClass extends React.Component {
     } = this.props;
     
     return (
-      <FormControl className={classes.FormControl} error={!!this.state.error}>
+      <FormControl className={classes.FormControl} error={!!this.state.error} style={{padding:'10px'}}>
         <FormLabel component="legend" style={{color: 'black'}}><h3>{ this.state.label }</h3></FormLabel>  
 
         { data && data.length !== 0 &&
