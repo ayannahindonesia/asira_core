@@ -1,4 +1,4 @@
-export function constructFees (dataFees) {
+export function constructFees (dataFees, feeMethod) {
     let fees = [];
 
     for(const key in dataFees) {
@@ -10,7 +10,8 @@ export function constructFees (dataFees) {
             fees.push(
                 {
                     description: dataFees[key].label,
-                    amount:`${dataFees[key].value}${dataFees[key].type === 'percent' ? '%':''}`
+                    amount:`${dataFees[key].value}${dataFees[key].type === 'percent' ? '%':''}`,
+                    fee_method: feeMethod,
                 }
             )
         }

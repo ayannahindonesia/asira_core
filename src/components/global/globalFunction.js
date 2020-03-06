@@ -78,10 +78,10 @@ export function formatNumber(number,money) {
   if(pjg>3){
     while(pjg>3){
       pjg -= 3
-      tmp = number.substr(pjg,3) + "." + tmp
+      tmp = number.substr(pjg,3) + "," + tmp
     }
     if(pjg<=3){
-      tmp = number.substr(0,pjg) + "." + tmp
+      tmp = number.substr(0,pjg) + "," + tmp
     }
     tmp = tmp.substr(0, tmp.length-1)
   }else{
