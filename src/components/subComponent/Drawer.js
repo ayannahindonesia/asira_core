@@ -78,7 +78,6 @@ import AuditTrail from '../logs/auditTrail';
 import AuditTrailDetail from '../logs/auditTrailDetail';
 import FAQ from './../FAQ/faqList'
 import FAQDetail from './../FAQ/faqDetail'
-import FAQEdit from './../FAQ/faqEdit'
 import FAQAdd from './../FAQ/faqAdd'
 import UserMobile from './../calonNasabah/userMobileList'
 import UserMobileDetail from './../calonNasabah/userMobileDetail'
@@ -408,7 +407,6 @@ function ResponsiveDrawer(props) {
 
             <Route path='/FAQ' component={FAQ}></Route>
             <Route path='/FAQAdd' component={FAQAdd}></Route>
-            <Route path='/FAQEdit/:id' component={FAQEdit}></Route>
             <Route path='/FAQDetail/:id' component={FAQDetail}></Route>
 
             <Route path='/usermobile' component={UserMobile}></Route>
