@@ -128,7 +128,10 @@ class BankEdit extends React.Component{
     }
 
     getBankService = async function () {
-        const data = await getAllLayananListFunction({})
+        const param ={
+            status:"active"
+        }
+        const data = await getAllLayananListFunction(param)
 
         if(data){
             if(!data.error){
@@ -273,10 +276,10 @@ class BankEdit extends React.Component{
         var id=this.refs.idBank.value
         var name = this.refs.namaBank.value
         var type = parseInt(this.refs.tipeBank.value)
-        var address = this.refs.alamat.value ? this.refs.alamat.value:this.refs.alamat.placeholder
+        var address = this.refs.alamat.value 
         var province = this.refs.provinsi.value.includes("-") ? this.refs.provinsi.value.slice(this.refs.provinsi.value.indexOf('-')+1,this.refs.provinsi.value.length) : this.refs.provinsi.value
         var city = this.refs.kota.value.includes("-") ? this.refs.kota.value.slice(this.refs.provinsi.value.indexOf('-')+1,this.refs.provinsi.length):this.refs.kota.value
-        var pic = this.refs.pic.value ? this.refs.pic.value:this.refs.pic.placeholder
+        var pic = this.refs.pic.value 
         var phone = this.state.phone ? String(this.state.phone):String(this.state.dataBank.phone)
         var adminfee_setup = this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
         var convfee_setup =  this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
@@ -322,7 +325,7 @@ class BankEdit extends React.Component{
                         newData
                     }
                
-                    this.editBankBtn(param)
+                  this.editBankBtn(param)
                 };
                 reader.onerror = function (error) {
                   this.setState({errorMessage:"Gambar gagal tersimpan"})
@@ -416,7 +419,7 @@ class BankEdit extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Alamat Mitra</label>
                             <div className="col-sm-10">
-                            <textarea rows="6" ref="alamat" placeholder={this.state.dataBank.address} className="form-control"  autoFocus/>
+                            <textarea rows="6" ref="alamat" defaultValue={this.state.dataBank.address} className="form-control"  autoFocus/>
                             </div>
                         </div>
 
@@ -508,7 +511,7 @@ class BankEdit extends React.Component{
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Nama PIC</label>
                             <div className="col-sm-10">
-                            <input type="text" className="form-control" ref="pic" placeholder={this.state.dataBank.pic} />                            
+                            <input type="text" className="form-control" ref="pic" defaultValue={this.state.dataBank.pic} />                            
                             </div>
                         </div>
                         <div className="form-group row">
@@ -518,8 +521,7 @@ class BankEdit extends React.Component{
                             <PhoneInput
                             country="ID"
                             ref="telp"
-                            placeholder={this.state.dataBank.phone} 
-                            value={ this.state.phone }
+                            value={ this.state.dataBank.phone }
                             onChange={ phone => this.setState({ phone }) } className="form-control" />                                                       
                             </div>
                         </div>

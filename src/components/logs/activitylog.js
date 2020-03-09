@@ -128,16 +128,16 @@ class ActivityLog extends React.Component{
     // }
    
     formatSearchingDate = (dateData, endSearch) => {
-        const startDate = dateData || new Date();
+        //const startDate = dateData || new Date();
     
-        let startMonth =''+ (startDate.getMonth()+1),
-        startDay = '' + startDate.getDate(),
-        startYear = startDate.getFullYear();
+        // let startMonth =''+ (startDate.getMonth()+1),
+        // startDay = '' + startDate.getDate(),
+        // startYear = startDate.getFullYear();
     
-        if (startMonth.length < 2) startMonth = '0' + startMonth;
-        if (startDay.length < 2) startDay = '0' + startDay;
+        // if (startMonth.length < 2) startMonth = '0' + startMonth;
+        // if (startDay.length < 2) startDay = '0' + startDay;
     
-        let newFormatStartDate = startYear+"-"+startMonth+"-"+startDay;
+        let newFormatStartDate = dateData
         newFormatStartDate += endSearch ? "T23:59:59.999Z" : "T00:00:00.000Z"
     
         return newFormatStartDate;
@@ -204,7 +204,7 @@ class ActivityLog extends React.Component{
             }if(searchMessage.trim().length > 0){
                 param.messages = searchMessage
             }
-            if(dateAwal<=dateAkhir){
+            if(tanggalAwal && tanggalAkhir && dateAwal<=dateAkhir){
                 param.start_date = this.formatSearchingDate(tanggalAwal)
                 param.end_date = this.formatSearchingDate(tanggalAkhir, true)
             }
