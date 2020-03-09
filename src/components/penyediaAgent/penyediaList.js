@@ -121,7 +121,6 @@ if(getToken()){
           totalData={this.state.total_data}
           onChangePage={this.onChangePage}  
           permissionAdd={ checkPermission('core_agent_provider_new') ? '/penyediaAdd/' : null}           
-          permissionEdit={ checkPermission('core_agent_provider_patch') ? '/penyediaEdit/' : null}
           permissionDetail={ checkPermission('core_agent_provider_details') ? '/penyediaDetail/' : null}
 
         /> 
