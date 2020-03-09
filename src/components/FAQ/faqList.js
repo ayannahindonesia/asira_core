@@ -87,8 +87,6 @@ class FAQ extends React.Component{
                         onChangePage={this.onChangePage}     
                         permissionAdd={ checkPermission('_') ? '/FAQAdd' : null }           
                         permissionDetail={ checkPermission('_') ? '/FAQDetail/' : null}
-                        permissionEdit={ checkPermission('_') ? '/FAQEdit/' : null}
-
                     /> 
                 </div>
             )

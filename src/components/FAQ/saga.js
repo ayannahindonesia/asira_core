@@ -90,3 +90,20 @@ export async function EditFAQFunction(params) {
         })
     })
 }
+
+export async function DeleteFAQFunction(params) {
+    return new Promise(async(resolve)=>{
+        const config = {
+            headers: {'Authorization': "Bearer " + getToken()}
+        };
+        axios.delete(serverUrl+`admin/faq/${params.id}`,config)
+        .then((res)=>{
+            resolve(res)
+        })
+        .catch((err)=>{
+            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
+            params.error = error;
+            resolve(params);
+        })
+    })
+}
