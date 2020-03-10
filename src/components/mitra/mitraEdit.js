@@ -128,10 +128,8 @@ class BankEdit extends React.Component{
     }
 
     getBankService = async function () {
-        const param ={
-            status:"active"
-        }
-        const data = await getAllLayananListFunction(param)
+       
+        const data = await getAllLayananListFunction({})
 
         if(data){
             if(!data.error){
