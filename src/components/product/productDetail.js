@@ -875,11 +875,11 @@ class ProductDetail extends React.Component{
                                     }
                                 </Grid>
                             </Grid>
-                            {/* Mandatory */}
+                            {/* Form */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px',marginBottom:'15px'}}>
                                 <Grid container>
                                     <Grid item xs={2} sm={2}>
-                                        Mandatory
+                                        Form
                                         <IconButton aria-label="delete" disabled={this.state.modifyType ? false : true} onClick={(e) => this.btnTambahFlexibleData(e, 'mandatory')} style={{marginLeft:'5px',outline:'none'}}>
                                             <AddIcon />
                                         </IconButton>
