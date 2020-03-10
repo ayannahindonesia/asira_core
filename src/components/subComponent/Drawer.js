@@ -45,7 +45,6 @@ import TujuanEdit from './../tujuan/tujuanEdit'
 import TujuanDetail from './../tujuan/tujuanDetail'
 import TypeBankAdd from '../tipeMitra/typeAdd'
 import TypeBankList from '../tipeMitra/typeList'
-import TypeBankEdit from '../tipeMitra/typeEdit'
 import TypeBankDetail from '../tipeMitra/typeDetail'
 import RoleAdd from './../role/roleAdd'
 import RoleList from './../role/roleList'
@@ -359,7 +358,6 @@ function ResponsiveDrawer(props) {
 
             { checkPermission('core_bank_type_new') && <Route path='/tipeAdd' component={TypeBankAdd}></Route>}
             { checkPermission('core_bank_type_list') && <Route path='/tipeList' component={TypeBankList}></Route>}
-            { checkPermission('core_bank_type_patch') && <Route path='/tipeEdit/:id' component={TypeBankEdit}></Route>}
             { checkPermission('core_bank_type_detail') && <Route path='/tipeDetail/:id' component={TypeBankDetail}></Route>}
             
             { checkPermission('core_loan_purpose_new') && <Route path='/tujuanAdd' component={TujuanAdd}></Route>}

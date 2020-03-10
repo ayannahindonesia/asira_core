@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import Pagination from 'rc-pagination';
 import {Link} from 'react-router-dom';
-import Loader from 'react-loader-spinner';
 import { formatNumber, handleFormatDate } from '../global/globalFunction';
 import CheckBox from '@material-ui/core/Checkbox';
 import './../../support/css/table.css'
@@ -12,12 +11,12 @@ import TitleBar from './TitleBar';
 import SearchBar from './SearchBar';
 import DatePicker from "./../subComponent/DatePicker";
 import AddIcon from '@material-ui/icons/Add';
+import Loading from './Loading';
 
 class TableComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: props.data,
       page: 1,
       rowsPerPage: 10,
     };
@@ -128,11 +127,7 @@ class TableComponent extends React.Component {
               this.props.loading &&
               <tr  key="zz"  className="tBodycustom">
                 <td align="center" colSpan={this.props.columnData.length + 2}>
-                  <Loader 
-                    type="Circles"
-                    color="#00BFFF"
-                    height="40"	
-                    width="40"
+                  <Loading
                   />   
                 </td>
               </tr>
