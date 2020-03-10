@@ -81,8 +81,7 @@ class TambahBankList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.total_data}
                         onChangePage={this.onChangePage}      
-                        permissionAdd={ checkPermission('core_bank_type_new') ? '/tipeAdd/' : null}       
-                        permissionEdit={ checkPermission('core_bank_type_patch') ? '/tipeEdit/' : null}
+                        permissionAdd={ checkPermission('core_bank_type_new') ? '/tipeAdd/' : null}     
                         permissionDetail={ checkPermission('core_bank_type_detail') ? '/tipeDetail/' : null}
 
                     /> 

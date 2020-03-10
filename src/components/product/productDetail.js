@@ -10,7 +10,6 @@ import { Grid, InputAdornment, FormControlLabel, Checkbox, TextField, IconButton
 import { editProductFunction, detailProductFunction,detailServiceProductFunction} from './saga';
 import { getAllLayananListFunction } from '../layanan/saga';
 import { getToken } from '../index/token';
-import Loader from 'react-loader-spinner';
 import EditIcon from '@material-ui/icons/Edit';
 import CancelIcon from '@material-ui/icons/Cancel';
 import SaveIcon from '@material-ui/icons/Save';
@@ -18,6 +17,7 @@ import { constructFees, constructCollaterals, constructSector, constructMandator
 import { checkPermission } from '../global/globalFunction';
 import DialogComponent from '../subComponent/DialogComponent';
 import NumberFormatCustom from '../subComponent/NumberFormatCustom';
+import Loading from '../subComponent/Loading';
 
 
 class ProductDetail extends React.Component{
@@ -43,6 +43,7 @@ class ProductDetail extends React.Component{
         modifyType: false,
         dialog:false,
         feeType:'deduct_loan',
+        description:'',
         listTypeFee:[
             {
                 id: 'deduct_loan',
@@ -274,6 +275,7 @@ class ProductDetail extends React.Component{
                 interest_type: this.state.tipeBunga,
                 auto_paid: this.state.checkAuto,
                 status: this.state.check ? 'active':'nonactive',
+                description: this.state.description,
             }
 
             let fees = constructFees(this.state.fee || [], this.state.feeType);
@@ -391,19 +393,15 @@ class ProductDetail extends React.Component{
         if(this.state.diKlik){
             return <Redirect to='/produkList'/>            
 
-        }
-        if (this.state.loading){
-            return (
-                <div className="mt-2">
-                 <Loader 
-                    type="ThreeDots"
-                    color="#00BFFF"
-                    height="30"	
-                    width="30"
-                />  
-                </div>
+        } else if(this.state.loading) {
+            return(
+                <Loading
+                    title={'Tipe Mitra - Tambah'}
+                />
             )
-        }else if(getToken()){
+            
+             
+        } else if(getToken()){
             return (
                 <Grid container>
 
@@ -652,6 +650,25 @@ class ProductDetail extends React.Component{
                                             onChange={(e) => this.changeDropDown(e,'feeType')}
                                             fullWidth
                                             disabled={this.state.modifyType ? false : true}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* Deskripsi */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'25px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                        Deskripsi
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} >
+                                        <TextField
+                                            id="description"
+                                            value={this.state.description}
+                                            onChange={(e) => this.onChangeTextField(e,'description')} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            multiline
                                         />
                                     </Grid>
                                 </Grid>

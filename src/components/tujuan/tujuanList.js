@@ -45,7 +45,6 @@ class TujuanList extends React.Component{
 
         if(data){
             if(!data.error){
-                console.log(data)
                 const newData = data.data.data
                 for(const key in newData){
                     newData[key].status= newData[key].status ==='active'?"Aktif":"Tidak Aktif"
