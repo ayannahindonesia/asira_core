@@ -70,7 +70,6 @@ class profileNasabahDetail extends React.Component{
       
 
       if(data) {
-          console.log(data)
           if(!data.error) {
             const dataUser = data.dataUser.data || {};
             let flag = false;
@@ -78,10 +77,6 @@ class profileNasabahDetail extends React.Component{
             dataUser.category = this.isCategoryExist(dataUser.category) ;
             dataUser.idcard_image = dataUser.idcard_image && decryptImage(dataUser.idcard_image);
             dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image)
-            dataUser.image = dataUser.taxid_image && decryptImage(dataUser.image)
-
-
-           
 
             this.setState({
               diKlik: flag,
@@ -120,8 +115,8 @@ class profileNasabahDetail extends React.Component{
         message = this.state.dataUser && this.state.dataUser.taxid_image
 
       }
-      else if(label.toLowerCase().includes('profile')) {
-        title = 'Foto Profile'
+      else if(label.toLowerCase().includes('nasabah')) {
+        title = 'Foto Nasabah'
         message = this.state.dataUser && this.state.dataUser.image
       }
 
@@ -183,13 +178,13 @@ class profileNasabahDetail extends React.Component{
                         </Grid> 
                     <Grid container spacing={2}>
                         <Grid item sm={2} xs={12} style={{marginBottom:'10px'}}>
-                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="KTP Detail" onClick={this.handleDialog}></input>                               
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto KTP" onClick={this.handleDialog}></input>                               
                         </Grid>
                         <Grid item sm={2} xs={12} style={{marginBottom:"10px"}}>
-                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="NPWP Detail" onClick={this.handleDialog}></input>
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto NPWP" onClick={this.handleDialog}></input>
                         </Grid>
                         <Grid item sm={2} xs={12} >
-                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto Profile Detail" onClick={this.handleDialog}></input>
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto Nasabah" onClick={this.handleDialog}></input>
                         </Grid>
                     </Grid>                        
                   </Grid>
@@ -338,6 +333,7 @@ class profileNasabahDetail extends React.Component{
                       message={this.state.message}
                       type='image'
                       onClose={this.handleClose}
+                      base64Boolean={this.state.title ==='Foto Nasabah' ? true : false }
                     />
                   </div>
 
