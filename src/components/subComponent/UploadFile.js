@@ -1,17 +1,15 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import { Grid } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   root: {
     width:'100%',
-    height:'95%',
+    height:'100%',
     '& > *': {
       width:'100%',
-      height:'95%',
+      height:'100%',
     },
   },
   input: {
@@ -20,9 +18,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+
 export default function UploadButtons(props) {
   const classes = useStyles();
-
+  
   return (
     <Grid container className={classes.root}>
       <input
@@ -31,17 +30,18 @@ export default function UploadButtons(props) {
         id="outlined-button-file"
         type="file"
         onChange={props.onChange}
+        disabled={props.disabled}
       />
-      <label htmlFor="outlined-button-file">
-        <Button variant="outlined" component="span" fullWidth style={{height:'inherit'}}>
+      <label htmlFor="outlined-button-file" style={{paddingTop:'10px'}}>
+        <Button variant="outlined" component="span" fullWidth disabled={props.disabled}>
           {
-            !props.file &&
-            <img src={require('./../../support/img/default.png')} alt={'-'} style={{maxWidth:'80%', maxHeight:'80%'}} />
+            props.file && 
+            <img src={props.file} alt={'-'} style={{maxWidth:'120px', maxHeight:'inherit'}} />
           }
 
           {
-            props.file &&
-            props.file.name
+            !props.file &&
+            'Upload your File'
           }
           
         </Button>
