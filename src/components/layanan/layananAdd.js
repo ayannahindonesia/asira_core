@@ -253,7 +253,7 @@ class LayananAdd extends React.Component{
                                     {
                                         this.state.selectedFile && 
                                         <Grid item xs={1} sm={1} style={{paddingTop:'20px'}}>
-                                            <Tooltip title="Back" style={{outline:'none'}}>
+                                            <Tooltip title="Remove" style={{outline:'none'}}>
                                                 <IconButton aria-label="cancel" onClick={(e) => this.removeImage(e,'selectedFile')}>
                                                     <CancelIcon style={{width:'35px',height:'35px'}} />
                                                 </IconButton>
