@@ -2,8 +2,17 @@ import React from 'react'
 import './../../support/css/layananAdd.css'
 import { Redirect } from 'react-router-dom'
 import swal from 'sweetalert'
+import DialogComponent from '../subComponent/DialogComponent';
 import { addLayananFunction } from './saga';
 import { getToken } from '../index/token';
+import Loading from '../subComponent/Loading';
+import { Grid, IconButton, Tooltip, TextField, FormControlLabel, Checkbox } from '@material-ui/core';
+import TitleBar from '../subComponent/TitleBar';
+import CancelIcon from '@material-ui/icons/Cancel';
+import SaveIcon from '@material-ui/icons/Save';
+import { checkPermission } from '../global/globalFunction';
+import UploadFile from '../subComponent/UploadFile';
+// import UploadFileDropzone from '../subComponent/UploadFileDropzone';
 
 class LayananAdd extends React.Component{
     _isMounted = false;
@@ -28,6 +37,7 @@ class LayananAdd extends React.Component{
     
     onChangeHandler = (event)=>{
         //untuk mendapatkan file image
+        console.log(event.target.files)
         this.setState({selectedFile:event.target.files[0]})
     }
     valueHandler = ()=>{
@@ -83,8 +93,9 @@ class LayananAdd extends React.Component{
     btnCancel = ()=>{
         this.setState({diKlik:true})
     }
-    handleChecked=(e)=>{
-        this.setState({check:!this.state.check})
+
+    handleChecked = (e, labelData)=>{
+        this.setState({[labelData]:!this.state[labelData]})
     }
 
     renderBtnSumbit =()=>{
@@ -100,8 +111,159 @@ class LayananAdd extends React.Component{
         if(this.state.diKlik){
             return <Redirect to='/layananList'/>            
 
-        }
-        if(getToken()){
+        } else if(this.state.loading) {
+            return(
+                <Loading
+                    title={'Layanan - Tambah'}
+                />
+            )
+            
+             
+        } else if(getToken()){
+            return(
+                <Grid container>
+
+                    <Grid item sm={12} xs={12} style={{maxHeight:50}}>
+                        
+                        <TitleBar
+                            title={'Layanan - Tambah'}
+                        />
+
+                    </Grid>
+                    <Grid
+                        item
+                        sm={12} xs={12}
+                        style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+                    >
+                        <Grid container>
+                            {/* Dialog */}
+                            < DialogComponent 
+                                title={'Confirmation'}
+                                message={'Are you sure want to save this data ?'}
+                                type={'textfield'}
+                                openDialog={this.state.dialog}
+                                onClose={this.btnConfirmationDialog}
+                            />
+                            {/* Action Button */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                                <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
+                                    <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
+                                        
+                                        {
+                                           checkPermission('core_service_new') &&
+                                            <Tooltip title="Save" style={{outline:'none'}}>
+                                                <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
+                                                    <SaveIcon style={{width:'35px',height:'35px'}} />
+                                                </IconButton>
+                                            </Tooltip>
+                                        }
+
+                                        <Tooltip title="Back" style={{outline:'none'}}>
+                                            <IconButton aria-label="cancel" onClick={this.btnCancel}>
+                                                <CancelIcon style={{width:'35px',height:'35px'}} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* Error */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
+                                {this.state.errorMessage}
+                            </Grid>
+                            {/* Nama Layanan */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'20px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                        Nama Layanan
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} >
+                                        <TextField
+                                            id="namaLayanan"
+                                            value={this.state.namaLayanan}
+                                            onChange={(e) => this.onChangeTextField(e,'namaLayanan')} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* Deskripsi Layanan */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'25px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                        Deskripsi
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} >
+                                        <TextField
+                                            id="description"
+                                            value={this.state.description}
+                                            onChange={(e) => this.onChangeTextField(e,'description')} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            multiline
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* Gambar Layanan */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'30px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                        Gambar
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} >
+                                        <UploadFile
+                                            file={this.state.selectedFile}
+                                            onChange={this.onChangeHandler}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                            {/* <Grid item md={12}>
+                                <UploadFileDropzone
+                                    onDrop={(files, key) => { this.onDrop(files, files[0].name); }}
+                                    maxSize={2000}
+                                    value={this.state.selectedFile && this.state.selectedFile.name}
+                                    multiple={false}
+                                    acceptedFile={'image/*'}
+                                    label={this.state.selectedFile && this.state.selectedFile.name}
+                                />
+                            </Grid> */}
+
+                            {/* Status */}
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'25px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'10px'}}>
+                                        Status
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} >
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={this.state.check}
+                                                    onChange={(e) => this.handleChecked(e, 'check')}
+                                                    color={this.state.check ? "primary":"default"}
+                                                    value="default"
+                                                    inputProps={{ 'aria-label': 'checkbox with default color' }}
+                                                />
+                                            }
+                                            label={'Aktif'}
+                                        />
+                                        
+                                    </Grid>
+                                </Grid>
+                            </Grid>      
+
+
+                        </Grid>
+                    </Grid>
+                </Grid>
+                
+            )
+
             return(
                 <div className="container">
                    <h2 className="mt-3">Layanan Tambah</h2>

@@ -11,6 +11,7 @@ import { getToken, setTokenAuth, getProfileUser, getTokenAuth } from './componen
 import ResponsiveDrawer from './components/subComponent/Drawer';
 
 import { Grid } from '@material-ui/core';
+import Loading from './components/subComponent/Loading';
 
 class App extends React.Component {
   _isMounted = false;
@@ -69,7 +70,7 @@ class App extends React.Component {
     
     if(this.state.loading){
       return(
-        <p> loading ....</p>
+        <Loading />
       )
     }
 

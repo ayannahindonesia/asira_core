@@ -39,7 +39,7 @@ class LoadingComponent extends React.Component {
                 style={{padding:20, marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                                     
               >
                 
-                <Grid container style={{display:flexbox, justifyContent:'center'}}>
+                <Grid container style={{display:flexbox, justifyContent:'center', alignItems:'center'}}>
       
                   <Loader 
                       type="Circles"
@@ -58,7 +58,7 @@ class LoadingComponent extends React.Component {
     } else {
         return (
         
-            <Grid container style={{display:flexbox, justifyContent:'center'}}>
+            <Grid container style={{display:flexbox, justifyContent:'center', alignItems:'center'}}>
                 <Loader 
                     type="Circles"
                     color="#00BFFF"
