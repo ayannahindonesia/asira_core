@@ -296,6 +296,7 @@ class TableComponent extends React.Component {
                           value={searchPerBar.value}
                           placeholder={searchPerBar.label || 'Cari...'}
                           onChange={(e) => {searchPerBar.function(e, searchPerBar.id)} }
+                          disabled={true}
                           float={'left'}
                         />
                       </Grid>
@@ -354,12 +355,12 @@ class TableComponent extends React.Component {
 
                   <Grid item sm={2} xs={12}>
                     {
-                      this.props.searchDate.button &&
+                      this.props.advancedButton &&
                       <Grid container>
                         {
-                          this.props.searchDate.button.map((buttonChild, index) => {
+                          this.props.advancedButton.map((buttonChild, index) => {
                             return (
-                              <Grid key={index} item sm={parseInt(12 /(this.props.searchDate.button.length))} xs={parseInt(12 /(this.props.searchDate.button.length))} style={{maxWidth:'100px'}}>
+                              <Grid key={index} item sm={parseInt(12 /(this.props.advancedButton.length))} xs={parseInt(12 /(this.props.advancedButton.length))} style={{maxWidth:'100px'}}>
                                 <Button disableElevation
                                   variant='contained'
                                   style={{padding: '2px', minWidth:'80px',backgroundColor: buttonChild.color || '#2D85E9', color:'white'}}
@@ -388,7 +389,8 @@ class TableComponent extends React.Component {
                   id="search"
                   value={this.props.search.value}
                   placeholder={this.props.search.label || 'Cari...'}
-                  onChange={this.props.search.function || null} 
+                  onChange={this.props.search.onChange || this.props.search.function || null} 
+                  onClick={this.props.search.function || null}
                   float={'left'}
                 />
               }

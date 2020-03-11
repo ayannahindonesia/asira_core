@@ -288,7 +288,10 @@ class AuditTrail extends React.Component{
                               value:[this.state.tanggalAwal, this.state.tanggalAkhir],
                               label: 'Waktu Transaksi',
                               function: [this.handleStartChange, this.handleEndChange],
-                              button: [
+                            }
+                        }
+                        advancedButton={
+                            [
                                 {
                                   label:'Filter',
                                   color:'#20B889',
@@ -299,8 +302,7 @@ class AuditTrail extends React.Component{
                                   color:'#EE6969',
                                   function:this.resetLog
                                 },
-                              ]
-                            }
+                            ]
                         }
                         errorMessage={this.state.errorMessage}
                         paging={this.state.paging}

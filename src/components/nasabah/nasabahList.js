@@ -95,11 +95,15 @@ class profileNasabah extends React.Component {
     }
   }
 
+  onChangeSearch = (e) => {
+    this.setState({searchRows:e.target.value})
+  }
+
   onBtnSearch = (e)=>{
-    this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
+    this.setState({loading:true,page:1},()=>{
       if(this.state.paging){
-      this.getProfileNasabah()
-    }
+        this.getProfileNasabah()
+      }
     })
   }
   
@@ -125,6 +129,7 @@ class profileNasabah extends React.Component {
               {
                 value: this.state.searchRows,
                 label: 'Search ID Nasabah, Nama Nasabah',
+                onChange: this.onChangeSearch,
                 function: this.onBtnSearch,
               }
             }

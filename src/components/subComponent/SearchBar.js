@@ -34,20 +34,28 @@ const styles = (theme) => ({
 
 class SearchBar extends React.Component  {
  
-    constructor(props) {
-        super(props);
-        this.state = {
-          errorText: '',
-        };
-    }
+  constructor(props) {
+      super(props);
+      this.state = {
+        errorText: '',
+      };
+  }
     
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (nextProps.error !== this.props.error) {
-            this.setState({
-                error: nextProps.error,
-            });
-        }
+  UNSAFE_componentWillReceiveProps(nextProps) {
+      if (nextProps.error !== this.props.error) {
+          this.setState({
+              error: nextProps.error,
+          });
+      }
+  }
+
+  handleEnter =(e)=> {
+    if (e.charCode === 13 && this.props.onChange && this.props.onClick) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.props.onClick();
     }
+  }
 
   render(){
     const {
@@ -62,11 +70,12 @@ class SearchBar extends React.Component  {
             className={classes.input}
             placeholder={placeholder}
             onChange={this.props.onChange}
+            onKeyPress={this.handleEnter}
             value={this.props.value}
             inputProps={{ 'aria-label': 'search google maps' }}
           />
-          <IconButton className={classes.iconButton} aria-label="search" disabled >
-            <SearchIcon disabled/>
+          <IconButton className={classes.iconButton} aria-label="search" style={{outline:'none'}} onClick={this.props.onClick} disabled={this.props.disabled}>
+            <SearchIcon style={{outline:'none'}}/>
           </IconButton>
         </Paper>
     );
