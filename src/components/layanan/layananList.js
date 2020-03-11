@@ -90,7 +90,6 @@ class LayananList extends React.Component{
                         onChangePage={this.onChangePage}     
                         permissionAdd={ checkPermission('core_service_new') ? '/layananAdd' : null }           
                         permissionDetail={ checkPermission('core_service_detail') ? '/layananDetail/' : null}
-                        permissionEdit={ checkPermission('core_service_patch') ? '/layananEdit/' : null}
 
                     /> 
                 </div>

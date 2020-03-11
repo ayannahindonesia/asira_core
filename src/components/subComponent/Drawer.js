@@ -26,7 +26,6 @@ import TambahBank from '../mitra/mitraAdd'
 import ListBank from '../mitra/mitraList'
 import EditBank from '../mitra/mitraEdit'
 import DetailBank from '../mitra/mitraDetail'
-import LayananEdit from './../layanan/layananEdit'
 import LayananAdd from './../layanan/layananAdd'
 import LayananList from './../layanan/layananList'
 import LayananDetail from './../layanan/layananDetail'
@@ -352,7 +351,6 @@ function ResponsiveDrawer(props) {
                               
             { checkPermission('core_service_new') && <Route path='/layananAdd' component={LayananAdd}></Route>}
             { checkPermission('core_service_list') && <Route path='/layananList' component={LayananList}></Route>}
-            { checkPermission('core_service_patch') && <Route path='/layananEdit/:id' component={LayananEdit}></Route>}
             { checkPermission('core_service_detail') && <Route path='/layananDetail/:id' component={LayananDetail}></Route>}
 
 
