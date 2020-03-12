@@ -58,7 +58,6 @@ import UserList from './../user/userList'
 import UserDetail from './../user/userDetail'
 import UserEdit from './../user/userEdit'
 import penyediaAgentAdd from './../penyediaAgent/penyediaAdd'
-import penyediaAgentEdit from './../penyediaAgent/penyediaEdit'
 import penyediaAgentDetail from './../penyediaAgent/penyediaDetail'
 import penyediaAgentList from './../penyediaAgent/penyediaList'
 import AgentAdd from './../agent/agentAdd'
@@ -382,7 +381,6 @@ function ResponsiveDrawer(props) {
 
             { checkPermission('core_agent_provider_new') && <Route path='/penyediaAdd' component={penyediaAgentAdd}></Route>}
             { checkPermission('core_agent_provider_list') && <Route path='/penyediaList' component={penyediaAgentList}></Route>}
-            { checkPermission('core_agent_provider_patch') && <Route path='/penyediaEdit/:id' component={penyediaAgentEdit}></Route>}
             { checkPermission('core_agent_provider_details') && <Route path='/penyediaDetail/:id' component={penyediaAgentDetail}></Route>}
 
             { checkPermission('core_agent_new') && <Route path='/agenAdd' component={AgentAdd}></Route>}

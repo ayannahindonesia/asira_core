@@ -12,7 +12,9 @@ import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from './../subComponent/DialogComponent'
 import TitleBar from '../subComponent/TitleBar';
-import { Grid, Button } from '@material-ui/core';
+
+import { Grid, IconButton, Tooltip } from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const styles = (theme) => ({
     container: {
@@ -76,8 +78,6 @@ class profileNasabahDetail extends React.Component{
             dataUser.idcard_image = dataUser.idcard_image && decryptImage(dataUser.idcard_image);
             dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image)
 
-           
-
             this.setState({
               diKlik: flag,
               dataUser,
@@ -114,6 +114,10 @@ class profileNasabahDetail extends React.Component{
         title = 'NPWP'
         message = this.state.dataUser && this.state.dataUser.taxid_image
 
+      }
+      else if(label.toLowerCase().includes('nasabah')) {
+        title = 'Foto Nasabah'
+        message = this.state.dataUser && this.state.dataUser.image
       }
 
       this.setState({
@@ -165,12 +169,22 @@ class profileNasabahDetail extends React.Component{
                   </Grid>
 
                   <Grid item sm={12} xs={12} style={{marginBottom:"10px"}}>
+                      <Grid item xs={12} sm={12} style={{display:'flex', justifyContent:'flex-end'}}>
+                            <Tooltip title="Back" style={{outline:'none'}}>
+                                <IconButton aria-label="cancel" onClick={this.btnCancel}>
+                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
+                                </IconButton>
+                            </Tooltip>       
+                        </Grid> 
                     <Grid container spacing={2}>
                         <Grid item sm={2} xs={12} style={{marginBottom:'10px'}}>
-                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="KTP Detail" onClick={this.handleDialog}></input>                               
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto KTP" onClick={this.handleDialog}></input>                               
+                        </Grid>
+                        <Grid item sm={2} xs={12} style={{marginBottom:"10px"}}>
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto NPWP" onClick={this.handleDialog}></input>
                         </Grid>
                         <Grid item sm={2} xs={12} >
-                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="NPWP Detail" onClick={this.handleDialog}></input>
+                            <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto Nasabah" onClick={this.handleDialog}></input>
                         </Grid>
                     </Grid>                        
                   </Grid>
@@ -319,23 +333,12 @@ class profileNasabahDetail extends React.Component{
                       message={this.state.message}
                       type='image'
                       onClose={this.handleClose}
+                      base64Boolean={this.state.title ==='Foto Nasabah' ? true : false }
                     />
                   </div>
 
                       
-                  <Grid container style={{marginBottom:'10px', marginTop:'10px', paddingLeft:'10px', fontSize:'calc(10px + 0.3vw)'}}>
-                      <Grid item xs={12} sm={12}>  
-                        <Button disableElevation
-                            variant='contained'
-                            style={{padding: '2px', width:'100px',backgroundColor:'#2D85E9', color:'white'}}
-                            onClick={this.btnCancel}
-                        >
-                            <b>Kembali</b>
-                        </Button>    
-                      </Grid>
-
-                      
-                  </Grid>
+                
                   
                   
                </Grid>
