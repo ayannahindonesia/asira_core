@@ -194,3 +194,29 @@ export async function changeFileToBase64(file) {
     reader.onerror = error => resolve({error});
   });
 }
+
+export function findAmount (dataFees, stringFee, amountPinjamanPokok, charPersen){
+  let feeNew = '';
+  
+  if(dataFees && stringFee && amountPinjamanPokok) {
+    for(const key in dataFees) {
+      if(dataFees[key].description.toString().toLowerCase() === stringFee.toString().toLowerCase()) {
+        if(dataFees[key].amount.toString().toLowerCase().includes('%')) {
+          if(charPersen) {
+            feeNew = parseFloat(dataFees[key].amount).toFixed(2);
+          } else {
+            feeNew = parseInt(dataFees[key].amount) * amountPinjamanPokok / 100;
+          }
+        } else {
+          if(charPersen) {
+            feeNew = parseFloat(parseInt(dataFees[key].amount)  * 100 / amountPinjamanPokok).toFixed(2);
+          } else {
+            feeNew = parseInt(dataFees[key].amount);
+          }
+        }
+      }
+    }
+  }
+
+  return feeNew;
+}
