@@ -152,7 +152,7 @@ class LayananDetail extends React.Component{
         const data = await editLayananFunction(param)
         if(data){
             if(!data.error){
-                swal("Success","Layanan berhasil di ubah","success")
+                swal("Success","Layanan berhasil diubah","success")
                 this.setState({errorMessage:null,diKlik:true})
             }else{
                 this.setState({errorMessage:data.error,loading:false})

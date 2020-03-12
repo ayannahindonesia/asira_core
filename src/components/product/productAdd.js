@@ -242,7 +242,7 @@ class ProductAdd extends React.Component{
         const data = await addProductFunction(params)
         if(data){
             if(!data.error){
-                swal("Berhasil","Produk berhasil bertambah","success")
+                swal("Berhasil","Produk berhasil ditambah","success")
                 this.setState({errorMessage:null,diKlik:true, loading: false})
             }else{
                 this.setState({errorMessage:data.error, loading: false})
