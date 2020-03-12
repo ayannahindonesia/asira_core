@@ -51,6 +51,8 @@ const columnDataUser = [
     },
 ]
 class PermintaanPinjaman extends React.Component {
+  _isMounted=false
+  
   state = {
     rows: [],detailNasabah:{}, searchRows:'',
     page: 1,
@@ -66,7 +68,7 @@ class PermintaanPinjaman extends React.Component {
   };
 
   //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
-  _isMounted=false
+ 
   componentDidMount(){
     this.getAllData()
     this._isMounted=true
@@ -111,15 +113,22 @@ class PermintaanPinjaman extends React.Component {
     }
   }
 
+  changeSearch = (e) => {
+    this.setState({
+        search: e.target.value,
+    })
+  }
 
-
-  onBtnSearch = (e)=>{
-      this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
+  btnSearch = (e) => {
+      this.setState({
+          loading:true,
+          page: 1,
+      }, () => {
         if(this.state.paging){
           this.getAllData()
 
         }
-    })
+      })
   }
 
 
@@ -143,9 +152,10 @@ class PermintaanPinjaman extends React.Component {
             {
               value: this.state.searchRows,
               label: 'Search ID Pinjaman, Nama Nasabah',
-              function: this.onBtnSearch,
+              onChange: this.changeSearch,
+              function: this.btnSearch,
             }
-        }
+          }
           paging={this.state.paging}
           loading={this.state.loading}
           columnData={columnDataUser}

@@ -81,13 +81,22 @@ class profileNasabah extends React.Component {
       }
   }
 
-  onBtnSearch = (e)=>{
-    this.setState({loading:true,searchRows:e.target.value,page:1},()=>{
-      if(this.state.paging){
-        this.getAllData()
-      }
+  changeSearch = (e) => {
+    this.setState({
+        search: e.target.value,
     })
-  
+  }
+
+  btnSearch = (e) => {
+      this.setState({
+          loading:true,
+          page: 1,
+      }, () => {
+        if(this.state.paging){
+          this.getAllData()
+
+        }
+      })
   }
 
  onChangePage = (current) => {
@@ -108,7 +117,8 @@ if(getToken()){
             {
               value: this.state.searchRows,
               label: 'Search Penyedia Agen, ID Penyedia Agen..',
-              function: this.onBtnSearch,
+              onChange: this.changeSearch,
+              function: this.btnSearch,
             }
           }
           title={'Penyedia Agen - List'}

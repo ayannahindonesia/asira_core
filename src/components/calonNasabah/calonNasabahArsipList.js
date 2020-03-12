@@ -114,9 +114,14 @@ class CalonNasabahArsipList extends React.Component{
 
     changeSearch = (e) => {
         this.setState({
+            search: e.target.value,
+        })
+    }
+
+    btnSearch = (e) => {
+        this.setState({
             loading:true,
             page: 1,
-            search: e.target.value,
         }, () => {
             this.refresh();
         })
@@ -136,7 +141,8 @@ class CalonNasabahArsipList extends React.Component{
                             {
                               value: this.state.search,
                               label: 'Search ID, Nama Nasabah',
-                              function: this.changeSearch,
+                              onChange: this.changeSearch,
+                              function: this.btnSearch,
                             }
                           }
                         paging={this.state.paging}

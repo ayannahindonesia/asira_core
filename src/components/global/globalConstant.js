@@ -47,6 +47,30 @@ exports.dataMenu = [
             },
         ]
     },
+    // Produk & Layanan Dashboard
+    {
+        label: 'Produk & Layanan',
+        logo: '',
+        system:'Bank Dashboard',
+        child: [
+            {
+                label: 'Produk',
+                logo: '',
+                link:'/produk',
+                action: {
+                    list:'lender_product_list lender_product_list_detail',
+                }
+            },
+            {
+                label: 'Layanan',
+                logo: '',
+                link:'/layanan',
+                action: {
+                    list:'lender_service_list lender_service_list_detail',
+                }
+            },
+        ]
+    },
     // Nasabah, Calon Nasabah Core
     {
         label: 'Nasabah',
