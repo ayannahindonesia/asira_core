@@ -18,7 +18,7 @@ RUN chown -R 1001:0 /opt/app-root/src/ &&  chmod -R ug+rwx /opt/app-root/src/
 
 USER 1001
 
-# install and cache app dependencies
+# install and cache app dependencies#
 #RUN yarn
 
 # start app
