@@ -302,10 +302,10 @@ class ProductDetail extends React.Component{
             if(mandatory) {
                 newData.form = mandatory;
             }
-
+            
             this.setState({loading: true})
 
-            this.productEditBtn(newData)
+            this.productEditBtn({id:newData.id,newData})
         }
         
     }

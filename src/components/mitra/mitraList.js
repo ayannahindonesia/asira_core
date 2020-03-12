@@ -75,10 +75,22 @@ class MitraList extends React.Component{
         }
     }
 
-    onBtnSearch = (e)=>{
-      this.setState({loading : true, page:1,search:e.target.value},()=>{
-        this.getAllBankData()
+    changeSearch = (e) => {
+      this.setState({
+          search: e.target.value,
       })
+    }
+  
+    btnSearch = (e) => {
+        this.setState({
+            loading:true,
+            page: 1,
+        }, () => {
+          if(this.state.paging){
+            this.getAllBankData()
+  
+          }
+        })
     }
 
 
@@ -102,7 +114,8 @@ class MitraList extends React.Component{
                       {
                         value: this.state.search,
                         label: 'Search Nama Mitra, ID Mitra..',
-                        function: this.onBtnSearch,
+                        onChange: this.changeSearch,
+                        function: this.btnSearch,
                       }
                     }
                     title={'Mitra - List'}

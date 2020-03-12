@@ -150,7 +150,12 @@ export function destructMandatory(dataMandatory) {
 
     if(dataMandatory && dataMandatory.length && dataMandatory.length > 0) {
         for(const key in dataMandatory) {
-            collaterals.push(dataMandatory[key])
+            collaterals.push({
+                label: dataMandatory[key].label || '',
+                type: dataMandatory[key].type || 'textfield',
+                value: dataMandatory[key].value || '',
+                status: dataMandatory[key].status || 'required',
+            })
         }
     } else {
         collaterals = [
