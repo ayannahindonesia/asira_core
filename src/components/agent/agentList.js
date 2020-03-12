@@ -58,19 +58,21 @@ class AgentList extends React.Component{
         this._isMounted = false;
     }
 
-    // onBtnSearch = () => {
-    //     this.setState({page:1}, () => {
-    //         this.refresh()
-    //     })
-    // }
-
     changeSearch = (e) => {
+        this.setState({
+            search: e.target.value,
+        })
+      }
+    
+    btnSearch = (e) => {
         this.setState({
             loading:true,
             page: 1,
-            search: e.target.value,
         }, () => {
-            this.refresh();
+            if(this.state.paging){
+                this.refresh()
+
+            }
         })
     }
 
@@ -125,9 +127,10 @@ class AgentList extends React.Component{
                         id={"id"}
                         search={
                             {
-                              value: this.state.search,
-                              label: 'Search Nama Agen, ID Agen..',
-                              function: this.changeSearch,
+                                value: this.state.search,
+                                label: 'Search Nama Agen, ID Agen..',
+                                onChange: this.changeSearch,
+                                function: this.btnSearch,
                             }
                         }
                         title={'Agen - List'}
