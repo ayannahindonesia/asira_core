@@ -134,7 +134,6 @@ class UserList extends React.Component{
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
                         permissionAdd={ checkPermission('core_user_new') ? '/akunAdd/' : null}   
-                        permissionEdit={ checkPermission('core_user_patch') ? '/akunEdit/' : null}
                         permissionDetail={ checkPermission('core_user_details') ? '/akunDetail/' : null}
                     />
 

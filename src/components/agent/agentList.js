@@ -143,7 +143,6 @@ class AgentList extends React.Component{
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}       
                         permissionAdd={ checkPermission('core_agent_new') ? '/agenAdd/' : null}      
-                        permissionEdit={ checkPermission('core_agent_patch') ? '/agenEdit/' : null}
                         permissionDetail={ checkPermission('core_agent_details') ? '/agenDetail/' : null}
                     />
 
