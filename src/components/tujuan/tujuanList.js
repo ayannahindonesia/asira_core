@@ -87,9 +87,7 @@ class TujuanList extends React.Component{
                         totalData={this.state.total_data}
                         onChangePage={this.onChangePage}  
                         permissionAdd={ checkPermission('core_loan_purpose_new') ? '/tujuanAdd/' : null}           
-                        permissionEdit={ checkPermission('core_loan_purpose_patch') ? '/tujuanEdit/' : null}
                         permissionDetail={ checkPermission('core_loan_purpose_detail') ? '/tujuanDetail/' : null}
-
                     /> 
                   
     

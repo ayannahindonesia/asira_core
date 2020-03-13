@@ -40,7 +40,6 @@ import ProductList from './../product/productList'
 import ProductDetail from './../product/productDetail'
 import TujuanAdd from './../tujuan/tujuanAdd'
 import TujuanList from './../tujuan/tujuanList'
-import TujuanEdit from './../tujuan/tujuanEdit'
 import TujuanDetail from './../tujuan/tujuanDetail'
 import TypeBankAdd from '../tipeMitra/typeAdd'
 import TypeBankList from '../tipeMitra/typeList'
@@ -360,7 +359,6 @@ function ResponsiveDrawer(props) {
             
             { checkPermission('core_loan_purpose_new') && <Route path='/tujuanAdd' component={TujuanAdd}></Route>}
             { checkPermission('core_loan_purpose_list') && <Route path='/tujuanList' component={TujuanList}></Route>}
-            { checkPermission('core_loan_purpose_patch') && <Route path='/tujuanEdit/:id' component={TujuanEdit}></Route>}
             { checkPermission('core_loan_purpose_detail') && <Route path='/tujuanDetail/:id' component={TujuanDetail}></Route>}
             
             { checkPermission('core_role_new') && <Route path='/roleAdd' component={RoleAdd}></Route>}
