@@ -68,7 +68,7 @@ class TipeMitraAdd extends React.Component{
         if(data){
             if(!data.error){
                 this.setState({diKlik:true,errorMessage:"",loading:false})
-                swal("Success","Tipe Mitra Berhasil di Tambah","success")
+                swal("Success","Tipe Mitra Berhasil ditambah","success")
             }else{
                 this.setState({errorMessage:data.error,loading:false})
             }

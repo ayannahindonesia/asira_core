@@ -234,7 +234,7 @@ class ProductDetail extends React.Component{
         const data = await editProductFunction(params)
         if(data){
             if(!data.error){
-                swal("Berhasil","Produk berhasil bertambah","success")
+                swal("Berhasil","Produk berhasil diubah","success")
                 this.setState({errorMessage:null,diKlik:true, loading:false})
             }else{
                 this.setState({errorMessage:data.error, loading: false})

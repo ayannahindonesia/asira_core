@@ -122,7 +122,7 @@ class LayananAdd extends React.Component{
         const data = await addLayananFunction(param)
         if(data){
             if(!data.error){
-                swal("Success","Layanan berhasil di tambah","success")
+                swal("Success","Layanan berhasil ditambah","success")
                 this.setState({errorMessage:null,diKlik:true})
             }else{
                 this.setState({errorMessage:data.error,loading:false})
