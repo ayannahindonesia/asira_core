@@ -370,7 +370,7 @@ class ActivityLogDetail extends React.Component{
 
                             </Grid>
 
-                            <Grid item sm={12} xs={12} style={{margin:'30px 36px 0px 10px', padding:'10px', border:'2px solid #cfcfcf', fontSize:'20px', textAlign:'center'}}>
+                            <Grid item sm={12} xs={12} style={{fontWeight: 'bold', maxWidth:'80vw',marginLeft:'10px', padding:'10px', border:'2px solid #cfcfcf', fontSize:'20px', textAlign:'center'}}>
                                 Messages
 
                             </Grid>
