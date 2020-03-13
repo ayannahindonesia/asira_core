@@ -277,8 +277,6 @@ class UserDetail extends React.Component{
           )
         } else if(getToken()){
             return(
-              <div className="container mt-4">
-
                 <Grid container>
 
                        <Grid item sm={12} xs={12} style={{maxHeight:50}}>
@@ -501,126 +499,7 @@ class UserDetail extends React.Component{
                     onClose={this.btnConfirmationDialog}
                   />
                 </Grid>
-                 {/* <h3>Akun - Detail</h3>
-                 
-                 <hr/>
-                 
-                 <form>
-                    <div className="form-group row"> 
-                      <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left'}}>
-                        {this.state.errorMessage}
-                      </div>     
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Id Akun
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.id}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Username
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.username}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Password
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        ********
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Role
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.role}
-                      </label>               
-                    </div>
-
-                    {
-                      this.isRoleBank(this.state.dataUser && this.state.dataUser.roles && this.state.dataUser.roles[0]) && 
-                      <div className="form-group row">                   
-                        <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                          Mitra
-                        </label>
-                        <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                          :
-                        </label>
-                        <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                          {this.state.dataUser && this.state.dataUser.bank_name}
-                        </label>               
-                      </div>
-                    }
-                    
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Email
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.email}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Kontak PIC
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.phone}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Status
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <label className="col-sm-4 col-form-label" style={{lineHeight:3.5}}>
-                        {this.state.dataUser && this.state.dataUser.status && this.state.dataUser.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
-                      </label>               
-                    </div>
-
-                    <div className="form-group row">
-                      <div className="col-sm-12 mt-3">
-                        <input type="button" value="Kembali" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                      </div>
-                    </div>
-                    
-                 </form>
-                 */}
-                </div>
+            
             )
         } else if(!getToken()){
           return (
