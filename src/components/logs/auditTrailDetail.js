@@ -2,8 +2,8 @@ import React from 'react'
 import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
 import { getAuditTrailDetailFunction } from './saga'
-import Loader from 'react-loader-spinner'
-import { Grid, Tooltip, IconButton } from '@material-ui/core';
+import Loading from '../subComponent/Loading';
+import { Grid, Tooltip, IconButton, TextField } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TitleBar from '../subComponent/TitleBar'
 
@@ -180,18 +180,13 @@ class AuditTrailDetail extends React.Component{
             return(
                 <Redirect to="/auditTrail"></Redirect>
             )
-        }
-        if(this.state.loading){
+        } else if(this.state.loading){
             return(
-                <Loader 
-                  type="ThreeDots"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
+                <Loading
+                    title={'Audit Trail - Detail'}
+                />
             )
-        }
-        else if(getToken()){
+        } else if(getToken()){
             
             return (
                 <Grid container>
@@ -231,12 +226,21 @@ class AuditTrailDetail extends React.Component{
                             <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
                                 <Grid container>
 
-                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                    <Grid item sm={4} xs={4} style={{padding:'25px 0px 0px 10px'}}>
                                         User
                                     </Grid>
 
-                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                                        {`${this.state.username || '-'} (id : ${this.state.user_id || '-'})`}
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        < TextField
+                                            id="user"
+                                            value={`${this.state.username || '-'} (id : ${this.state.user_id || '-'})`}
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            multiline
+                                            disabled
+                                        />
+                                        
                                     </Grid>
 
                                 </Grid>
@@ -245,12 +249,21 @@ class AuditTrailDetail extends React.Component{
                             <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
                                 <Grid container>
 
-                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                    <Grid item sm={4} xs={4} style={{padding:'25px 0px 0px 10px'}}>
                                         Client
                                     </Grid>
 
-                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                                        {this.state.client || '-'}
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        < TextField
+                                            id="client"
+                                            value={this.state.client || '-'}
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            multiline
+                                            disabled
+                                        />
+                                        
                                     </Grid>
 
                                 </Grid>
@@ -260,27 +273,45 @@ class AuditTrailDetail extends React.Component{
                             <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
                                 <Grid container>
 
-                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                    <Grid item sm={4} xs={4} style={{padding:'25px 0px 0px 10px'}}>
                                         Entity
                                     </Grid>
 
-                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                                        {this.state.entity || '-'}
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        < TextField
+                                            id="entity"
+                                            value={this.state.entity || '-'}
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            multiline
+                                            disabled
+                                        />
+                                        
                                     </Grid>
 
                                 </Grid>
 
                             </Grid>
 
-                            <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
+                            <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'20px'}}>
                                 <Grid container>
 
-                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                    <Grid item sm={4} xs={4} style={{padding:'25px 0px 0px 10px'}}>
                                         Action
                                     </Grid>
 
-                                    <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                                        {this.state.actionAudit || '-'}
+                                    <Grid item sm={4} xs={4} style={{padding:'10px'}}>
+                                        < TextField
+                                            id="entity"
+                                            value={this.state.actionAudit || '-'}
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            multiline
+                                            disabled
+                                        />
+                                        
                                     </Grid>
 
                                 </Grid>
