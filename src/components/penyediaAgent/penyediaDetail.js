@@ -8,7 +8,7 @@ import Loader from 'react-loader-spinner'
 import EditIcon from '@material-ui/icons/Edit';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TitleBar from '../subComponent/TitleBar';
-import { Grid, IconButton, Tooltip, FormControlLabel, Checkbox, TextField  } from '@material-ui/core';
+import { Grid, IconButton, Tooltip, FormControlLabel, Checkbox, TextField,InputAdornment } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 
 import { checkPermission } from '../global/globalFunction';
@@ -286,6 +286,9 @@ class PenyediaDetail extends React.Component{
                                             margin="dense"
                                             variant="outlined"
                                             fullWidth
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start">+62</InputAdornment>,
+                                              }}
                                             disabled={this.state.modifyType ? false : true}
 
                                         />
