@@ -5,18 +5,17 @@ import swal from 'sweetalert'
 import { addProductFunction} from './saga';
 import { getToken } from '../index/token';
 import { getAllLayananListFunction } from '../layanan/saga';
-import { Grid, InputAdornment, FormControlLabel, Checkbox, TextField, IconButton, Tooltip } from '@material-ui/core';
+import { Grid, InputAdornment, FormControlLabel, Checkbox, TextField, IconButton } from '@material-ui/core';
 import DropDown from '../subComponent/DropDown';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TitleBar from '../subComponent/TitleBar';
-import CancelIcon from '@material-ui/icons/Cancel';
-import SaveIcon from '@material-ui/icons/Save';
 import { constructFees, constructCollaterals, constructSector, constructMandatory } from './function';
 import DialogComponent from '../subComponent/DialogComponent';
 import { checkPermission } from '../global/globalFunction';
 import NumberFormatCustom from '../subComponent/NumberFormatCustom';
 import Loading from '../subComponent/Loading';
+import ActionComponent from '../subComponent/ActionComponent';
 
 
 class ProductAdd extends React.Component{
@@ -379,25 +378,12 @@ class ProductAdd extends React.Component{
                             />
                             {/* Action Button */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                                <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                                    <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-                                        
-                                        {
-                                           checkPermission('core_product_new') &&
-                                            <Tooltip title="Save" style={{outline:'none'}}>
-                                                <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
-                                                    <SaveIcon style={{width:'35px',height:'35px'}} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        }
-
-                                        <Tooltip title="Back" style={{outline:'none'}}>
-                                            <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                                                <CancelIcon style={{width:'35px',height:'35px'}} />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Grid>
-                                </Grid>
+                                < ActionComponent
+                                    permissionAdd={ checkPermission('core_product_new') ? this.btnConfirmationDialog : null}
+                                    onCancel={this.btnCancel}
+                                />
+                                
+                                
                             </Grid>
                             {/* Error */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>

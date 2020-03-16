@@ -9,9 +9,9 @@ import Loading from '../subComponent/Loading';
 import { Grid, IconButton, Tooltip, TextField, FormControlLabel, Checkbox } from '@material-ui/core';
 import TitleBar from '../subComponent/TitleBar';
 import CancelIcon from '@material-ui/icons/Cancel';
-import SaveIcon from '@material-ui/icons/Save';
 import { checkPermission, changeFileToBase64 } from '../global/globalFunction';
 import UploadFile from '../subComponent/UploadFile';
+import ActionComponent from '../subComponent/ActionComponent';
 
 class LayananAdd extends React.Component{
     _isMounted = false;
@@ -177,25 +177,12 @@ class LayananAdd extends React.Component{
                             />
                             {/* Action Button */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                                <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                                    <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-                                        
-                                        {
-                                           checkPermission('core_service_new') &&
-                                            <Tooltip title="Save" style={{outline:'none'}}>
-                                                <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
-                                                    <SaveIcon style={{width:'35px',height:'35px'}} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        }
-
-                                        <Tooltip title="Back" style={{outline:'none'}}>
-                                            <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                                                <CancelIcon style={{width:'35px',height:'35px'}} />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Grid>
-                                </Grid>
+                                
+                                < ActionComponent
+                                    permissionAdd={ checkPermission('core_service_new') ? this.btnConfirmationDialog : null}
+                                    onCancel={this.btnCancel}
+                                />
+                                
                             </Grid>
                             {/* Error */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>

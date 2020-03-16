@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -11,6 +11,9 @@ import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from '../subComponent/DialogComponent'
+import { Grid } from '@material-ui/core';
+import ActionComponent from '../subComponent/ActionComponent';
+import TitleBar from '../subComponent/TitleBar';
 
 const styles = (theme) => ({
     container: {
@@ -162,183 +165,192 @@ class CalonNasabahArsipDetail extends React.Component{
             return <Redirect to='/calonNasabahArsipList'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+            <Loading
+              title={'Calon Nasabah Arsip - Detail'}
+            />
           )
         } else if(getToken()){
             return(
-              <div className="container mt-4">
-                <h3> Calon Nasabah Arsip  - Detail</h3>
-                
-                <hr/>
-                 
-                <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left', marginBottom:'10px'}}>
-                  {this.state.errorMessage}
-                </div>   
+              <Grid container>
 
-                <div className="col-sm-12" style={{marginBottom:'10px'}}>
-                  <input type="button" value="KTP Detail" className="btn" onClick={this.handleDialog} style={{width:'120px',backgroundColor:"blue",color:"white",marginRight:'10px'}}/>
-                  <input type="button" value="NPWP Detail" className="btn" onClick={this.handleDialog} style={{width:'120px',backgroundColor:"blue",color:"white"}}/>               
-                </div>
-
-                <GridDetail
-                  gridLabel={[4,3,5]}
-                  background
-                  label={[
-                    ['Id Nasabah','Mitra Nasabah'],
-                    ['Kategori','Agen / AE'],
-                    ['Tanggal Register'],
-                  ]}
-                  data={this.state.dataUser && [
-                    [
-                      this.state.dataUser.id, 
-                      this.state.dataUser.bank_name
-                    ],
-                    [
-                      this.state.dataUser.category,
-                      this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
-                    ],
-                    [
-                      this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at)
-                    ],
-                  ]}                 
-                />
-
-                <GridDetail
-                  title="Informasi Pribadi"
-                  gridLabel={[4,5,7]}
-                  label={[
-                    ['Nama','Jenis Kelamin','No KTP','No NPWP','Email'],
-                    ['Tanggal Lahir','Tempat Lahir','Pendidikan','Nama Ibu Kandung','No HP'],
-                    ['Status Pernikahan','Nama Pasangan','Tanggal Lahir Pasangan','Pendidikan Pasangan','Tanggungan (orang)'],
-                  ]}
-                  data={this.state.dataUser && [
-                    [
-                      this.state.dataUser.fullname, 
-                      this.state.dataUser.gender && (this.state.dataUser.gender === 'M' ? 'Pria' : 'Perempuan'),
-                      this.state.dataUser.idcard_number,
-                      this.state.dataUser.taxid_number,
-                      this.state.dataUser.email
-                    ],
-                    [
-                      this.state.dataUser.birthday && new Date(this.state.dataUser.birthday).getFullYear() !== 1 ? handleFormatDate(this.state.dataUser.birthday) : '-',
-                      this.state.dataUser.birthplace,
-                      this.state.dataUser.last_education,
-                      this.state.dataUser.mother_name,
-                      this.state.dataUser.phone
-                    ],
-                    [
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status,
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? this.state.dataUser.spouse_name : '-',
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
-                      this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? this.state.dataUser.spouse_lasteducation : '-',
-                      this.state.dataUser.dependants
-                    ],
-                  ]}                 
-                />
-
-                <GridDetail
-                  title="Data Tempat Tinggal"
-                  gridLabel={[4,5,7]}
-                  label={[
-                    ['Alamat','Provinsi','Kota','RT / RW','No Telp Rumah'],
-                    ['Kecamatan','Kelurahan','Status Tempat Tinggal','Lama Menempati Rumah'],
-                    [],
-                  ]}
-                  data={this.state.dataUser && [
-                    [
-                      this.state.dataUser.address, 
-                      this.state.dataUser.province,
-                      this.state.dataUser.city,
-                      `${this.state.dataUser.neighbour_association ? this.state.dataUser.neighbour_association : '-'} / ${this.state.dataUser.hamlets ? this.state.dataUser.hamlets : '-'} `,
-                      this.state.dataUser.home_phonenumber
-                    ],
-                    [
-                      this.state.dataUser.subdistrict,
-                      this.state.dataUser.urban_village,
-                      this.state.dataUser.home_ownership,
-                      this.state.dataUser.lived_for && `${this.state.dataUser.lived_for} tahun`,
-                    ],
-                    [],
-                  ]}                 
-                />
-
-                <GridDetail
-                  title="Info Pekerjaan"
-                  gridLabel={[4,5,7]}
-                  label={[
-                    ['Jenis Pekerjaan','No Induk Pegawai','Nama Instansi','Alamat Kantor'],
-                    ['Jabatan','Lama Bekerja','Nama Atasan','No Tlp Kantor'],
-                    ['Gaji (perbulan)','Pendapatan Lain','Sumber Pendapatan Lain',],
-                  ]}
-                  data={this.state.dataUser && [
-                    [
-                      this.state.dataUser.field_of_work, 
-                      this.state.dataUser.employee_id,
-                      this.state.dataUser.employer_name,
-                      this.state.dataUser.employer_address
-                    ],
-                    [
-                      this.state.dataUser.occupation,
-                      this.state.dataUser.been_workingfor && `${this.state.dataUser.been_workingfor} tahun`,
-                      this.state.dataUser.direct_superiorname,
-                      this.state.dataUser.employer_number,
-                    ],
-                    [
-                      this.state.dataUser.monthly_income && `Rp ${formatNumber(this.state.dataUser.monthly_income,true)}`,
-                      this.state.dataUser.other_income && `Rp ${formatNumber(this.state.dataUser.other_income,true)}`,
-                      this.state.dataUser.other_incomesource,
-                    ],
-                  ]}                 
-                />
-
-                <GridDetail
-                  title="Lain lain"
-                  gridLabel={[7]}
-                  label={[
-                    ['Nama Orang Tidak Serumah Yang Bisa Dihubungi','Hubungan','Alamat Rumah','No Tlp','No HP'],
-                    []
-                  ]}
-                  data={this.state.dataUser && [
-                    [
-                      this.state.dataUser.related_personname, 
-                      this.state.dataUser.related_relation, 
-                      this.state.dataUser.related_address,
-                      this.state.dataUser.related_homenumber,
-                      this.state.dataUser.related_phonenumber
-                    ],
-                    []
-                  ]}                 
-                />
-
-
-                <div className="col-sm-12">
-                  <DialogComponent
-                    title={this.state.title}
-                    openDialog={this.state.dialog}
-                    message={this.state.message}
-                    type='image'
-                    onClose={this.handleClose}
+                <Grid item sm={12} xs={12} style={{maxHeight:50}}>   
+                  <TitleBar
+                    title={'Calon Nasabah Arsip - Detail'}
                   />
-                </div>
+                </Grid>
 
-                    
-                <div className="col-sm-12">
-                  <input type="button" value="Kembali" className="btn" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                </div>
-                    
-                    
-                 
-                
-              </div>
+                <Grid
+                    item
+                    sm={12} xs={12}
+                    style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+                >
+                  <Grid container>
+                    {/* Dialog Component */}
+                    <DialogComponent
+                      title={this.state.title}
+                      openDialog={this.state.dialog}
+                      message={this.state.message}
+                      type='image'
+                      onClose={this.handleClose}
+                    />
+                    {/* Action Button */}
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>   
+                      <ActionComponent
+                        onCancel={this.btnCancel}
+                      />
+                    </Grid>
+
+                    {/* Error */}
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
+                      {this.state.errorMessage}
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                      <GridDetail
+                        gridLabel={[4,3,5]}
+                        noTitleLine
+                        background
+                        label={[
+                          ['Id Nasabah','Mitra Nasabah'],
+                          ['Kategori','Agen / AE'],
+                          ['Tanggal Register'],
+                        ]}
+                        data={this.state.dataUser && [
+                          [
+                            this.state.dataUser.id, 
+                            this.state.dataUser.bank_name
+                          ],
+                          [
+                            this.state.dataUser.category,
+                            this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
+                          ],
+                          [
+                            this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at)
+                          ],
+                        ]}                 
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+
+                      <GridDetail
+                        title="Informasi Pribadi"
+                        gridLabel={[4,5,7]}
+                        label={[
+                          ['Nama','Jenis Kelamin','No KTP','No NPWP','Email'],
+                          ['Tanggal Lahir','Tempat Lahir','Pendidikan','Nama Ibu Kandung','No HP'],
+                          ['Status Pernikahan','Nama Pasangan','Tanggal Lahir Pasangan','Pendidikan Pasangan','Tanggungan (orang)'],
+                        ]}
+                        data={this.state.dataUser && [
+                          [
+                            this.state.dataUser.fullname, 
+                            this.state.dataUser.gender && (this.state.dataUser.gender === 'M' ? 'Pria' : 'Perempuan'),
+                            this.state.dataUser.idcard_number,
+                            this.state.dataUser.taxid_number,
+                            this.state.dataUser.email
+                          ],
+                          [
+                            this.state.dataUser.birthday && new Date(this.state.dataUser.birthday).getFullYear() !== 1 ? handleFormatDate(this.state.dataUser.birthday) : '-',
+                            this.state.dataUser.birthplace,
+                            this.state.dataUser.last_education,
+                            this.state.dataUser.mother_name,
+                            this.state.dataUser.phone
+                          ],
+                          [
+                            this.state.dataUser.marriage_status && this.state.dataUser.marriage_status,
+                            this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? this.state.dataUser.spouse_name : '-',
+                            this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? ((this.state.dataUser.spouse_birthday && handleFormatDate(this.state.dataUser.spouse_birthday)) || '-') : '-',
+                            this.state.dataUser.marriage_status && this.state.dataUser.marriage_status === 'menikah' ? this.state.dataUser.spouse_lasteducation : '-',
+                            this.state.dataUser.dependants
+                          ],
+                        ]}                 
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>\
+                      <GridDetail
+                        title="Data Tempat Tinggal"
+                        gridLabel={[4,5,7]}
+                        label={[
+                          ['Alamat','Provinsi','Kota','RT / RW','No Telp Rumah'],
+                          ['Kecamatan','Kelurahan','Status Tempat Tinggal','Lama Menempati Rumah'],
+                          [],
+                        ]}
+                        data={this.state.dataUser && [
+                          [
+                            this.state.dataUser.address, 
+                            this.state.dataUser.province,
+                            this.state.dataUser.city,
+                            `${this.state.dataUser.neighbour_association ? this.state.dataUser.neighbour_association : '-'} / ${this.state.dataUser.hamlets ? this.state.dataUser.hamlets : '-'} `,
+                            this.state.dataUser.home_phonenumber
+                          ],
+                          [
+                            this.state.dataUser.subdistrict,
+                            this.state.dataUser.urban_village,
+                            this.state.dataUser.home_ownership,
+                            this.state.dataUser.lived_for && `${this.state.dataUser.lived_for} tahun`,
+                          ],
+                          [],
+                        ]}                 
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                      <GridDetail
+                        title="Info Pekerjaan"
+                        gridLabel={[4,5,7]}
+                        label={[
+                          ['Jenis Pekerjaan','No Induk Pegawai','Nama Instansi','Alamat Kantor'],
+                          ['Jabatan','Lama Bekerja','Nama Atasan','No Tlp Kantor'],
+                          ['Gaji (perbulan)','Pendapatan Lain','Sumber Pendapatan Lain',],
+                        ]}
+                        data={this.state.dataUser && [
+                          [
+                            this.state.dataUser.field_of_work, 
+                            this.state.dataUser.employee_id,
+                            this.state.dataUser.employer_name,
+                            this.state.dataUser.employer_address
+                          ],
+                          [
+                            this.state.dataUser.occupation,
+                            this.state.dataUser.been_workingfor && `${this.state.dataUser.been_workingfor} tahun`,
+                            this.state.dataUser.direct_superiorname,
+                            this.state.dataUser.employer_number,
+                          ],
+                          [
+                            this.state.dataUser.monthly_income && `Rp ${formatNumber(this.state.dataUser.monthly_income,true)}`,
+                            this.state.dataUser.other_income && `Rp ${formatNumber(this.state.dataUser.other_income,true)}`,
+                            this.state.dataUser.other_incomesource,
+                          ],
+                        ]}                 
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                      <GridDetail
+                        title="Lain lain"
+                        gridLabel={[7]}
+                        label={[
+                          ['Nama Orang Tidak Serumah Yang Bisa Dihubungi','Hubungan','Alamat Rumah','No Tlp','No HP'],
+                          []
+                        ]}
+                        data={this.state.dataUser && [
+                          [
+                            this.state.dataUser.related_personname, 
+                            this.state.dataUser.related_relation, 
+                            this.state.dataUser.related_address,
+                            this.state.dataUser.related_homenumber,
+                            this.state.dataUser.related_phonenumber
+                          ],
+                          []
+                        ]}                 
+                      />
+                    </Grid>
+
+                  </Grid>
+                </Grid>
+              </Grid>
+              
             )
         } else if(!getToken()){
           return (
