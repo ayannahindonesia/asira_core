@@ -395,7 +395,7 @@ class ProductDetail extends React.Component{
         } else if(this.state.loading) {
             return(
                 <Loading
-                    title={'Tipe Mitra - Tambah'}
+                    title={this.state.modifyType ?'Produk - Edit' : 'Produk - Detail'}
                 />
             )
             
