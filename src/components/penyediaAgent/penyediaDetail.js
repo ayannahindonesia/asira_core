@@ -5,15 +5,13 @@ import './../../support/css/penyediaAgent.css'
 import { getPenyediaAgentDetailFunction ,editPenyediaAgentFunction} from './saga';
 import Loader from 'react-loader-spinner'
 
-import EditIcon from '@material-ui/icons/Edit';
-import CancelIcon from '@material-ui/icons/Cancel';
 import TitleBar from '../subComponent/TitleBar';
-import { Grid, IconButton, Tooltip, FormControlLabel, Checkbox, TextField,InputAdornment } from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
+import { Grid, FormControlLabel, Checkbox, TextField,InputAdornment } from '@material-ui/core';
 
 import { checkPermission } from '../global/globalFunction';
 import swal from 'sweetalert'
 import DialogComponent from '../subComponent/DialogComponent';
+import ActionComponent from '../subComponent/ActionComponent';
 
 class PenyediaDetail extends React.Component{
     state = {
@@ -166,38 +164,13 @@ class PenyediaDetail extends React.Component{
                         >
                     
                     <Grid container>
-
-
+                    
                     <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                            <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                            <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-
-                                {
-                                    checkPermission('core_agent_provider_patch') && this.state.modifyType &&
-                                    <Tooltip title="Save" style={{outline:'none'}}>
-                                    <IconButton aria-label="save" onClick={()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?')} >
-                                        <SaveIcon style={{width:'35px',height:'35px'}}/>
-                                    </IconButton>
-                                    </Tooltip>
-                                }
-
-                                {
-                                    checkPermission('core_agent_provider_patch') && !this.state.modifyType &&
-                                    <Tooltip title="Edit" style={{outline:'none'}}>
-                                    <IconButton aria-label="edit" onClick={this.btnEditPermission}>
-                                        <EditIcon style={{width:'35px',height:'35px'}}/>
-                                    </IconButton>
-                                    </Tooltip>
-                                }
-                                
-
-                                <Tooltip title="Back" style={{outline:'none'}}>
-                                <IconButton aria-label="cancel" onClick={()=> this.setState({diKlik:true})}>
-                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
-                                </IconButton>
-                                </Tooltip>
-                            </Grid>
-                            </Grid>
+                                <ActionComponent
+                                    modifyType={this.state.modifyType}
+                                    permissionEdit={ checkPermission('core_agent_provider_patch') ? (this.state.modifyType ? ()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?') : this.btnEditPermission) : null}
+                                    onCancel={this.btnCancel}
+                                />
                     </Grid>
 
 
@@ -244,8 +217,7 @@ class PenyediaDetail extends React.Component{
                                             margin="dense"
                                             variant="outlined"
                                             fullWidth
-                                            disabled={this.state.modifyType ? false : true}
-
+                                            disabled={true}
                                         />
                                 </Grid>
                             </Grid>
