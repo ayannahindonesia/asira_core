@@ -177,7 +177,7 @@ class LayananDetail extends React.Component{
         } else if(this.state.loading) {
             return(
                 <Loading
-                    title={'Layanan - Tambah'}
+                    title={this.state.modifyType ? 'Layanan - Ubah':'Layanan - Detail'}
                 />
             )
             
