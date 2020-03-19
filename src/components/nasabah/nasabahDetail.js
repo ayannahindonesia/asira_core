@@ -12,9 +12,9 @@ import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from './../subComponent/DialogComponent'
 import TitleBar from '../subComponent/TitleBar';
+import ActionComponent from '../subComponent/ActionComponent';
 
-import { Grid, IconButton, Tooltip } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { Grid } from '@material-ui/core';
 
 const styles = (theme) => ({
     container: {
@@ -169,13 +169,13 @@ class profileNasabahDetail extends React.Component{
                   </Grid>
 
                   <Grid item sm={12} xs={12} style={{marginBottom:"10px"}}>
-                      <Grid item xs={12} sm={12} style={{display:'flex', justifyContent:'flex-end'}}>
-                            <Tooltip title="Back" style={{outline:'none'}}>
-                                <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
-                                </IconButton>
-                            </Tooltip>       
-                        </Grid> 
+              <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                      <ActionComponent
+                          onCancel={this.btnCancel}
+                      />
+              </Grid>
+
+
                     <Grid container spacing={2}>
                         <Grid item sm={2} xs={12} style={{marginBottom:'10px'}}>
                             <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto KTP" onClick={this.handleDialog}></input>                               

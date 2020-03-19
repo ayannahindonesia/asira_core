@@ -2,16 +2,13 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { DetailRoleFunction, EditRoleFunction } from './saga';
 import { getToken } from '../index/token';
-import { Grid, Tooltip, IconButton, TextField,FormControlLabel,Checkbox } from '@material-ui/core';
+import { Grid, TextField,FormControlLabel,Checkbox } from '@material-ui/core';
 import { checkPermission } from '../global/globalFunction';
-
-import CancelIcon from '@material-ui/icons/Cancel';
-import SaveIcon from '@material-ui/icons/Save';
-import EditIcon from '@material-ui/icons/Edit';
 
 import DialogComponent from '../subComponent/DialogComponent';
 import TitleBar from '../subComponent/TitleBar';
 import swal from 'sweetalert'
+import ActionComponent from '../subComponent/ActionComponent';
 
 class RoleDetail extends React.Component{
     _isMounted = false;
@@ -95,6 +92,9 @@ class RoleDetail extends React.Component{
             }
         }
     }
+    btnCancel=()=>{
+        this.setState({diKlik:true})
+    }
     render(){
         if(this.state.diKlik){
             return <Redirect to="/roleList"></Redirect>
@@ -113,39 +113,13 @@ class RoleDetail extends React.Component{
                         style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
                         >
                             <Grid container>
-                                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                                    <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                                    <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-
-                                    {
-                                        checkPermission('core_role_patch') && this.state.modifyType &&
-                                        <Tooltip title="Save" style={{outline:'none'}}>
-                                        <IconButton aria-label="save" onClick={()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?')} >
-                                            <SaveIcon style={{width:'35px',height:'35px'}}/>
-                                        </IconButton>
-                                        </Tooltip>
-                                    }
-
-                                    {
-                                        checkPermission('core_role_patch') && !this.state.modifyType &&
-                                        <Tooltip title="Edit" style={{outline:'none'}}>
-                                        <IconButton aria-label="edit" onClick={this.btnEditPermission}>
-                                            <EditIcon style={{width:'35px',height:'35px'}}/>
-                                        </IconButton>
-                                        </Tooltip>
-                                    }
-
-
-                                                <Tooltip title="Back" style={{outline:'none'}}>
-                                                <IconButton aria-label="cancel" onClick={()=> this.setState({diKlik:true})}>
-                                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
-                                                </IconButton>
-                                                </Tooltip>
-                                            </Grid>
-                                            </Grid>
-                                    </Grid>
-
-
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                                        <ActionComponent
+                                            modifyType={this.state.modifyType}
+                                            permissionEdit={ checkPermission('core_role_patch') ? (this.state.modifyType ? ()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?') : this.btnEditPermission) : null}
+                                            onCancel={this.btnCancel}
+                                        />
+                            </Grid>
 
                             </Grid>
 

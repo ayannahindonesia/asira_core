@@ -18,9 +18,8 @@ import { isRoleAccountExecutive, constructAgent } from './function';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TitleBar from '../subComponent/TitleBar';
 import { Grid, IconButton, Tooltip, FormControlLabel, Checkbox, TextField,InputAdornment } from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
 import UploadFile from '../subComponent/UploadFile';
-
+import ActionComponent from './../subComponent/ActionComponent'
 import { checkPermission,changeFileToBase64,validateEmail,validatePhone } from '../global/globalFunction';
 
 const styles = (theme) => ({
@@ -301,6 +300,10 @@ class agentAdd extends React.Component{
       return flag;
     }
 
+    btnCancel=()=>{
+      this.setState({diKlik:true})
+    }
+
     render(){
         if(this.state.diKlik){
           return <Redirect to='/agenList'/>            
@@ -335,29 +338,12 @@ class agentAdd extends React.Component{
                         <Grid container>
 
                         <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                            <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                            <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-
-                                {
-                                    checkPermission('core_agent_new') &&
-                                    <Tooltip title="Save" style={{outline:'none'}}>
-                                    <IconButton aria-label="save" onClick={()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?')} >
-                                        <SaveIcon style={{width:'35px',height:'35px'}}/>
-                                    </IconButton>
-                                    </Tooltip>
-                                }
-
-                          
-      
-
-                                <Tooltip title="Back" style={{outline:'none'}}>
-                                <IconButton aria-label="cancel" onClick={()=> this.setState({diKlik:true})}>
-                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
-                                </IconButton>
-                                </Tooltip>
-                            </Grid>
-                            </Grid>
-                    </Grid>
+                            <ActionComponent
+                              permissionAdd={ checkPermission('core_agent_new') ?  ()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?'): null}
+                              onCancel={this.btnCancel}
+                            />
+                        </Grid>
+                      
 
 
                   {/* Error */}

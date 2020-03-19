@@ -5,10 +5,10 @@ import {  handleFormatDate,formatNumber, findAmount} from './../global/globalFun
 
 import { getDetailFunction } from './saga';
 import { getToken } from '../index/token';
-import { Grid, Tooltip, IconButton } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { Grid} from '@material-ui/core';
 import TitleBar from '../subComponent/TitleBar';
 import GridDetail from './../subComponent/GridDetail'
+import ActionComponent from '../subComponent/ActionComponent';
 
 class Main extends React.Component{
     state = {rows:{},items:[],borrowerDetail:{},formInfo:[],status:'',borrower_info:{},productInfo:{},redirecting:false,errorMessage:''}
@@ -134,13 +134,12 @@ class Main extends React.Component{
                     style={{padding:10, marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
                     >
 
-                    <Grid item xs={12} sm={12} style={{display:'flex', justifyContent:'flex-end'}}>
-                        <Tooltip title="Back" style={{outline:'none'}}>
-                            <IconButton aria-label="cancel" onClick={this.btnBack}>
-                                <CancelIcon style={{width:'35px',height:'35px'}}/>
-                            </IconButton>
-                        </Tooltip>       
-                    </Grid> 
+                      {/* Action Button */}
+                  <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                        <ActionComponent
+                            onCancel={this.btnBack}
+                        />
+                 </Grid>
 
                     {/* -----------------------------------------------------FIRST ROW----------------------------------------------------------------- */}
 

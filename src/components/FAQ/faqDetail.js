@@ -2,16 +2,13 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { EditFAQFunction,detailFAQFunction,DeleteFAQFunction } from './saga';
 import { getToken } from '../index/token';
-import EditIcon from '@material-ui/icons/Edit';
-import CancelIcon from '@material-ui/icons/Cancel';
 import TitleBar from '../subComponent/TitleBar';
-import { Grid, IconButton, Tooltip,TextField } from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { Grid,TextField } from '@material-ui/core';
 
 import { checkPermission } from '../global/globalFunction';
 import swal from 'sweetalert'
 import DialogComponent from '../subComponent/DialogComponent';
+import ActionComponent from '../subComponent/ActionComponent';
 
 class FAQDetail extends React.Component{
     _isMounted = false;
@@ -151,47 +148,17 @@ class FAQDetail extends React.Component{
                     
                     <Grid container>
 
-
                     <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                            <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                            <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-
-                               {checkPermission('core_faq_delete') &&
-                               <Tooltip title="Delete" style={{outline:'none'}}>
-                               <IconButton aria-label="Delete" onClick={()=>this.btnConfirmationDialog('','','Are you sure want to delete this data ?')}>
-                                   <DeleteIcon style={{width:'35px',height:'35px'}}/>
-                               </IconButton>
-                               </Tooltip>
-                               
-                               } 
-
-                                {
-                                    checkPermission('core_faq_patch') && this.state.modifyType &&
-                                    <Tooltip title="Save" style={{outline:'none'}}>
-                                    <IconButton aria-label="save" onClick={()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?')} >
-                                        <SaveIcon style={{width:'35px',height:'35px'}}/>
-                                    </IconButton>
-                                    </Tooltip>
-                                }
-
-                                {
-                                    checkPermission('core_faq_patch') && !this.state.modifyType &&
-                                    <Tooltip title="Edit" style={{outline:'none'}}>
-                                    <IconButton aria-label="edit" onClick={this.btnEditPermission}>
-                                        <EditIcon style={{width:'35px',height:'35px'}}/>
-                                    </IconButton>
-                                    </Tooltip>
-                                }
-                                
-
-                                <Tooltip title="Back" style={{outline:'none'}}>
-                                <IconButton aria-label="cancel" onClick={()=> this.setState({diKlik:true})}>
-                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
-                                </IconButton>
-                                </Tooltip>
-                            </Grid>
-                            </Grid>
+                                <ActionComponent
+                                    modifyType={this.state.modifyType}
+                                    permissionEdit={ checkPermission('core_faq_patch') ? (this.state.modifyType ? ()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?') : this.btnEditPermission) : null}
+                                    permissionDelete={ checkPermission('core_faq_delete') ?  ()=>this.btnConfirmationDialog('','','Are you sure want to delete this data ?') : null}
+                                    onCancel={this.btnCancel}
+                                />
                     </Grid>
+
+
+                 
 
 
                   {/* Error */}

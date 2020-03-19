@@ -64,7 +64,7 @@ class ActionComponent extends React.Component {
 
                     {   permissionDelete &&
                         <Tooltip title="Hapus" style={{outline:'none'}}>
-                            <IconButton aria-label="Delete" onClick={()=>this.btnConfirmationDialog('','','Are you sure want to delete this data ?')}>
+                            <IconButton aria-label="Delete" onClick={permissionDelete}>
                                 <DeleteIcon style={{width:'35px',height:'35px'}}/>
                             </IconButton>
                         </Tooltip>
