@@ -1,21 +1,24 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import CheckBox from '@material-ui/core/Checkbox';
-import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
-import TextField from '@material-ui/core/TextField';
 import { compose } from 'redux';
 import { getAllRoleFunction } from './../rolePermission/saga'
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { postUserAddFunction } from './saga';
-import { validateEmail, validatePhone } from '../global/globalFunction';
 import { getToken } from '../index/token';
 import { getAllMitraList } from '../mitra/saga';
+import ActionComponent from '../subComponent/ActionComponent';
+import { validateEmail, validatePhone ,checkPermission} from '../global/globalFunction';
+
+
+import DialogComponent from '../subComponent/DialogComponent';
+import TitleBar from '../subComponent/TitleBar';
+import DropDown from '../subComponent/DropDown';
+import { Grid, TextField,FormControlLabel,Checkbox,InputAdornment } from '@material-ui/core';
 
 const styles = (theme) => ({
     container: {
@@ -162,11 +165,10 @@ class userAdd extends React.Component{
       }
     }
 
-    onChangeCheck = (e) => {
-      this.setState({
-        status: !this.state.status,
-      });
-    };
+
+    handleChecked = (e, labelData)=>{
+      this.setState({[labelData]:!this.state[labelData]})
+    }
 
     onChangeTextField = (e) => {
       let value = e.target.value;
@@ -237,6 +239,14 @@ class userAdd extends React.Component{
       return flag;
     }
 
+    btnConfirmationDialog = (e, nextStep, pesan) => {
+      this.setState({dialog: !this.state.dialog,messageDialog:pesan})
+
+      if(nextStep && this.state.messageDialog.includes('save')) {
+          this.btnSave() 
+      }
+    }
+
     render(){
         if(this.state.diKlik){
           return <Redirect to='/akunList'/>            
@@ -255,159 +265,165 @@ class userAdd extends React.Component{
           )
         } else if(getToken()){
           return(
-              <div className="container mt-4">
-                <h3>Akun - Tambah</h3>
-                                
-                <hr/>
-                
-                <form>
-                  <div className="form-group row">   
-                    <div className="col-12" style={{color:"red",fontSize:"15px",textAlign:'left', marginBottom:'2vh'}}>
-                      {this.state.errorMessage}
-                    </div>    
-                  </div>
-                  <div className="form-group row" style={{marginBottom:20}}>                
-                    <label className="col-sm-2 col-form-label" style={{height:3.5}}>
-                      Username
-                    </label>
-                    <label className="col-sm-1 col-form-label" style={{height:3.5}}>
-                      :
-                    </label>
-                    <div className="col-sm-4" >
-                      <TextField
-                        id="username"
-                        onChange={this.onChangeTextField}
-                        value={this.state.username}
-                        hiddenLabel
-                        fullWidth
-                        placeholder="Username"
-                        style={{border:'1px groove', paddingLeft:'5px'}}
-                      />
-                    </div>                 
-                  </div>
+            <Grid container>
 
-                  <div className="form-group row" style={{marginBottom:7}}>                   
-                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                      Role
-                    </label>
-                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                      :
-                    </label>
-                    <div className="col-sm-4">
-                      <DropDown
-                        value={this.state.role}
-                        label="Role"
-                        data={this.state.listRole}
-                        id="id"
-                        labelName={"name-system"}
-                        onChange={this.onChangeDropDown}
-                        fullWidth
-                      />
-                    </div>                 
-                  </div>
+            <Grid item sm={12} xs={12} style={{maxHeight:50}}>
+                 <TitleBar
+                  title={'Akun - Tambah'}
+                 />
+             </Grid>
 
-                  { this.isRoleBank(this.state.role) && 
-                    <div className="form-group row" style={{marginBottom:20}}>                   
-                      <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                        Mitra
-                      </label>
-                      <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                        :
-                      </label>
-                      <div className="col-sm-4">
-                        <DropDown
-                          value={this.state.bank}
-                          label="Bank"
-                          data={this.state.listBank}
-                          id="id"
-                          labelName="name"
-                          onChange={this.onChangeDropDown}
-                          disabled={!this.isRoleBank(this.state.role)}
-                          fullWidth
-                        />
-                      </div>                 
-                    </div>
-                  }
+             <Grid
+             item
+             sm={12} xs={12}
+             style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+             >
+               <Grid container>
 
-                  <div className="form-group row" style={{marginBottom:40}}>                   
-                    <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
-                      Email
-                    </label>
-                    <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
-                      :
-                    </label>
-                    <div className="col-sm-4">
-                      <TextField
-                        id="email"
-                        type="email"
-                        onChange={this.onChangeTextField}
-                        value={this.state.email}
-                        hiddenLabel
-                        fullWidth
-                        placeholder="Email"
-                        style={{border:'1px groove', paddingLeft:'5px'}}
-                      />
-                    </div>                   
-                  </div>
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                     <ActionComponent
+                         permissionAdd={ checkPermission('core_user_new') ?  ()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?') : null}
+                         onCancel={this.btnCancel}
+                     />
+               </Grid>
 
-                  <div className="form-group row" style={{marginBottom:20}}>                   
-                    <label className="col-sm-2 col-form-label" style={{lineHeight:1.5}}>
-                      Kontak PIC
-                    </label>
-                    <label className="col-sm-1 col-form-label" style={{lineHeight:1.5}}>
-                      : 
-                    </label>
-                    <div className="col-sm-1" style={{lineHeight:1.5, textAlign:'center', paddingTop:'5px', paddingRight:'0px', paddingLeft:'0px'}}>
-                      (+62)
-                    </div>
-                    <div className="col-sm-3" style={{paddingLeft:'0px'}}>
-                      <TextField
-                        id="phone"
-                        type="tel"
-                        onChange={this.onChangeTextField}
-                        value={this.state.phone}
-                        hiddenLabel
-                        fullWidth
-                        placeholder="Telepon"
-                        style={{border:'1px groove', paddingLeft:'5px'}}
-                      />
-                    </div>                   
-                  </div>
+               </Grid>
+               
+                 {/* Error */}
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
+                             {this.state.errorMessage}
+                         </Grid>
 
-                  <div className="form-group row">
-                    <label className="col-sm-2 col-form-label" style={{lineHeight:3.5}}>
-                      Status
-                    </label>
-                    <label className="col-sm-1 col-form-label" style={{lineHeight:3.5}}>
-                      :
-                    </label>
-                    <div className="col-4" style={{color:"black",fontSize:"15px",alignItems:'left', paddingTop: '15px'}}>
-                      
-                      <FormControlLabel
-                        control={
-                          <CheckBox       
-                            color="default"           
-                            onChange={this.onChangeCheck}
-                            checked={this.state.status}
-                            style={{justifyContent:'left'}}
-                          />  
-                        }
-                        label={this.state.status ? "Aktif" : "Tidak Aktif"}
-                      />
-                      
-                    </div>           
-                  </div>
-                  
-                  <div className="form-group row">
-                      <div className="col-sm-12 ml-3 mt-3">
-                        <input type="button" value="Simpan" className="btn btn-success" onClick={this.btnSave} />
-                        <input type="button" value="Batal" className="btn ml-2" onClick={this.btnCancel} style={{backgroundColor:"grey",color:"white"}}/>
-                      </div>
-                  </div>
-                  
-                </form>
+
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                              <Grid container>
+                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                        Username
+                                     </Grid>
+                                     <Grid item xs={12} sm={4} >
+                                         <TextField
+                                             id="username"
+                                             value={this.state.username}
+                                             onChange={(e) => this.onChangeTextField(e,'username')} 
+                                             margin="dense"
+                                             variant="outlined"
+                                             fullWidth
+                                         />
+                                     </Grid>
+                             </Grid>
+                 </Grid>
+
               
-              </div>
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                              <Grid container>
+                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                       Role
+                                     </Grid>
+                                     <Grid item xs={12} sm={4} >
+                                     <DropDown
+                                         value={this.state.role}
+                                         label="Role"
+                                         data={this.state.listRole}
+                                         id="id"
+                                         labelName="name-system"
+                                         onChange={this.onChangeDropDown}
+                                         fullWidth
+                                       />
+                 
+                                     </Grid>
+                             </Grid>
+                 </Grid>
+                 { this.isRoleBank(this.state.role, this.state.listRole) && 
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                              <Grid container>
+                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                       Mitra
+                                     </Grid>
+                                     <Grid item xs={12} sm={4} >
+                                     <TextField
+                                             id="bank_name"
+                                             value={this.state.bank_name}
+                                             onChange={(e) => this.onChangeTextField(e,'bank_name')} 
+                                             margin="dense"
+                                             variant="outlined"
+                                             fullWidth
+                                       />
+                                     </Grid>
+                             </Grid>
+                 </Grid>}
+
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                              <Grid container>
+                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                       Email
+                                     </Grid>
+                                     <Grid item xs={12} sm={4} >
+                                     <TextField
+                                             id="email"
+                                             value={this.state.email}
+                                             onChange={(e) => this.onChangeTextField(e,'email')} 
+                                             margin="dense"
+                                             variant="outlined"
+                                             fullWidth
+
+                                       />
+                                     </Grid>
+                             </Grid>
+                 </Grid>
+
+
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                              <Grid container>
+                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                       Kontak PIC
+                                     </Grid>
+                                     <Grid item xs={12} sm={4} >
+                                     <TextField
+                                             id="phone"
+                                             value={this.state.phone}
+                                             onChange={(e) => this.onChangeTextField(e,'phone',true)} 
+                                             margin="dense"
+                                             variant="outlined"
+                                             InputProps={{
+                                              startAdornment: <InputAdornment position="start">+62</InputAdornment>,
+                                            }}
+                                             fullWidth
+                                       />
+                                     </Grid>
+                             </Grid>
+                 </Grid>
+
+                 <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                              <Grid container>
+                                     <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                        Status
+                                     </Grid>
+                                     <Grid item xs={12} sm={4} >
+                                     <FormControlLabel
+                                 control={
+                                     <Checkbox
+                                         checked={this.state.status}
+                                         onChange={(e) => this.handleChecked(e, 'status')}
+                                         color={this.state.status ? "primary":"default"}
+                                         value="default"
+                                         inputProps={{ 'aria-label': 'checkbox with default color' }}
+                                         
+                                     />
+                                 }
+                                 label={'Aktif'}
+                             />
+                                     </Grid>
+                             </Grid>
+           </Grid>
+             </Grid>
+             <DialogComponent 
+         title={'Confirmation'}
+         message={this.state.messageDialog}
+         type={'textfield'}
+         openDialog={this.state.dialog}
+         onClose={this.btnConfirmationDialog}
+       />
+     </Grid>
           )
         } else if(getToken()){
           return (

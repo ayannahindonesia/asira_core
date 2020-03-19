@@ -62,7 +62,6 @@ import penyediaAgentList from './../penyediaAgent/penyediaList'
 import AgentAdd from './../agent/agentAdd'
 import AgentList from './../agent/agentList'
 import AgentDetail from './../agent/agentDetail'
-import AgentEdit from './../agent/agentEdit'
 import CalonNasabahList from './../calonNasabah/calonNasabahList';
 import calonNasabahDetail from './../calonNasabah/calonNasabahDetail';
 import CalonNasabahArsipList from './../calonNasabah/calonNasabahArsipList';
@@ -383,7 +382,6 @@ function ResponsiveDrawer(props) {
 
             { checkPermission('core_agent_new') && <Route path='/agenAdd' component={AgentAdd}></Route>}
             { checkPermission('core_agent_list') && <Route path='/agenList' component={AgentList}></Route>}
-            { checkPermission('core_agent_patch') && <Route path='/agenEdit/:id' component={AgentEdit}></Route>}
             { checkPermission('core_agent_details') && <Route path='/agenDetail/:id' component={AgentDetail}></Route>}
 
             { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahList' component={CalonNasabahList}></Route>}

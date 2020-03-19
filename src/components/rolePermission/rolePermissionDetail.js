@@ -12,10 +12,8 @@ import { getRoleFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission, checkingRole, checkingSystem } from './function'
 import { getToken } from '../index/token';
 import { destructRolePermission } from './function';
-import { Tooltip, Grid, IconButton } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import CancelIcon from '@material-ui/icons/Cancel';
-import SaveIcon from '@material-ui/icons/Save';
+import {  Grid  } from '@material-ui/core';
+
 import DialogComponent from '../subComponent/DialogComponent';
 import { checkPermission } from '../global/globalFunction';
 import TitleBar from '../subComponent/TitleBar';

@@ -11,7 +11,7 @@ import { getAllRoleFunction } from '../rolePermission/saga';
 import { getToken } from '../index/token';
 import { validateEmail, validatePhone ,checkPermission} from '../global/globalFunction';
 
-import { Grid, TextField,FormControlLabel,Checkbox } from '@material-ui/core';
+import { Grid, TextField,FormControlLabel,Checkbox,InputAdornment } from '@material-ui/core';
 import ActionComponent from '../subComponent/ActionComponent';
 
 
@@ -436,6 +436,9 @@ class UserDetail extends React.Component{
                                                         variant="outlined"
                                                         fullWidth
                                                         disabled={this.state.modifyType ? false : true}
+                                                        InputProps={{
+                                                          startAdornment: <InputAdornment position="start">+62</InputAdornment>,
+                                                        }}
                                                   />
                                                 </Grid>
                                         </Grid>
