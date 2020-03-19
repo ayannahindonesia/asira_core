@@ -174,7 +174,7 @@ class ProductDetail extends React.Component{
                     namaProduct: dataProduct.name,
                     layanan: dataProduct.service_id,
                     check: dataProduct.status === 'active' ? true : false,
-                    checkAuto: dataProduct.auto_paid ? true : false,
+                    checkAuto: dataProduct.record_installment_details ? true : false,
                     interest: dataProduct.interest,
                     rentangFrom: dataProduct.min_loan,
                     rentangTo: dataProduct.max_loan,
@@ -272,7 +272,7 @@ class ProductDetail extends React.Component{
                 min_loan: parseFloat(this.state.rentangFrom),
                 max_loan: parseFloat(this.state.rentangTo),
                 interest_type: this.state.tipeBunga,
-                auto_paid: this.state.checkAuto,
+                record_installment_details: this.state.checkAuto,
                 status: this.state.check ? 'active':'nonactive',
                 description: this.state.description,
             }
@@ -651,11 +651,11 @@ class ProductDetail extends React.Component{
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            {/* Auto Paid */}
+                            {/* Record Installment */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', marginBottom:'20px'}}>
                                 <Grid container>
                                     <Grid item xs={4} sm={4} style={{paddingTop:'10px'}}>
-                                        Auto Paid
+                                        Pantau Cicilan
                                     </Grid>
                                     <Grid item xs={4} sm={4} >
                                         <FormControlLabel
@@ -668,7 +668,7 @@ class ProductDetail extends React.Component{
                                                     inputProps={{ 'aria-label': 'checkbox with default color' }}
                                                 />
                                             }
-                                            label={'Auto Paid'}
+                                            label={'Pantau Cicilan'}
                                             disabled={this.state.modifyType ? false : true}
                                         />
                                         
@@ -701,10 +701,10 @@ class ProductDetail extends React.Component{
                                 </Grid>
                             </Grid> 
                             {/* Sektor Pembiayaan */}
-                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                            <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px 10px'}}>
                                 <Grid container>
-                                    <Grid item xs={3} sm={3} >
-                                        Sektor Pembiayaan
+                                    <Grid item xs={12} sm={12} style={{display:'flex', justifyContent: 'flex-start'}}>
+                                        <p style={{paddingTop:'13px'}}> Sektor Pembiayaan </p>
                                         <IconButton aria-label="delete" disabled={this.state.modifyType ? false : true} onClick={(e) => this.btnTambahFlexibleData(e, 'sektor')} style={{marginLeft:'5px',outline:'none'}}>
                                             <AddIcon />
                                         </IconButton>
@@ -751,8 +751,8 @@ class ProductDetail extends React.Component{
                             {/* Agunan */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
                                 <Grid container>
-                                    <Grid item xs={2} sm={2} >
-                                        Agunan
+                                    <Grid item xs={12} sm={12} style={{display:'flex', justifyContent: 'flex-start'}} >
+                                        <p style={{paddingTop:'13px'}}> Agunan </p>
                                         <IconButton aria-label="delete" disabled={this.state.modifyType ? false : true} onClick={(e) => this.btnTambahFlexibleData(e, 'agunan')} style={{marginLeft:'5px',outline:'none'}}>
                                             <AddIcon />
                                         </IconButton>
@@ -799,8 +799,8 @@ class ProductDetail extends React.Component{
                             {/* Fee */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
                                 <Grid container>
-                                    <Grid item xs={2} sm={2} >
-                                        Fee
+                                    <Grid item xs={12} sm={12} style={{display:'flex', justifyContent: 'flex-start'}} >
+                                        <p style={{paddingTop:'13px'}}> Biaya </p>
                                         <IconButton aria-label="delete" disabled={this.state.modifyType ? false : true} onClick={(e) => this.btnTambahFlexibleData(e, 'fee')} style={{marginLeft:'5px',outline:'none'}}>
                                             <AddIcon />
                                         </IconButton>
@@ -873,8 +873,8 @@ class ProductDetail extends React.Component{
                             {/* Form */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px',marginBottom:'15px'}}>
                                 <Grid container>
-                                    <Grid item xs={2} sm={2}>
-                                        Form
+                                    <Grid item xs={12} sm={12} style={{display:'flex', justifyContent: 'flex-start'}}>
+                                        <p style={{paddingTop:'13px'}}> Form </p>
                                         <IconButton aria-label="delete" disabled={this.state.modifyType ? false : true} onClick={(e) => this.btnTambahFlexibleData(e, 'mandatory')} style={{marginLeft:'5px',outline:'none'}}>
                                             <AddIcon />
                                         </IconButton>
