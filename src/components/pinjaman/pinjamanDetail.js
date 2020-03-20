@@ -264,7 +264,7 @@ class Main extends React.Component{
                             
                         ]}                 
                     />
-                    {this.renderFormInfoJsx()}
+                    {this.state.formInfo &&this.renderFormInfoJsx()}
 
 
                     
