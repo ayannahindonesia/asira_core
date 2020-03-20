@@ -1,6 +1,5 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -9,24 +8,19 @@ import { compose } from 'redux';
 import { getAgentFunction, patchAgentAddFunction } from './saga'
 import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
 import { getAllMitraList } from '../mitra/saga';
-
 import { getToken } from '../index/token';
 import { isRoleAccountExecutive, destructAgent, constructAgent } from './function';
-
 import { checkPermission, changeFileToBase64 } from '../global/globalFunction';
 import { validateEmail, validatePhone } from '../global/globalFunction';
-
 import { Grid, Tooltip, IconButton, TextField,FormControlLabel,Checkbox } from '@material-ui/core';
+
 import UploadFile from '../subComponent/UploadFile';
-
 import CancelIcon from '@material-ui/icons/Cancel';
-
-
+import Loading from '../subComponent/Loading'
 import DialogComponent from '../subComponent/DialogComponent';
 import TitleBar from '../subComponent/TitleBar';
 import swal from 'sweetalert'
 import DropDown from '../subComponent/DropDown';
-
 import ActionComponent from '../subComponent/ActionComponent';
 
 const styles = (theme) => ({
@@ -278,16 +272,9 @@ class AgentDetail extends React.Component{
         return <Redirect to='/agenList'/>            
       } else if (this.state.loading){
         return  (
-          <div key="zz">
-            <div align="center" colSpan={6}>
-              <Loader 
-                type="Circles"
-                color="#00BFFF"
-                height="40"	
-                width="40"
-              />   
-            </div>
-          </div>
+            <Loading
+            title={this.state.modifyType ? 'Agen - Ubah':'Agen - Detail'}
+            />
         )
       } else if(getToken()){
         return(

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -252,16 +252,9 @@ class userAdd extends React.Component{
           return <Redirect to='/akunList'/>            
         } else if (this.state.loading){
           return  (
-            <div key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+         <Loading 
+            title={'Akun - Tambah'}
+         />
           )
         } else if(getToken()){
           return(
@@ -340,13 +333,15 @@ class userAdd extends React.Component{
                                        Mitra
                                      </Grid>
                                      <Grid item xs={12} sm={4} >
-                                     <TextField
-                                             id="bank_name"
-                                             value={this.state.bank_name}
-                                             onChange={(e) => this.onChangeTextField(e,'bank_name')} 
-                                             margin="dense"
-                                             variant="outlined"
-                                             fullWidth
+                                     <DropDown
+                                         value={this.state.bank}
+                                         label="Bank"
+                                         data={this.state.listBank}
+                                         id="id"
+                                         labelName="name"
+                                         onChange={this.onChangeDropDown}
+                                         disabled={!this.isRoleBank(this.state.role)}
+                                         fullWidth
                                        />
                                      </Grid>
                              </Grid>

@@ -3,7 +3,7 @@ import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import './../../support/css/penyediaAgent.css'
 import { getPenyediaAgentDetailFunction ,editPenyediaAgentFunction} from './saga';
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 
 import TitleBar from '../subComponent/TitleBar';
 import { Grid, FormControlLabel, Checkbox, TextField,InputAdornment } from '@material-ui/core';
@@ -134,14 +134,7 @@ class PenyediaDetail extends React.Component{
         if(this.state.loading){
           
                 return (
-                    <div className="mt-2">
-                     <Loader 
-                        type="ThreeDots"
-                        color="#00BFFF"
-                        height="30"	
-                        width="30"
-                    />  
-                    </div>
+                   <Loading title = {this.state.modifyType ?'Penyedia Agen - Ubah':'Penyedia Agen - Detail'}/>
                 )
             
         }

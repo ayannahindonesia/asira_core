@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import CheckBoxClass from '../subComponent/CheckBox';
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -203,16 +203,9 @@ class RolePermissionDetail extends React.Component{
             return <Redirect to='/permissionList'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+            <Loading
+              title={this.state.modifyType?"Permission - Ubah":"Permission - Detail"}
+            />
           )
         } else if(getToken()){
           return (

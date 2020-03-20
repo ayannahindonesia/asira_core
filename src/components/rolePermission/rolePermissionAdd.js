@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 import CheckBoxClass from '../subComponent/CheckBox';
 import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
@@ -223,16 +223,7 @@ class rolePermissionAdd extends React.Component{
           return <Redirect to='/permissionList'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+            <Loading title={'Permission - Tambah'}/>
           )
         } else if(getToken()){
           return (
