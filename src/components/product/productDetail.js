@@ -181,6 +181,7 @@ class ProductDetail extends React.Component{
                     timeFrom: dataProduct.min_timespan,
                     timeTo: dataProduct.max_timespan,
                     asuransi: dataProduct.assurance,
+                    description: dataProduct.description,
                     tipeBunga: dataProduct.interest_type,
                     feeType,
                     mandatory,
