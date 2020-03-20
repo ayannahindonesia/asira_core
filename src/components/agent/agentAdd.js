@@ -1,6 +1,5 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
 import DialogComponent from '../subComponent/DialogComponent';
 import DropDown from '../subComponent/DropDown';
 import swal from 'sweetalert';
@@ -14,7 +13,7 @@ import { getToken } from '../index/token';
 import { getAllMitraList } from '../mitra/saga';
 import { getPenyediaAgentListFunction } from '../penyediaAgent/saga';
 import { isRoleAccountExecutive, constructAgent } from './function';
-
+import Loading from '../subComponent/Loading'
 import CancelIcon from '@material-ui/icons/Cancel';
 import TitleBar from '../subComponent/TitleBar';
 import { Grid, IconButton, Tooltip, FormControlLabel, Checkbox, TextField,InputAdornment } from '@material-ui/core';
@@ -309,16 +308,9 @@ class agentAdd extends React.Component{
           return <Redirect to='/agenList'/>            
         } else if (this.state.loading){
           return  (
-            <div key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+            <Loading
+            title={'Agen - Tambah'}
+            />
           )
         } else if(getToken()){
           return(

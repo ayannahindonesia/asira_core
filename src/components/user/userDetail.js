@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -262,16 +262,7 @@ class UserDetail extends React.Component{
             return <Redirect to='/akunList'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+          <Loading title ={this.state.modifyType?"Akun - Ubah":"Akun - Detail"}/>
           )
         } else if(getToken()){
             return(
