@@ -647,6 +647,7 @@ class ProductDetail extends React.Component{
                                             variant="outlined"
                                             fullWidth
                                             multiline
+                                            disabled={this.state.modifyType ? false : true}
                                         />
                                     </Grid>
                                 </Grid>
