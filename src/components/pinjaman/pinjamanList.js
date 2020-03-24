@@ -115,7 +115,7 @@ class PermintaanPinjaman extends React.Component {
 
   changeSearch = (e) => {
     this.setState({
-        search: e.target.value,
+        searchRows: e.target.value,
     })
   }
 
