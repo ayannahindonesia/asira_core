@@ -265,7 +265,7 @@ exports.dataMenu = [
                 logo: '',
                 link:'/activityLog',
                 action: {
-                    list: '_',
+                    list: 'core_activity_logs core_activity_logs_detail',
                 }
             },
             {
@@ -273,7 +273,7 @@ exports.dataMenu = [
                 logo: '',
                 link:'/auditTrail',
                 action: {
-                    list:'_',
+                    list:'core_auditrail core_auditrail_detail',
                 }
             },
         ]

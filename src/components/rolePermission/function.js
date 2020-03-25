@@ -15,7 +15,18 @@ export function destructRolePermission(permission, allPermission){
 
             if(actionPermission) {
               for(const keyAction in actionPermission) {
-                if(actionPermission[keyAction].toString().includes(permissionRow.toString())) {
+                const splitActionPermission = actionPermission[keyAction].toString().split(' ');
+
+                let flag = false;
+
+                for(const keySplit in splitActionPermission) {
+                  if(splitActionPermission[keySplit].toString() === permissionRow.toString()) {
+                    flag = true
+                    break;
+                  }
+                }
+                
+                if(flag) {
                   lastPermission.push({
                     id: `${allPermission[key].label}-${actionPermission[keyAction].toString()}`,
                     modules: permissionRow,
