@@ -390,10 +390,10 @@ function ResponsiveDrawer(props) {
             { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahArsipList' component={CalonNasabahArsipList}></Route>}
             { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahArsipDetail/:id' component={CalonNasabahArsipDetail}></Route>}
 
-            <Route path='/activityLog' component={ActivityLog}></Route>
-            <Route path="/activityLogDetail/:id" component={ActivityLogDetail}></Route>
-            <Route path="/auditTrail" component={AuditTrail}></Route>
-            <Route path="/auditTrailDetail/:id" component={AuditTrailDetail}></Route>
+            { checkPermission('core_activity_logs') && <Route path='/activityLog' component={ActivityLog}></Route> }
+            { checkPermission('core_activity_logs_detail') && <Route path="/activityLogDetail/:id" component={ActivityLogDetail}></Route> }
+            { checkPermission('core_auditrail') && <Route path="/auditTrail" component={AuditTrail}></Route> }
+            { checkPermission('core_auditrail_detail') && <Route path="/auditTrailDetail/:id" component={AuditTrailDetail}></Route> }
 
             <Route path='/FAQ' component={FAQ}></Route>
             <Route path='/FAQAdd' component={FAQAdd}></Route>

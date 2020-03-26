@@ -3,6 +3,7 @@ import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
 import { getAllActivityLog } from './saga'
 import TableComponent from '../subComponent/TableComponent'
+import { checkPermission } from '../global/globalFunction'
 
 const columnDataUser = [
     {
@@ -362,7 +363,7 @@ class ActivityLog extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.total_data}
                         onChangePage={this.onChangePage}    
-                        permissionDetail={'/activityLogDetail/'}         
+                        permissionDetail={checkPermission('core_activity_logs_detail') ? '/activityLogDetail/' : null}         
                     /> 
                         
                         

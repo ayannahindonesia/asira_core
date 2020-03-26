@@ -177,6 +177,17 @@ exports.dataMenu = [
             approval:'lender_loan_approve_reject lender_loan_change_disburse_date',
         }
     },    
+    // Installment Dashboard
+    {
+        label: 'Cicilan & Pembayaran',
+        logo: '',
+        system:'Bank Dashboard',
+        action: {
+            list:'lender_loan_request_list_installment_list',
+            edit:'lender_loan_installment_approve',
+            approval:'lender_loan_patch_payment_status lender_loan_installment_approve_bulk',
+        }
+    },    
     // User, Role, Permission Core
     {
         label: 'User',
@@ -254,7 +265,7 @@ exports.dataMenu = [
                 logo: '',
                 link:'/activityLog',
                 action: {
-                    list: '_',
+                    list: 'core_activity_logs core_activity_logs_detail',
                 }
             },
             {
@@ -262,7 +273,7 @@ exports.dataMenu = [
                 logo: '',
                 link:'/auditTrail',
                 action: {
-                    list:'_',
+                    list:'core_auditrail core_auditrail_detail',
                 }
             },
         ]

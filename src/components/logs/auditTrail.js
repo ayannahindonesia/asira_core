@@ -3,6 +3,7 @@ import { getToken } from '../index/token'
 import { Redirect } from 'react-router-dom'
 import { getAllAuditTrailFunction } from './saga'
 import TableComponent from '../subComponent/TableComponent'
+import { checkPermission } from '../global/globalFunction'
 
 const columnDataUser = [
   
@@ -313,7 +314,7 @@ class AuditTrail extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.total_data}
                         onChangePage={this.onChangePage}    
-                        permissionDetail={'/auditTrailDetail/'}         
+                        permissionDetail={checkPermission('core_auditrail_detail') ? '/auditTrailDetail/' : null}         
                     /> 
                         
                 </div>
