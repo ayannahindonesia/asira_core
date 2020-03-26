@@ -59,7 +59,7 @@ class Main extends React.Component{
             //         newFormInfo[key2].answers = newFormInfo[key2].answers && decryptImage(newFormInfo[key2].answers);
             //     }
             // }
-
+           
             if(!data.error){
                 this.setState({
                     formInfo:newFormInfo,
@@ -332,7 +332,7 @@ class Main extends React.Component{
                     />
 
                  {/* -----------------------------------------------------FORM ROW----------------------------------------------------------------- */}
-                      {this.state.formInfo &&  <GridDetail
+                      {this.state.formInfo.length >0 &&  <GridDetail
                             title={'Form'}
                             data={[]}
                             label={[]}
