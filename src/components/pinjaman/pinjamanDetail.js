@@ -2,6 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { GlobalFunction } from '../globalFunction'
 import {  handleFormatDate,formatNumber, findAmount} from './../global/globalFunction'
+// import { decryptImage} from './../global/globalFunction'
 
 import { getDetailFunction } from './saga';
 import { getToken } from '../index/token';
@@ -11,7 +12,17 @@ import GridDetail from './../subComponent/GridDetail'
 import ActionComponent from '../subComponent/ActionComponent';
 
 class Main extends React.Component{
-    state = {rows:{},items:[],borrowerDetail:{},formInfo:[],status:'',borrower_info:{},productInfo:{},redirecting:false,errorMessage:''}
+    state = {rows:{},
+    items:[],
+    borrowerDetail:{},
+    formInfo:[],
+    status:'',
+    borrower_info:{},
+    productInfo:{},
+    redirecting:false,
+    errorMessage:'',
+    installment:[]
+    }
     _isMounted = false
     componentDidMount(){
         this._isMounted=true
@@ -27,17 +38,42 @@ class Main extends React.Component{
         const data = await getDetailFunction(param)
 
         if(data){
-            console.log(data)
+            let newFormatInstallmentDetail = data.data.installment_details
+            let newFormInfo = JSON.parse(data.data.form_info)
+            for (const key in newFormatInstallmentDetail){
+                newFormatInstallmentDetail[key].due_date = handleFormatDate(newFormatInstallmentDetail[key].due_date)
+                newFormatInstallmentDetail[key].loan_payment = GlobalFunction.formatMoney(newFormatInstallmentDetail[key].loan_payment)
+                newFormatInstallmentDetail[key].interest_payment = GlobalFunction.formatMoney(newFormatInstallmentDetail[key].interest_payment)
+                newFormatInstallmentDetail[key].created_at = handleFormatDate(newFormatInstallmentDetail[key].created_at)
+                newFormatInstallmentDetail[key].paid_date =  newFormatInstallmentDetail[key].paid_date ?handleFormatDate(newFormatInstallmentDetail[key].paid_date):"-"
+                newFormatInstallmentDetail[key].penalty =  newFormatInstallmentDetail[key].penalty? GlobalFunction.formatMoney(newFormatInstallmentDetail[key].penalty):"-"
+                newFormatInstallmentDetail[key].paid_amount = newFormatInstallmentDetail[key].paid_amount? GlobalFunction.formatMoney(newFormatInstallmentDetail[key].paid_amount):"-"
+                newFormatInstallmentDetail[key].underpayment = newFormatInstallmentDetail[key].underpayment? GlobalFunction.formatMoney(newFormatInstallmentDetail[key].underpayment):"-"
+                newFormatInstallmentDetail[key].paid_status = newFormatInstallmentDetail[key].paid_status?"Sudah Bayar":" - "
+            }
+
+
+            // for (const key2 in newFormInfo)
+            // {
+            //     if(newFormInfo[key2].type==='image'){
+            //         newFormInfo[key2].answers = newFormInfo[key2].answers && decryptImage(newFormInfo[key2].answers);
+            //     }
+            // }
+
             if(!data.error){
                 this.setState({
-                    formInfo:data.data.form_info,
-                    borrowerDetail:data.data.borrower_info,rows:data.data,items:data.data.fees,status:data.data.status})
+                    formInfo:newFormInfo,
+                    installment:newFormatInstallmentDetail,
+                    borrowerDetail:data.data.borrower_info,
+                    rows:data.data,
+                    items:data.data.fees,
+                    status:data.data.status})
             }else{
                 this.setState({errorMessage:data.error})
             }
         }
     }
-
+ 
  
     renderAdminFee = ()=>{
         var jsx = this.state.items.map((val,index)=>{
@@ -82,22 +118,52 @@ class Main extends React.Component{
     renderFormInfoJsx = ()=>{
         var jsx = this.state.formInfo.map((val,index)=>{
             return(
-                <GridDetail
-                key={index}
-                gridLabel={[3,7]}
-                label={
-                [
-                    
-                    [val.label]
-                ] 
-                }
-                data={this.state.rows && [
-                    [this.desctructFormInfo(val.answers).toString()]
-                ]}                 
-                />
+                <Grid item xs={12} sm={12} key={index} style={{marginBottom:"10px"}}>
+                   <Grid container>
+                    <Grid item xs={4} sm={4}>
+                        <b>
+                            {
+                            val.type==='dropdown'? val.label : 
+                            val.type ==='checkbox' || val.type ==='textfield'? val.label :
+                            "Gambar Profile"
+                            }
+                         </b>
+                   </Grid> 
+                   <Grid item xs={6} sm={6} style={{marginRight:'20px',flexWrap:"wrap"}} >
+                     <b>{val.type==='image'?null:" : "}</b>
+                     {val.type ==='image'?  
+                     <img src={`data:image/png;base64,${val.answers}`} style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
+                    //  <img src={`${val.answers}`} style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
+
+                     :val.answers ? val.answers: " - "
+                    }
+                    </Grid> 
+                   </Grid>
+             </Grid>
+
             )
         })
         return jsx
+    }
+
+    renderInstallmentJsx = ()=>{
+        var installment = this.state.installment.map((val,index)=>{
+            return(
+                <tr key={index}>
+                   <td className="text-center">{val.period}</td>
+                   <td className="text-center">{val.loan_payment}</td>
+                   <td className="text-center">{val.interest_payment}</td>
+                   <td className="text-center">{val.paid_date}</td>
+                   <td className="text-center">{val.paid_status}</td>
+                   <td className="text-center">{val.paid_amount}</td>
+                   <td className="text-center">{val.underpayment}</td>
+                   <td className="text-center">{val.penalty}</td>
+                   <td className="text-center">{val.due_date}</td>
+                   <td className="text-center">{val.note}</td>
+                </tr>
+            )
+        })
+        return installment
     }
 
     desctructFormInfo = (array)=>{
@@ -264,9 +330,64 @@ class Main extends React.Component{
                             
                         ]}                 
                     />
-                    {this.state.formInfo &&this.renderFormInfoJsx()}
+
+                 {/* -----------------------------------------------------FORM ROW----------------------------------------------------------------- */}
+                      {this.state.formInfo &&  <GridDetail
+                            title={'Form'}
+                            data={[]}
+                            label={[]}
+                        />}
+                       
+                        <Grid container
+                        style={
+                            {
+                              padding: '0px 0px 0px 10px',
+                              fontWeight: 'normal',
+                              borderRadius:'5px',
+                              flexGrow:"1",
+                              fontSize:"14px",
+                              marginBottom:"10px"
+                            }
+                          }
+                        
+                        >
+                            
+                        {this.state.formInfo &&this.renderFormInfoJsx()}
+
+                        </Grid>
 
 
+                   {this.state.installment.length >0 && 
+                   <Grid container>
+                    <GridDetail
+                        title={'Installment'}
+                        data={[]}
+                        label={[]}
+                    />
+                    <Grid container>
+                         <Grid item sm={12} xs={12}>
+                         <table className="table table-hover">
+                             <thead style={{border:'none'}}>
+                                    <tr>
+                                        <td className="text-center">Period</td>
+                                        <td className="text-center">Loan Payment</td>
+                                        <td className="text-center">Interest Payment</td>
+                                        <td className="text-center">Paid Date</td>
+                                        <td className="text-center">Paid Status</td>
+                                        <td className="text-center">Paid Amount</td>
+                                        <td className="text-center">Underpayment</td>
+                                        <td className="text-center">Penalty</td>
+                                        <td className="text-center">Due Date</td>
+                                        <td className="text-center">Note</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        {this.state.installment&& this.renderInstallmentJsx()}
+                                </tbody>
+                            </table>
+                         </Grid>
+                    </Grid>
+                </Grid>}
                     
                     </Grid>
                 </Grid>
