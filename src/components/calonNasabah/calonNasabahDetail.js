@@ -125,7 +125,7 @@ class CalonNasabahDetail extends React.Component{
       }
       else if(label.toLowerCase().includes('nasabah')) {
         title = 'Foto Nasabah'
-        message = this.state.dataUser && this.state.dataUser.image
+        message = this.state.dataUser && this.state.dataUser.image_profile
       }
 
       this.setState({
