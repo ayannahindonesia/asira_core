@@ -279,8 +279,6 @@ class BankEdit extends React.Component{
         var city = this.refs.kota.value.includes("-") ? this.refs.kota.value.slice(this.refs.provinsi.value.indexOf('-')+1,this.refs.provinsi.length):this.refs.kota.value
         var pic = this.refs.pic.value 
         var phone = this.state.phone ? String(this.state.phone):String(this.state.dataBank.phone)
-        var adminfee_setup = this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
-        var convfee_setup =  this.state.adminFeeRadioValue ? this.state.adminFeeRadioValue : this.state.dataBank.adminfee_setup
        
 
         if(city === "0" || city === null){
@@ -316,7 +314,7 @@ class BankEdit extends React.Component{
                     var image = arr[1].toString()
                     
                     var newData = {
-                        name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup,image
+                        name,type,address,province,city,services,products,pic,phone,image
                     }
                     const param = {
                         id:id,
@@ -330,7 +328,7 @@ class BankEdit extends React.Component{
                 };
             }else{
                 var newData = {
-                    name,type,address,province,city,services,products,pic,phone,adminfee_setup,convfee_setup
+                    name,type,address,province,city,services,products,pic,phone
                 }
                 const param = {
                     id:id,
@@ -449,33 +447,6 @@ class BankEdit extends React.Component{
                             </select>
                             </div>
                         </div>
-                        <div className="form-group row">
-                            <label className="col-sm-2 col-form-label">Admin Fee Setup</label>
-                            <div className="col-sm-10">
-                                {this.state.dataBank.adminfee_setup === 'beban_plafon' ?
-                                <label className="form-control" style={{border:"none"}}>
-                                    <input type="radio" name="adminfeeSetup"  value="potong_plafon" onClick={this.handleChangeRadioAdmin} /> Potong dari plafond
-                                    <input type="radio" name="adminfeeSetup" defaultChecked={true} className="ml-3" value="beban_plafon" onClick={this.handleChangeRadioAdmin} /> Bebankan ke cicilan
-                                </label> 
-                                    :
-                                <label className="form-control" style={{border:"none"}}>
-                                    <input type="radio" name="adminfeeSetup" defaultChecked={true} value="potong_plafon" onClick={this.handleChangeRadioAdmin} /> Potong dari plafond
-                                    <input type="radio" name="adminfeeSetup"  className="ml-3" value="beban_plafon" onClick={this.handleChangeRadioAdmin} /> Bebankan ke cicilan
-                                </label> 
-                                }
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="col-sm-2 col-form-label">Convinience Fee Setup</label>
-                            <div className="col-sm-10">
-                                <div className="form-control" style={{border:"none",cursor: "not-allowed"}}>
-                                    <input type="radio" disabled="disabled" checked={this.state.adminFeeRadioValue==="potong_plafon"?"checked":""} name="convinienceFeeSetup" readOnly value="potong_plafon"  /> Potong dari plafond
-                                    <input type="radio" disabled="disabled" checked={this.state.adminFeeRadioValue==="beban_plafon"?"checked":""} name="convinienceFeeSetup" readOnly className="ml-3" value="beban_plafon" /> Bebankan ke cicilan
-                                </div> 
-                         
-                            </div>
-                        </div>
-
                         <div className="form-group row">
                             <label className="col-sm-2 col-form-label">Jenis Layanan</label>
                            
