@@ -10,6 +10,8 @@ import { Grid} from '@material-ui/core';
 import TitleBar from '../subComponent/TitleBar';
 import GridDetail from './../subComponent/GridDetail'
 import ActionComponent from '../subComponent/ActionComponent';
+import BrokenLink from './../../support/img/default.png'
+
 
 class Main extends React.Component{
     state = {rows:{},
@@ -58,7 +60,6 @@ class Main extends React.Component{
             //         newFormInfo[key2].answers = newFormInfo[key2].answers && decryptImage(newFormInfo[key2].answers);
             //     }
             // }
-           
             if(!data.error){
                 this.setState({
                     formInfo:newFormInfo,
@@ -123,15 +124,19 @@ class Main extends React.Component{
                         <b>
                             {
                             val.type==='dropdown'? val.label : 
-                            val.type ==='checkbox' || val.type ==='textfield'? val.label :
-                            "Gambar Profile"
+                            val.type ==='checkbox' || val.type ==='textfield' || val.type==='image'? val.label :
+                            "Tambahan Data lain"
                             }
                          </b>
                    </Grid> 
                    <Grid item xs={6} sm={6} style={{marginRight:'20px',flexWrap:"wrap"}} >
                      <b>{val.type==='image'?null:" : "}</b>
                      {val.type ==='image'?  
-                     <img src={`data:image/png;base64,${val.answers}`} style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
+                     <img src={`${val.answers?"data:image/png;base64":null},${val.answers}`} 
+                     onError={(e)=>{
+                        e.target.attributes.getNamedItem("src").value = BrokenLink
+                     }}
+                     style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
                     //  <img src={`${val.answers}`} style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
 
                      :val.answers ? val.answers: " - "
