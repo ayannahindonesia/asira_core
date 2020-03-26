@@ -52,7 +52,6 @@ class Main extends React.Component{
                 newFormatInstallmentDetail[key].paid_status = newFormatInstallmentDetail[key].paid_status?"Sudah Bayar":" - "
             }
 
-
             // for (const key2 in newFormInfo)
             // {
             //     if(newFormInfo[key2].type==='image'){
@@ -332,7 +331,7 @@ class Main extends React.Component{
                     />
 
                  {/* -----------------------------------------------------FORM ROW----------------------------------------------------------------- */}
-                      {this.state.formInfo.length >0 &&  <GridDetail
+                      {this.state.formInfo &&  <GridDetail
                             title={'Form'}
                             data={[]}
                             label={[]}
@@ -357,7 +356,7 @@ class Main extends React.Component{
                         </Grid>
 
 
-                   {this.state.installment.length >0 && 
+                   {this.state.installment.length !== 0 && 
                    <Grid container>
                     <GridDetail
                         title={'Installment'}
