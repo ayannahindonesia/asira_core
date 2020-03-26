@@ -216,8 +216,7 @@ class Main extends React.Component{
         var city = this.refs.kota.value
         var pic = this.refs.pic.value
         var phone = this.state.phone
-        var adminfee_setup = this.state.adminFeeRadioValue
-        var convfee_setup = this.state.adminFeeRadioValue
+      
         
         if(this.state.jenisLayanan===null || this.state.jenisProduct===null || 
         this.refs.namaBank.value === "" || this.refs.tipeBank.value ==="0" || 
@@ -250,7 +249,7 @@ class Main extends React.Component{
                         products.push (this.state.jenisProduct[i].value)
                     }
                     var newData = {
-                        name,type,address,province,city,pic,phone,services,products,adminfee_setup,convfee_setup,image
+                        name,type,address,province,city,pic,phone,services,products,image
                     }
                     
                    this.addBankSubmit(newData)
@@ -356,24 +355,6 @@ class Main extends React.Component{
                                 <option value={0}>===== Pilih Kota =====</option>
                                 {this.renderKabupatenJsx()}
                             </select>
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="col-sm-2 col-form-label">Admin Fee Setup</label>
-                            <div className="col-sm-10">
-                            <label className="form-control" style={{border:"none"}}>
-                                <input type="radio" name="adminfeeSetup" defaultChecked={true} value="potong_plafon" onChange={this.handleChangeRadioAdmin} /> Potong dari plafond
-                                <input type="radio" name="adminfeeSetup" className="ml-3" value="beban_plafon" onChange={this.handleChangeRadioAdmin} /> Bebankan ke cicilan
-                            </label> 
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="col-sm-2 col-form-label">Convinience Fee Setup</label>
-                            <div className="col-sm-10">
-                            <label className="form-control" style={{border:"none",cursor:"not-allowed"}}>
-                                <input type="radio" name="convinienceFeeSetup" disabled="disabled" checked={this.state.adminFeeRadioValue==="potong_plafon"?"checked":"checked"}  value="potong_plafon" /> Potong dari plafond
-                                <input type="radio" name="convinienceFeeSetup" disabled="disabled" checked={this.state.adminFeeRadioValue==="beban_plafon"?"checked":""} className="ml-3" value="beban_plafon"  /> Bebankan ke cicilan
-                            </label> 
                             </div>
                         </div>
                         <div className="form-group row">
