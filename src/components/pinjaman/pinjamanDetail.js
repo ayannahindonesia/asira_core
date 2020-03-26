@@ -2,6 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { GlobalFunction } from '../globalFunction'
 import {  handleFormatDate,formatNumber, findAmount} from './../global/globalFunction'
+// import { decryptImage} from './../global/globalFunction'
 
 import { getDetailFunction } from './saga';
 import { getToken } from '../index/token';
@@ -51,8 +52,13 @@ class Main extends React.Component{
                 newFormatInstallmentDetail[key].paid_status = newFormatInstallmentDetail[key].paid_status?"Sudah Bayar":" - "
             }
 
-            
-            console.log(data)
+
+            // for (const key2 in newFormInfo)
+            // {
+            //     if(newFormInfo[key2].type==='image'){
+            //         newFormInfo[key2].answers = newFormInfo[key2].answers && decryptImage(newFormInfo[key2].answers);
+            //     }
+            // }
 
             if(!data.error){
                 this.setState({
@@ -116,15 +122,19 @@ class Main extends React.Component{
                    <Grid container>
                     <Grid item xs={4} sm={4}>
                         <b>
-                       {val.type==='dropdown'? val.label : 
-                       val.type ==='checkbox' || val.type ==='textfield'? val.label :
-                       "Gambar"}
+                            {
+                            val.type==='dropdown'? val.label : 
+                            val.type ==='checkbox' || val.type ==='textfield'? val.label :
+                            "Gambar Profile"
+                            }
                          </b>
                    </Grid> 
                    <Grid item xs={6} sm={6} style={{marginRight:'20px',flexWrap:"wrap"}} >
                      <b>{val.type==='image'?null:" : "}</b>
                      {val.type ==='image'?  
                      <img src={`data:image/png;base64,${val.answers}`} style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
+                    //  <img src={`${val.answers}`} style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
+
                      :val.answers ? val.answers: " - "
                     }
                     </Grid> 
@@ -322,11 +332,11 @@ class Main extends React.Component{
                     />
 
                  {/* -----------------------------------------------------FORM ROW----------------------------------------------------------------- */}
-                        <GridDetail
+                      {this.state.formInfo &&  <GridDetail
                             title={'Form'}
                             data={[]}
                             label={[]}
-                        />
+                        />}
                        
                         <Grid container
                         style={
@@ -347,7 +357,8 @@ class Main extends React.Component{
                         </Grid>
 
 
-
+                   {this.state.installment.length >0 && 
+                   <Grid container>
                     <GridDetail
                         title={'Installment'}
                         data={[]}
@@ -376,7 +387,7 @@ class Main extends React.Component{
                             </table>
                          </Grid>
                     </Grid>
-
+                </Grid>}
                     
                     </Grid>
                 </Grid>
