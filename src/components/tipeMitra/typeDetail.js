@@ -4,13 +4,12 @@ import swal from 'sweetalert'
 import { EditTipeBankFunction, DetailTipeBankFunction } from './saga';
 import { getToken } from '../index/token';
 import DialogComponent from '../subComponent/DialogComponent';
-import { Grid, Tooltip, IconButton, TextField } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
-import SaveIcon from '@material-ui/icons/Save';
-import EditIcon from '@material-ui/icons/Edit';
+import { Grid, TextField } from '@material-ui/core';
+
 import { checkPermission } from '../global/globalFunction';
 import TitleBar from '../subComponent/TitleBar';
 import Loading from '../subComponent/Loading';
+import ActionComponent from '../subComponent/ActionComponent';
 
 class TipeMitraDetail extends React.Component{
     _isMounted = false;
@@ -155,34 +154,15 @@ class TipeMitraDetail extends React.Component{
                             />
                             {/* Action Button */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                                <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                                    <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-                                        
-                                    {   
-                                           checkPermission('core_bank_type_patch') && this.state.modifyType &&
-                                            <Tooltip title="Save" style={{outline:'none'}}>
-                                                <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
-                                                    <SaveIcon style={{width:'35px',height:'35px'}}/>
-                                                </IconButton>
-                                            </Tooltip>
-                                        }
 
-                                        {
-                                            checkPermission('core_bank_type_patch') && !this.state.modifyType &&
-                                            <Tooltip title="Edit" style={{outline:'none'}}>
-                                                <IconButton aria-label="edit" onClick={this.btnEditTipeMitra}>
-                                                    <EditIcon style={{width:'35px',height:'35px'}}/>
-                                                </IconButton>
-                                            </Tooltip>
-                                        }
-                                        <Tooltip title="Back" style={{outline:'none'}}>
-                                            <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                                                <CancelIcon style={{width:'35px',height:'35px'}} />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Grid>
-                                </Grid>
+                                <ActionComponent
+                                    modifyType={this.state.modifyType}
+                                    permissionEdit={ checkPermission('core_bank_type_patch') ? (this.state.modifyType ? this.btnConfirmationDialog : this.btnEditTipeMitra) : null}
+                                    onCancel={this.btnCancel}
+                                />
+
                             </Grid>
+                    
                             {/* Error */}
                             <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red'}}>
                                 {this.state.errorMessage}

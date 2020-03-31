@@ -1,12 +1,30 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Moment from 'react-moment';
 import { GlobalFunction } from '../globalFunction'
+import {  handleFormatDate,formatNumber, findAmount} from './../global/globalFunction'
+// import { decryptImage} from './../global/globalFunction'
+
 import { getDetailFunction } from './saga';
 import { getToken } from '../index/token';
+import { Grid} from '@material-ui/core';
+import TitleBar from '../subComponent/TitleBar';
+import GridDetail from './../subComponent/GridDetail'
+import ActionComponent from '../subComponent/ActionComponent';
+import BrokenLink from './../../support/img/default.png'
+
 
 class Main extends React.Component{
-    state = {rows:{},items:[],borrowerDetail:{},status:'',borrower_info:{},productInfo:{},redirecting:false,errorMessage:''}
+    state = {rows:{},
+    items:[],
+    borrowerDetail:{},
+    formInfo:[],
+    status:'',
+    borrower_info:{},
+    productInfo:{},
+    redirecting:false,
+    errorMessage:'',
+    installment:[]
+    }
     _isMounted = false
     componentDidMount(){
         this._isMounted=true
@@ -22,14 +40,40 @@ class Main extends React.Component{
         const data = await getDetailFunction(param)
 
         if(data){
+            let newFormatInstallmentDetail = data.data.installment_details
+            let newFormInfo = JSON.parse(data.data.form_info)
+            for (const key in newFormatInstallmentDetail){
+                newFormatInstallmentDetail[key].due_date = handleFormatDate(newFormatInstallmentDetail[key].due_date)
+                newFormatInstallmentDetail[key].loan_payment = GlobalFunction.formatMoney(newFormatInstallmentDetail[key].loan_payment)
+                newFormatInstallmentDetail[key].interest_payment = GlobalFunction.formatMoney(newFormatInstallmentDetail[key].interest_payment)
+                newFormatInstallmentDetail[key].created_at = handleFormatDate(newFormatInstallmentDetail[key].created_at)
+                newFormatInstallmentDetail[key].paid_date =  newFormatInstallmentDetail[key].paid_date ?handleFormatDate(newFormatInstallmentDetail[key].paid_date):"-"
+                newFormatInstallmentDetail[key].penalty =  newFormatInstallmentDetail[key].penalty? GlobalFunction.formatMoney(newFormatInstallmentDetail[key].penalty):"-"
+                newFormatInstallmentDetail[key].paid_amount = newFormatInstallmentDetail[key].paid_amount? GlobalFunction.formatMoney(newFormatInstallmentDetail[key].paid_amount):"-"
+                newFormatInstallmentDetail[key].underpayment = newFormatInstallmentDetail[key].underpayment? GlobalFunction.formatMoney(newFormatInstallmentDetail[key].underpayment):"-"
+                newFormatInstallmentDetail[key].paid_status = newFormatInstallmentDetail[key].paid_status?"Sudah Bayar":" - "
+            }
+
+            // for (const key2 in newFormInfo)
+            // {
+            //     if(newFormInfo[key2].type==='image'){
+            //         newFormInfo[key2].answers = newFormInfo[key2].answers && decryptImage(newFormInfo[key2].answers);
+            //     }
+            // }
             if(!data.error){
-                this.setState({borrowerDetail:data.data.borrower_info,rows:data.data,items:data.data.fees,status:data.data.status})
+                this.setState({
+                    formInfo:newFormInfo,
+                    installment:newFormatInstallmentDetail,
+                    borrowerDetail:data.data.borrower_info,
+                    rows:data.data,
+                    items:data.data.fees,
+                    status:data.data.status})
             }else{
                 this.setState({errorMessage:data.error})
             }
         }
     }
-
+ 
  
     renderAdminFee = ()=>{
         var jsx = this.state.items.map((val,index)=>{
@@ -71,178 +115,288 @@ class Main extends React.Component{
          return jsx;
     }
 
+    renderFormInfoJsx = ()=>{
+        var jsx = this.state.formInfo.map((val,index)=>{
+            return(
+                <Grid item xs={12} sm={12} key={index} style={{marginBottom:"10px"}}>
+                   <Grid container>
+                    <Grid item xs={4} sm={4}>
+                        <b>
+                            {
+                            val.type==='dropdown'? val.label : 
+                            val.type ==='checkbox' || val.type ==='textfield' || val.type==='image'? val.label :
+                            "Tambahan Data lain"
+                            }
+                         </b>
+                   </Grid> 
+                   <Grid item xs={6} sm={6} style={{marginRight:'20px',flexWrap:"wrap"}} >
+                     <b>{val.type==='image'?null:" : "}</b>
+                     {val.type ==='image'?  
+                     <img src={`${val.answers?"data:image/png;base64":null},${val.answers}`} 
+                     onError={(e)=>{
+                        e.target.attributes.getNamedItem("src").value = BrokenLink
+                     }}
+                     style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
+                    //  <img src={`${val.answers}`} style={{width:"100px",height:"auto"}} alt="Gambar Profile" />
+
+                     :val.answers ? val.answers: " - "
+                    }
+                    </Grid> 
+                   </Grid>
+             </Grid>
+
+            )
+        })
+        return jsx
+    }
+
+    renderInstallmentJsx = ()=>{
+        var installment = this.state.installment.map((val,index)=>{
+            return(
+                <tr key={index}>
+                   <td className="text-center">{val.period}</td>
+                   <td className="text-center">{val.loan_payment}</td>
+                   <td className="text-center">{val.interest_payment}</td>
+                   <td className="text-center">{val.paid_date}</td>
+                   <td className="text-center">{val.paid_status}</td>
+                   <td className="text-center">{val.paid_amount}</td>
+                   <td className="text-center">{val.underpayment}</td>
+                   <td className="text-center">{val.penalty}</td>
+                   <td className="text-center">{val.due_date}</td>
+                   <td className="text-center">{val.note}</td>
+                </tr>
+            )
+        })
+        return installment
+    }
+
+    desctructFormInfo = (array)=>{
+        var newArray=[]
+
+        for(var i=0;i<array.length;i++){
+            for (const key in array[i]){
+                newArray.push(key)
+            }
+        }
+
+        return newArray
+    }
+
     render(){
         if (this.state.redirecting){
             return <Redirect to="/pinjamanList"/>
         }
         if(getToken()){
             return(
-                <div>
+                <Grid container className="containerDetail">
+         
+                    <Grid item sm={12} xs={12} style={{maxHeight:50}}>
+                    
+                        <TitleBar
+                            title={'Pinjaman - Detail'}
+                        />
 
-                    <h2>Pinjaman - Detail</h2>
-                    <hr></hr>
+                    </Grid>
+
+                    <Grid
+                    item
+                    sm={12} xs={12}
+                    style={{padding:10, marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
+                    >
+
+                      {/* Action Button */}
+                  <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                        <ActionComponent
+                            onCancel={this.btnBack}
+                        />
+                 </Grid>
 
                     {/* -----------------------------------------------------FIRST ROW----------------------------------------------------------------- */}
-                    <div className="row" style={{marginTop:"20px", background:"#f7f7f7f7"}}>
-                        <div className="col col-md col-xs">
-                            <table style={{width:"100%"}}>
-                                <tbody>
-                                    <tr>
-                                        <td>ID Pinjaman</td>
-                                        <td>: {this.state.rows.id}</td>
-                                        <td>Rekening Peminjam</td>
-                                        <td>: {this.state.rows.bank_account}</td>
-                                        <td>Kategori</td>
-                                        <td>: {this.state.borrowerDetail.category ==="account_executive"?"Account Executive" :this.state.borrowerDetail.category === "agent"?"Agent":"Personal"}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Nama Nasabah</td>
-                                        <td>: {this.state.rows.borrower_name}</td>
-                                        <td>Status Pinjaman</td>
-                                        <td>: {
-                                    this.state.status === "processing"?
-                                        <label style={{color:"blue"}}>Dalam Proses</label>
-                                    : this.state.status === "approved"?
-                                    <label style={{color:"green"}}>Diterima</label>:
-                                    <label style={{color:"red"}}>Ditolak</label>
-                                    
-                                    }</td>
-                                        <td>Agen/ AE</td>
-                                        <td>: {this.state.borrowerDetail.agent_name?this.state.borrowerDetail.agent_name:"-"} ({this.state.borrowerDetail.agent_provider_name?this.state.borrowerDetail.agent_provider_name:"-"})</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                       
 
-                    </div>
-             {/* -----------------------------------------------------SECOND ROW----------------------------------------------------------------- */}
-             <div className="row mt-4" >
-                        <div className="col-12 col-md-6">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>Pinjaman Pokok</td>
-                                    <td>: {GlobalFunction.formatMoney(parseInt(this.state.rows.loan_amount))}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tenor (Bulan)</td>
-                                    <td>: {this.state.rows.installment}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total Pinjaman</td>
-                                    <td>: {GlobalFunction.formatMoney(parseInt(this.state.rows.total_loan))}</td>
-                                </tr>
-                                <tr>
-                                    <td>Angsuran Perbulan</td>
-                                    <td>: {GlobalFunction.formatMoney(parseInt(this.state.rows.layaway_plan))}</td>
-                                </tr>
-                                </tbody>
-                                
-                            </table>
-                            <table className="mt-2">
-                                <thead>
-                                <tr >
-                                    <th className="text-center" ></th>
-                                    <th></th>
-                                    <th className="text-center">(%)</th>
-                                    <th></th>
-                                    <th className="text-center">(Jumlah)</th>
-                                </tr>   
+                    <GridDetail
+                        gridLabel={[5,5,3]}
+                        noTitleLine
+                        background
+                        label={[
+                            ['ID Pinjaman','Nama Nasabah'],
+                            ['Rekening Pinjaman','Status Pinjaman'],
+                            ['Kategori', 'Agen/ AE'],
+                        ]}
+                        data={this.state.rows && [
+                            [
+                            this.state.rows.id,
+                            this.state.rows.borrower_name
+                            ],
+                            [
+                            this.state.rows.bank_account,
+                            this.state.status &&   this.state.status === "processing"?
+                                {value:"Dalam Proses", color:'blue'}
+                                : this.state.status === "approved" && this.state.rows.disburse_status ==="confirmed"?
+                                {value:"Telah Dicairkan", color:'blue'}:
+                                this.state.status ==='rejected'?
+                                {value:"Ditolak", color:'red'}:
+                                this.state.status === 'approved'?
+                                {value:"Diterima", color:'green'}:
+                                null
+                            ],
+                            [
+                            this.state.rows.category===""?"Personal":this.state.rows.category==="account_executive"?"Account Executive":"Agent",
+                            `${this.state.rows.agent_name?this.state.rows.agent_name:"-"} (${this.state.rows.agent_provider_name?this.state.rows.agent_provider_name:"-"})`
+                            ],
+                        ]}                 
+                    />
+
+                          {/* -----------------------------------------------------SECOND ROW----------------------------------------------------------------- */}
+                          <GridDetail
+                        gridLabel={[5,5]}
+                        label={
+                        [
+                            
+                            ['Pinjaman Pokok','Tenor (Bulan)','Total Pinjaman','Angsuran Perbulan'],
+                            this.state.status==='processing'? 
+                            ['Tujuan Pinjaman','Detail Tujuan','Tanggal Pengajuan']   :
+                            ['Tujuan Pinjaman','Detail Tujuan','Tanggal Pengajuan',
+                            this.state.status==='approved'?"Tanggal Persetujuan":"Tanggal Ditolak"]
+                        ] 
+                        }
+                        data={this.state.rows && [
+                            [
+                                GlobalFunction.formatMoney(parseInt(this.state.rows.loan_amount)),
+                                this.state.rows.installment,
+                                GlobalFunction.formatMoney(parseInt(this.state.rows.total_loan)),
+                                GlobalFunction.formatMoney(parseInt(this.state.rows.layaway_plan)),
+                            ],
+                            this.state.status==='processing'?
+                            [
+                                this.state.rows.loan_intention,
+                                this.state.rows.intention_details,
+                                handleFormatDate(this.state.rows.created_at)          
+                            ] :
+                            [
+                                this.state.rows.loan_intention,
+                                this.state.rows.intention_details,
+                                handleFormatDate(this.state.rows.created_at),
+                                handleFormatDate(this.state.rows.updated_at)           
+                            ],
+                            []
+                        ]}                 
+                    />
+
+                      {/* Fee Section */}
+                      <GridDetail
+                        gridLabel={[8]}
+                        noEquals
+                        label={[
+                            ['','Imbal Hasil/ Bunga','Admin Fee','Convenience Fee'],
+                            [
+                                '(Jumlah)',
+                                "Rp. "+formatNumber(this.state.rows && this.state.rows.loan_amount && this.state.rows.interest && parseFloat(this.state.rows.interest * this.state.rows.loan_amount / 100).toFixed(0), true),
+                                "Rp. "+formatNumber(findAmount(this.state.rows && this.state.rows.fees, 'Admin Fee',this.state.rows && this.state.rows.loan_amount,false), true),
+                                "Rp. "+formatNumber(findAmount(this.state.rows && this.state.rows.fees, 'Convenience Fee',this.state.rows && this.state.rows.loan_amount,false), true)
+            
+            
+                            ],
+                            ['','','','']
+                    
+                        ]}
+                        data={this.state.rows && [
+                            [
+                                '<b>(%)',
+                                `<b>${parseFloat(this.state.rows.interest).toFixed(2)}%`,
+                                `<b>${findAmount(this.state.rows && this.state.rows.fees, 'Admin Fee',this.state.rows && this.state.rows.loan_amount,true)}%`,
+                                `<b>${findAmount(this.state.rows && this.state.rows.fees, 'Convenience Fee',this.state.rows && this.state.rows.loan_amount,true)}%`
+                            ],
+                            [' ',' ',' ',' '],
+                            [' ',' ',' ',' '],
+                            [' ',' ',' ',' '],
+                        ]}   
+                    />
+
+                 {/* -----------------------------------------------------THIRD ROW----------------------------------------------------------------- */}
+            
+                    <GridDetail
+                        title={'Info Penghasilan Saat Pengajuan'}
+                        gridLabel={[3]}
+                        label={[
+                            ['Pendapatan perbulan','Penghasilan lain-lain (jika ada)','Sumber Penghasilan lain-lain',
+                            this.state.status==='rejected'?"Alasan Ditolak":this.state.status==="approved"?"Tanggal Pencairan":"Alasan/ Tanggal Pencairan"
+                            ]
+                        ]}
+                        data={this.state.rows && this.state.borrowerDetail&& [
+                            [
+                            this.state.borrowerDetail.monthly_income?
+                            GlobalFunction.formatMoney(parseInt(this.state.borrowerDetail.monthly_income))
+                            :0,
+                            this.state.borrowerDetail.other_income?GlobalFunction.formatMoney(parseInt(this.state.borrowerDetail.other_income)):0,
+                            this.state.borrowerDetail.other_incomesource,
+                            this.state.status==='rejected'? this.state.rows.reject_reason : this.state.status==="approved"? handleFormatDate(this.state.rows.disburse_date) :""
+                            ],
+                            
+                        ]}                 
+                    />
+
+                 {/* -----------------------------------------------------FORM ROW----------------------------------------------------------------- */}
+                      {this.state.formInfo &&  <GridDetail
+                            title={'Form'}
+                            data={[]}
+                            label={[]}
+                        />}
+                       
+                        <Grid container
+                        style={
+                            {
+                              padding: '0px 0px 0px 10px',
+                              fontWeight: 'normal',
+                              borderRadius:'5px',
+                              flexGrow:"1",
+                              fontSize:"14px",
+                              marginBottom:"10px"
+                            }
+                          }
+                        
+                        >
+                            
+                        {this.state.formInfo &&this.renderFormInfoJsx()}
+
+                        </Grid>
+
+
+                   {this.state.installment.length !== 0 && 
+                   <Grid container>
+                    <GridDetail
+                        title={'Installment'}
+                        data={[]}
+                        label={[]}
+                    />
+                    <Grid container>
+                         <Grid item sm={12} xs={12}>
+                         <table className="table table-hover">
+                             <thead style={{border:'none'}}>
+                                    <tr>
+                                        <td className="text-center">Period</td>
+                                        <td className="text-center">Loan Payment</td>
+                                        <td className="text-center">Interest Payment</td>
+                                        <td className="text-center">Paid Date</td>
+                                        <td className="text-center">Paid Status</td>
+                                        <td className="text-center">Paid Amount</td>
+                                        <td className="text-center">Underpayment</td>
+                                        <td className="text-center">Penalty</td>
+                                        <td className="text-center">Due Date</td>
+                                        <td className="text-center">Note</td>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Imbal Hasil/ Bunga</td>
-                                        <td></td>
-                                        <td>{parseInt(this.state.rows.interest).toFixed(2)}%</td>
-                                        <td></td>
-                                        <td>{this.state.rows &&  this.state.rows.interest && this.state.rows.loan_amount?GlobalFunction.formatMoney(parseInt(this.state.rows.interest)*parseInt(this.state.rows.loan_amount)/100) :null}</td>
-                                    </tr>
-                                    {this.renderAdminFee()}
-                                    
+                                        {this.state.installment&& this.renderInstallmentJsx()}
                                 </tbody>
                             </table>
-                        </div>
-                        <div className="col-12 col-md-6">
-                            <table>
-                                <tbody>
-                                {/* <tr>
-                                    <td>Product</td>
-                                    <td>: {this.state.borrowerDetail.idcard_number}</td>
-                                </tr>
-                                <tr>
-                                    <td>Layanan</td>
-                                    <td>: {this.state.rows.status}</td>
-                                </tr> */}
-                                <tr>
-                                    <td>Tujuan Pinjaman</td>
-                                    <td>: {this.state.rows.loan_intention}</td>
-                                </tr>
-                                <tr>
-                                    <td>Detail Tujuan</td>
-                                    <td>: {this.state.rows.intention_details}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tanggal Pengajuan</td>
-                                    <td>: 
-                                    <Moment date={this.state.rows.created_at} format=" DD  MMMM  YYYY" />
-                                    </td>
-                                </tr>
-                              
-                                </tbody>
-                                
-                            </table>
+                         </Grid>
+                    </Grid>
+                </Grid>}
+                    
+                    </Grid>
+                </Grid>
 
-                        </div>
-                        
-
-                 </div>
-             {/* -----------------------------------------------------THIRD ROW----------------------------------------------------------------- */}
-             <h2 className="mt-4">Info Penghasilan Saat Pengajuan</h2>
-            
-             <div className="row">
-                        <div className="col-12 col-md-12">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>Pendapatan perbulan</td>
-                                    <td>: {this.state.borrowerDetail.monthly_income ?
-                                        GlobalFunction.formatMoney(parseInt(this.state.borrowerDetail.monthly_income))
-                                        : 0
-                                        }</td>
-                                </tr>
-                                <tr>
-                                    <td>Penghasilan lain lain(jika ada)</td>
-                                    <td>: {this.state.borrowerDetail.other_income ?
-                                        GlobalFunction.formatMoney(parseInt(this.state.borrowerDetail.other_income)):0}</td>
-                                </tr>
-                                <tr>
-                                    <td>Sumber Penghasilan lain lain</td>
-                                    <td>: {this.state.borrowerDetail.other_incomesource}</td>
-                                </tr>
-                                {this.state.status === 'rejected'?
-                                <tr>
-                                    <td>Alasan ditolak</td>
-                                    <td>: {this.state.rows.reject_reason}</td>
-                                </tr>
-                                :this.state.status === "approved" ?
-                                <tr>
-                                    <td>Tanggal Pencairan</td>
-                                    <td>: 
-                                    <Moment date={this.state.rows.disburse_date} format=" DD  MMMM  YYYY" />                               
-                                    </td>
-                                </tr>
-                                :null}
-                                
-                               
-                                </tbody>
-                            </table>
-                            <input type="button" onClick={this.btnBack}  className="mt-2 btn btn-secondary" value="Kembali"></input>
-                        </div>
-            </div>
-             
-
-                </div>
+              
             )
         }
         if(!getToken()){

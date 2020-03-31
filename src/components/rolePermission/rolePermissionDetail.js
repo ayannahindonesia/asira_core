@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import CheckBoxClass from '../subComponent/CheckBox';
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 import swal from 'sweetalert';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -12,13 +12,12 @@ import { getRoleFunction, patchRolePermissionFunction } from './saga'
 import { constructRolePermission, checkingRole, checkingSystem } from './function'
 import { getToken } from '../index/token';
 import { destructRolePermission } from './function';
-import { Tooltip, Grid, IconButton } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import CancelIcon from '@material-ui/icons/Cancel';
-import SaveIcon from '@material-ui/icons/Save';
+import {  Grid  } from '@material-ui/core';
+
 import DialogComponent from '../subComponent/DialogComponent';
 import { checkPermission } from '../global/globalFunction';
 import TitleBar from '../subComponent/TitleBar';
+import ActionComponent from '../subComponent/ActionComponent';
 
 const styles = (theme) => ({
     container: {
@@ -204,16 +203,9 @@ class RolePermissionDetail extends React.Component{
             return <Redirect to='/permissionList'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+            <Loading
+              title={this.state.modifyType?"Permission - Ubah":"Permission - Detail"}
+            />
           )
         } else if(getToken()){
           return (
@@ -233,37 +225,15 @@ class RolePermissionDetail extends React.Component{
                 style={{padding:'20px', marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                  
               >
                 <Grid container>
+         
                   {/* Action Button */}
                   <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                    <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                      <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-
-                        {
-                          checkPermission('core_permission_patch') && this.state.modifyType &&
-                          <Tooltip title="Save" style={{outline:'none'}}>
-                            <IconButton aria-label="save" onClick={this.btnConfirmationDialog} >
-                              <SaveIcon style={{width:'35px',height:'35px'}}/>
-                            </IconButton>
-                          </Tooltip>
-                        }
-
-                        {
-                          checkPermission('core_permission_patch') && !this.state.modifyType &&
-                          <Tooltip title="Edit" style={{outline:'none'}}>
-                            <IconButton aria-label="edit" onClick={this.btnEditPermission}>
-                              <EditIcon style={{width:'35px',height:'35px'}}/>
-                            </IconButton>
-                          </Tooltip>
-                        }
-
-                        <Tooltip title="Back" style={{outline:'none'}}>
-                          <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                            <CancelIcon style={{width:'35px',height:'35px'}}/>
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                        <ActionComponent
+                            modifyType={this.state.modifyType}
+                            permissionEdit={ checkPermission('core_permission_patch') ? (this.state.modifyType ? this.btnConfirmationDialog: this.btnEditPermission) : null}
+                            onCancel={this.btnCancel}
+                        />
+                 </Grid>
 
                   {/* Dialog */}
                   <DialogComponent 

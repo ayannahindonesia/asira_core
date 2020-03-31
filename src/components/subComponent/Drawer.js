@@ -40,7 +40,6 @@ import ProductList from './../product/productList'
 import ProductDetail from './../product/productDetail'
 import TujuanAdd from './../tujuan/tujuanAdd'
 import TujuanList from './../tujuan/tujuanList'
-import TujuanEdit from './../tujuan/tujuanEdit'
 import TujuanDetail from './../tujuan/tujuanDetail'
 import TypeBankAdd from '../tipeMitra/typeAdd'
 import TypeBankList from '../tipeMitra/typeList'
@@ -63,7 +62,6 @@ import penyediaAgentList from './../penyediaAgent/penyediaList'
 import AgentAdd from './../agent/agentAdd'
 import AgentList from './../agent/agentList'
 import AgentDetail from './../agent/agentDetail'
-import AgentEdit from './../agent/agentEdit'
 import CalonNasabahList from './../calonNasabah/calonNasabahList';
 import calonNasabahDetail from './../calonNasabah/calonNasabahDetail';
 import CalonNasabahArsipList from './../calonNasabah/calonNasabahArsipList';
@@ -360,7 +358,6 @@ function ResponsiveDrawer(props) {
             
             { checkPermission('core_loan_purpose_new') && <Route path='/tujuanAdd' component={TujuanAdd}></Route>}
             { checkPermission('core_loan_purpose_list') && <Route path='/tujuanList' component={TujuanList}></Route>}
-            { checkPermission('core_loan_purpose_patch') && <Route path='/tujuanEdit/:id' component={TujuanEdit}></Route>}
             { checkPermission('core_loan_purpose_detail') && <Route path='/tujuanDetail/:id' component={TujuanDetail}></Route>}
             
             { checkPermission('core_role_new') && <Route path='/roleAdd' component={RoleAdd}></Route>}
@@ -385,7 +382,6 @@ function ResponsiveDrawer(props) {
 
             { checkPermission('core_agent_new') && <Route path='/agenAdd' component={AgentAdd}></Route>}
             { checkPermission('core_agent_list') && <Route path='/agenList' component={AgentList}></Route>}
-            { checkPermission('core_agent_patch') && <Route path='/agenEdit/:id' component={AgentEdit}></Route>}
             { checkPermission('core_agent_details') && <Route path='/agenDetail/:id' component={AgentDetail}></Route>}
 
             { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahList' component={CalonNasabahList}></Route>}

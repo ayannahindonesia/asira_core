@@ -126,7 +126,6 @@ class userEdit extends React.Component{
           id: this.state.userId,
           dataUser,
         }
-
         this.setState({loading: true});
         
         this.patchUser(param)

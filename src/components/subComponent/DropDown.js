@@ -97,19 +97,21 @@ class DropDown extends React.Component {
     
     if(multiple) {
       return (
-        <FormControl variant="outlined" className={classes.formControl} error={!!this.state.error}>
+        <FormControl variant="outlined" className={classes.formControl} error={!!this.state.error} style={{outlineStyle:'none'}}>
           <Select
             variant='outlined'
             multiple
             fullWidth
             value={value}
             onChange={onChange}
+            disabled={disabled}
             input={
               <Input 
                 className={classes.multipleDropDown}
                 disableUnderline 
                 multiline
                 id="select-multiple-chip" 
+                disabled={disabled}
               />
             }
             renderValue={value => (
@@ -120,6 +122,7 @@ class DropDown extends React.Component {
                     label={dataChip[labelName]} 
                     className={classes.chip} 
                     style={{marginRight: '10px', marginBottom: '5px'}}
+                    disabled={disabled}
                   />
                 ))}
               </div>
@@ -127,13 +130,13 @@ class DropDown extends React.Component {
             MenuProps={MenuProps}
           >
             {data.map(data => (
-              <MenuItem key={data[id]} value={data[id]} style={{backgroundColor: this.getColor(data[id], value)}}>
+              <MenuItem key={data[id]} value={data[id]} style={{backgroundColor: this.getColor(data[id], value)}} disabled={disabled}>
                 {data[labelName]}
               </MenuItem>
             ))}
           </Select>
           {this.state.error && (
-            <FormHelperText>{this.state.error}</FormHelperText>
+            <FormHelperText disabled={disabled}>{this.state.error}</FormHelperText>
           )}
         </FormControl>
       ); 

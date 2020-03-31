@@ -3,17 +3,15 @@ import { Redirect  } from 'react-router-dom'
 import { getToken } from '../index/token';
 import './../../support/css/penyediaAgent.css'
 import { getPenyediaAgentDetailFunction ,editPenyediaAgentFunction} from './saga';
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 
-import EditIcon from '@material-ui/icons/Edit';
-import CancelIcon from '@material-ui/icons/Cancel';
 import TitleBar from '../subComponent/TitleBar';
-import { Grid, IconButton, Tooltip, FormControlLabel, Checkbox,  } from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
+import { Grid, FormControlLabel, Checkbox, TextField,InputAdornment } from '@material-ui/core';
 
 import { checkPermission } from '../global/globalFunction';
 import swal from 'sweetalert'
 import DialogComponent from '../subComponent/DialogComponent';
+import ActionComponent from '../subComponent/ActionComponent';
 
 class PenyediaDetail extends React.Component{
     state = {
@@ -45,7 +43,6 @@ class PenyediaDetail extends React.Component{
         const data = await getPenyediaAgentDetailFunction({id})
 
         if(data){
-            console.log(data)
             if(!data.error){
                 this.setState({
                     id:data.dataAgentDetail.id,
@@ -137,14 +134,7 @@ class PenyediaDetail extends React.Component{
         if(this.state.loading){
           
                 return (
-                    <div className="mt-2">
-                     <Loader 
-                        type="ThreeDots"
-                        color="#00BFFF"
-                        height="30"	
-                        width="30"
-                    />  
-                    </div>
+                   <Loading title = {this.state.modifyType ?'Penyedia Agen - Ubah':'Penyedia Agen - Detail'}/>
                 )
             
         }
@@ -167,38 +157,13 @@ class PenyediaDetail extends React.Component{
                         >
                     
                     <Grid container>
-
-
+                    
                     <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                            <Grid container style={{display:'flex', justifyContent:'flex-end', padding:'0'}}>
-                            <Grid item xs={2} sm={2} style={{display:'flex', justifyContent:'flex-end'}}>
-
-                                {
-                                    checkPermission('core_agent_provider_patch') && this.state.modifyType &&
-                                    <Tooltip title="Save" style={{outline:'none'}}>
-                                    <IconButton aria-label="save" onClick={()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?')} >
-                                        <SaveIcon style={{width:'35px',height:'35px'}}/>
-                                    </IconButton>
-                                    </Tooltip>
-                                }
-
-                                {
-                                    checkPermission('core_agent_provider_patch') && !this.state.modifyType &&
-                                    <Tooltip title="Edit" style={{outline:'none'}}>
-                                    <IconButton aria-label="edit" onClick={this.btnEditPermission}>
-                                        <EditIcon style={{width:'35px',height:'35px'}}/>
-                                    </IconButton>
-                                    </Tooltip>
-                                }
-                                
-
-                                <Tooltip title="Back" style={{outline:'none'}}>
-                                <IconButton aria-label="cancel" onClick={()=> this.setState({diKlik:true})}>
-                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
-                                </IconButton>
-                                </Tooltip>
-                            </Grid>
-                            </Grid>
+                                <ActionComponent
+                                    modifyType={this.state.modifyType}
+                                    permissionEdit={ checkPermission('core_agent_provider_patch') ? (this.state.modifyType ? ()=>this.btnConfirmationDialog('','','Are you sure want to save this data ?') : this.btnEditPermission) : null}
+                                    onCancel={this.btnCancel}
+                                />
                     </Grid>
 
 
@@ -211,91 +176,122 @@ class PenyediaDetail extends React.Component{
                   <Grid item sm={12} xs={12} style={{fontSize:'20px', marginBottom:'10px'}}>
                     <Grid container>
 
-                      <Grid item sm={4} xs={4} style={{padding:'10px'}}>
-                        ID Penyedia Agent
-                      </Grid>
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                    ID Penyedia Agent
 
-                      <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                         <input type="text" 
-                         className="form-control" 
-                         ref="judul" 
-                         value={this.state.id}
-                         onChange={(e) => this.onChangeTextField(e,'id')} 
-                         disabled={ true }
-                         required autoFocus
-                         style={{width:"80%"}}/>
-                      </Grid>
+                                    </Grid>
+                                    <Grid item xs={12} sm={4} >
+                                        <TextField
+                                            id="id"
+                                            value={this.state.id}
+                                            onChange={(e) => this.onChangeTextField(e,'id')} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            disabled={true}
+                                        />
+                                </Grid>
+                            </Grid>
+                    </Grid>
 
-                      <Grid item sm={4} xs={4} style={{padding:'10px'}}>
-                        Nama Penyedia Agent
-                      </Grid>
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                    Nama Penyedia Agent
 
-                      <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                         <input type="text" 
-                         className="form-control" 
-                         ref="judul" 
-                         value={this.state.name}
-                         onChange={(e) => this.onChangeTextField(e,'name')} 
-                         disabled={this.state.modifyType ? false : true}
-                         required autoFocus
-                         style={{width:"80%"}}/>
-                      </Grid>
+                                    </Grid>
+                                    <Grid item xs={12} sm={4} >
+                                        <TextField
+                                            id="name"
+                                            value={this.state.name}
+                                            onChange={(e) => this.onChangeTextField(e,'name')} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            disabled={true}
+                                        />
+                                </Grid>
+                            </Grid>
+                    </Grid>
 
-                      
-                      <Grid item sm={4} xs={4} style={{padding:'10px'}}>
-                        PIC
-                      </Grid>
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                    PIC
 
-                      <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                         <input type="text" 
-                         className="form-control" 
-                         ref="judul" 
-                         value={this.state.pic}
-                         onChange={(e) => this.onChangeTextField(e,'pic')} 
-                         disabled={this.state.modifyType ? false : true}
-                         required autoFocus
-                         style={{width:"80%"}}/>
-                      </Grid>
+                                    </Grid>
+                                    <Grid item xs={12} sm={4} >
+                                        <TextField
+                                            id="pic"
+                                            value={this.state.pic}
+                                            onChange={(e) => this.onChangeTextField(e,'pic')} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            disabled={this.state.modifyType ? false : true}
 
-                      
-                      <Grid item sm={4} xs={4} style={{padding:'10px'}}>
-                        Nomor Telepon
-                      </Grid>
+                                        />
+                                </Grid>
+                            </Grid>
+                    </Grid>
 
-                      <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                         <input type="text" 
-                         className="form-control" 
-                         ref="judul" 
-                         value={this.state.phone}
-                         onChange={(e) => this.onChangeTextField(e,'phone',true)} 
-                         disabled={this.state.modifyType ? false : true}
-                         required autoFocus
-                         style={{width:"80%"}}/>
-                      </Grid>
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                    Nomor Telepon
 
-                      
-                      <Grid item sm={4} xs={4} style={{padding:'10px'}}>
-                        Alamat
-                      </Grid>
+                                    </Grid>
+                                    <Grid item xs={12} sm={4} >
+                                        <TextField
+                                            id="phone"
+                                            value={this.state.phone}
+                                            onChange={(e) => this.onChangeTextField(e,'phone',true)} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start">+62</InputAdornment>,
+                                              }}
+                                            disabled={this.state.modifyType ? false : true}
 
-                      <Grid item sm={8} xs={8} style={{padding:'10px'}}>
-                        <textarea 
-                        rows="10" 
-                        disabled={this.state.modifyType ? false : true}
-                        onChange={(e) => this.onChangeTextField(e,'address')} 
-                        className="form-control" 
-                        style={{width:"80%"}}
-                        value={this.state.address} 
-                        placeholder="Description.." required autoFocus/>
-                      </Grid>
+                                        />
+                                </Grid>
+                            </Grid>
+                    </Grid>
 
-                      
-                      <Grid item sm={4} xs={4} style={{padding:'10px'}}>
-                        Status
-                      </Grid>
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                     Alamat
 
-                      <Grid item sm={8} xs={8} style={{paddingLeft:'12%'}}>
-                            <FormControlLabel
+                                    </Grid>
+                                    <Grid item xs={12} sm={4} >
+                                        <TextField
+                                            id="address"
+                                            value={this.state.address}
+                                            onChange={(e) => this.onChangeTextField(e,'address')} 
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
+                                            multiline
+                                            disabled={this.state.modifyType ? false : true}
+
+                                        />
+                                </Grid>
+                            </Grid>
+                    </Grid>
+
+                    
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px'}}>
+                                <Grid container>
+                                    <Grid item xs={4} sm={4} style={{paddingTop:'20px'}}>
+                                    Status
+
+                                    </Grid>
+                                    <Grid item xs={12} sm={4} >
+                                    <FormControlLabel
                                 control={
                                     <Checkbox
                                         checked={this.state.status}
@@ -308,10 +304,10 @@ class PenyediaDetail extends React.Component{
                                 label={'Aktif'}
                                 disabled={this.state.modifyType ? false : true}
                             />
-                      </Grid>
-
-                     
-
+                                </Grid>
+                            </Grid>
+                    </Grid>
+        
                     </Grid>
 
                   </Grid>

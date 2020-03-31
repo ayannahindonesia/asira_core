@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
+import Loading from '../subComponent/Loading'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -12,9 +12,9 @@ import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from './../subComponent/DialogComponent'
 import TitleBar from '../subComponent/TitleBar';
+import ActionComponent from '../subComponent/ActionComponent';
 
-import { Grid, IconButton, Tooltip } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { Grid } from '@material-ui/core';
 
 const styles = (theme) => ({
     container: {
@@ -117,7 +117,7 @@ class profileNasabahDetail extends React.Component{
       }
       else if(label.toLowerCase().includes('nasabah')) {
         title = 'Foto Nasabah'
-        message = this.state.dataUser && this.state.dataUser.image
+        message = this.state.dataUser && this.state.dataUser.image_profile
       }
 
       this.setState({
@@ -137,16 +137,7 @@ class profileNasabahDetail extends React.Component{
             return <Redirect to='/nasabahList'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+        <Loading title ={"Nasabah - Detail"}/>
           )
         } else if(getToken()){
           return(
@@ -169,13 +160,13 @@ class profileNasabahDetail extends React.Component{
                   </Grid>
 
                   <Grid item sm={12} xs={12} style={{marginBottom:"10px"}}>
-                      <Grid item xs={12} sm={12} style={{display:'flex', justifyContent:'flex-end'}}>
-                            <Tooltip title="Back" style={{outline:'none'}}>
-                                <IconButton aria-label="cancel" onClick={this.btnCancel}>
-                                    <CancelIcon style={{width:'35px',height:'35px'}}/>
-                                </IconButton>
-                            </Tooltip>       
-                        </Grid> 
+              <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                      <ActionComponent
+                          onCancel={this.btnCancel}
+                      />
+              </Grid>
+
+
                     <Grid container spacing={2}>
                         <Grid item sm={2} xs={12} style={{marginBottom:'10px'}}>
                             <input className='buttonCustomAsira' type="button" style={{width:"100%"}} value="Foto KTP" onClick={this.handleDialog}></input>                               

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -12,7 +11,7 @@ import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
 import DialogComponent from './../subComponent/DialogComponent'
 import TitleBar from '../subComponent/TitleBar';
-
+import Loading from '../subComponent/Loading'
 import { Grid} from '@material-ui/core';
 import ActionComponent from '../subComponent/ActionComponent';
 
@@ -126,7 +125,7 @@ class UserMobileDetail extends React.Component{
       }
       else if(label.toLowerCase().includes('nasabah')) {
         title = 'Foto Nasabah'
-        message = this.state.dataUser && this.state.dataUser.image
+        message = this.state.dataUser && this.state.dataUser.image_profile
       }
 
       this.setState({
@@ -146,16 +145,7 @@ class UserMobileDetail extends React.Component{
             return <Redirect to='/usermobile'/>            
         } else if (this.state.loading){
           return  (
-            <div  key="zz">
-              <div align="center" colSpan={6}>
-                <Loader 
-                  type="Circles"
-                  color="#00BFFF"
-                  height="40"	
-                  width="40"
-                />   
-              </div>
-            </div>
+          <Loading title={'Calon Nasabah - Detail'}/>
           )
         } else if(getToken()){
           return(
