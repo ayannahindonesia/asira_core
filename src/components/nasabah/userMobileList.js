@@ -65,14 +65,11 @@ class userMobileList extends React.Component{
         };
         param.search_all = this.state.search;
 
-        param.rows = this.state.rowsPerPage;
-        param.page = this.state.page;
-
         const data = await getNasabahFunction(param);
 
         if(data) {
             if(!data.error) {
-                const dataListUser = data.dataUser || [];
+                const dataListUser = data.listNasabah.data || [];
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {

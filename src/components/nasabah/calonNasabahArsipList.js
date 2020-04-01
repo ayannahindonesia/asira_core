@@ -67,7 +67,7 @@ class CalonNasabahArsipList extends React.Component{
 
         if(data) {
             if(!data.error) {
-                const dataListUser = data.dataUser || [];
+                const dataListUser = data.listNasabah.data || [];
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {

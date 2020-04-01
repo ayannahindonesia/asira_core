@@ -113,7 +113,6 @@ class FAQDetail extends React.Component{
     onChangeTextField = (e, labelData,number) => {
         let dataText = e.target.value;
 
-        console.log(dataText)
         if(number && isNaN(dataText)) {           
             dataText = this.state[labelData];          
         }

@@ -63,7 +63,7 @@ class profileNasabah extends React.Component {
   
   //Ambil data pertama kali
   refresh = async function(){
-    console.log(this.props)
+    
     const param ={
       account_number:'not null',
       rows:this.state.rowsPerPage,
@@ -77,7 +77,6 @@ class profileNasabah extends React.Component {
     const data = await getNasabahFunction(param)
     
     if(data){
-      console.log(data)
       const dataNasabah = data.listNasabah.data;
     
       for (const key in dataNasabah){

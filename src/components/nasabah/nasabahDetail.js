@@ -131,13 +131,28 @@ class profileNasabahDetail extends React.Component{
       this.setState({dialog: false})
     }
 
+    checkStatusNasabah = () => {
+      if(this.state.dataUser && this.state.dataUser.status && this.state.dataUser.status === 'rejected') {
+        return 'Calon Nasabah Arsip'
+      } else if(this.state.dataUser && this.state.dataUser.status && (!this.state.dataUser.bank || (this.state.dataUser.bank && this.state.dataUser.bank.Int64 === 0)) && !this.state.dataUser.account_number) {
+        return 'User Mobile'
+      } else if(this.state.dataUser && this.state.dataUser.status && !this.state.dataUser.account_number) {
+        return 'Calon Nasabah'  
+      } else if(this.state.dataUser && this.state.dataUser.status === 'approved' && this.state.dataUser.account_number && this.state.dataUser.bank ){
+        return 'Nasabah'
+      } else {
+        return '';
+      }
+    }
+    
     render(){
+      
         if(this.state.diKlik){
-          if(this.state.dataUser && this.state.dataUser.status && this.state.dataUser.status === 'rejected') {
+          if(this.checkStatusNasabah() === 'Calon Nasabah Arsip') {
             return <Redirect to='/calonNasabahArsipList'/> 
-          } else if(this.state.dataUser && this.state.dataUser.status && !this.state.dataUser.bank_id) {
+          } else if(this.checkStatusNasabah() === 'User Mobile') {
             return <Redirect to='/userMobileList'/> 
-          } else if(this.state.dataUser && this.state.dataUser.status && !this.state.dataUser.account_number) {
+          } else if(this.checkStatusNasabah() === 'Calon Nasabah') {
             return <Redirect to='/calonNasabahList'/>  
           } else {
             return <Redirect to='/nasabahList'/>
@@ -152,7 +167,7 @@ class profileNasabahDetail extends React.Component{
             <Grid container className="containerDetail">
               <Grid item sm={12} xs={12} style={{maxHeight:50}}>
                 <TitleBar
-                  title={'Nasabah - Detail'}
+                  title={`${this.checkStatusNasabah()} - Detail`}
                 />
               </Grid>
               <Grid
@@ -209,12 +224,7 @@ class profileNasabahDetail extends React.Component{
                       ],
                       [
                         this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at),
-                        this.state.dataUser.status ?
-                        (
-                          this.state.dataUser.status === 'approved' ? 'Nasabah' :
-                          this.state.dataUser.status === 'rejected' ? 'Calon Nasabah Arsip' : 'Calon Nasabah'
-                        ) 
-                        : '',
+                        this.checkStatusNasabah()
                       ],
                     ]}                 
                   />

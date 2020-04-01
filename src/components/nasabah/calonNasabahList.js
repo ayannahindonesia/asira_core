@@ -63,15 +63,14 @@ class CalonNasabahList extends React.Component{
             rows:this.state.rowsPerPage,
             page:this.state.page
         };
+
         param.search_all = this.state.search;
-
-
 
         const data = await getNasabahFunction(param);
 
         if(data) {
             if(!data.error) {
-                const dataListUser = data.dataUser || [];
+                const dataListUser = data.listNasabah.data || [];
 
                 if(dataListUser.length !== 0) {
                     for(const key in dataListUser) {

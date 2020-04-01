@@ -11,8 +11,8 @@ export async function getNasabahFunction (param,next){
         for (const key in param){
             filter += `&${[key]}=${param[key]}`
         }
-
-        axios.get(serverUrl+`admin/borrower?account_number=not null&orderby=updated_at&sort=desc${filter}`,config)
+        
+        axios.get(serverUrl+`admin/borrower?orderby=updated_at&sort=desc${filter}`,config)
         .then((res)=>{
             if(next){
                 resolve(next(param))
