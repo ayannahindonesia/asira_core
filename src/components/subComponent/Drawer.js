@@ -53,32 +53,26 @@ import RoleListPermission from './../rolePermission/rolePermissionList'
 import RoleDetailPermission from './../rolePermission/rolePermissionDetail'
 import Report from './../report/report'
 import UserAdd from './../user/userAdd'
-import UserList from './../user/userList'
-import UserDetail from './../user/userDetail'
-import UserEdit from './../user/userEdit'
-import penyediaAgentAdd from './../penyediaAgent/penyediaAdd'
-import penyediaAgentDetail from './../penyediaAgent/penyediaDetail'
-import penyediaAgentList from './../penyediaAgent/penyediaList'
-import AgentAdd from './../agent/agentAdd'
-import AgentList from './../agent/agentList'
-import AgentDetail from './../agent/agentDetail'
-import CalonNasabahList from './../calonNasabah/calonNasabahList';
-import calonNasabahDetail from './../calonNasabah/calonNasabahDetail';
-import CalonNasabahArsipList from './../calonNasabah/calonNasabahArsipList';
-import CalonNasabahArsipDetail from './../calonNasabah/calonNasabahArsipDetail';
-import ChangePassword from './../index/changePassword'
-import ActivityLog from './../logs/activitylog'
-import ActivityLogDetail from './../logs/activitylogDetail'
+import UserList from './../user/userList';
+import UserDetail from './../user/userDetail';
+import UserEdit from './../user/userEdit';
+import penyediaAgentAdd from './../penyediaAgent/penyediaAdd';
+import penyediaAgentDetail from './../penyediaAgent/penyediaDetail';
+import penyediaAgentList from './../penyediaAgent/penyediaList';
+import AgentAdd from './../agent/agentAdd';
+import AgentList from './../agent/agentList';
+import AgentDetail from './../agent/agentDetail';
+import CalonNasabahList from './../nasabah/calonNasabahList';
+import CalonNasabahArsipList from './../nasabah/calonNasabahArsipList';
+import ChangePassword from './../index/changePassword';
+import ActivityLog from './../logs/activitylog';
+import ActivityLogDetail from './../logs/activitylogDetail';
 import AuditTrail from '../logs/auditTrail';
 import AuditTrailDetail from '../logs/auditTrailDetail';
-import FAQ from './../FAQ/faqList'
-import FAQDetail from './../FAQ/faqDetail'
-import FAQAdd from './../FAQ/faqAdd'
-import UserMobile from './../calonNasabah/userMobileList'
-import UserMobileDetail from './../calonNasabah/userMobileDetail'
-
-
-
+import FAQ from './../FAQ/faqList';
+import FAQDetail from './../FAQ/faqDetail';
+import FAQAdd from './../FAQ/faqAdd';
+import UserMobile from './../nasabah/userMobileList';
 
 const drawerWidth = 200;
 
@@ -330,8 +324,10 @@ function ResponsiveDrawer(props) {
           <Switch> 
             <Route path='/' component={Home} exact></Route>
 
-
-            { checkPermission('core_borrower_get_all') && <Route path='/nasabahList' component={Nasabah}></Route>}
+            { checkPermission('core_borrower_get_all') && <Route path='/userMobileList' component={UserMobile}></Route>}
+            { checkPermission('core_borrower_get_all') && <Route path='/nasabahList' component={Nasabah}></Route>}          
+            { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahList' component={CalonNasabahList}></Route>}
+            { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahArsipList' component={CalonNasabahArsipList}></Route>}
             { checkPermission('core_borrower_get_details') && <Route path="/nasabahDetail/:id" component={profileNasabahDetail}></Route>}
 
             { checkPermission('core_loan_get_all') && <Route path="/pinjamanList" component={PermintaanPinjaman}></Route>}
@@ -383,13 +379,7 @@ function ResponsiveDrawer(props) {
             { checkPermission('core_agent_new') && <Route path='/agenAdd' component={AgentAdd}></Route>}
             { checkPermission('core_agent_list') && <Route path='/agenList' component={AgentList}></Route>}
             { checkPermission('core_agent_details') && <Route path='/agenDetail/:id' component={AgentDetail}></Route>}
-
-            { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahList' component={CalonNasabahList}></Route>}
-            { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahDetail/:id' component={calonNasabahDetail}></Route>}
-
-            { checkPermission('core_borrower_get_all') && <Route path='/calonNasabahArsipList' component={CalonNasabahArsipList}></Route>}
-            { checkPermission('core_borrower_get_details') && <Route path='/calonNasabahArsipDetail/:id' component={CalonNasabahArsipDetail}></Route>}
-
+            
             { checkPermission('core_activity_logs') && <Route path='/activityLog' component={ActivityLog}></Route> }
             { checkPermission('core_activity_logs_detail') && <Route path="/activityLogDetail/:id" component={ActivityLogDetail}></Route> }
             { checkPermission('core_auditrail') && <Route path="/auditTrail" component={AuditTrail}></Route> }
@@ -399,10 +389,7 @@ function ResponsiveDrawer(props) {
             <Route path='/FAQAdd' component={FAQAdd}></Route>
             <Route path='/FAQDetail/:id' component={FAQDetail}></Route>
 
-            <Route path='/usermobile' component={UserMobile}></Route>
-            <Route path='/userMobileDetail/:id' component={UserMobileDetail}></Route>
-
-
+            
 
             {getToken() && getProfileUser() ?  <Route path="/login" component={Home}></Route>:  <Route path="/login" component={Login}></Route>} 
             <Route path='/ubahpassword' component={ChangePassword} />

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import {getAlluserMobileFunction} from './saga'
+import {getNasabahFunction} from './saga'
 import { checkPermission, handleFormatDate } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
@@ -58,13 +58,17 @@ class userMobileList extends React.Component{
     }
 
     refresh = async function(){
-        const param = {};
+        const param = {
+            bank_id:'null',
+            rows:this.state.rowsPerPage,
+            page:this.state.page
+        };
         param.search_all = this.state.search;
 
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
 
-        const data = await getAlluserMobileFunction(param);
+        const data = await getNasabahFunction(param);
 
         if(data) {
             if(!data.error) {
@@ -154,7 +158,7 @@ class userMobileList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/userMobileDetail/' : null}
+                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/nasabahDetail/' : null}
                     />
                 </div>
             )

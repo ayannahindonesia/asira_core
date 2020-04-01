@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import {getAllBorrowerFunction} from './saga'
+import {getNasabahFunction} from './saga'
 import { checkPermission, handleFormatDate } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
@@ -26,10 +26,13 @@ const columnDataUser = [
         numeric: false,
         label: 'Nama Mitra',
     },
-    { id: 'created_at', numeric: false, label: 'Tanggal Registrasi'},
+    { 
+        id: 'created_at', 
+        numeric: false, 
+        label: 'Tanggal Registrasi'},
 ]
 
-class CalonNasabahArsipList extends React.Component{
+class CalonNasabahList extends React.Component{
     _isMounted = false;
 
     constructor(props) {
@@ -56,14 +59,15 @@ class CalonNasabahArsipList extends React.Component{
 
     refresh = async function(){
         const param = {
-            status: 'rejected'
+            account_number:'null',
+            rows:this.state.rowsPerPage,
+            page:this.state.page
         };
         param.search_all = this.state.search;
 
-        param.rows = this.state.rowsPerPage;
-        param.page = this.state.page;
 
-        const data = await getAllBorrowerFunction(param);
+
+        const data = await getNasabahFunction(param);
 
         if(data) {
             if(!data.error) {
@@ -136,7 +140,7 @@ class CalonNasabahArsipList extends React.Component{
                     < TableComponent
                         id={"id"}
                         errorMessage={this.state.errorMessage}
-                        title={'Calon Nasabah Arsip - List'}
+                        title={'Calon Nasabah - List'}
                         search={
                             {
                               value: this.state.search,
@@ -144,7 +148,7 @@ class CalonNasabahArsipList extends React.Component{
                               onChange: this.changeSearch,
                               function: this.btnSearch,
                             }
-                          }
+                        }
                         paging={this.state.paging}
                         loading={this.state.loading}
                         columnData={columnDataUser}
@@ -153,7 +157,7 @@ class CalonNasabahArsipList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/calonNasabahArsipDetail/' : null}
+                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/nasabahDetail/' : null}
                     />
 
                   
@@ -169,4 +173,4 @@ class CalonNasabahArsipList extends React.Component{
     }
 }
 
-export default CalonNasabahArsipList;
+export default CalonNasabahList;

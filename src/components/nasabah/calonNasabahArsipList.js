@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import {getAllBorrowerFunction} from './saga'
+import {getNasabahFunction} from './saga'
 import { checkPermission, handleFormatDate } from '../global/globalFunction';
 import { getToken } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
@@ -26,13 +26,10 @@ const columnDataUser = [
         numeric: false,
         label: 'Nama Mitra',
     },
-    { 
-        id: 'created_at', 
-        numeric: false, 
-        label: 'Tanggal Registrasi'},
+    { id: 'created_at', numeric: false, label: 'Tanggal Registrasi'},
 ]
 
-class CalonNasabahList extends React.Component{
+class CalonNasabahArsipList extends React.Component{
     _isMounted = false;
 
     constructor(props) {
@@ -58,13 +55,15 @@ class CalonNasabahList extends React.Component{
     }
 
     refresh = async function(){
-        const param = {};
+        const param = {
+            status: 'rejected'
+        };
         param.search_all = this.state.search;
 
         param.rows = this.state.rowsPerPage;
         param.page = this.state.page;
 
-        const data = await getAllBorrowerFunction(param);
+        const data = await getNasabahFunction(param);
 
         if(data) {
             if(!data.error) {
@@ -137,7 +136,7 @@ class CalonNasabahList extends React.Component{
                     < TableComponent
                         id={"id"}
                         errorMessage={this.state.errorMessage}
-                        title={'Calon Nasabah - List'}
+                        title={'Calon Nasabah Arsip - List'}
                         search={
                             {
                               value: this.state.search,
@@ -145,7 +144,7 @@ class CalonNasabahList extends React.Component{
                               onChange: this.changeSearch,
                               function: this.btnSearch,
                             }
-                        }
+                          }
                         paging={this.state.paging}
                         loading={this.state.loading}
                         columnData={columnDataUser}
@@ -154,7 +153,7 @@ class CalonNasabahList extends React.Component{
                         rowsPerPage={this.state.rowsPerPage}
                         totalData={this.state.totalData}
                         onChangePage={this.onChangePage}             
-                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/calonNasabahDetail/' : null}
+                        permissionDetail={ checkPermission('lender_borrower_list_detail') ? '/nasabahDetail/' : null}
                     />
 
                   
@@ -170,4 +169,4 @@ class CalonNasabahList extends React.Component{
     }
 }
 
-export default CalonNasabahList;
+export default CalonNasabahArsipList;

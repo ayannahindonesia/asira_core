@@ -103,7 +103,7 @@ exports.dataMenu = [
             },
             {
                 label: 'User Mobile',
-                link:'/usermobile',
+                link:'/userMobileList',
                 logo: 'calonNasabah.svg',
                 action: {
                     list:'core_borrower_get_all core_borrower_get_details',

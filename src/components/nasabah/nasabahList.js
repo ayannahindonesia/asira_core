@@ -2,7 +2,7 @@ import React from 'react';
 import {connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import './../../support/css/pagination.css'
-import {getProfileNasabahFunction} from './saga'
+import {getNasabahFunction} from './saga'
 import 'moment/locale/id';
 import { getToken, getTokenAuth } from '../index/token'
 import TableComponent from '../subComponent/TableComponent'
@@ -54,7 +54,7 @@ class profileNasabah extends React.Component {
   //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
   componentDidMount(){
     this._isMounted=true
-    this._isMounted && this.getProfileNasabah()
+    this._isMounted && this.refresh()
   }
   componentWillUnmount(){
     this._isMounted=false
@@ -62,8 +62,10 @@ class profileNasabah extends React.Component {
 
   
   //Ambil data pertama kali
-  getProfileNasabah = async function(){
+  refresh = async function(){
+    console.log(this.props)
     const param ={
+      account_number:'not null',
       rows:this.state.rowsPerPage,
       page:this.state.page
     }
@@ -72,9 +74,10 @@ class profileNasabah extends React.Component {
     if(hasil){
       param.search_all = hasil
     }
-    const data = await getProfileNasabahFunction(param)
+    const data = await getNasabahFunction(param)
     
     if(data){
+      console.log(data)
       const dataNasabah = data.listNasabah.data;
     
       for (const key in dataNasabah){
@@ -102,7 +105,7 @@ class profileNasabah extends React.Component {
   onBtnSearch = (e)=>{
     this.setState({loading:true,page:1},()=>{
       if(this.state.paging){
-        this.getProfileNasabah()
+        this.refresh()
       }
     })
   }
@@ -112,7 +115,7 @@ class profileNasabah extends React.Component {
     this.setState({loading:true,page:current},()=>{
 
       if(this.state.paging){
-        this.getProfileNasabah()
+        this.refresh()
       }
     })
   }

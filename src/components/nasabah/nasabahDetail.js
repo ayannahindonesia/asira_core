@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/styles';
 import { compose } from 'redux';
-import { getProfileNasabahDetailFunction } from './saga'
+import { getNasabahDetailFunction } from './saga'
 import { getToken } from '../index/token';
 import GridDetail from '../subComponent/GridDetail';
 import { formatNumber, handleFormatDate, decryptImage } from '../global/globalFunction';
@@ -66,20 +66,19 @@ class profileNasabahDetail extends React.Component{
       const param = {};
       param.id = this.state.idUser;
 
-      const data = await getProfileNasabahDetailFunction(param);
+      const data = await getNasabahDetailFunction(param);
       
 
       if(data) {
           if(!data.error) {
             const dataUser = data.dataUser.data || {};
-            let flag = false;
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
             dataUser.idcard_image = dataUser.idcard_image && decryptImage(dataUser.idcard_image);
             dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image)
+            dataUser.image_profile = dataUser.image_profile && decryptImage(dataUser.image_profile)
 
             this.setState({
-              diKlik: flag,
               dataUser,
               listRole: data.dataRole,
               loading: false,
@@ -134,7 +133,16 @@ class profileNasabahDetail extends React.Component{
 
     render(){
         if(this.state.diKlik){
-            return <Redirect to='/nasabahList'/>            
+          if(this.state.dataUser && this.state.dataUser.status && this.state.dataUser.status === 'rejected') {
+            return <Redirect to='/calonNasabahArsipList'/> 
+          } else if(this.state.dataUser && this.state.dataUser.status && !this.state.dataUser.bank_id) {
+            return <Redirect to='/userMobileList'/> 
+          } else if(this.state.dataUser && this.state.dataUser.status && !this.state.dataUser.account_number) {
+            return <Redirect to='/calonNasabahList'/>  
+          } else {
+            return <Redirect to='/nasabahList'/>
+          }
+                        
         } else if (this.state.loading){
           return  (
         <Loading title ={"Nasabah - Detail"}/>
@@ -160,11 +168,11 @@ class profileNasabahDetail extends React.Component{
                   </Grid>
 
                   <Grid item sm={12} xs={12} style={{marginBottom:"10px"}}>
-              <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
+                    <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
                       <ActionComponent
                           onCancel={this.btnCancel}
                       />
-              </Grid>
+                    </Grid>
 
 
                     <Grid container spacing={2}>
@@ -188,7 +196,7 @@ class profileNasabahDetail extends React.Component{
                     label={[
                       ['Id Nasabah','Mitra Nasabah'],
                       ['Kategori','Agen / AE'],
-                      ['Tanggal Register'],
+                      ['Tanggal Register', 'Status'],
                     ]}
                     data={this.state.dataUser && [
                       [
@@ -200,7 +208,13 @@ class profileNasabahDetail extends React.Component{
                         this.state.dataUser.agent_name && (`${this.state.dataUser.agent_name} ` + (this.state.dataUser.agent_provider_name && this.state.dataUser.agent_provider_name.trim().length !== 0 ? `(${this.state.dataUser.agent_provider_name})` : '')),
                       ],
                       [
-                        this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at)
+                        this.state.dataUser.created_at && handleFormatDate(this.state.dataUser.created_at),
+                        this.state.dataUser.status ?
+                        (
+                          this.state.dataUser.status === 'approved' ? 'Nasabah' :
+                          this.state.dataUser.status === 'rejected' ? 'Calon Nasabah Arsip' : 'Calon Nasabah'
+                        ) 
+                        : '',
                       ],
                     ]}                 
                   />
@@ -324,7 +338,6 @@ class profileNasabahDetail extends React.Component{
                       message={this.state.message}
                       type='image'
                       onClose={this.handleClose}
-                      base64Boolean={this.state.title ==='Foto Nasabah' ? true : false }
                     />
                   </div>
 
