@@ -14,7 +14,7 @@
     "crypto": "^1.0.1",
     "date-and-time": "^0.8.1",
     "date-fns": "^2.0.0-beta.5",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "md5": "^2.2.1",
