@@ -40,28 +40,9 @@ export async function getDetailFunction(param,next){
             if(next){
                 resolve(next(param))
             }else{
-                resolve(res)
-            }
-        })
-        .catch((err)=>{
-            const error = (err.response && err.response.data && destructErrorMessage(err.response.data))|| err.toString()
-            param.error = error;
-            resolve(param);
-        })
-    })
-
-}
-
-export async function getDetailBorrowerFunction(param,next){
-    return new Promise (async (resolve)=>{
-        const config = {headers: {'Authorization': "Bearer " + getToken() }};
-
-        axios.get(serverUrl+`admin/borrower/${param.id}`,config)
-        .then((res)=>{
-            if(next){
-                resolve(next(param))
-            }else{
-                resolve(res)
+                const dataLender = res && res.data;
+                param.dataLender = dataLender;
+                resolve(param)
             }
         })
         .catch((err)=>{

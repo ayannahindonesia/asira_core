@@ -54,17 +54,15 @@ class PermintaanPinjaman extends React.Component {
   _isMounted=false
   
   state = {
-    rows: [],detailNasabah:{}, searchRows:'',
+    rows: [],
+    detailNasabah:{},
+    searchRows:'',
     page: 1,
     rowsPerPage: 10,
-    isEdit: false,
-    editIndex:Number,
-    udahdiklik : false,
     total_data:0,
-    last_page:1,
     loading:true,
-    BankName:'',serviceName:'',productName:'',
-    errorMessage:'',paging:true
+    errorMessage:'',
+    paging:true
   };
 
   //-----------------------------------NIKO FUNCTION-------------------------------------------------------------
@@ -105,7 +103,6 @@ class PermintaanPinjaman extends React.Component {
           rows:data.pinjamanList.data, 
           rowsPerPage:data.pinjamanList.rows,
           total_data:data.pinjamanList.total_data,
-          last_page:data.pinjamanList.last_page,
           page:data.pinjamanList.current_page})
       }else{
         this.setState({errorMessage:data.error})
