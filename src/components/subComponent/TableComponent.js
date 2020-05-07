@@ -3,20 +3,22 @@ import PropTypes from 'prop-types';
 import localeInfo from 'rc-pagination/lib/locale/id_ID';
 import Pagination from 'rc-pagination';
 import {Link} from 'react-router-dom';
+import Loader from 'react-loader-spinner';
 import { formatNumber, handleFormatDate } from '../global/globalFunction';
 import CheckBox from '@material-ui/core/Checkbox';
 import './../../support/css/table.css'
-import { Grid, Button, Fab } from '@material-ui/core';
+import { Grid, Button, IconButton, Tooltip } from '@material-ui/core';
 import TitleBar from './TitleBar';
 import SearchBar from './SearchBar';
-import DatePicker from "./../subComponent/DatePicker";
-import AddIcon from '@material-ui/icons/Add';
-import Loading from './Loading';
+import DatePicker from "react-date-picker";
+import PaymentIcon from '@material-ui/icons/Payment';
+import "react-datepicker/dist/react-datepicker.css";
 
 class TableComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      data: props.data,
       page: 1,
       rowsPerPage: 10,
     };
@@ -95,10 +97,10 @@ class TableComponent extends React.Component {
       <Grid item sm={12} xs={12}>
 
         <table className="table table-hover">
-          <thead style={{border:'none'}}>
+          <thead className="theadCustom">
             <tr >
               {
-                this.props.checkBoxAction &&
+                this.props.checkBoxAction && this.props.data && this.props.data.length !== 0 &&
                 <th className="text-center" scope="col" key={'CheckBox'} style={{padding:0}}>
                   <CheckBox
                     checked={this.onChecked('all', this.props.arrayCheckBox)}
@@ -111,14 +113,18 @@ class TableComponent extends React.Component {
               
               {
                 this.props.columnData.map((data,index) => {
-                  return (
-                    <th className="text-center" scope="col" key={index}>{data.label}</th>
-                  );
+                  if(!data.hidden) {
+                    return (
+                      <th className="text-center" scope="col" key={index}>{data.label}</th>
+                    );
+                  }
+
+                  return null
+                  
                 },this) 
               }
-              { (this.props.permissionEdit || this.props.permissionDetail) &&
-                <th className="text-center" scope="col">Action</th>
-              }
+              
+              { (this.props.permissionDetail || this.props.permissionEdit || this.props.permissionPaid) && <th className="text-center" scope="col">Action</th>}
             </tr>     
           </thead>
           <tbody>
@@ -126,8 +132,12 @@ class TableComponent extends React.Component {
               
               this.props.loading &&
               <tr  key="zz"  className="tBodycustom">
-                <td align="center" colSpan={this.props.columnData.length + 2}>
-                  <Loading
+                <td align="center" colSpan={12}>
+                  <Loader 
+                    type="Circles"
+                    color="#00BFFF"
+                    height="40"	
+                    width="40"
                   />   
                 </td>
               </tr>
@@ -157,64 +167,78 @@ class TableComponent extends React.Component {
                       }
                     
                       {
-                        this.props.columnData.map((dataRow, indexRow) => {              
-                          return(
-                            <td align={dataRow.align ? dataRow.align : (dataRow.numeric ? "right" : "center")} key={indexRow} width={dataRow.width ? dataRow.width:'auto'}>
-                              {
-                                dataRow.type && dataRow.type.includes('date') && handleFormatDate(dataTable[dataRow.id], dataRow.type.includes('time') && true)
-                              }
-                              {
-                                dataRow.type && dataRow.type.includes('textColor') &&
-                                <div style={{
-                                  color:`${dataTable[dataRow.id].color ? dataTable[dataRow.id].color : 'black'}`,
-                                  border:`2px solid ${dataTable[dataRow.id].color ? dataTable[dataRow.id].color : 'black'}`,
-                                  borderRadius:'5px',
-                                  padding:'5px'
-                                }}>
-                                  {dataTable[dataRow.id].value ? dataTable[dataRow.id].value : dataTable[dataRow.id]}
-                                </div>                               
-                              }
-                              {
-                                dataRow.type && dataRow.type === 'button'  && this.checkConditionButton(dataTable, dataRow.conditions) &&
-                                <Button disableElevation
-                                  variant='contained'
-                                  style={{backgroundColor: '#2D85E9', color:'white'}}
-                                  onClick={(e) => {dataRow.function(e, dataTable[this.props.id])}}
-                                  value={dataTable[this.props.id]}
-                                  disabled={!dataRow.permission}
-                                >
-                                  <b>{dataRow.id}</b>
-                                </Button>
-                              }
-                              {
-                                dataRow.type && dataRow.type === 'button' && !this.checkConditionButton(dataTable, dataRow.conditions) &&
-                                this.checkWordCondition(dataRow.id, dataTable)
-                              }
-                              {
-                                !dataRow.type &&  dataRow.numeric === true && formatNumber(dataTable[dataRow.id]) 
-                              }
-                              {
-                                !dataRow.type &&  !dataRow.numeric && dataTable[dataRow.id]
-                              }
-                              {
-                                !dataRow.type &&  !dataRow.numeric && !dataTable[dataRow.id] && '-'
-                              }
+                        this.props.columnData.map((dataRow, indexRow) => {   
+                          if(!dataRow.hidden) {
+                            
+                            if(!dataTable[dataRow.id] && (!dataRow.type || dataRow.type !== 'button')) {
+                              return <td align={dataRow.numeric ? "right" : "center"} key={indexRow}> {'-'} </td>
+                            } else if(dataRow.type && dataRow.type === 'datetime'){
+                              return <td align={dataRow.numeric ? "right" : "center"} key={indexRow}> {handleFormatDate(dataTable[dataRow.id])} </td>
+                            } else if(dataRow.type && dataRow.type === 'button'){ 
+                              return (
+                                <td align={dataRow.numeric ? "right" : "center"} key={indexRow}>
+                                  {
+                                    this.checkConditionButton(dataTable, dataRow.conditions) && dataRow.permission &&
+                                    <Button disableElevation
+                                      variant='contained'
+                                      style={{backgroundColor: '#2076B8', color:'white'}}
+                                      onClick={(e) => {dataRow.function(e, dataTable[this.props.id])}}
+                                      value={dataTable[this.props.id]}
+                                      disabled={!dataRow.permission}
+                                    >
+                                      <b>{dataRow.id}</b>
+                                    </Button>
+                                  }
+                                  {
+                                    this.checkConditionButton(dataTable, dataRow.conditions) && !dataRow.permission &&
+                                    '-'
+                                  }
+                                  {
+                                    !this.checkConditionButton(dataTable, dataRow.conditions) &&
+                                    this.checkWordCondition(dataRow.id, dataTable)
+                                  }
+                                </td>
+                              )
                               
-                            </td>
-                          );               
+                            }
+                              return(
+                                <td align={dataRow.numeric ? "right" : "center"} key={indexRow}>
+                                  
+                                  {
+                                    !dataRow.type &&  dataRow.numeric === true && formatNumber(dataTable[dataRow.id]) 
+                                  }
+                                  {
+                                    !dataRow.type &&  !dataRow.numeric ? dataTable[dataRow.id] : '-'
+                                  }
+                                  
+                                </td>
+                              ); 
+                            
+                             
+                          }                      
+                          return null      
                         }, this)
                       }
                       <td align="center">
                         { this.props.permissionEdit &&
                           <Link to={`${this.props.permissionEdit}${dataTable[this.props.id]}`} className="mr-2">
-                            <i className="fas fa-edit" style={{color:"#2D85E9",fontSize:"18px"}}/>
+                            <i className="fas fa-edit" style={{color:"#2076B8",fontSize:"18px"}}/>
                           </Link>
                         }
                         { this.props.permissionDetail &&
                           <Link to={`${this.props.permissionDetail}${dataTable[this.props.id]}`} >
-                            <img src={require('./../../support/icons/mata.svg')} alt={<i className="fas fa-eye" style={{color:"#2D85E9",fontSize:"18px"}}/>} style={{maxWidth:'30%'}}/>
+                            <img src={require('./../../support/icons/mata.svg')} alt={<i className="fas fa-eye" style={{color:"#2076B8",fontSize:"18px"}}/>} style={{maxWidth:'30%'}}/>
                             
                           </Link>
+                        }
+
+                        {
+                          this.props.permissionPaid &&
+                          <Tooltip title="Detail & Bayar" style={{outline:'none'}}>
+                            <IconButton aria-label="paid" style={{color:'#2076B8', outline:'none', padding:'unset'}} onClick={(e) => this.props.permissionPaid(e, dataTable[this.props.id])} >
+                              <PaymentIcon />
+                            </IconButton>
+                          </Tooltip>
                         }
                       </td>
                     
@@ -235,7 +259,7 @@ class TableComponent extends React.Component {
               <Button disableElevation
                 key={indexButton}
                 variant='outlined'
-                style={{border:`2px solid ${buttonChild.color || '#2D85E9'}`,color:buttonChild.color || '#2D85E9'}}
+                style={{border:`2px solid ${buttonChild.color || '#2076B8'}`,color:buttonChild.color || '#2076B8'}}
                 onClick={buttonChild.function}
               >
                 <b>{buttonChild.label}</b>
@@ -264,68 +288,49 @@ class TableComponent extends React.Component {
   render() {
     return (
       <Grid container >
+        {
+          this.props.title &&
+          <Grid item sm={12} xs={12}>
+
+            <TitleBar
+              title={this.props.title}
+            />
+          </Grid>
+        }
         
-        <Grid item sm={12} xs={12}>
-          <TitleBar
-            title={this.props.title}
-          />
-        </Grid>
 
         <Grid 
           item 
           sm={12} xs={12}
-          style={{padding:20, marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                                     
+          style={this.props.title && {padding:20, marginBottom:20, boxShadow:'0px -3px 25px rgba(99,167,181,0.24)', WebkitBoxShadow:'0px -3px 25px rgba(99,167,181,0.24)', borderRadius:'15px'}}                                     
         >
           
           <Grid container>
-
-            <Grid item sm={12} xs={12} style={{color:"red",fontSize:"15px",textAlign:'left',marginBottom:'5px'}}>
+            <Grid item sm={12} xs={12} style={{color:"red",fontSize:"15px",textAlign:'left'}}>
               {this.props.errorMessage}
             </Grid>
 
-            {
-              this.props.advancedSearch &&
-              <Grid item sm={12} xs={12} style={{marginBottom:`${this.props.advancedSearch ? '0px' : '10px'}`}}>
-                <Grid container>
-                {
-                  this.props.advancedSearch.map((searchPerBar, index) => {
-                    return(
-                      <Grid item key={index} sm={parseInt(12 / this.props.advancedSearch.length)} xs={parseInt(12 / this.props.advancedSearch.length)} style={{paddingRight:'6px'}}>
-                        <SearchBar
-                          id={searchPerBar.id}
-                          value={searchPerBar.value}
-                          placeholder={searchPerBar.label || 'Cari...'}
-                          onChange={(e) => {searchPerBar.function(e, searchPerBar.id)} }
-                          disabled={true}
-                          float={'left'}
-                        />
-                      </Grid>
-                    )
-                  },this)
-                }
-                </Grid>
-              </Grid>
-            }
 
             {
               this.props.searchDate &&
               <Grid item sm={12} xs={12} style={{marginBottom:'10px'}}>
                 <Grid container>
-                  <Grid item sm={1} xs={12} style={{color:'#2D85E9', fontSize:'16px'}}>
+                  <Grid item sm={2} xs={12} style={{color:'#2076B8', fontSize:'16px'}}>
                     <b> {this.props.searchDate.label} </b>
                   </Grid>
 
-                  <Grid item sm={6} xs={12} style={{maxWidth:'400px'}}>
+                  <Grid item sm={5} xs={12} style={{maxWidth:'330px'}}>
                     {
                       this.props.searchDate.value && 
                       <Grid container>
 
-                        <Grid item sm={5} xs={5}>
+                        <Grid item sm={5} xs={5} style={{maxWidth:'130px'}}>
                           <DatePicker
+                            format="yyyy-MM-dd"
+                            style={{width:'100%'}}
                             value={
-                              (typeof(this.props.searchDate.value) === 'object' ? this.props.searchDate.value[0] : this.props.searchDate.value) || ''
+                              (typeof(this.props.searchDate.value) === 'object' ? this.props.searchDate.value[0] : this.props.searchDate.value) || new Date()
                             }
-                            label={''}
                             onChange={this.props.searchDate.function ? (this.props.searchDate.function[0] ? this.props.searchDate.function[0] : this.props.searchDate.function) : null}
                             clearIcon={null}
                           />
@@ -340,8 +345,8 @@ class TableComponent extends React.Component {
                         { typeof(this.props.searchDate.value) === 'object' &&
                           <Grid item sm={5} xs={5} style={{maxWidth:'130px'}}>
                             <DatePicker
-                              value={this.props.searchDate.value[1] || ''}
-                              label={''}
+                              format="yyyy-MM-dd"
+                              value={this.props.searchDate.value[1] || new Date()}
                               onChange={(this.props.searchDate.function && this.props.searchDate.function[1]) || null}
                               clearIcon={null}
                             />
@@ -353,17 +358,17 @@ class TableComponent extends React.Component {
                     }
                   </Grid>
 
-                  <Grid item sm={2} xs={12}>
+                  <Grid item sm={5} xs={12}>
                     {
-                      this.props.advancedButton &&
+                      this.props.searchDate.button &&
                       <Grid container>
                         {
-                          this.props.advancedButton.map((buttonChild, index) => {
+                          this.props.searchDate.button.map((buttonChild, index) => {
                             return (
-                              <Grid key={index} item sm={parseInt(12 /(this.props.advancedButton.length))} xs={parseInt(12 /(this.props.advancedButton.length))} style={{maxWidth:'100px'}}>
+                              <Grid key={index} item sm={parseInt(12 /(this.props.searchDate.button.length))} xs={parseInt(12 /(this.props.searchDate.button.length))} style={{maxWidth:'100px'}}>
                                 <Button disableElevation
                                   variant='contained'
-                                  style={{padding: '2px', minWidth:'80px',backgroundColor: buttonChild.color || '#2D85E9', color:'white'}}
+                                  style={{padding: '2px', minWidth:'80px',backgroundColor: buttonChild.color || '#2076B8', color:'white'}}
                                   onClick={buttonChild.function}
                                 >
                                   <b>{buttonChild.label}</b>
@@ -382,31 +387,18 @@ class TableComponent extends React.Component {
               </Grid>
             }
 
-            <Grid item sm={12} xs={12} style={{marginBottom:`${this.props.search ? '0px' : '10px'}`}}>
+            <Grid item sm={12} xs={12}>
               {
                 this.props.search &&
                 <SearchBar
                   id="search"
                   value={this.props.search.value}
                   placeholder={this.props.search.label || 'Cari...'}
-                  onChange={this.props.search.onChange || this.props.search.function || null} 
-                  onClick={this.props.search.function || null}
-                  float={'left'}
+                  onChange={this.props.search.function || null} 
+                  float={'right'}
                 />
               }
-
-              {
-                this.props.permissionAdd && 
-                <Fab 
-                  size="small" 
-                  aria-label="add" 
-                  style={{color:'white', outline:'none', float:'right', backgroundColor:'#2D85E9'}}
-                  href={`${this.props.permissionAdd}`}
-                >
-                  <AddIcon />
-                </Fab>
-              }
-
+              
             </Grid>
 
             {

@@ -95,6 +95,10 @@ export function formatNumber(number,money) {
   return tmp.toString().length !== 0 ? tmp : '-'
 }
 
+export function formatMoney(number){ 
+  return number.toLocaleString('in-RP', {style : 'currency', currency: 'IDR'})
+}
+
 export function handleFormatDate (dateBefore, time){
   let dateAfter = new Date(dateBefore);
 
