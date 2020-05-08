@@ -129,10 +129,10 @@ class AuditTrail extends React.Component{
     
     // HANDLE TANGGAL UNTUK SEARCH
     handleStartChange = (date)=>{
-        this.setState({tanggalAwal:date.target.value})
+        this.setState({tanggalAwal:date})
     }
     handleEndChange = (date)=>{
-        this.setState({tanggalAkhir:date.target.value})
+        this.setState({tanggalAkhir:date})
     }
 
     //SEARCH
