@@ -146,10 +146,11 @@ class ActivityLog extends React.Component{
     
     // HANDLE TANGGAL UNTUK SEARCH
     handleStartChange = (date)=>{
-        this.setState({tanggalAwal:date.target.value})
+        
+        this.setState({tanggalAwal:date})
     }
     handleEndChange = (date)=>{
-        this.setState({tanggalAkhir:date.target.value})
+        this.setState({tanggalAkhir:date})
     }
 
     //SEARCH
@@ -335,24 +336,22 @@ class ActivityLog extends React.Component{
                         ]}
                         searchDate={
                             {
-                              value:[this.state.tanggalAwal, this.state.tanggalAkhir],
-                              label: 'Waktu Transaksi',
-                              function: [this.handleStartChange, this.handleEndChange],
+                                value:[this.state.tanggalAwal, this.state.tanggalAkhir],
+                                label: 'Waktu Transaksi',
+                                function: [this.handleStartChange, this.handleEndChange],
+                                button: [
+                                    {
+                                        label:'Filter',
+                                        color:'#20B889',
+                                        function:this.searching
+                                    },
+                                    {
+                                        label:'Reset',
+                                        color:'#EE6969',
+                                        function:this.resetLog
+                                    },
+                                ]
                             }
-                        }
-                        advancedButton={
-                            [
-                                {
-                                  label:'Filter',
-                                  color:'#20B889',
-                                  function:this.searching
-                                },
-                                {
-                                  label:'Reset',
-                                  color:'#EE6969',
-                                  function:this.resetLog
-                                },
-                            ]
                         }
                         errorMessage={this.state.errorMessage}
                         paging={this.state.paging}
