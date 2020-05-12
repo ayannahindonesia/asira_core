@@ -75,7 +75,8 @@ class CalonNasabahDetail extends React.Component{
             
             dataUser.category = this.isCategoryExist(dataUser.category) ;
             dataUser.idcard_image = dataUser.idcard_image && decryptImage(dataUser.idcard_image);
-            dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image)
+            dataUser.taxid_image = dataUser.taxid_image && decryptImage(dataUser.taxid_image);
+            dataUser.image_profile = dataUser.image_profile && decryptImage(dataUser.image_profile)
 
 
             if(dataUser && dataUser.status && dataUser.status === 'rejected') {
@@ -334,7 +335,6 @@ class CalonNasabahDetail extends React.Component{
                       message={this.state.message}
                       type='image'
                       onClose={this.handleClose}
-                      base64Boolean={this.state.title ==='Foto Nasabah' ? true : false }
                     />
                   </div>
 
