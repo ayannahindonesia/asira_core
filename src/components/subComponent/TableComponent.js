@@ -12,6 +12,7 @@ import TitleBar from './TitleBar';
 import SearchBar from './SearchBar';
 import DatePicker from "react-date-picker";
 import PaymentIcon from '@material-ui/icons/Payment';
+import AddIcon from '@material-ui/icons/Add';
 import "react-datepicker/dist/react-datepicker.css";
 
 class TableComponent extends React.Component {
@@ -415,7 +416,7 @@ class TableComponent extends React.Component {
               </Grid>
             }
 
-            <Grid item sm={12} xs={12}>
+            <Grid item sm={this.props.permissionAdd ? 6 : 12} xs={this.props.permissionAdd ? 6 : 12}>
               {
                 this.props.search &&
                 <SearchBar
@@ -423,11 +424,25 @@ class TableComponent extends React.Component {
                   value={this.props.search.value}
                   placeholder={this.props.search.label || 'Cari...'}
                   onChange={this.props.search.function || null} 
-                  float={'right'}
+                  float={this.props.permissionAdd ? 'left' : 'right'}
                 />
               }
               
             </Grid>
+
+            <Grid item sm={this.props.search ? 6 : 12} xs={this.props.search ? 6 : 12} style={{display:'flex', justifyContent:'flex-end', marginBottom:'10px'}}>
+              {
+                
+                this.props.permissionAdd && 
+                <Link to={`${this.props.permissionAdd}`}>
+                  <IconButton aria-label="addButton" style={{outline:'none', backgroundColor:'#2076B8', color:'white'}} >
+                    <AddIcon style={{outline:'none'}}/>
+                  </IconButton>
+                </Link>
+              }
+              
+            </Grid>
+          
 
             {
               this.renderTable()

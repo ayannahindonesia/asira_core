@@ -64,25 +64,26 @@ class RolePermissionDetail extends React.Component{
       const data = await getRoleFunction(param);
 
       if(data) {
-          const newListAllRolePermission = checkingSystem(this.state.roleId, [data.dataRole]);
-          const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [], newListAllRolePermission)
+ 
+        const newListAllRolePermission = checkingSystem(this.state.roleId, [data.dataRole]);
+        const listRolePermission = destructRolePermission((data.dataRole && data.dataRole.permissions) || [], newListAllRolePermission)
 
-          if(!data.error) {
-            this.setState({
-              listRole: data.dataRole,
-              nameRole: data.dataRole.name,
-              system: data.dataRole.system,
-              listRolePermission,
-              listAllRolePermission: newListAllRolePermission,
-              loading: false,
-            })
-          } else {
-            this.setState({
-              errorMessage: data.error,
-              disabled: true,
-              loading: false,
-            })
-          }      
+        if(!data.error) {
+          this.setState({
+            listRole: data.dataRole,
+            nameRole: data.dataRole.name,
+            system: data.dataRole.system,
+            listRolePermission,
+            listAllRolePermission: newListAllRolePermission,
+            loading: false,
+          })
+        } else {
+          this.setState({
+            errorMessage: data.error,
+            disabled: true,
+            loading: false,
+          })
+        }      
       }
     }
 
@@ -94,16 +95,18 @@ class RolePermissionDetail extends React.Component{
     }
 
     btnSave = () =>{ 
+      
       this.setState({loading: true})
 
       const listRolePermission = this.state.listRolePermission;
+      
       const dataRolePermission = {};
       
       dataRolePermission.id = parseInt(this.state.listRole.id);
       dataRolePermission.name = this.state.nameRole;
       dataRolePermission.system = this.state.system
       dataRolePermission.permissions = constructRolePermission(listRolePermission);
-
+      
       const param = {
         roleId: parseInt(this.state.listRole.id),
         dataRolePermission,
@@ -158,9 +161,10 @@ class RolePermissionDetail extends React.Component{
       let flag = true;
       
       if(modules) {
+        
         for(const key in profileUser) {
           if(
-            e.target.value.toString() !== profileUser[key].id.toString()
+            modules.toString() !== profileUser[key].id.toString()
           ) {
             profileUserNew.push(profileUser[key])
           } else {
@@ -171,14 +175,11 @@ class RolePermissionDetail extends React.Component{
 
       if(flag && modules) {
         let newModules = modules.split('-')[1];
-        newModules = newModules.split(' ');
 
-        for(const key in newModules) {
-          profileUserNew.push({
-            id: e.target.value,
-            modules: newModules[key],
-          });
-        }
+        profileUserNew.push({
+          id: modules,
+          modules: newModules,
+        });
       }
       
       this.setState({
@@ -228,11 +229,11 @@ class RolePermissionDetail extends React.Component{
          
                   {/* Action Button */}
                   <Grid item xs={12} sm={12} style={{fontSize:'20px', padding:'0px 10px 10px', color:'red', display:'flex', justifyContent:'flex-end'}}>
-                        <ActionComponent
-                            modifyType={this.state.modifyType}
-                            permissionEdit={ checkPermission('core_permission_patch') ? (this.state.modifyType ? this.btnConfirmationDialog: this.btnEditPermission) : null}
-                            onCancel={this.btnCancel}
-                        />
+                    <ActionComponent
+                        modifyType={this.state.modifyType}
+                        permissionEdit={ checkPermission('core_permission_patch') ? (this.state.modifyType ? this.btnConfirmationDialog: this.btnEditPermission) : null}
+                        onCancel={this.btnCancel}
+                    />
                  </Grid>
 
                   {/* Dialog */}

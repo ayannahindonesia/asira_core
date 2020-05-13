@@ -2,53 +2,48 @@ import { dataMenu } from "../global/globalConstant";
 import { destructErrorMessage } from "../global/globalFunction";
 
 export function destructRolePermission(permission, allPermission){
-
+  
   try {
       let lastPermission = [] ;
 
       if(allPermission && permission) {
         for(const keyPermission in permission) {
           const permissionRow = permission[keyPermission]
-
+          
           for(const key in allPermission) {
-            const actionPermission = allPermission[key].action;
+            const actionPermission = allPermission[key].action; 
+            const labelPermission = allPermission[key].label;
 
             if(actionPermission) {
+              
               for(const keyAction in actionPermission) {
-                const splitActionPermission = actionPermission[keyAction].toString().split(' ');
-
-                let flag = false;
-
-                for(const keySplit in splitActionPermission) {
-                  if(splitActionPermission[keySplit].toString() === permissionRow.toString()) {
-                    flag = true
-                    break;
-                  }
+                if(
+                  permissionRow.toString().toLowerCase() === 'all' ||
+                  // actionPermission[keyAction].id
+                  permissionRow.toString() === actionPermission[keyAction].toString()
+                ) {
+                  lastPermission.push({
+                    id: `${labelPermission}-${actionPermission[keyAction].toString()}`,
+                    modules: actionPermission[keyAction],
+                  })
                 }
                 
-                if(flag) {
-                  lastPermission.push({
-                    id: `${allPermission[key].label}-${actionPermission[keyAction].toString()}`,
-                    modules: permissionRow,
-                  })
-                  break;
-                }
               }
             }
           }
         }
       }
-
+      
       return(lastPermission)
   } catch (err) {
-      const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString();
-      return({error});
+    
+    const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err;
+    return({error});
   }
 
 };
 
 export function constructRolePermission(rolePermission) {
-
     try {
         let newPermission = [];
 
@@ -59,6 +54,7 @@ export function constructRolePermission(rolePermission) {
             }
             newPermission.push(rolePermission[key].modules)
         }
+        
         return newPermission;
     } catch (err) {
         const error = (err.response && err.response.data && destructErrorMessage(err.response.data)) || err.toString();
@@ -100,7 +96,9 @@ export function checkingSystem (role, listRole){
 export function checkingRole (role, id){
     for (const key in role) {
       if (
-        role[key].id.toString().trim() === id.toString().trim()
+        id && role[key].id &&
+        (role[key].id.toString().trim() === id.toString().trim() ||
+        role[key].id.toString().trim() === 'all')
       ) {
         return true;
       }

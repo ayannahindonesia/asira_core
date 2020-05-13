@@ -25,31 +25,39 @@ export function  validatePhone(phone) {
 export function checkPermission(stringPermission) {
   let flag = false;
   
-  const listPermission = getProfileUser() ? JSON.parse(getProfileUser()) : [];
-
-
+  const listPermission = (getProfileUser() && JSON.parse(getProfileUser()) && JSON.parse(getProfileUser())) || [];
+  
   for(const key in listPermission) {
+    const listPermissionChild = listPermission[key] && listPermission[key].toString().toLowerCase().split(' ');
     
-    if(typeof(stringPermission) !== 'object') {
-      if(stringPermission && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
-        flag = true;
-        break;
-      } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
+    for(const keyChild in listPermissionChild) {
+      if(listPermissionChild[keyChild] && listPermissionChild[keyChild].toString().toLowerCase() === 'all') {
         flag = true;
         break;
       }
-    } else {
-      for(const keyPermission in stringPermission) {
-        if(stringPermission[keyPermission] && listPermission[key] && listPermission[key].toString().toLowerCase() === stringPermission[keyPermission].toString().toLowerCase()) {
-          flag = true;
-          break;
-        } else if(listPermission[key] && listPermission[key].toString().toLowerCase() === 'all') {
-          flag = true;
-          break;
+
+      if(typeof(stringPermission) === 'object') {
+        for(const keyPermit in stringPermission) {
+          if(stringPermission[keyPermit] && listPermissionChild[keyChild] && listPermissionChild[keyChild].toString().toLowerCase() === stringPermission[keyPermit].toString().toLowerCase()) {
+            flag = true;
+            break;
+          }
         }
+      } else {
+        if(stringPermission && listPermissionChild[keyChild] && listPermissionChild[keyChild].toString().toLowerCase() === stringPermission.toString().toLowerCase()) {
+          flag = true;
+          break;
+        } 
       }
     }
+    
+    if(flag) {
+      break;
+    }
+  }
 
+  if(stringPermission === 'keluar') {
+    return true;
   }
   
   return flag;
