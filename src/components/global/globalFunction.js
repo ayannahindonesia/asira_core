@@ -1,5 +1,4 @@
 import { getProfileUser } from '../index/token';
-var crypto = require("crypto");
 
 export function validateEmail(email) {
     let flag = false;
@@ -149,19 +148,26 @@ export function getMonthNow(bulanNow) {
   return bulan
 }
 
-export function decryptImage(text){
-  let keyStr = "BpLnfgDsc3WD9F3qap394rjd239smsdk"
-  const algorithm = 'aes-256-cfb';
-
-  const contents = Buffer.from(text, 'base64');
-  const iv = contents.slice(0, 16);
-  const textBytes = contents.slice(16);
-  const decipher = crypto.createDecipheriv(algorithm, keyStr, iv);
-  let res = decipher.update(textBytes, '', 'utf8');
-
-  res += decipher.final('utf8');
+export function decryptImage(textImage) {
   
-  return res
+  if(textImage) {
+    let crypto = require("crypto");
+    const algorithm = 'aes-256-cfb';
+
+    let keyStr = "BpLnfgDsc3WD9F3qap394rjd239smsdk";
+
+    const contents = Buffer.from(textImage, 'base64');
+    const iv = contents.slice(0, 16);
+    const textBytes = contents.slice(16);
+    const decipher = crypto.createDecipheriv(algorithm, keyStr, iv);
+    let imageUrl = decipher.update(textBytes, '', 'utf8');
+    imageUrl += decipher.final('utf8');
+
+    return imageUrl.includes('http') ? imageUrl : textImage;
+  }
+
+  return '';
+  
 }
 
 export function destructErrorMessage(objError) {
@@ -207,26 +213,16 @@ export async function changeFileToBase64(file) {
   });
 }
 
-export function findAmount (dataFees, stringFee, amountPinjamanPokok, charPersen){
+export function findAmount (dataFees, amountPinjamanPokok){
   let feeNew = '';
   
-  if(dataFees && stringFee && amountPinjamanPokok) {
-    for(const key in dataFees) {
-      if(dataFees[key].description.toString().toLowerCase() === stringFee.toString().toLowerCase()) {
-        if(dataFees[key].amount.toString().toLowerCase().includes('%')) {
-          if(charPersen) {
-            feeNew = parseFloat(dataFees[key].amount).toFixed(2);
-          } else {
-            feeNew = parseInt(dataFees[key].amount) * amountPinjamanPokok / 100;
-          }
-        } else {
-          if(charPersen) {
-            feeNew = parseFloat(parseInt(dataFees[key].amount)  * 100 / amountPinjamanPokok).toFixed(2);
-          } else {
-            feeNew = parseInt(dataFees[key].amount);
-          }
-        }
-      }
+  if(dataFees && amountPinjamanPokok) {
+    if(dataFees.toString().toLowerCase().includes('%')) {
+      feeNew = `${parseFloat(dataFees).toFixed(2)}%`;
+      feeNew += ` atau ${formatMoney(parseInt(dataFees) * amountPinjamanPokok / 100)}`;
+    } else {
+      feeNew = `${parseFloat(parseInt(dataFees)  * 100 / amountPinjamanPokok).toFixed(2)}%`;
+      feeNew += ` atau ${formatMoney(parseInt(dataFees))}`;
     }
   }
 
