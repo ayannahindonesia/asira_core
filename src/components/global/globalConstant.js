@@ -123,6 +123,7 @@ exports.dataMenu = [
                 logo: '',
                 action: {
                     list:'lender_borrower_list lender_borrower_list_detail',
+                    delete:'lender_approve_reject_borrower_delete_request'
                 }
             },
             {
