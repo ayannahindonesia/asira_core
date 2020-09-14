@@ -1,27 +1,48 @@
 #base image
-FROM node
+#FROM node
 
 # set working directory
-WORKDIR /opt/app-root/src
-#RUN mkdir /usr/src/app
-RUN chmod 777 /opt/app-root/src
+#WORKDIR /opt/app-root/src
+###RUN mkdir /usr/src/app
+#RUN chmod 777 /opt/app-root/src
 #copy all files from current directory to docker
-COPY . /opt/app-root/src
+#COPY . /opt/app-root/src
 
 
 
 # add `/usr/src/app/node_modules/.bin` to $PATH
-ENV PATH /opt/app-root/src/node_modules/.bin:$PATH
+#ENV PATH /opt/app-root/src/node_modules/.bin:$PATH
 
-CMD npm install core-js
-RUN chown -R 1001:0 /opt/app-root/src/ &&  chmod -R ug+rwx /opt/app-root/src/
+#CMD npm install core-js
+#RUN chown -R 1001:1001 /opt/app-root/src/ &&  chmod -R ug+rwx /opt/app-root/src/
 
-USER 1001
+#USER 1001
 
 # install and cache app dependencies
 #RUN yarn
 
 # start app
-CMD npm start
+#CMD npm start
+#EXPOSE 3000
+#################build lama############
+#base image
+FROM node
 
-EXPOSE 3000
+# set working directory
+RUN mkdir /usr/src/app
+#copy all files from current directory to docker
+COPY . /usr/src/app
+
+WORKDIR /usr/src/app
+
+# add `/usr/src/app/node_modules/.bin` to $PATH
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+# install and cache app dependencies
+RUN yarn
+
+# start app
+CMD npm install\
+&& npm start
+
+EXPOSE 3001
